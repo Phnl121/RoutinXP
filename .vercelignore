@@ -1,0 +1,8 @@
+# Arquivos que nunca devem subir num deploy feito pela CLI da Vercel.
+# (Deploys a partir do GitHub já não têm esses arquivos, que ficam fora do git.)
+.env
+.env.*
+!.env.example
+supabase-credentials.txt
+Claude outputs/
+.impeccable/
