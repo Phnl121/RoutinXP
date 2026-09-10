@@ -31,7 +31,7 @@ v1 exists to validate the core reward loop: **register a task â†’ complete it â†
 
 ## Positioning
 
-One list for every area of life, with a reward loop that is deliberately simple: fixed XP per task and a daily streak. Instead of a planner that tries to manage your calendar, it rewards the act of finishing something, whatever area it belongs to.
+One list for every area of life, with a reward loop that is deliberately simple: XP per completed task and a daily streak. Instead of a planner that tries to manage your calendar, it rewards the act of finishing something, whatever area it belongs to.
 
 (Derived from the v1 scope; refine once there is real usage data.)
 
@@ -65,10 +65,10 @@ One list for every area of life, with a reward loop that is deliberately simple:
 **Idea, not scheduled:** themes unlocked by leveling up. The user would customize the app's look with what they earn as their level rises. Not in v1 unless the user decides otherwise, but design tokens must stay theme-swappable so it can be added later.
 
 **Reward rules (v1, simple on purpose):**
-- Completing a task adds its `xp_value` (default 10) to `xp_total`.
+- Completing a task adds its `xp_value` to `xp_total`.
 - Streak goes up by 1 the first time a task is completed on a day with no prior completion.
 - Streak resets to zero if a full day passes with no completed task.
-- XP is fixed per task in v1; no variation by category or priority until there is real usage data.
+- **XP per task is not decided** (user, 2026-09-10, superseding the "XP fixo" line in `escopo-mvp-v1.md`): some tasks may be worth more and others less. The `xp_value` column already stores each task's own value (schema default 10 until a rule exists). No UI copy may promise a fixed amount ("vale 10 XP"); demo data may show varied example values.
 
 **Data model:** `categories`, `tasks`, `user_stats` in Postgres with RLS restricting every row to its `user_id`. Full schema in `escopo-mvp-v1.md`.
 
@@ -87,6 +87,8 @@ One list for every area of life, with a reward loop that is deliberately simple:
 
 ## Brand Commitments
 
+- **Name: Routin** (user, 2026-09-10). Replaces "Rotina" in every user-visible place. The project folder and repo keep "App - Rotina".
+
 - **Visual convention** (user, 2026-09-10): follow the gamified learning platforms rather than an invented world. DIO (web.dio.me) is the primary reference; Duolingo and Habitica set the craft bar. The first two directions (travel document, then a round of alternatives) were rejected for losing the gamification focus.
 - **Colors** (user, 2026-09-10): dark theme with two accents only, green for XP and level, purple for actions. Not DIO's full green/purple/yellow/pink palette. User-defined category colors are data, shown as small dots.
 - Must not feel: childish, cold like a spreadsheet, guilt-inducing when a streak is lost, or like a generic UI-kit template (user, 2026-09-10).
@@ -101,7 +103,7 @@ One list for every area of life, with a reward loop that is deliberately simple:
 
 1. **The loop comes first.** Register, complete, get rewarded. Every screen should make that loop faster or clearer; anything that doesn't serve it waits for v2.
 2. **Finishing is the event.** Completing a task is the moment the product exists for. The reward (XP, streak) must be immediate and unmistakable, never buried.
-3. **Simple rules, honestly shown.** Fixed XP and a plain streak. The user should always understand why a number changed.
+3. **Simple rules, honestly shown.** Each task shows the XP it gives, and the streak is plain. The user should always understand why a number changed.
 4. **Every life area belongs.** Faculdade and Vida Pessoal get the same standing; categories organize, they don't rank.
 5. **Two devices, one app.** Planning on the desktop and completing on the phone are both primary; neither is a degraded version of the other.
 

@@ -1,7 +1,7 @@
 // Todos os textos da interface ficam aqui, para facilitar a tradução no futuro.
 export const t = {
   app: {
-    nome: 'Rotina',
+    nome: 'Routin',
     carregando: 'Carregando…',
     sair: 'Sair',
   },
@@ -16,19 +16,20 @@ export const t = {
   entrar: {
     titulo: ['Conclua tarefas.', 'Ganhe XP.', 'Suba de nível.'],
     texto:
-      'Faculdade, trabalho, vida pessoal e projetos numa lista só. Cada tarefa concluída vale 10 XP, e o seu nível mostra o quanto você já avançou.',
+      'Faculdade, trabalho, vida pessoal e projetos numa lista só. Cada tarefa concluída rende XP, e o seu nível mostra o quanto você já avançou.',
   },
 
   demo: {
     titulo: 'Experimente: conclua uma tarefa',
-    ganho: '+10 XP',
-    anuncio: (atual, meta) => `Mais 10 XP. ${atual} de ${meta} no nível.`,
+    ganho: (xp) => `+${xp} XP`,
+    anuncio: (xp, atual, meta) => `Mais ${xp} XP. ${atual} de ${meta} no nível.`,
     subiu: (n) => `Nível ${n} alcançado. No app, cada tarefa concluída funciona assim.`,
     recomecar: 'Recomeçar exemplo',
     tarefas: [
-      { id: 1, titulo: 'Entregar relatório de Cálculo II', categoria: 'Faculdade', cor: '#6c9be8' },
-      { id: 2, titulo: 'Revisar slides da reunião de sexta', categoria: 'Trabalho', cor: '#e0a050' },
-      { id: 3, titulo: 'Pagar conta de luz', categoria: 'Vida Pessoal', cor: '#e27d8f' },
+      // Valores de exemplo: o XP por tarefa ainda não foi definido e pode variar.
+      { id: 1, titulo: 'Entregar relatório de Cálculo II', categoria: 'Faculdade', cor: '#6c9be8', xp: 15 },
+      { id: 2, titulo: 'Revisar slides da reunião de sexta', categoria: 'Trabalho', cor: '#e0a050', xp: 5 },
+      { id: 3, titulo: 'Pagar conta de luz', categoria: 'Vida Pessoal', cor: '#e27d8f', xp: 10 },
     ],
   },
 

@@ -1,5 +1,5 @@
 ---
-name: Rotina
+name: Routin
 description: Gamified routine app in a dark learning-platform convention; finish a task, earn XP, level up.
 colors:
   ground: "#121318"
@@ -169,13 +169,13 @@ components:
     size: "48px"
 ---
 
-# Design System: Rotina
+# Design System: Routin
 
 ## Overview
 
 **Creative North Star: "The Level Always in View"**
 
-Rotina follows the gamified learning-platform convention (DIO as the reference, Duolingo and Habitica as the craft bar) rather than an invented world. The system exists to make one moment land: a task is finished, "+10 XP" flies to the counter, the number counts up, the bar fills, and on a level change the badge pulses. Everything else is quiet dark chrome that lets that moment be the brightest thing on screen.
+Routin follows the gamified learning-platform convention (DIO as the reference, Duolingo and Habitica as the craft bar) rather than an invented world. The system exists to make one moment land: a task is finished, "+n XP" flies to the counter, the number counts up, the bar fills, and on a level change the badge pulses. Everything else is quiet dark chrome that lets that moment be the brightest thing on screen.
 
 Surfaces are a near-black ground with slightly lifted panels, separated by 1px rules. Density is operational, not editorial: rows, fields and meters sit close, labels are small uppercase, and figures are tabular so numbers never jitter while counting. Type is one family, Archivo, pushed to extra-bold and slightly expanded for the headline, wordmark and badges; everything else is plain weight at normal width.
 
@@ -194,7 +194,7 @@ Two accents carry all meaning. Green is progress (XP, level, fills, completed ch
 A cool, near-black neutral stack with two saturated accents whose roles never overlap.
 
 ### Primary
-- **Level Green** (`green`): the progress color. XP fills, the NÍVEL badge, the avatar ring, completed checks, "+10 XP" labels and the flying "+10 XP", and the one highlighted phrase in a headline ("Suba de nível."). Text on a green fill always uses **Deep Moss** (`on-green`), never white.
+- **Level Green** (`green`): the progress color. XP fills, the NÍVEL badge, the avatar ring, completed checks, "+n XP" labels and the flying "+n XP", and the one highlighted phrase in a headline ("Suba de nível."). Text on a green fill always uses **Deep Moss** (`on-green`), never white.
 
 ### Secondary
 - **Action Violet** (`purple`): primary button fill, the active tab's underline bar, text-selection tint. **Violet Lift** (`purple-hover`) is its hover step only.
@@ -228,7 +228,7 @@ A cool, near-black neutral stack with two saturated accents whose roles never ov
 
 ### Hierarchy
 - **Display** (800, clamp 2.25rem to 3.5rem, width 110%, line-height 1.02): the single page headline. Balanced wrapping. Below 60rem it drops to clamp(1.875rem, 8vw, 2.5rem). One phrase may be Level Green when it names the reward.
-- **Wordmark** (800, 1.625rem, width 112.5%, line-height 1): "Rotina" in text; no logo asset exists.
+- **Wordmark** (800, 1.625rem, width 112.5%, line-height 1): "Routin" in text; no logo asset exists.
 - **Headline** (800, 1.5rem, line-height 1.15): titles inside panels and simple pages (Redefinir senha, Confira seu e-mail).
 - **Body Lead** (400, 1.0625rem, line-height 1.55, max 46ch, muted): the one supporting paragraph under a display headline.
 - **Body** (400, 1rem, line-height 1.45): default; panel prose caps at 44ch.
@@ -237,7 +237,7 @@ A cool, near-black neutral stack with two saturated accents whose roles never ov
 - **Tab** (800, 0.875rem, 0.06em, uppercase): segmented tabs.
 - **Label** (700, 0.75rem, 0.07em, uppercase, muted): field labels, field toggles, section titles over a list (the list title runs 0.8125rem, 0.06em).
 - **Badge** (800, 0.6875rem, width 112.5%, 0.06em, uppercase): NÍVEL pill; 0.8125rem inside a level meter.
-- **XP Figure** (800, tabular): "XP 120 / 150" and "+10 XP".
+- **XP Figure** (800, tabular): "XP 120 / 150" and "+n XP".
 
 ### Named Rules
 **The Tabular Rule.** `font-variant-numeric: tabular-nums` is set at the root and stays on; counting XP must never shift its neighbors.
@@ -296,7 +296,7 @@ Uppercase Tab-style labels in Muted, 28px apart, over a 1px Rule baseline. The a
 - Sections inside a panel are separated by a 1px Rule, never by nested panels.
 
 ### List Rows (tasks)
-Rows are divided by 1px Rules between siblings, not boxed. Each row is a full-width button: a 24px circular check (2px Rule Strong ring), a text stack (Row Title plus category line: 8px color dot and the name in Meta muted), and a right-aligned green "+10 XP". Hover gives the row a Panel Two background (8px radius) and turns the check ring green. Completed: check fills green with a Deep Moss tick and a 1.18 scale pop, title goes Muted with a Rule Strong strike-through, and the XP label drops to 40% opacity. The whole row is the touch target.
+Rows are divided by 1px Rules between siblings, not boxed. Each row is a full-width button: a 24px circular check (2px Rule Strong ring), a text stack (Row Title plus category line: 8px color dot and the name in Meta muted), and a right-aligned green "+n XP". Hover gives the row a Panel Two background (8px radius) and turns the check ring green. Completed: check fills green with a Deep Moss tick and a 1.18 scale pop, title goes Muted with a Rule Strong strike-through, and the XP label drops to 40% opacity. The whole row is the touch target.
 
 ### Level Badge (signature)
 Green pill, Deep Moss text, "NÍVEL n", Badge type. On a level change it pulses once (scale to 1.2 with the green pulse shadow, 0.7s).
@@ -308,7 +308,7 @@ Above the track: the XP figure ("XP 120 / 150") left, "faltam n XP" muted right,
 Badge (meter size) and XP bar side by side in a flex row, closed by a 1px Rule beneath. This is the compact progress header for any panel that lists tasks.
 
 ### XP Flight and Level-Up (signature interaction)
-Completing a task launches "+10 XP" (green, 800, 0.9375rem) from the row's XP label to the XP figure (0.6s, scale 1.1 to 0.75, fades in its last 20%). On arrival the figure counts up and the bar fills. On a level change the bar fills to 100% in the old level, holds 750ms, then snaps (no transition) to the new level at 0 and the badge pulses; a green-tinted banner (green at 10% fill, 35% border, 10px radius) confirms it. Changes are announced through a polite live region. The same sequence is used in the login demo and in the app.
+Completing a task launches "+n XP" (green, 800, 0.9375rem) from the row's XP label to the XP figure (0.6s, scale 1.1 to 0.75, fades in its last 20%). On arrival the figure counts up and the bar fills. On a level change the bar fills to 100% in the old level, holds 750ms, then snaps (no transition) to the new level at 0 and the badge pulses; a green-tinted banner (green at 10% fill, 35% border, 10px radius) confirms it. Changes are announced through a polite live region. The same sequence is used in the login demo and in the app.
 
 ### Avatar
 48px circle, Panel Two fill, 2px green ring, initials at 700. Appears only inside the app (profile card), never on the login.

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "generatedAt": "2026-09-10T00:00:00Z",
-  "title": "Design System: Rotina",
+  "title": "Design System: Routin",
   "extensions": {
     "colorMeta": {
       "green": { "role": "primary", "displayName": "Level Green", "canonical": "#2bd576", "tonalRamp": ["#0a2616", "#0f4526", "#15673a", "#1d9150", "#2bd576", "#5fe399", "#8af5b5", "#d4fbe4"] },
@@ -20,7 +20,7 @@
     },
     "typographyMeta": {
       "display": { "displayName": "Display", "purpose": "The single page headline; extra-bold, 110% width. Mobile: clamp(1.875rem, 8vw, 2.5rem)." },
-      "wordmark": { "displayName": "Wordmark", "purpose": "\"Rotina\" set in text; no logo asset exists." },
+      "wordmark": { "displayName": "Wordmark", "purpose": "\"Routin\" set in text; no logo asset exists." },
       "headline": { "displayName": "Headline", "purpose": "Titles inside panels and on simple pages." },
       "body-lead": { "displayName": "Body Lead", "purpose": "One supporting paragraph under a display headline, muted, max 46ch." },
       "body": { "displayName": "Body", "purpose": "Default text; tabular figures on at the root." },
@@ -29,7 +29,7 @@
       "tab": { "displayName": "Tab", "purpose": "Uppercase underline tabs." },
       "label": { "displayName": "Label", "purpose": "Uppercase field labels, field toggles, list section titles." },
       "badge": { "displayName": "Badge", "purpose": "NÍVEL pill; 0.8125rem inside a level meter." },
-      "xp-figure": { "displayName": "XP Figure", "purpose": "XP counter and +10 XP labels; tabular, counts up." }
+      "xp-figure": { "displayName": "XP Figure", "purpose": "XP counter and +n XP labels; tabular, counts up." }
     },
     "shadows": [
       { "name": "panel-lift", "value": "0 1px 2px rgb(0 0 0 / 0.35), 0 16px 40px -12px rgb(0 0 0 / 0.55)", "purpose": "Every panel, always the same single elevation." },
@@ -41,7 +41,7 @@
     "motion": [
       { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "The single easing for every state transition and fill." },
       { "name": "xp-fill", "value": "transform 0.7s ease-out", "purpose": "XP bar fill via translateX; matches the 700ms count-up (quartic ease-out)." },
-      { "name": "xp-flight", "value": "0.6s cubic-bezier(0.5, 0, 0.2, 1)", "purpose": "+10 XP flying from the row to the counter; scale 1.1 to 0.75, fades in the last 20%." },
+      { "name": "xp-flight", "value": "0.6s cubic-bezier(0.5, 0, 0.2, 1)", "purpose": "+n XP flying from the row to the counter; scale 1.1 to 0.75, fades in the last 20%." },
       { "name": "level-hold", "value": "750ms", "purpose": "Bar holds full in the old level before snapping to the new level at 0." },
       { "name": "badge-pulse", "value": "0.7s ease-out, scale 1.2 at 30%", "purpose": "NÍVEL badge on level change." },
       { "name": "check-pop", "value": "0.4s ease-out, scale 1.18 at 40%", "purpose": "Task check on completion." },
@@ -115,8 +115,8 @@
       "name": "Task Row",
       "kind": "custom",
       "refersTo": "task-row",
-      "description": "Rule-divided row: circular check, title plus category dot and name, green +10 XP.",
-      "html": "<ul class=\"ds-list\"><li><button class=\"ds-row\" aria-pressed=\"false\"><span class=\"ds-check\"><svg viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M3.5 8.5 6.5 11.5 12.5 4.5\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span><span class=\"ds-row-text\"><span class=\"ds-row-title\">Entregar relatório de Cálculo II</span><span class=\"ds-row-cat\"><span class=\"ds-dot\" style=\"background:#6c9be8\"></span>Faculdade</span></span><span class=\"ds-row-xp\">+10 XP</span></button></li><li><button class=\"ds-row\" aria-pressed=\"true\"><span class=\"ds-check\"><svg viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M3.5 8.5 6.5 11.5 12.5 4.5\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span><span class=\"ds-row-text\"><span class=\"ds-row-title\">Pagar conta de luz</span><span class=\"ds-row-cat\"><span class=\"ds-dot\" style=\"background:#e27d8f\"></span>Vida Pessoal</span></span><span class=\"ds-row-xp\">+10 XP</span></button></li></ul>",
+      "description": "Rule-divided row: circular check, title plus category dot and name, green +n XP.",
+      "html": "<ul class=\"ds-list\"><li><button class=\"ds-row\" aria-pressed=\"false\"><span class=\"ds-check\"><svg viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M3.5 8.5 6.5 11.5 12.5 4.5\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span><span class=\"ds-row-text\"><span class=\"ds-row-title\">Entregar relatório de Cálculo II</span><span class=\"ds-row-cat\"><span class=\"ds-dot\" style=\"background:#6c9be8\"></span>Faculdade</span></span><span class=\"ds-row-xp\">+n XP</span></button></li><li><button class=\"ds-row\" aria-pressed=\"true\"><span class=\"ds-check\"><svg viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M3.5 8.5 6.5 11.5 12.5 4.5\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span><span class=\"ds-row-text\"><span class=\"ds-row-title\">Pagar conta de luz</span><span class=\"ds-row-cat\"><span class=\"ds-dot\" style=\"background:#e27d8f\"></span>Vida Pessoal</span></span><span class=\"ds-row-xp\">+n XP</span></button></li></ul>",
       "css": ".ds-list { margin: 0; padding: 0; list-style: none; font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; } .ds-list li + li { border-top: 1px solid var(--rule, #2e3039); } .ds-row { display: flex; align-items: center; gap: 0.85rem; width: 100%; margin: 0.2rem 0; padding: 0.75rem 0.6rem; border: 0; border-radius: 8px; background: transparent; color: var(--ink, #f3f4f7); font: inherit; text-align: left; cursor: pointer; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-row:hover { background: var(--panel-2, #25262f); } .ds-row:focus-visible { outline: 2px solid var(--purple-soft, #c28cf6); outline-offset: 2px; } .ds-check { display: grid; place-items: center; flex: none; width: 1.5rem; height: 1.5rem; border: 2px solid var(--rule-strong, #454856); border-radius: 50%; color: transparent; transition: background-color 0.25s, border-color 0.25s, color 0.25s; } .ds-check svg { width: 0.9rem; height: 0.9rem; } .ds-row:hover .ds-check { border-color: var(--green, #2bd576); } .ds-row[aria-pressed='true'] .ds-check { background: var(--green, #2bd576); border-color: var(--green, #2bd576); color: var(--on-green, #0a2616); } .ds-row-text { flex: 1; display: grid; gap: 0.2rem; min-width: 0; } .ds-row-title { font-weight: 600; line-height: 1.3; } .ds-row[aria-pressed='true'] .ds-row-title { color: var(--muted, #a3a7b3); text-decoration: line-through; text-decoration-color: var(--rule-strong, #454856); } .ds-row-cat { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8125rem; color: var(--muted, #a3a7b3); } .ds-dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; flex: none; } .ds-row-xp { flex: none; font-size: 0.8125rem; font-weight: 800; color: var(--green, #2bd576); } .ds-row[aria-pressed='true'] .ds-row-xp { opacity: 0.4; }"
     },
     {
@@ -130,7 +130,7 @@
   ],
   "narrative": {
     "northStar": "The Level Always in View",
-    "overview": "Rotina follows the gamified learning-platform convention (DIO as the reference, Duolingo and Habitica as the craft bar) rather than an invented world. The system exists to make one moment land: a task is finished, \"+10 XP\" flies to the counter, the number counts up, the bar fills, and on a level change the badge pulses. Everything else is quiet dark chrome that lets that moment be the brightest thing on screen.\n\nSurfaces are a near-black ground with slightly lifted panels, separated by 1px rules. Density is operational, not editorial: rows, fields and meters sit close, labels are small uppercase, and figures are tabular so numbers never jitter while counting. Type is one family, Archivo, pushed to extra-bold and slightly expanded for the headline, wordmark and badges; everything else is plain weight at normal width.\n\nTwo accents carry all meaning. Green is progress (XP, level, fills, completed checks). Purple is action (primary buttons, the active tab bar, focus, link text). Every color is a custom property on `:root` so a later theme can swap the whole set by overriding variables on a `[data-tema]` scope; the system must stay expressible that way.",
+    "overview": "Routin follows the gamified learning-platform convention (DIO as the reference, Duolingo and Habitica as the craft bar) rather than an invented world. The system exists to make one moment land: a task is finished, \"+n XP\" flies to the counter, the number counts up, the bar fills, and on a level change the badge pulses. Everything else is quiet dark chrome that lets that moment be the brightest thing on screen.\n\nSurfaces are a near-black ground with slightly lifted panels, separated by 1px rules. Density is operational, not editorial: rows, fields and meters sit close, labels are small uppercase, and figures are tabular so numbers never jitter while counting. Type is one family, Archivo, pushed to extra-bold and slightly expanded for the headline, wordmark and badges; everything else is plain weight at normal width.\n\nTwo accents carry all meaning. Green is progress (XP, level, fills, completed checks). Purple is action (primary buttons, the active tab bar, focus, link text). Every color is a custom property on `:root` so a later theme can swap the whole set by overriding variables on a `[data-tema]` scope; the system must stay expressible that way.",
     "keyCharacteristics": [
       "Dark ground, lifted panels, 1px rules; no nested cards.",
       "Exactly two accents with fixed jobs: green = XP and level, purple = actions.",

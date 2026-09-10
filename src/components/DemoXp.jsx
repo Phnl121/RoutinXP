@@ -40,7 +40,7 @@ export function DemoXp({ className = '' }) {
     if (feitas.includes(tarefa.id)) return
     setFeitas((f) => [...f, tarefa.id])
 
-    // O "+10 XP" sai do rótulo da tarefa e voa até o contador de XP.
+    // O "+XP" sai do rótulo da tarefa e voa até o contador de XP.
     const secao = secaoRef.current.getBoundingClientRect()
     const origem = evento.currentTarget.querySelector('.tarefa__xp').getBoundingClientRect()
     const alvo = alvoRef.current.getBoundingClientRect()
@@ -52,18 +52,19 @@ export function DemoXp({ className = '' }) {
         y: origem.top - secao.top,
         dx: alvo.left - origem.left,
         dy: alvo.top - origem.top,
+        xp: tarefa.xp,
       },
     ])
     // Garantia: se a animação não terminar (aba em segundo plano, por exemplo), o XP entra mesmo assim.
-    setTimeout(() => chegou(tarefa.id), DURACAO_VOO + 150)
+    setTimeout(() => chegou(tarefa.id, tarefa.xp), DURACAO_VOO + 150)
   }
 
-  function chegou(id) {
+  function chegou(id, ganho) {
     if (aplicados.current.has(id)) return
     aplicados.current.add(id)
     setVoos((v) => v.filter((voo) => voo.id !== id))
     const antes = calcularNivel(xpRef.current)
-    xpRef.current += 10
+    xpRef.current += ganho
     const depois = calcularNivel(xpRef.current)
 
     if (depois.nivel > antes.nivel) {
@@ -77,7 +78,7 @@ export function DemoXp({ className = '' }) {
       }, PAUSA_NIVEL_CHEIO)
     } else {
       setXp(xpRef.current)
-      setAnuncio(d.anuncio(depois.xpNoNivel, depois.meta))
+      setAnuncio(d.anuncio(ganho, depois.xpNoNivel, depois.meta))
     }
   }
 
@@ -111,7 +112,7 @@ export function DemoXp({ className = '' }) {
                 type="button"
                 className="tarefa"
                 aria-pressed={feita}
-                aria-label={`${tarefa.titulo}, ${tarefa.categoria}, ${d.ganho}`}
+                aria-label={`${tarefa.titulo}, ${tarefa.categoria}, ${d.ganho(tarefa.xp)}`}
                 disabled={feita}
                 onClick={(evento) => concluir(tarefa, evento)}
               >
@@ -127,7 +128,7 @@ export function DemoXp({ className = '' }) {
                     {tarefa.categoria}
                   </span>
                 </span>
-                <span className="tarefa__xp">{d.ganho}</span>
+                <span className="tarefa__xp">{d.ganho(tarefa.xp)}</span>
               </button>
             </li>
           )
@@ -149,9 +150,9 @@ export function DemoXp({ className = '' }) {
           className="xp-voo"
           aria-hidden="true"
           style={{ left: voo.x, top: voo.y, '--dx': `${voo.dx}px`, '--dy': `${voo.dy}px` }}
-          onAnimationEnd={() => chegou(voo.id)}
+          onAnimationEnd={() => chegou(voo.id, voo.xp)}
         >
-          {d.ganho}
+          {d.ganho(voo.xp)}
         </span>
       ))}
 
