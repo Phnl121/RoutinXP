@@ -1,0 +1,205 @@
+.pass {
+  --notch: 10px;
+  --stub-w: 15.5rem;
+  width: min(100%, 52rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--stub-w);
+  filter: drop-shadow(0 1px 1px rgb(17 20 24 / 0.07)) drop-shadow(0 18px 28px rgb(17 20 24 / 0.1));
+  animation: pass-in 0.8s var(--ease-out) both;
+}
+
+@keyframes pass-in {
+  from {
+    transform: translateY(12px);
+  }
+}
+
+/* Os recortes do picote ficam nos cantos onde os dois segmentos se encontram. */
+.pass__main {
+  background: var(--panel);
+  border-radius: 8px 0 0 8px;
+  padding: 2.25rem 2.5rem 2rem;
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at 100% 0, #0000 97%, #000),
+    radial-gradient(circle var(--notch) at 100% 100%, #0000 97%, #000);
+  -webkit-mask-composite: source-in;
+  mask:
+    radial-gradient(circle var(--notch) at 100% 0, #0000 97%, #000),
+    radial-gradient(circle var(--notch) at 100% 100%, #0000 97%, #000);
+  mask-composite: intersect;
+}
+
+.pass__stub {
+  position: relative;
+  background: var(--ink);
+  color: var(--on-ink);
+  border-radius: 0 8px 8px 0;
+  padding: 2.25rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  -webkit-mask:
+    radial-gradient(circle var(--notch) at 0 0, #0000 97%, #000),
+    radial-gradient(circle var(--notch) at 0 100%, #0000 97%, #000);
+  -webkit-mask-composite: source-in;
+  mask:
+    radial-gradient(circle var(--notch) at 0 0, #0000 97%, #000),
+    radial-gradient(circle var(--notch) at 0 100%, #0000 97%, #000);
+  mask-composite: intersect;
+}
+
+.pass__stub::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: calc(var(--notch) + 6px);
+  bottom: calc(var(--notch) + 6px);
+  width: 1px;
+  background: repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.3) 0 6px, transparent 6px 12px);
+}
+
+.pass__stub .label {
+  color: var(--on-ink-muted);
+}
+
+.tag {
+  align-self: flex-start;
+  background: var(--amber);
+  color: var(--ink);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  font-stretch: 87.5%;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 0.4rem 0.55rem;
+  border-radius: 2px;
+}
+
+.stub__fields {
+  display: grid;
+  gap: 0.9rem;
+  margin: 0;
+}
+
+.stub__fields dd {
+  margin: 0.25rem 0 0;
+}
+
+.stub__value {
+  font-size: 1.125rem;
+  font-weight: 600;
+  font-stretch: 87.5%;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.stub__value--name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scan {
+  display: block;
+  width: 100%;
+  max-width: 8.5rem;
+  margin-top: auto;
+  color: var(--on-ink);
+  transition: opacity 0.3s var(--ease-out);
+}
+
+.scan[data-empty='true'] {
+  opacity: 0.3;
+}
+
+.scan rect {
+  fill: currentColor;
+  opacity: 0;
+  transition: opacity 0.18s var(--ease-out);
+}
+
+.scan rect.on {
+  opacity: 1;
+}
+
+.stub__foot {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--on-ink-muted);
+}
+
+/* Celular: os segmentos empilham e o picote vira horizontal. */
+@media (max-width: 44.99rem) {
+  .pass {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pass__main {
+    border-radius: 8px 8px 0 0;
+    padding: 1.75rem 1.25rem 1.5rem;
+    -webkit-mask:
+      radial-gradient(circle var(--notch) at 0 100%, #0000 97%, #000),
+      radial-gradient(circle var(--notch) at 100% 100%, #0000 97%, #000);
+    -webkit-mask-composite: source-in;
+    mask:
+      radial-gradient(circle var(--notch) at 0 100%, #0000 97%, #000),
+      radial-gradient(circle var(--notch) at 100% 100%, #0000 97%, #000);
+    mask-composite: intersect;
+  }
+
+  .pass__stub {
+    border-radius: 0 0 8px 8px;
+    padding: 1.5rem 1.25rem 1.25rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'tag scan'
+      'fields scan'
+      'foot scan';
+    column-gap: 1.25rem;
+    row-gap: 1rem;
+    -webkit-mask:
+      radial-gradient(circle var(--notch) at 0 0, #0000 97%, #000),
+      radial-gradient(circle var(--notch) at 100% 0, #0000 97%, #000);
+    -webkit-mask-composite: source-in;
+    mask:
+      radial-gradient(circle var(--notch) at 0 0, #0000 97%, #000),
+      radial-gradient(circle var(--notch) at 100% 0, #0000 97%, #000);
+    mask-composite: intersect;
+  }
+
+  .pass__stub::before {
+    top: 0;
+    bottom: auto;
+    left: calc(var(--notch) + 6px);
+    right: calc(var(--notch) + 6px);
+    width: auto;
+    height: 1px;
+    background: repeating-linear-gradient(to right, rgb(255 255 255 / 0.3) 0 6px, transparent 6px 12px);
+  }
+
+  .tag {
+    grid-area: tag;
+  }
+
+  .stub__fields {
+    grid-area: fields;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
+  }
+
+  .stub__foot {
+    grid-area: foot;
+  }
+
+  .scan {
+    grid-area: scan;
+    width: 6.5rem;
+    align-self: center;
+    margin: 0;
+  }
+}

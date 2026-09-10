@@ -1,111 +1,262 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  /* Mundo: cartão de embarque + painel de partidas. Neutros e um único acento âmbar. */
+  --ground: #f6f6f4;
+  --panel: #ffffff;
+  --rule: #d5d8dc;
+  --rule-strong: #b6bbc2;
+  --ink: #111418;
+  --muted: #5e6570;
+  --on-ink: #f2f3f5;
+  --on-ink-muted: #9aa1ab;
+  --amber: #e09a12; /* só como preenchimento, com texto em --ink */
+  --amber-ink: #a86c00; /* quando o âmbar precisa ser texto (5,7:1 no branco) */
+  --amber-wash: #f7dfae;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  --font: 'Archivo Variable', 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
+  color-scheme: light;
+  font-family: var(--font);
+  font-size: 100%;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  background: var(--ground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  text-rendering: optimizeLegibility;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
+  min-height: 100dvh;
+  background: var(--ground);
+  caret-color: var(--ink);
+  scrollbar-color: var(--rule-strong) transparent;
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+button,
+input {
+  font: inherit;
+  color: inherit;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+::selection {
+  background: var(--amber-wash);
+  color: var(--ink);
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
+
+/* Rótulo de campo de cartão de embarque */
+.label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-stretch: 87.5%;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  color: var(--muted);
 }
-p {
+
+.wordmark {
   margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-stretch: 100%;
+  letter-spacing: -0.015em;
+  line-height: 1;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
+.btn {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0 1.5rem;
+  border: 0;
   border-radius: 4px;
-  color: var(--text-h);
+  background: var(--ink);
+  color: var(--on-ink);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgb(17 20 24 / 0.2);
+  transition:
+    transform 0.12s var(--ease-out),
+    background-color 0.2s var(--ease-out);
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+.btn:hover {
+  background: #262a31;
+}
+
+.btn:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+.btn:disabled {
+  cursor: progress;
+  background: #3a3f47;
+}
+
+.link-btn {
+  padding: 0.25rem 0;
+  border: 0;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--rule-strong);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  cursor: pointer;
+  transition: text-decoration-color 0.2s var(--ease-out);
+}
+
+.link-btn:hover {
+  text-decoration-color: var(--ink);
+}
+
+.field {
+  display: grid;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.field__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.field__toggle {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-stretch: 87.5%;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ink);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 3px;
+}
+
+.input {
+  width: 100%;
+  min-height: 2.875rem;
+  padding: 0 0.85rem;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--panel);
+  font-size: 1rem;
+  transition:
+    border-color 0.2s var(--ease-out),
+    box-shadow 0.2s var(--ease-out);
+}
+
+.input::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+.input:hover {
+  border-color: var(--rule-strong);
+}
+
+.input:focus-visible {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+.input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 100px var(--panel) inset;
+  -webkit-text-fill-color: var(--ink);
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+/* Erro: a marca é o selo invertido, não uma cor de alarme. */
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+  background: var(--panel);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  animation: notice-in 0.35s var(--ease-out);
+}
+
+@keyframes notice-in {
+  from {
+    transform: translateY(-4px);
+  }
+}
+
+.notice__tag {
+  flex: none;
+  margin-top: 0.1rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 2px;
+  background: var(--ink);
+  color: var(--on-ink);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem clamp(1rem, 4vw, 2.5rem);
+  border-bottom: 1px solid var(--rule);
+  background: var(--panel);
+}
+
+.inicio {
+  padding: 3rem clamp(1rem, 4vw, 2.5rem);
+}
+
+.carregando {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
 }
