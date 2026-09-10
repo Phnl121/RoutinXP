@@ -46,6 +46,19 @@ let tarefas = [
   tarefa('t8', 'Ler artigo sobre UX', 'c2', null, 90, 10),
   tarefa('t9', 'Resumo de Direito Civil', 'c1', dia(0), 150, 15),
   tarefa('t10', 'Atualizar README do portfólio', 'c2', null, 400, 10),
+  // Histórico dos últimos dias, para o Painel ter semana e linha do tempo.
+  tarefa('t11', 'Lista de exercícios de Física', 'c1', dia(-1), 1440 + 120, 15),
+  tarefa('t12', 'Correr 5 km', 'c4', null, 1440 + 300, 10),
+  tarefa('t13', 'Deploy da landing page', 'c2', dia(-1), 1440 + 500, 15),
+  tarefa('t14', 'Fichamento de Sociologia', 'c1', dia(-1), 2880 + 200, 15),
+  tarefa('t15', 'Reunião de alinhamento', 'c3', null, 2880 + 400, 10),
+  tarefa('t16', 'Organizar a mesa', 'c4', null, 4320 + 60, 0),
+  tarefa('t17', 'Prova de Cálculo II', 'c1', dia(-3), 4320 + 240, 15),
+  tarefa('t18', 'Relatório semanal', 'c3', dia(-4), 5760 + 180, 15),
+  tarefa('t19', 'Revisar pull request', 'c2', null, 5760 + 400, 10),
+  tarefa('t20', 'Resumo de Anatomia', 'c1', dia(-5), 7200 + 100, 15),
+  tarefa('t21', 'Planejar a semana', 'c4', null, 8640 + 200, 10),
+  tarefa('t22', 'Mapa mental de História', 'c1', dia(-6), 8640 + 300, 15),
 ]
 
 let perfil = { primeiro_nome: 'Ana', sobrenome: 'Souza', data_nascimento: '2003-05-14', ocupacao: 'estudante' }

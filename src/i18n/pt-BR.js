@@ -115,6 +115,28 @@ export const t = {
     completarPerfil: 'Complete seu perfil',
   },
 
+  painel: {
+    titulo: 'Painel',
+    total: (n) => `${n} XP no total`,
+    semana: 'Sua semana',
+    mes: 'Seus últimos 30 dias',
+    periodo: { rotulo: 'Período', sete: '7 dias', trinta: '30 dias' },
+    resumo: (n, xp) => `${n} ${n === 1 ? 'tarefa concluída' : 'tarefas concluídas'} · ${xp} XP`,
+    teto: (n) => `teto diário · ${n}`,
+    barra: (dia, data, xp, n) => `${dia}, ${data}: ${xp} XP, ${n} ${n === 1 ? 'tarefa' : 'tarefas'}`,
+    tabela: { dia: 'Dia', xp: 'XP', tarefas: 'Tarefas' },
+    categorias: 'Conclusões por categoria',
+    maisConcluida: (nome) => `Mais concluída: ${nome}`,
+    semCategorias: 'Crie categorias para ver este gráfico.',
+    semConclusoes: 'Nenhuma tarefa concluída neste período.',
+    linhaTempo: 'Linha do tempo',
+    hoje: 'Hoje',
+    ontem: 'Ontem',
+    vazioTempo: 'Nenhuma conclusão ainda. Conclua uma tarefa e ela aparece aqui.',
+    streakAtual: 'Streak atual',
+    recorde: 'Recorde',
+  },
+
   lembrete: {
     texto: (n) =>
       `Você ainda não concluiu nenhuma tarefa hoje. Conclua uma para manter sua sequência de ${n} ${n === 1 ? 'dia' : 'dias'}.`,

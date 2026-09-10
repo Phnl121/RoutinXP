@@ -1,0 +1,410 @@
+/* Painel: nível, XP por dia, conclusões por categoria e linha do tempo. */
+
+.painel {
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+  width: min(100%, 90rem);
+  margin-inline: auto;
+  padding: clamp(1.25rem, 3vw, 2rem) clamp(1rem, 3vw, 2rem) 6rem;
+}
+
+.painel__grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+/* A largura útil depende do menu lateral (aberto, recolhido ou gaveta): a grade
+   responde ao espaço do conteúdo, não à janela. */
+.painel {
+  container-type: inline-size;
+}
+
+@container (max-width: 58rem) {
+  .painel__grade {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.painel__coluna {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.painel__nivel {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+}
+
+.painel__nivel .xp {
+  flex: 1;
+  min-width: 0;
+}
+
+.painel__total {
+  flex: none;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.painel__cartao {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.painel__cabeca {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+}
+
+.painel__cabeca h2 {
+  margin: 0;
+}
+
+/* O filtro segmentado da tela de tarefas é posicionado; aqui ele fica no fluxo. */
+.painel .segmentos {
+  position: static;
+  margin: 0;
+}
+
+.painel__resumo,
+.painel__destaque {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.painel__destaque {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.painel__vazio {
+  margin: 0.5rem 0;
+  color: var(--muted);
+}
+
+/* ---------- Barras de XP por dia ---------- */
+
+.barras {
+  margin: 0;
+}
+
+.barras__area {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(0.25rem, 1.2vw, 0.75rem);
+  height: 12rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.barras__area[data-longo='true'] {
+  gap: 2px;
+}
+
+.barras__teto {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed var(--rule-strong);
+  pointer-events: none;
+}
+
+.barras__teto span {
+  position: absolute;
+  right: 0;
+  bottom: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.barras__coluna {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.barras__coluna:hover,
+.barras__coluna:focus-visible {
+  background: var(--panel-2);
+}
+
+.barras__barra {
+  width: min(2.75rem, 72%);
+  background: var(--green);
+  border-radius: 4px 4px 0 0;
+}
+
+.barras__area[data-longo='true'] .barras__barra {
+  width: 100%;
+}
+
+.barras__valor {
+  position: absolute;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.barras__dica {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 2;
+  padding: 0.35rem 0.55rem;
+  background: var(--panel-2);
+  border: 1px solid var(--rule-strong);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, -110%);
+  pointer-events: none;
+  transition: opacity 0.15s var(--ease-out);
+}
+
+.barras__coluna[data-lado='inicio'] .barras__dica {
+  left: 0;
+  transform: translate(0, -110%);
+}
+
+.barras__coluna[data-lado='fim'] .barras__dica {
+  left: auto;
+  right: 0;
+  transform: translate(0, -110%);
+}
+
+.barras__coluna:hover .barras__dica,
+.barras__coluna:focus-visible .barras__dica {
+  opacity: 1;
+}
+
+.barras__eixo {
+  display: flex;
+  gap: clamp(0.25rem, 1.2vw, 0.75rem);
+  margin-top: 0.5rem;
+}
+
+.barras__area[data-longo='true'] + .barras__eixo {
+  gap: 2px;
+}
+
+.barras__eixo span {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ---------- Conclusões por categoria ---------- */
+
+.cat-barras {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cat-barras__linha {
+  display: grid;
+  grid-template-columns: minmax(0, 11rem) minmax(0, 1fr) 2.25rem;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cat-barras__nome {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.cat-barras__trilho {
+  height: 0.75rem;
+  background: var(--panel-2);
+  border-radius: 0 4px 4px 0;
+  overflow: hidden;
+}
+
+.cat-barras__barra {
+  display: block;
+  height: 100%;
+  background: var(--green);
+  border-radius: 0 4px 4px 0;
+}
+
+.cat-barras__valor {
+  font-weight: 700;
+  text-align: right;
+}
+
+/* ---------- Linha do tempo ---------- */
+
+.painel__tempo {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.painel__tempo-cabeca {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.painel__tempo-cabeca h2 {
+  margin: 0;
+}
+
+.painel__streaks {
+  display: flex;
+  gap: 1.25rem;
+  margin: 0;
+}
+
+.painel__streaks div {
+  display: grid;
+  justify-items: end;
+  gap: 0.2rem;
+}
+
+.painel__streaks dd {
+  order: -1;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.linha-tempo,
+.linha-tempo__lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.linha-tempo {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.linha-tempo__dia {
+  margin: 0 0 0.5rem;
+}
+
+.linha-tempo__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+}
+
+.linha-tempo__item + .linha-tempo__item {
+  border-top: 1px solid var(--rule);
+}
+
+.linha-tempo__check {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--green);
+  color: var(--on-green);
+}
+
+.linha-tempo__check svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.linha-tempo__texto {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.linha-tempo__titulo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.linha-tempo__cat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.linha-tempo__hora {
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.linha-tempo__xp {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--green);
+  white-space: nowrap;
+}
+
+.linha-tempo__xp[data-zero='true'] {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.linha-tempo__vazio {
+  margin: 0.5rem 0;
+  color: var(--muted);
+}
+
+@media (max-width: 59.99rem) {
+  .painel__nivel {
+    flex-wrap: wrap;
+  }
+
+  .painel__nivel .xp {
+    flex-basis: 100%;
+    order: 2;
+  }
+}
+
+@media (max-width: 30rem) {
+  .cat-barras__linha {
+    grid-template-columns: minmax(0, 7.5rem) minmax(0, 1fr) 2rem;
+    gap: 0.75rem;
+  }
+
+  .linha-tempo__hora {
+    display: none;
+  }
+}

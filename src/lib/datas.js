@@ -40,6 +40,13 @@ export function diaBrasilia(instanteIso) {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date(instanteIso))
 }
 
+// Hora (Brasília) de um instante ISO: "19:10".
+export function horaBrasilia(instanteIso) {
+  return new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' }).format(
+    new Date(instanteIso),
+  )
+}
+
 // Idade completa em anos numa data "AAAA-MM-DD", comparando com hoje em Brasília.
 export function idadeEm(dataNascimento) {
   const [a, m, d] = dataNascimento.split('-').map(Number)

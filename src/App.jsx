@@ -5,6 +5,7 @@ import RedefinirSenha from './pages/RedefinirSenha'
 import Tarefas from './pages/Tarefas'
 import Shell from './pages/Shell'
 import Perfil from './pages/Perfil'
+import Painel from './pages/Painel'
 import { t } from './i18n/pt-BR'
 import { emPrevia, sessaoPrevia } from './dev/previa'
 
@@ -44,6 +45,7 @@ export default function App() {
           }
         >
           <Route path="/" element={<Tarefas />} />
+          <Route path="/painel" element={<Painel />} />
           <Route path="/perfil" element={<Perfil />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
