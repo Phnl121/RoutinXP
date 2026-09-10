@@ -77,6 +77,7 @@ One list for every area of life, with a reward loop that is deliberately simple:
   - The task form has no XP field. UI copy must not promise a fixed amount per task.
   - **Day boundary** (user, 2026-09-10): fixed Brasília time (`America/Sao_Paulo`) for everyone. It governs the streak, the daily cap and the on-time bonus. The client's timezone is never trusted.
   - **0 XP feedback** (user, 2026-09-10): when a completion earns 0 XP (recently created, or daily cap reached), the app shows a short notice naming the reason.
+  - **Anti-farm and streak** (user, 2026-09-10): a task completed less than 5 minutes after creation earns 0 XP **and does not count for the streak**, so the streak cannot be kept by creating and ticking something on the spot. Completions beyond the daily cap still count for the streak.
   - **Tasks completed before step 10** (user, 2026-09-10): their `xp_value` is reset to 0. They were never counted, and total XP starts from zero under the new rule.
 - **Delete task** (user, 2026-09-10): allowed, with an "Tarefa excluída · Desfazer" notice for a few seconds instead of a confirmation dialog.
 - **Undo completion** (user, 2026-09-10): not in v1. A completed task stays completed; in the Quadro, cards cannot be dragged back to Pendentes.
