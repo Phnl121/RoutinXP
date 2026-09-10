@@ -1,0 +1,198 @@
+.demo {
+  position: relative;
+  padding: 1.5rem;
+}
+
+/* Medidor de nível: badge + barra. (O card de perfil só existe dentro do app.) */
+.demo__nivel {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.demo__nivel .nivel-badge {
+  padding: 0.5rem 0.85rem;
+  font-size: 0.8125rem;
+}
+
+.demo__nivel .xp {
+  flex: 1;
+  min-width: 0;
+}
+
+.demo__titulo {
+  margin: 1.25rem 0 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Linhas divididas por régua, não cartões dentro do cartão. */
+.demo__lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.demo__lista li + li {
+  border-top: 1px solid var(--rule);
+}
+
+.tarefa {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  margin: 0.2rem 0;
+  padding: 0.75rem 0.6rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease-out);
+}
+
+.tarefa:hover:not(:disabled) {
+  background: var(--panel-2);
+}
+
+.tarefa:disabled {
+  cursor: default;
+}
+
+.tarefa__check {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--rule-strong);
+  border-radius: 50%;
+  color: transparent;
+  transition:
+    background-color 0.25s var(--ease-out),
+    border-color 0.25s var(--ease-out),
+    color 0.25s var(--ease-out);
+}
+
+.tarefa__check svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.tarefa:hover:not(:disabled) .tarefa__check {
+  border-color: var(--green);
+}
+
+.tarefa[aria-pressed='true'] .tarefa__check {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--on-green);
+  animation: check-in 0.4s var(--ease-out);
+}
+
+@keyframes check-in {
+  40% {
+    transform: scale(1.18);
+  }
+}
+
+.tarefa__texto {
+  flex: 1;
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.tarefa__titulo {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.tarefa[aria-pressed='true'] .tarefa__titulo {
+  color: var(--muted);
+  text-decoration: line-through;
+  text-decoration-color: var(--rule-strong);
+}
+
+.tarefa__cat {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.tarefa__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  flex: none;
+}
+
+.tarefa__xp {
+  flex: none;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--green);
+  transition: opacity 0.25s var(--ease-out);
+}
+
+.tarefa[aria-pressed='true'] .tarefa__xp {
+  opacity: 0.4;
+}
+
+/* "+10 XP" que voa da tarefa até o contador; ao chegar, o XP conta e a barra enche. */
+.xp-voo {
+  position: absolute;
+  z-index: 2;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: var(--green);
+  white-space: nowrap;
+  pointer-events: none;
+  animation: xp-voa 0.6s cubic-bezier(0.5, 0, 0.2, 1) forwards;
+}
+
+@keyframes xp-voa {
+  0% {
+    transform: translate(0, 0) scale(1.1);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) scale(0.75);
+    opacity: 0;
+  }
+}
+
+.demo__subiu {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-top: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-sm);
+  background: rgb(43 213 118 / 0.1);
+  border: 1px solid rgb(43 213 118 / 0.35);
+  animation: notice-in 0.4s var(--ease-out);
+}
+
+.demo__subiu p {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+}

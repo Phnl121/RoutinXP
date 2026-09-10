@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { mensagemDeErro } from '../lib/authErrors'
-import { BoardingPass } from '../components/BoardingPass'
-import { Aviso, CampoSenha, Rota } from '../components/AuthParts'
+import { Aviso, CampoSenha } from '../components/AuthParts'
+import { DemoXp } from '../components/DemoXp'
 import { t } from '../i18n/pt-BR'
 import './auth.css'
 
@@ -54,56 +54,60 @@ export default function Entrar() {
   }
 
   const conferindo = modo === 'confira-cadastro' || modo === 'confira-reset'
-  const tag = conferindo ? t.pass.tags.aguardando : t.pass.tags[modo]
+  const [frase1, frase2, frase3] = t.entrar.titulo
 
   return (
-    <main className="auth">
-      <BoardingPass tag={tag} email={email}>
-        <header className="pass__head">
-          <h1 className="wordmark">{t.app.nome}</h1>
-          {(modo === 'entrar' || modo === 'cadastrar') && (
-            <div className="tabs" role="group" aria-label={a.abas.rotulo}>
-              <button type="button" aria-pressed={modo === 'entrar'} onClick={() => trocarModo('entrar')}>
-                {a.abas.entrar}
-              </button>
-              <button type="button" aria-pressed={modo === 'cadastrar'} onClick={() => trocarModo('cadastrar')}>
-                {a.abas.cadastrar}
-              </button>
-            </div>
-          )}
-        </header>
+    <main className="entrar">
+      <div className="entrar__grid">
+        <span className="wordmark entrar__marca">{t.app.nome}</span>
+        <div className="entrar__intro">
+          <h1 className="entrar__titulo">
+            {frase1} {frase2} <span className="destaque">{frase3}</span>
+          </h1>
+          <p className="entrar__texto">{t.entrar.texto}</p>
+        </div>
 
-        {conferindo ? (
-          <div className="auth__panel" role="status">
-            <h2 className="auth__title">{a.confira.titulo}</h2>
-            <p className="auth__text">
-              {modo === 'confira-cadastro' ? a.confira.cadastro(email.trim()) : a.confira.reset(email.trim())}
-            </p>
-            <p className="hint">{a.confira.semEmail}</p>
-            <div className="form__foot">
-              <button type="button" className="link-btn" onClick={() => trocarModo('entrar')}>
-                {a.links.voltar}
-              </button>
-            </div>
-          </div>
-        ) : (
-          <>
-            {modo === 'esqueci' ? (
-              <div className="auth__panel">
-                <h2 className="auth__title">{a.esqueci.titulo}</h2>
-                <p className="auth__text">{a.esqueci.texto}</p>
+        <div className="entrar__form panel">
+          {conferindo ? (
+            <div role="status">
+              <h2 className="auth__title">{a.confira.titulo}</h2>
+              <p className="auth__text">
+                {modo === 'confira-cadastro' ? a.confira.cadastro(email.trim()) : a.confira.reset(email.trim())}
+              </p>
+              <p className="hint">{a.confira.semEmail}</p>
+              <div className="form__foot">
+                <button type="button" className="link-btn" onClick={() => trocarModo('entrar')}>
+                  {a.links.voltar}
+                </button>
               </div>
-            ) : (
-              <Rota />
-            )}
+            </div>
+          ) : (
+            <>
+              {modo === 'esqueci' ? (
+                <div>
+                  <h2 className="auth__title">{a.esqueci.titulo}</h2>
+                  <p className="auth__text">{a.esqueci.texto}</p>
+                </div>
+              ) : (
+                <div className="tabs" role="group" aria-label={a.abas.rotulo}>
+                  <button type="button" aria-pressed={modo === 'entrar'} onClick={() => trocarModo('entrar')}>
+                    {a.abas.entrar}
+                  </button>
+                  <button type="button" aria-pressed={modo === 'cadastrar'} onClick={() => trocarModo('cadastrar')}>
+                    {a.abas.cadastrar}
+                  </button>
+                </div>
+              )}
 
-            <form className="form" onSubmit={enviar} noValidate={false}>
-              <div className={modo === 'esqueci' ? 'form__fields form__fields--single' : 'form__fields'}>
-                <label className="field">
+              <form className="form" onSubmit={enviar}>
+                <div className="field">
                   <span className="field__top">
-                    <span className="label">{a.campos.email}</span>
+                    <label className="label" htmlFor="entrar-email">
+                      {a.campos.email}
+                    </label>
                   </span>
                   <input
+                    id="entrar-email"
                     className="input"
                     type="email"
                     name="email"
@@ -114,7 +118,7 @@ export default function Entrar() {
                     value={email}
                     onChange={(ev) => setEmail(ev.target.value)}
                   />
-                </label>
+                </div>
 
                 {modo !== 'esqueci' && (
                   <CampoSenha
@@ -125,31 +129,33 @@ export default function Entrar() {
                     dica={modo === 'cadastrar' ? a.dicaSenha : null}
                   />
                 )}
-              </div>
 
-              {erro && <Aviso>{erro}</Aviso>}
+                {erro && <Aviso>{erro}</Aviso>}
 
-              <div className="form__foot">
-                <button className="btn" type="submit" disabled={enviando}>
-                  {modo === 'entrar' && (enviando ? a.botoes.entrando : a.botoes.entrar)}
-                  {modo === 'cadastrar' && (enviando ? a.botoes.cadastrando : a.botoes.cadastrar)}
-                  {modo === 'esqueci' && (enviando ? a.botoes.enviando : a.botoes.enviarLink)}
-                </button>
-                {modo === 'entrar' && (
-                  <button type="button" className="link-btn" onClick={() => trocarModo('esqueci')}>
-                    {a.links.esqueci}
+                <div className="form__foot">
+                  <button className="btn" type="submit" disabled={enviando}>
+                    {modo === 'entrar' && (enviando ? a.botoes.entrando : a.botoes.entrar)}
+                    {modo === 'cadastrar' && (enviando ? a.botoes.cadastrando : a.botoes.cadastrar)}
+                    {modo === 'esqueci' && (enviando ? a.botoes.enviando : a.botoes.enviarLink)}
                   </button>
-                )}
-                {modo === 'esqueci' && (
-                  <button type="button" className="link-btn" onClick={() => trocarModo('entrar')}>
-                    {a.links.voltar}
-                  </button>
-                )}
-              </div>
-            </form>
-          </>
-        )}
-      </BoardingPass>
+                  {modo === 'entrar' && (
+                    <button type="button" className="link-btn" onClick={() => trocarModo('esqueci')}>
+                      {a.links.esqueci}
+                    </button>
+                  )}
+                  {modo === 'esqueci' && (
+                    <button type="button" className="link-btn" onClick={() => trocarModo('entrar')}>
+                      {a.links.voltar}
+                    </button>
+                  )}
+                </div>
+              </form>
+            </>
+          )}
+        </div>
+
+        <DemoXp className="entrar__demo" />
+      </div>
     </main>
   )
 }

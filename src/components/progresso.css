@@ -1,0 +1,84 @@
+.nivel-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  background: var(--green);
+  color: var(--on-green);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  font-stretch: 112.5%;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.nivel-badge[data-animar='true'] {
+  animation: badge-sobe 0.7s var(--ease-out);
+}
+
+@keyframes badge-sobe {
+  30% {
+    transform: scale(1.2);
+    box-shadow: 0 6px 18px -4px rgb(43 213 118 / 0.6);
+  }
+}
+
+.xp {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.xp__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+}
+
+.xp__valor {
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.xp__falta {
+  color: var(--muted);
+}
+
+.xp__track {
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--panel-2);
+  overflow: hidden;
+}
+
+/* Preenchimento com as pontas arredondadas, deslizado por translateX dentro do trilho
+   (sem recalcular layout). A ponta que avança é um pouco mais clara. */
+.xp__fill {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--green) calc(100% - 0.9rem), #8af5b5);
+  transform: translateX(calc((max(var(--p), 0.04) - 1) * 100%));
+  transition: transform 0.7s var(--ease-out);
+}
+
+.xp__fill[data-instantaneo='true'] {
+  transition: none;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: 2px solid var(--green);
+  background: var(--panel-2);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}

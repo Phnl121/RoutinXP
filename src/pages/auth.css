@@ -1,107 +1,109 @@
-.auth {
+.entrar {
   min-height: 100dvh;
   display: grid;
   place-items: center;
-  padding: 2.5rem 1rem;
+  padding: clamp(1.5rem, 5vw, 3.5rem) clamp(1rem, 4vw, 2.5rem);
 }
 
-.pass__head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
+.entrar__grid {
+  width: min(100%, 70rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 25rem);
+  grid-template-areas:
+    'marca marca'
+    'intro form'
+    'demo form';
+  column-gap: clamp(2.5rem, 7vw, 6rem);
+  row-gap: 2.25rem;
+  align-items: start;
+}
+
+.entrar__marca {
+  grid-area: marca;
+}
+
+.entrar__intro {
+  grid-area: intro;
+}
+
+.entrar__titulo {
+  margin: 0 0 1rem;
+  font-size: clamp(2.25rem, 4.2vw, 3.5rem);
+  font-weight: 800;
+  font-stretch: 110%;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.destaque {
+  color: var(--green);
+}
+
+.entrar__texto {
+  margin: 0;
+  max-width: 46ch;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.entrar__demo {
+  grid-area: demo;
+  max-width: 34rem;
+}
+
+.entrar__form {
+  grid-area: form;
+  align-self: start;
+  padding: 2rem;
 }
 
 .tabs {
-  display: inline-flex;
-  padding: 3px;
-  background: var(--ground);
-  border: 1px solid var(--rule);
-  border-radius: 6px;
+  display: flex;
+  gap: 1.75rem;
+  margin-bottom: 1.75rem;
+  border-bottom: 1px solid var(--rule);
 }
 
 .tabs button {
-  min-height: 2.25rem;
-  padding: 0 0.95rem;
+  position: relative;
+  padding: 0.25rem 0 0.9rem;
   border: 0;
-  border-radius: 4px;
-  background: transparent;
-  color: var(--muted);
+  background: none;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
   cursor: pointer;
-  transition:
-    background-color 0.2s var(--ease-out),
-    color 0.2s var(--ease-out),
-    box-shadow 0.2s var(--ease-out);
+  transition: color 0.2s var(--ease-out);
 }
 
 .tabs button:hover {
   color: var(--ink);
 }
 
+.tabs button::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--purple);
+  transform: scaleX(0);
+  transition: transform 0.3s var(--ease-out);
+}
+
 .tabs button[aria-pressed='true'] {
-  background: var(--panel);
   color: var(--ink);
-  box-shadow: 0 1px 2px rgb(17 20 24 / 0.14);
 }
 
-/* De PENDENTE → para CONCLUÍDA */
-.route {
-  display: flex;
-  align-items: flex-end;
-  gap: clamp(0.75rem, 2.5vw, 1.5rem);
-  margin: 2.25rem 0 1.75rem;
-  padding-bottom: 1.75rem;
-  border-bottom: 1px solid var(--rule);
-}
-
-.route__leg {
-  display: grid;
-  gap: 0.35rem;
-  min-width: 0;
-}
-
-.route__value {
-  font-size: clamp(1.5rem, 6.2vw, 2.875rem);
-  font-weight: 700;
-  font-stretch: 75%;
-  line-height: 0.95;
-  letter-spacing: -0.005em;
-  text-transform: uppercase;
-}
-
-.route__leg--dest .route__value {
-  color: var(--amber-ink);
-}
-
-.route__arrow {
-  flex: none;
-  width: clamp(1.5rem, 4vw, 2.25rem);
-  margin-bottom: 0.4em;
-  color: var(--muted);
-}
-
-.auth__panel {
-  margin: 2rem 0 1.5rem;
-}
-
-.auth__title {
-  margin: 0 0 0.5rem;
-  font-size: 1.75rem;
-  font-weight: 700;
-  font-stretch: 87.5%;
-  line-height: 1.1;
-  text-wrap: balance;
-}
-
-.auth__text {
-  margin: 0 0 1rem;
-  max-width: 44ch;
-  color: var(--muted);
-  line-height: 1.5;
-  text-wrap: pretty;
+.tabs button[aria-pressed='true']::after {
+  transform: scaleX(1);
 }
 
 .form {
@@ -109,35 +111,68 @@
   gap: 1.25rem;
 }
 
-.form__fields {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-  align-items: start;
-}
-
-.form__fields--single {
-  grid-template-columns: minmax(0, 1fr);
-  max-width: 24rem;
-}
-
 .form__foot {
-  display: flex;
-  align-items: center;
-  gap: 1rem 1.5rem;
-  flex-wrap: wrap;
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  margin-top: 0.25rem;
 }
 
-@media (max-width: 44.99rem) {
-  .route {
-    margin-top: 1.75rem;
+.form__foot .btn {
+  width: 100%;
+}
+
+.auth__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.auth__text {
+  margin: 0 0 1.25rem;
+  max-width: 44ch;
+  color: var(--muted);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.auth-simples {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 2rem 1rem;
+}
+
+.auth-simples__col {
+  width: min(100%, 26rem);
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (max-width: 59.99rem) {
+  .entrar {
+    place-items: start center;
   }
 
-  .form__fields {
+  .entrar__grid {
+    width: min(100%, 30rem);
     grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'marca'
+      'intro'
+      'form'
+      'demo';
+    row-gap: 1.75rem;
   }
 
-  .form__foot .btn {
-    width: 100%;
+  .entrar__titulo {
+    font-size: clamp(1.875rem, 8vw, 2.5rem);
+  }
+
+  .entrar__form {
+    padding: 1.5rem;
   }
 }

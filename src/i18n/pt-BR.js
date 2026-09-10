@@ -6,22 +6,34 @@ export const t = {
     sair: 'Sair',
   },
 
-  pass: {
-    passageiro: 'Passageiro',
-    data: 'Data',
-    semNome: '—',
-    tags: {
-      entrar: 'Check-in',
-      cadastrar: 'Novo cadastro',
-      esqueci: 'Nova senha',
-      aguardando: 'Aguardando',
-      redefinir: 'Redefinição',
-    },
+  nivel: {
+    rotulo: (n) => `Nível ${n}`,
+    xp: (atual, meta) => `XP ${atual} / ${meta}`,
+    falta: (n) => `faltam ${n} XP`,
+    barra: 'Progresso até o próximo nível',
+  },
+
+  entrar: {
+    titulo: ['Conclua tarefas.', 'Ganhe XP.', 'Suba de nível.'],
+    texto:
+      'Faculdade, trabalho, vida pessoal e projetos numa lista só. Cada tarefa concluída vale 10 XP, e o seu nível mostra o quanto você já avançou.',
+  },
+
+  demo: {
+    titulo: 'Experimente: conclua uma tarefa',
+    ganho: '+10 XP',
+    anuncio: (atual, meta) => `Mais 10 XP. ${atual} de ${meta} no nível.`,
+    subiu: (n) => `Nível ${n} alcançado. No app, cada tarefa concluída funciona assim.`,
+    recomecar: 'Recomeçar exemplo',
+    tarefas: [
+      { id: 1, titulo: 'Entregar relatório de Cálculo II', categoria: 'Faculdade', cor: '#6c9be8' },
+      { id: 2, titulo: 'Revisar slides da reunião de sexta', categoria: 'Trabalho', cor: '#e0a050' },
+      { id: 3, titulo: 'Pagar conta de luz', categoria: 'Vida Pessoal', cor: '#e27d8f' },
+    ],
   },
 
   auth: {
     abas: { rotulo: 'Entrar ou criar conta', entrar: 'Entrar', cadastrar: 'Criar conta' },
-    rota: { rotulo: 'De pendente para concluída', de: 'De', para: 'Para', origem: 'Pendente', destino: 'Concluída' },
     campos: {
       email: 'E-mail',
       emailExemplo: 'voce@email.com',
@@ -80,7 +92,7 @@ export const t = {
   },
 
   inicio: {
-    titulo: 'Check-in feito',
-    texto: (email) => `Você entrou como ${email}. A lista de tarefas chega na próxima etapa.`,
+    titulo: 'Você entrou',
+    texto: (email) => `Conta: ${email}. A lista de tarefas chega na próxima etapa.`,
   },
 }

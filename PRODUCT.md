@@ -56,6 +56,14 @@ One list for every area of life, with a reward loop that is deliberately simple:
 
 **Hero number:** total XP is the number that makes people come back (decided 2026-09-10). Streak and record streak support it; they don't compete with it.
 
+**Levels** (added by the user 2026-09-10, beyond the original scope): the level is computed from `xp_total` with no schema change. Each level needs 50 XP more than the previous one: level 1→2 needs 100 XP, 2→3 needs 150, 3→4 needs 200, and so on. The UI shows a "NÍVEL n" badge and an XP bar toward the next level ("XP 120 / 150").
+
+**Profile card** (user, 2026-09-10): avatar with initials, level badge, XP bar and streaks. Shown only inside the app after sign-in, never on the login screen.
+
+**Not in v1 (user did not select, 2026-09-10):** ranking between users and achievements/badges.
+
+**Idea, not scheduled:** themes unlocked by leveling up. The user would customize the app's look with what they earn as their level rises. Not in v1 unless the user decides otherwise, but design tokens must stay theme-swappable so it can be added later.
+
 **Reward rules (v1, simple on purpose):**
 - Completing a task adds its `xp_value` (default 10) to `xp_total`.
 - Streak goes up by 1 the first time a task is completed on a day with no prior completion.
@@ -79,7 +87,8 @@ One list for every area of life, with a reward loop that is deliberately simple:
 
 ## Brand Commitments
 
-- **Few colors** (user, 2026-09-10): the interface must not look loud or multicolored. User-defined category colors are data, and they must not turn the screen into a rainbow.
+- **Visual convention** (user, 2026-09-10): follow the gamified learning platforms rather than an invented world. DIO (web.dio.me) is the primary reference; Duolingo and Habitica set the craft bar. The first two directions (travel document, then a round of alternatives) were rejected for losing the gamification focus.
+- **Colors** (user, 2026-09-10): dark theme with two accents only, green for XP and level, purple for actions. Not DIO's full green/purple/yellow/pink palette. User-defined category colors are data, shown as small dots.
 - Must not feel: childish, cold like a spreadsheet, guilt-inducing when a streak is lost, or like a generic UI-kit template (user, 2026-09-10).
 
 ## Evidence on Hand

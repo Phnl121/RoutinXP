@@ -12,6 +12,9 @@ dist-ssr
 supabase-credentials.txt
 Claude outputs/
 
+# Estado temporário das páginas de decisão do Impeccable
+.impeccable/questions/
+
 # Logs
 *.log
 npm-debug.log*
