@@ -5,7 +5,7 @@ Este arquivo é o ponto de handoff entre ferramentas (Code, Antigravity, ou qual
 ## Estado atual
 (a ferramenta que estiver trabalhando atualiza esta seção a cada sessão: o que existe, o que está funcionando, o que está pela metade)
 
-Atualizado em 2026-09-10 (Claude Code): passo 10 concluído, passo 11 em andamento.
+Atualizado em 2026-09-10 (Claude Code): passo 11 construído, banco de produção atualizado; falta o deploy do frontend e o teste do usuário.
 
 - Repositório git: **sim**, branch `main`, remoto **privado** https://github.com/Phnl121/RoutinXP (conta Phnl121). Identidade local `Pedro <pedrocybernet01@gmail.com>`.
 - Deploy: **Vercel**, projeto `phnl121/routinxp` (renomeado de `routin`), produção em **https://routinxp.vercel.app**.
@@ -46,13 +46,19 @@ Atualizado em 2026-09-10 (Claude Code): passo 10 concluído, passo 11 em andamen
   - O navegador não altera mais `status`, `completed_at` nem `xp_value` (privilégio por coluna).
   - Tarefas concluídas antes do passo 10 ficaram com XP 0.
   - No app: o "+XP" voa até a barra superior, o nível sobe em dois tempos com aviso, e há um aviso com o motivo quando a tarefa rende 0 XP ou o teto é atingido.
-- Painel, perfil e menu lateral (passo 11): **em andamento.**
-  - O usuário está gerando imagens das três estruturas de Painel (`.impeccable/mocks/decision/PROMPTS-painel.md`).
-  - Decidido:
-    - menu lateral fixo e retrátil, estilo app do Claude, com Tarefas, Painel e Perfil;
-    - gráficos no Painel;
-    - cadastro com primeiro nome, sobrenome, data de nascimento (13 anos ou mais) e ocupação;
-    - lembrete de streak.
+- Painel, perfil e menu lateral (passo 11): **construído.**
+  - Menu lateral fixo e retrátil (estilo app do Claude) com Tarefas, Painel e Perfil. O estado recolhido fica salvo no navegador. No celular vira gaveta.
+  - Painel (`/painel`) na estrutura "Linha do tempo do dia", escolhida pelo usuário:
+    - nível, barra de XP e XP total;
+    - XP por dia em barras, com o teto de 150 e opção de 7 ou 30 dias;
+    - conclusões por categoria, com a mais concluída em destaque;
+    - linha do tempo das conclusões recentes, com streak atual e recorde.
+    - Tudo é calculado no navegador a partir das tarefas do usuário (`src/lib/painel.js`), no horário de Brasília.
+  - Perfil (`/perfil`): primeiro nome, sobrenome, data de nascimento (13 anos ou mais) e ocupação (estudante, trabalho ou ambos), editáveis. O nome aparece no menu e no avatar.
+  - O cadastro pede esses campos. O gatilho `handle_new_user` cria o perfil a partir deles.
+  - Lembrete de streak: aparece quando há streak e nenhuma conclusão hoje. Pode ser dispensado, e volta no dia seguinte.
+  - A migration `20260910230000_perfis` (tabela `profiles` com RLS e validação de idade) **foi aplicada em produção**. Acesso anônimo à tabela testado e recusado.
+  - Contas antigas não têm perfil. O app mostra "Complete seu perfil" e a página Perfil cria o perfil ao salvar.
 - PWA (passo 12): não iniciado.
 - **Configuração de segurança e deploy** (roteiro em `seguranca-e-criacao-repositorio.txt`):
   - Etapas A a D feitas: histórico do git sem segredos, RLS confirmado no painel e por ataque anônimo à API, repositório privado criado, Vercel ligada ao projeto.
@@ -83,6 +89,22 @@ Atualizado em 2026-09-10 (Claude Code): passo 10 concluído, passo 11 em andamen
 
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
+
+### 2026-09-10 (fim da noite), Claude Code (Opus 5): passo 11
+Feito:
+- Menu lateral retrátil, página Perfil, campos de perfil no cadastro e lembrete de streak.
+- Migration de perfis aplicada em produção.
+- Rodada de estrutura do Painel no Impeccable: o usuário gerou imagens no Nano Banana a partir de `.impeccable/mocks/decision/PROMPTS-painel.md` e escolheu a "Linha do tempo do dia".
+- Painel construído e capturado em desktop, largura média e celular (`.impeccable/review/passo11/`).
+
+Travou:
+- As capturas de celular por iframe no Edge headless ficavam presas em "Carregando". A solução foi um script CDP com viewport real de 390px, que espera os dados antes de capturar.
+
+Próximo:
+- Revisão final do Impeccable, correções e documentação no DESIGN.md.
+- Push para produção.
+- Teste do usuário: criar conta com os campos novos, Perfil, menu, lembrete e Painel.
+- Passo 12 (PWA).
 
 ### 2026-09-10 (noite), Claude Code (Opus 5): segurança, deploy, migrations, CAPTCHA e marca
 Feito:
