@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NavLink, useLocation } from 'react-router'
 import { IconeFechar, IconeRelogio } from './icones'
 import { hojeBrasilia } from '../lib/datas'
+import { streakEmRisco } from '../lib/lembrete'
 import { t } from '../i18n/pt-BR'
 
 // Lembrete neutro quando a sequência está por um fio: streak acima de zero e
@@ -18,8 +19,7 @@ export function LembreteStreak({ stats }) {
     }
   })
 
-  const emRisco = stats && stats.streak_atual > 0 && stats.ultima_data_conclusao && stats.ultima_data_conclusao < hoje
-  if (!emRisco || dispensado) return null
+  if (!streakEmRisco(stats, hoje) || dispensado) return null
 
   function dispensar() {
     setDispensado(true)

@@ -139,6 +139,25 @@ export const t = {
     recorde: 'Recorde',
   },
 
+  instalar: {
+    menu: 'Instalar app',
+    convite: 'Instale o RoutinXP na tela inicial e abra direto, como um app.',
+    acao: 'Instalar',
+    dispensar: 'Dispensar convite para instalar',
+    ios: {
+      titulo: 'Instalar no iPhone',
+      texto: 'O iPhone instala pelo menu do Safari:',
+      passo1: 'Toque em Compartilhar, na barra do Safari.',
+      passo2: 'Escolha "Adicionar à Tela de Início".',
+      passo3: 'Toque em "Adicionar". O RoutinXP aparece junto dos seus apps.',
+      ok: 'Entendi',
+    },
+  },
+
+  conexao: {
+    offline: 'Sem conexão. Suas tarefas voltam a carregar quando a internet voltar.',
+  },
+
   lembrete: {
     texto: (n) =>
       `Você ainda não concluiu nenhuma tarefa hoje. Conclua uma para manter sua sequência de ${n} ${n === 1 ? 'dia' : 'dias'}.`,

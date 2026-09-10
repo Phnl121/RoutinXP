@@ -1,11 +1,17 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import { useDados } from '../lib/useDados'
 import { DadosContexto } from '../lib/dadosContexto'
 import { MenuLateral } from '../components/MenuLateral'
 import { TopBar } from '../components/TopBar'
 import { LembreteStreak } from '../components/LembreteStreak'
-import { IconeMais } from '../components/icones'
+import { ConviteInstalar } from '../components/ConviteInstalar'
+import { DialogoInstalarIos } from '../components/DialogoInstalarIos'
+import { IconeMais, IconeSemConexao } from '../components/icones'
+import { pedirInstalacao, useInstalacao } from '../lib/instalacao'
+import { useConexao } from '../lib/useConexao'
+import { streakEmRisco } from '../lib/lembrete'
+import { hojeBrasilia } from '../lib/datas'
 import { t } from '../i18n/pt-BR'
 import './tarefas.css'
 import './shell.css'
@@ -51,6 +57,18 @@ export default function Shell({ session }) {
     })
   }
 
+  // PWA: instalar (botão do navegador ou passo a passo do iPhone) e aviso sem conexão.
+  const modoInstalacao = useInstalacao()
+  const [dlgIos, setDlgIos] = useState(false)
+  const instalar = () => (modoInstalacao === 'ios' ? setDlgIos(true) : pedirInstalacao())
+
+  const online = useConexao()
+  const { estado, carregar } = d
+  // A internet voltou depois de uma falha de carregamento: busca os dados de novo.
+  useEffect(() => {
+    if (online && estado === 'erro') carregar()
+  }, [online, estado, carregar])
+
   // "Nova tarefa" funciona de qualquer página: leva para Tarefas e abre o formulário.
   const novaTarefa = () => navigate('/', { state: { novaTarefa: Date.now() } })
 
@@ -65,6 +83,7 @@ export default function Shell({ session }) {
           perfil={d.perfil}
           stats={d.stats}
           email={session.user.email}
+          onInstalar={modoInstalacao ? instalar : undefined}
         />
         <div className="shell__conteudo">
           <TopBar
@@ -75,8 +94,17 @@ export default function Shell({ session }) {
             onAbrirMenu={() => setGavetaAberta(true)}
             gavetaAberta={gavetaAberta}
           />
+          {!online && (
+            <div className="lembrete" role="status">
+              <IconeSemConexao />
+              <p>{t.conexao.offline}</p>
+            </div>
+          )}
           <LembreteStreak stats={d.stats} />
+          {/* Um aviso por vez: o convite para instalar espera o lembrete de streak sair. */}
+          {online && modoInstalacao && !streakEmRisco(d.stats, hojeBrasilia()) && <ConviteInstalar onInstalar={instalar} />}
           <Outlet context={{ session }} />
+          {dlgIos && <DialogoInstalarIos onFechar={() => setDlgIos(false)} />}
           {/* No celular a barra não tem "Nova tarefa": o botão flutuante faz esse papel em
               todas as páginas (a de Tarefas tem o próprio, que abre o formulário ali mesmo). */}
           {location.pathname !== '/' && (

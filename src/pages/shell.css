@@ -250,6 +250,60 @@
   height: 0.875rem;
 }
 
+/* ---------- PWA: instalar ---------- */
+
+/* O item de instalar fica no pé do menu, logo acima do cartão do usuário. */
+.menu-lateral__instalar {
+  width: 100%;
+  margin-top: auto;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu-lateral__instalar + .menu-lateral__usuario {
+  margin-top: 0.25rem;
+}
+
+/* No computador o item do menu basta; o convite em faixa é só do celular. */
+@media (min-width: 60rem) {
+  .convite-instalar {
+    display: none;
+  }
+}
+
+.passos-ios {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding-left: 1.25rem;
+  line-height: 1.5;
+}
+
+.passos-ios li::marker {
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.passos-ios__icone {
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  border: 1px solid var(--rule-strong);
+  border-radius: 8px;
+  color: var(--ink);
+}
+
+.passos-ios__icone svg {
+  width: 1rem;
+  height: 1rem;
+}
+
 /* ---------- Páginas simples (Perfil) ---------- */
 
 .pagina {

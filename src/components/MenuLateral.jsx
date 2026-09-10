@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { NavLink } from 'react-router'
 import { Logo } from './Logo'
-import { IconeFechar, IconeGrafico, IconeLista, IconeMenuLateral, IconePessoa } from './icones'
+import { IconeBaixar, IconeFechar, IconeGrafico, IconeLista, IconeMenuLateral, IconePessoa } from './icones'
 import { calcularNivel } from '../lib/nivel'
 import { iniciaisDoPerfil } from '../lib/datas'
 import { nomeCompleto } from '../lib/perfil'
@@ -16,7 +16,7 @@ const ITENS = [
 
 // Menu lateral fixo e retrátil (como o do app do Claude). Desktop: expandido ou em trilho
 // de ícones. Celular: gaveta sobre a página, aberta pelo botão da barra superior.
-export function MenuLateral({ recolhido, onAlternar, gavetaAberta, onFecharGaveta, perfil, stats, email }) {
+export function MenuLateral({ recolhido, onAlternar, gavetaAberta, onFecharGaveta, perfil, stats, email, onInstalar }) {
   // Gaveta aberta: foco vai para dentro dela e Esc fecha. Ao fechar, o foco volta
   // para o botão que abriu.
   useEffect(() => {
@@ -64,6 +64,13 @@ export function MenuLateral({ recolhido, onAlternar, gavetaAberta, onFecharGavet
             </NavLink>
           ))}
         </nav>
+
+        {onInstalar && (
+          <button type="button" className="menu-lateral__item menu-lateral__instalar" onClick={onInstalar} title={recolhido ? t.instalar.menu : undefined}>
+            <IconeBaixar />
+            <span className="menu-lateral__texto">{t.instalar.menu}</span>
+          </button>
+        )}
 
         <NavLink to="/perfil" className="menu-lateral__usuario" title={recolhido ? nomeCompleto(perfil) ?? m.completarPerfil : undefined}>
           <span className="avatar" aria-hidden="true">

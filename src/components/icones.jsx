@@ -75,6 +75,32 @@ export function IconeFechar() {
   )
 }
 
+export function IconeBaixar() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M8 2.5v7.5M4.75 7 8 10.25 11.25 7M2.75 13.5h10.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+// Compartilhar do iOS: caixa aberta com seta para cima.
+export function IconeCompartilhar() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M8 1.75v8M5.25 4.25 8 1.5l2.75 2.75M5.5 6.75H4.25a1.5 1.5 0 0 0-1.5 1.5v4.5a1.5 1.5 0 0 0 1.5 1.5h7.5a1.5 1.5 0 0 0 1.5-1.5v-4.5a1.5 1.5 0 0 0-1.5-1.5H10.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+// Sem conexão: nuvem cortada por uma diagonal.
+export function IconeSemConexao() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M5.5 5.1A4 4 0 0 1 11.6 7a2.75 2.75 0 0 1 1.9 3.9M11.25 12.75H4.5a2.75 2.75 0 0 1-.9-5.35M2 2l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 export function IconeLapis() {
   return (
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">

@@ -1,0 +1,17 @@
+{
+  "name": "RoutinXP",
+  "short_name": "RoutinXP",
+  "description": "Organize tarefas por categoria e ganhe XP ao concluir.",
+  "lang": "pt-BR",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#121318",
+  "theme_color": "#0d0e12",
+  "icons": [
+    { "src": "/marca/routinxp-icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/marca/routinxp-icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/marca/routinxp-icone-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
