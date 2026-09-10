@@ -48,7 +48,8 @@ let tarefas = [
   tarefa('t10', 'Atualizar README do portfólio', 'c2', null, 400, 10),
 ]
 
-let stats = { xp_total: 540, streak_atual: 6, streak_recorde: 14, ultima_data_conclusao: dia(0) }
+// 690 XP = nível 4 com 240/250: uma conclusão já mostra a subida de nível.
+let stats = { xp_total: 690, streak_atual: 6, streak_recorde: 14, ultima_data_conclusao: dia(0) }
 
 // Sem timer: capturas headless (tempo virtual, iframes) resolvem na hora.
 const espera = (valor) => Promise.resolve(structuredClone(valor))
@@ -95,9 +96,30 @@ export const previaApi = {
     tarefas = tarefas.filter((x) => x.id !== id)
     return espera(null)
   },
+  // Simula a regra do servidor (10 / +5 no prazo / 0 se recém-criada / teto 150 por dia).
   concluirTarefa: (id) => {
-    tarefas = tarefas.map((x) => (x.id === id ? { ...x, status: 'concluida', completed_at: new Date().toISOString() } : x))
-    return espera(tarefas.find((x) => x.id === id))
+    const hoje = dia(0)
+    const alvo = tarefas.find((x) => x.id === id)
+    const recente = Date.now() - new Date(alvo.created_at).getTime() < 5 * 60000
+    const xpHoje = tarefas
+      .filter((x) => x.status === 'concluida' && x.completed_at?.slice(0, 10) === hoje)
+      .reduce((soma, x) => soma + x.xp_value, 0)
+    let xp = recente ? 0 : alvo.data_prevista && hoje <= alvo.data_prevista ? 15 : 10
+    let motivo = recente ? 'recem_criada' : xp === 15 ? 'no_prazo' : 'base'
+    if (!recente && xpHoje + xp > 150) {
+      xp = Math.max(150 - xpHoje, 0)
+      motivo = xp === 0 ? 'teto' : 'teto_parcial'
+    }
+    tarefas = tarefas.map((x) =>
+      x.id === id ? { ...x, status: 'concluida', completed_at: new Date().toISOString(), xp_value: xp } : x,
+    )
+    stats = { ...stats, xp_total: stats.xp_total + xp }
+    return espera({
+      tarefa: tarefas.find((x) => x.id === id),
+      xp_ganho: xp,
+      motivo,
+      estatisticas: { ...stats, xp_hoje: xpHoje + xp, teto_diario: 150 },
+    })
   },
-  lerEstatisticas: () => espera(stats),
+  lerEstatisticas: () => espera({ ...stats, xp_hoje: 0, teto_diario: 150 }),
 }

@@ -145,6 +145,12 @@ export const t = {
     },
     excluida: 'Tarefa excluída',
     desfazer: 'Desfazer',
+    nivelAlcancado: 'Você subiu de nível!',
+    motivoXp: {
+      recemCriada: 'Concluída! Tarefas criadas há menos de 5 minutos não rendem XP nem contam para o streak.',
+      teto: 'Concluída! Você já ganhou os 150 XP de hoje. O streak continua valendo.',
+      tetoParcial: (xp) => `Concluída! +${xp} XP: o restante passaria do teto de 150 XP por dia.`,
+    },
   },
 
   formTarefa: {

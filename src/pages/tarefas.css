@@ -853,6 +853,44 @@
   }
 }
 
+/* ---------- Ganho de XP ---------- */
+
+.linha__xp[data-zero='true'],
+.linha__xp[data-pendente='true'] {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* "+XP" que voa da tarefa até o contador da barra superior; ao chegar, o número conta
+   e a barra enche (mesmo gesto da demonstração do login). */
+.xp-voo-app {
+  position: fixed;
+  z-index: 40;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--green);
+  white-space: nowrap;
+  pointer-events: none;
+  animation: xp-voa-app 0.7s cubic-bezier(0.5, 0, 0.2, 1) forwards;
+}
+
+@keyframes xp-voa-app {
+  0% {
+    transform: translate(0, 0) scale(1.15);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) scale(0.75);
+    opacity: 0;
+  }
+}
+
+.toast[data-tipo='nivel'] {
+  border-color: var(--green-line);
+}
+
 /* ---------- Botão flutuante (celular) ---------- */
 
 .fab {

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import * as apiReal from './dados'
 import { mensagemErroDados } from './dadosErros'
 import { emPrevia, previaApi } from '../dev/previa'
+import { t } from '../i18n/pt-BR'
 
 // Em /?previa (só em desenvolvimento) os dados vêm de uma fixture em memória.
 const api = emPrevia ? previaApi : apiReal
@@ -10,6 +11,15 @@ const api = emPrevia ? previaApi : apiReal
 const PRAZO_DESFAZER = 5000
 
 const porCriacao = (a, b) => a.created_at.localeCompare(b.created_at)
+
+// Aviso quando a conclusão rende menos que o normal (a regra fica visível).
+function mensagemDoGanho(xp, motivo) {
+  const m = t.tarefas.motivoXp
+  if (motivo === 'recem_criada') return m.recemCriada
+  if (motivo === 'teto') return m.teto
+  if (motivo === 'teto_parcial') return m.tetoParcial(xp)
+  return null
+}
 
 const buscarTudo = () => Promise.all([api.listarCategorias(), api.listarTarefas(), api.lerEstatisticas()])
 
@@ -69,19 +79,30 @@ export function useDados() {
     return salva
   }
 
+  // Conclui no servidor, que calcula XP e streak. Devolve { xp, motivo, estatisticas }
+  // (ou null se falhar). As estatísticas não entram aqui: a tela aplica depois que o
+  // "+XP" chega ao contador, com aplicarEstatisticas.
   async function concluir(id) {
     const antes = tarefas.find((x) => x.id === id)
-    if (!antes || antes.status === 'concluida') return
+    if (!antes || antes.status === 'concluida') return null
     setRecem(id)
     setTarefas((ts) =>
-      ts.map((x) => (x.id === id ? { ...x, status: 'concluida', completed_at: new Date().toISOString() } : x)),
+      ts.map((x) =>
+        x.id === id ? { ...x, status: 'concluida', completed_at: new Date().toISOString(), xp_value: null } : x,
+      ),
     )
     try {
-      const salva = await api.concluirTarefa(id)
-      setTarefas((ts) => ts.map((x) => (x.id === id ? salva : x)))
+      const r = await api.concluirTarefa(id)
+      setTarefas((ts) => ts.map((x) => (x.id === id ? r.tarefa : x)))
+      const texto = mensagemDoGanho(r.xp_ganho, r.motivo)
+      if (texto) setAviso({ tipo: 'info', texto })
+      return { xp: r.xp_ganho, motivo: r.motivo, estatisticas: r.estatisticas }
     } catch (erro) {
       setTarefas((ts) => ts.map((x) => (x.id === id ? antes : x)))
-      falhar(erro)
+      // Já concluída em outra aba/aparelho: recarrega em vez de mostrar erro.
+      if (/tarefa_ja_concluida/.test(erro?.message ?? '')) carregar()
+      else falhar(erro)
+      return null
     }
   }
 
@@ -139,6 +160,8 @@ export function useDados() {
     recem,
     carregar,
     fecharAviso,
+    avisar: setAviso,
+    aplicarEstatisticas: setStats,
     salvarTarefa,
     concluir,
     excluir,

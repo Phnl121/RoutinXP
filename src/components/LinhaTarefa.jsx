@@ -30,7 +30,7 @@ export function LinhaTarefa({ tarefa, categoria, mostrarCategoria = true, arrast
         className="linha__check"
         aria-label={tt.concluir(tarefa.titulo)}
         disabled={feita}
-        onClick={() => onConcluir(tarefa.id)}
+        onClick={(evento) => onConcluir(tarefa.id, evento.currentTarget.getBoundingClientRect())}
       >
         <span className="linha__circulo">
           <IconeCheck />
@@ -57,7 +57,16 @@ export function LinhaTarefa({ tarefa, categoria, mostrarCategoria = true, arrast
       </button>
 
       {feita ? (
-        <span className="linha__xp">{tt.xp(tarefa.xp_value)}</span>
+        tarefa.xp_value == null ? (
+          // Aguardando o servidor calcular o XP.
+          <span className="linha__xp" data-pendente="true" aria-hidden="true">
+            …
+          </span>
+        ) : (
+          <span className="linha__xp" data-zero={tarefa.xp_value === 0}>
+            {tt.xp(tarefa.xp_value)}
+          </span>
+        )
       ) : (
         <span className="linha__data" data-prazo={prazo.estado}>
           {prazo.texto}

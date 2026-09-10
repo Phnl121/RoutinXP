@@ -57,22 +57,13 @@ export async function excluirTarefa(id) {
   ok(await supabase.from('tasks').delete().eq('id', id))
 }
 
-// Provisório até o passo 10: só marca como concluída.
-// No passo 10 vira uma função no banco que também calcula XP e streak.
+// Conclui no servidor (função concluir_tarefa): XP, teto diário e streak são calculados
+// no banco, no horário de Brasília. Devolve { tarefa, xp_ganho, motivo, estatisticas }.
 export async function concluirTarefa(id) {
-  return ok(
-    await supabase
-      .from('tasks')
-      .update({ status: 'concluida', completed_at: new Date().toISOString() })
-      .eq('id', id)
-      .eq('status', 'pendente')
-      .select(CAMPOS_TAREFA)
-      .single(),
-  )
+  return ok(await supabase.rpc('concluir_tarefa', { p_task_id: id }))
 }
 
+// { xp_total, streak_atual (já zerado se passou um dia sem concluir), streak_recorde, xp_hoje, teto_diario }
 export async function lerEstatisticas() {
-  return ok(
-    await supabase.from('user_stats').select('xp_total, streak_atual, streak_recorde, ultima_data_conclusao').maybeSingle(),
-  )
+  return ok(await supabase.rpc('minhas_estatisticas'))
 }

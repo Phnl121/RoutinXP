@@ -1,13 +1,13 @@
 import { supabase } from '../lib/supabase'
-import { calcularNivel } from '../lib/nivel'
 import { iniciaisDoEmail } from '../lib/datas'
 import { BadgeNivel, BarraXp } from './Progresso'
+import { useMedidorNivel } from '../lib/useMedidorNivel'
 import { IconeMais } from './icones'
 import { Logo } from './Logo'
 import { t } from '../i18n/pt-BR'
 
 export function TopBar({ stats, email, onNovaTarefa }) {
-  const info = calcularNivel(stats?.xp_total ?? 0)
+  const medidor = useMedidorNivel(stats?.xp_total ?? 0, Boolean(stats))
   const streak = stats?.streak_atual ?? 0
 
   return (
@@ -16,9 +16,9 @@ export function TopBar({ stats, email, onNovaTarefa }) {
 
       {stats ? (
         <div className="topo__nivel" role="group" aria-label={t.topo.progresso}>
-          <BadgeNivel nivel={info.nivel} />
+          <BadgeNivel nivel={medidor.nivel} animar={medidor.animar} />
           <div className="topo__xp">
-            <BarraXp xpNoNivel={info.xpNoNivel} meta={info.meta} />
+            <BarraXp xpNoNivel={medidor.xpNoNivel} meta={medidor.meta} instantaneo={medidor.instantaneo} />
           </div>
           <div className="topo__streak">
             <span className="topo__streak-n">{t.topo.dias(streak)}</span>

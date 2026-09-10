@@ -93,7 +93,8 @@ export function Quadro({ pendentes, concluidas, categoriasPorId, mostrarCategori
           evento.preventDefault()
           setAlvo(false)
           const id = evento.dataTransfer.getData('text/plain')
-          if (id) acoes.onConcluir(id)
+          // O "+XP" sai do ponto onde a tarefa foi solta.
+          if (id) acoes.onConcluir(id, { left: evento.clientX, top: evento.clientY, width: 0, height: 0 })
         }}
       >
         <h2 id="coluna-concluidas" className="label coluna__titulo">
