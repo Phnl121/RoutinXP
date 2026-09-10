@@ -949,8 +949,40 @@
 
 /* ---------- Botão flutuante (celular) ---------- */
 
+/* Botão flutuante "Nova tarefa": em todas as larguras e em todas as páginas. */
 .fab {
-  display: none;
+  position: fixed;
+  right: 2rem;
+  bottom: calc(2rem + env(safe-area-inset-bottom));
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 0;
+  border-radius: 50%;
+  background: var(--purple);
+  color: var(--on-purple);
+  box-shadow:
+    0 10px 24px -8px var(--purple-glow),
+    var(--shadow);
+  cursor: pointer;
+  transition:
+    transform 0.12s var(--ease-out),
+    filter 0.2s var(--ease-out);
+}
+
+.fab:hover {
+  filter: brightness(1.1);
+}
+
+.fab:active {
+  transform: scale(0.94);
+}
+
+.fab svg {
+  width: 1.35rem;
+  height: 1.35rem;
 }
 
 /* ---------- Telas menores ---------- */
@@ -1094,27 +1126,8 @@
   }
 
   .fab {
-    position: fixed;
     right: 1.25rem;
     bottom: calc(1.25rem + env(safe-area-inset-bottom));
-    z-index: 20;
-    display: grid;
-    place-items: center;
-    width: 3.5rem;
-    height: 3.5rem;
-    border: 0;
-    border-radius: 50%;
-    background: var(--purple);
-    color: var(--on-purple);
-    box-shadow:
-      0 10px 24px -8px var(--purple-glow),
-      var(--shadow);
-    cursor: pointer;
-  }
-
-  .fab svg {
-    width: 1.35rem;
-    height: 1.35rem;
   }
 
   .toast-area {

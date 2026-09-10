@@ -112,7 +112,7 @@ Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer
 ### 2026-09-11, Claude Code (Opus 5): ajustes pedidos pelo usuário
 Feito:
 - "+ Nova tarefa" saiu da barra superior e foi para a linha do título da página de Tarefas, à direita. No celular continua o botão flutuante.
-- No computador, Painel e Perfil ficam sem botão de criar; o menu leva a Tarefas.
+- Botão flutuante "+" também no computador, em todas as páginas (canto inferior direito). Um clique abre direto o formulário de nova tarefa; fora de Tarefas, ele leva a Tarefas com o formulário já aberto. Em Tarefas, o botão do título continua.
 - Barra superior virou grade 1fr | auto | 1fr: o medidor de nível fica sempre centralizado (desvio medido: 0 px com o menu aberto e recolhido).
 - `DESIGN.md` atualizado. Capturas em `.impeccable/review/ajustes/`.
 - Decidido com o usuário: não haverá painel administrativo na v1; a administração é feita pelo painel do Supabase.
