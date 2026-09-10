@@ -8,7 +8,7 @@ export function GraficoCategorias({ linhas }) {
         <li key={categoria.id} className="cat-barras__linha">
           <span className="cat-barras__nome">
             <span className="dot" style={{ background: categoria.cor }} />
-            {categoria.nome}
+            <span className="cat-barras__texto">{categoria.nome}</span>
           </span>
           <span className="cat-barras__trilho" aria-hidden="true">
             <span className="cat-barras__barra" style={{ width: `${(total / maior) * 100}%` }} />
