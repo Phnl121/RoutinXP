@@ -1,5 +1,5 @@
 ---
-name: Routin
+name: RoutinXP
 description: Gamified routine app in a dark learning-platform convention; finish a task, earn XP, level up.
 colors:
   ground: "#121318"
@@ -12,19 +12,19 @@ colors:
   ink: "#f3f4f7"
   muted: "#a3a7b3"
   backdrop: "rgb(6 7 10 / 0.72)"
-  green: "#2bd576"
-  green-tip: "#8af5b5"
-  green-wash: "rgb(43 213 118 / 0.1)"
-  green-line: "rgb(43 213 118 / 0.35)"
-  green-glow: "rgb(43 213 118 / 0.6)"
+  green: "#22c55e"
+  green-tip: "#86efac"
+  green-wash: "rgb(34 197 94 / 0.1)"
+  green-line: "rgb(34 197 94 / 0.35)"
+  green-glow: "rgb(34 197 94 / 0.6)"
   on-green: "#0a2616"
-  purple: "#8e2de2"
-  purple-hover: "#9d47ec"
-  purple-soft: "#c28cf6"
-  purple-glow: "rgb(142 45 226 / 0.75)"
-  purple-halo: "rgb(142 45 226 / 0.35)"
-  purple-selection: "rgb(142 45 226 / 0.5)"
-  purple-link-line: "rgb(194 140 246 / 0.4)"
+  purple: "#7c3aed"
+  purple-hover: "#8b5cf6"
+  purple-soft: "#c4b5fd"
+  purple-glow: "rgb(124 58 237 / 0.75)"
+  purple-halo: "rgb(124 58 237 / 0.35)"
+  purple-selection: "rgb(124 58 237 / 0.5)"
+  purple-link-line: "rgb(196 181 253 / 0.4)"
   on-purple: "#ffffff"
 typography:
   display:
@@ -288,13 +288,13 @@ components:
     size: "40px"
 ---
 
-# Design System: Routin
+# Design System: RoutinXP
 
 ## Overview
 
 **Creative North Star: "The Level Always in View"**
 
-Routin follows the gamified learning-platform convention (DIO as the reference, Duolingo and Habitica as the craft bar) rather than an invented world. The system exists to make one moment land: a task is finished, "+n XP" flies to the counter, the number counts up, the bar fills, and on a level change the badge pulses. Everything else is quiet dark chrome that lets that moment be the brightest thing on screen.
+RoutinXP follows the gamified learning-platform convention (DIO as the reference, Duolingo and Habitica as the craft bar) rather than an invented world. The system exists to make one moment land: a task is finished, "+n XP" flies to the counter, the number counts up, the bar fills, and on a level change the badge pulses. Everything else is quiet dark chrome that lets that moment be the brightest thing on screen.
 
 Surfaces are a near-black ground with slightly lifted panels, separated by 1px rules. Density is operational, not editorial: rows, fields and meters sit close, labels are small uppercase, and figures are tabular so numbers never jitter while counting. Type is one family, Archivo, pushed to extra-bold and slightly expanded for the headline, page title, wordmark and badges; everything else is plain weight at normal width. Inside the app the level meter lives in the top bar on every screen, which is where the North Star gets its name.
 
@@ -355,7 +355,7 @@ A cool, near-black neutral stack with two saturated accents whose roles never ov
 ### Hierarchy
 - **Display** (800, clamp 2.25rem to 3.5rem, width 110%, line-height 1.02): the single marketing headline (login). Balanced wrapping. At 60rem and below it uses **Display Compact** (clamp 1.875rem, 8vw, 2.5rem). One phrase may be Level Green when it names the reward.
 - **Page Title** (800, 2rem, width 110%, line-height 1.1, -0.02em): the one heading of an app screen, the category name or "Todas as tarefas". At 60rem and below it drops to **Page Title Compact** (1.5rem). Wraps anywhere rather than overflowing long category names.
-- **Wordmark** (800, 1.625rem, width 112.5%, line-height 1): "Routin" in text; no logo asset exists.
+- **Wordmark** (800, 1.625rem, width 112.5%, line-height 1): "RoutinXP" in text; the UI shows the logo asset public/marca/routinxp-logo-horizontal.svg instead of this text wordmark.
 - **Headline** (800, 1.5rem, line-height 1.15): titles inside panels, dialogs, empty states and simple pages (Redefinir senha, Nenhuma tarefa ainda).
 - **Body Lead** (400, 1.0625rem, line-height 1.55, max 46ch, muted): the one supporting paragraph under a display headline.
 - **Body** (400, 1rem, line-height 1.45): default; panel prose caps at 44ch at line-height 1.55.

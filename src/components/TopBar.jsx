@@ -3,6 +3,7 @@ import { calcularNivel } from '../lib/nivel'
 import { iniciaisDoEmail } from '../lib/datas'
 import { BadgeNivel, BarraXp } from './Progresso'
 import { IconeMais } from './icones'
+import { Logo } from './Logo'
 import { t } from '../i18n/pt-BR'
 
 export function TopBar({ stats, email, onNovaTarefa }) {
@@ -11,7 +12,7 @@ export function TopBar({ stats, email, onNovaTarefa }) {
 
   return (
     <header className="topo">
-      <span className="wordmark">{t.app.nome}</span>
+      <Logo className="topo__logo" />
 
       {stats ? (
         <div className="topo__nivel" role="group" aria-label={t.topo.progresso}>

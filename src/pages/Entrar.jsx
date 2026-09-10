@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase'
 import { mensagemDeErro } from '../lib/authErrors'
 import { Aviso, CampoSenha } from '../components/AuthParts'
 import { DemoXp } from '../components/DemoXp'
+import { Logo } from '../components/Logo'
 import { Captcha } from '../components/Captcha'
 import { captchaAtivo } from '../lib/captcha'
 import { t } from '../i18n/pt-BR'
@@ -78,7 +79,7 @@ export default function Entrar() {
   return (
     <main className="entrar">
       <div className="entrar__grid">
-        <span className="wordmark entrar__marca">{t.app.nome}</span>
+        <Logo className="entrar__marca" />
         <div className="entrar__intro">
           <h1 className="entrar__titulo">
             {frase1} {frase2} <span className="destaque">{frase3}</span>

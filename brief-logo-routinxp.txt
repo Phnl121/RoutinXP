@@ -1,0 +1,35 @@
+BRIEF DE LOGO — RoutinXP
+(cole este texto no gerador de imagem)
+
+O QUE É O PROJETO
+RoutinXP é um app web de rotina pessoal gamificado. O usuário cadastra tarefas organizadas por categoria (Faculdade, Trabalho, Vida Pessoal, Projetos Pessoais), e cada tarefa concluída rende XP. Acumular XP sobe de nível, e existe um sistema de streak (sequência de dias ativos). É um projeto de portfólio, tom sério mas com camada leve de jogo, não é infantil nem corporativo demais.
+
+NOME
+RoutinXP (XP sempre em maiúsculas, confirmado). Não usar "RoutinXP" ou "Routinxp".
+
+PALETA JÁ EM USO NA INTERFACE (manter consistência com o app já construído, não começar do zero)
+- Fundo: preto/quase-preto (aprox #0B0D12)
+- Superfície de cartão: cinza-chumbo escuro (aprox #16181D)
+- Roxo primário (botões, destaques, nível): aprox #7C3AED, violeta vibrante
+- Verde de sucesso/XP (barra de progresso, texto "sobe de nível", ícone de check): aprox #22C55E, verde vibrante
+- Texto principal: branco/quase branco
+- Texto secundário: cinza médio (aprox #9CA3AF)
+
+ÍCONE ATUAL (referência, ponto de partida, não necessariamente o resultado final)
+Quadrado arredondado preto, com um check verde grande centralizado e uma barra roxa horizontal abaixo dele. Estilo flat, sem gradiente, sem sombra pesada.
+
+ESTILO DESEJADO PARA O NOVO LOGO
+- Flat e minimalista, sem gradiente pesado, sem efeito 3D
+- Precisa funcionar pequeno (favicon de navegador, ícone de PWA no celular), então poucos detalhes, formas simples
+- Usar roxo e verde como cores de assinatura (não precisa das duas em toda variação, mas pelo menos uma deve estar presente)
+- Tom: gamificação leve e séria, não fofa, não infantil
+
+O QUE EXPLORAR
+- Fusão entre o R de Routin e algum elemento de progresso (barra de XP, seta ascendente, indicador de nível)
+- Ou o check de tarefa concluída como elemento central, do jeito que já aparece no ícone atual, mas com uma versão mais refinada/original
+- Versão só com símbolo (pro ícone de app/favicon) e versão com o nome RoutinXP ao lado (pro cabeçalho do site), se o gerador conseguir fazer as duas
+
+O QUE EVITAR
+- Troféu dourado, foguete, ou qualquer clichê visual de app de produtividade genérico
+- Texto pequeno demais pra ler quando reduzido a tamanho de ícone
+- Gradiente arco-íris ou muitas cores ao mesmo tempo, a paleta é enxuta de propósito

@@ -28,6 +28,10 @@
   border-bottom: 1px solid var(--rule);
 }
 
+.topo__logo {
+  --logo-h: 2.125rem;
+}
+
 .topo__nivel {
   justify-self: center;
   display: flex;

@@ -1,14 +1,17 @@
-# Progresso — App de Rotina (Routin)
+# Progresso — App de Rotina (RoutinXP)
 
 Este arquivo é o ponto de handoff entre ferramentas (Code, Antigravity, ou qualquer outra). Toda sessão de trabalho começa lendo isto e o `escopo-mvp-v1.md`, e termina atualizando isto antes de encerrar ou trocar de ferramenta.
 
 ## Estado atual
 (a ferramenta que estiver trabalhando atualiza esta seção a cada sessão: o que existe, o que está funcionando, o que está pela metade)
 
-Atualizado em 2026-09-10 (Claude Code), fim do passo 9.
+Atualizado em 2026-09-10 (Claude Code), depois de segurança, deploy, migrations, CAPTCHA e marca RoutinXP. O próximo passo do roteiro é o 10.
 
-- Repositório git: **sim**, branch `main`, remoto **privado** https://github.com/Phnl121/Routin (conta Phnl121). Identidade local `Pedro <pedrocybernet01@gmail.com>`.
-- Deploy: **Vercel**, projeto `phnl121/routin`, produção em **https://routin-six.vercel.app**. Variáveis `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` cadastradas no painel (Production e Preview). `vercel.json` faz o rewrite de SPA; `.vercelignore` impede `.env` de subir por deploy via CLI. Supabase Auth com Site URL de produção (configurado pelo usuário).
+- Repositório git: **sim**, branch `main`, remoto **privado** https://github.com/Phnl121/RoutinXP (conta Phnl121). Identidade local `Pedro <pedrocybernet01@gmail.com>`.
+- Deploy: **Vercel**, projeto `phnl121/routinxp` (renomeado de `routin`), produção em **https://routinxp.vercel.app**.
+  - O endereço antigo https://routin-six.vercel.app continua respondendo.
+  - Deploy automático a cada push na `main`.
+  - Variáveis `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` e `VITE_TURNSTILE_SITE_KEY` cadastradas no painel (Production e Preview). `vercel.json` faz o rewrite de SPA; `.vercelignore` impede `.env` de subir por deploy via CLI. Supabase Auth com Site URL de produção (configurado pelo usuário).
 - Projeto Vite: **sim**. React 19 + Vite 8 (JS), `react-router`, fonte Archivo auto-hospedada. Node 24 LTS em `C:\Program Files\nodejs` (pode não estar no PATH do shell; `.claude/launch.json` chama `node.exe` direto).
 - Supabase: client em `src/lib/supabase.js`.
   - **Migrations versionadas com a Supabase CLI** (dependência de desenvolvimento, versão 2.117.0).
@@ -39,7 +42,10 @@ Atualizado em 2026-09-10 (Claude Code), fim do passo 9.
 - PWA (passo 12): não iniciado.
 - **Configuração de segurança e deploy** (roteiro em `seguranca-e-criacao-repositorio.txt`):
   - Etapas A a D feitas: histórico do git sem segredos, RLS confirmado no painel e por ataque anônimo à API, repositório privado criado, Vercel ligada ao projeto.
-  - Etapa E: URLs configuradas; falta o teste de cadastro, confirmação, login e redefinição de senha na URL de produção.
+  - Etapa E: a Site URL do Supabase foi corrigida pelo usuário para routin-six. Falta:
+    - trocar as URLs para routinxp.vercel.app;
+    - testar cadastro, confirmação, login e redefinição de senha em produção.
+  - **CAPTCHA (Cloudflare Turnstile) ativo.** O widget é invisível e só aparece quando a Cloudflare pede interação. Protege entrar, criar conta e esqueci minha senha. O Supabase recusa pedidos sem token ou com token falso (verificado pela API).
   - Etapa F (tornar o repositório público): opcional, não feita.
   - CLIs `gh` e `vercel` instaladas. O terminal do painel do usuário não as enxerga; quem roda os comandos é o Claude Code.
 
@@ -50,10 +56,49 @@ Atualizado em 2026-09-10 (Claude Code), fim do passo 9.
 - O anel do check vazio numa linha em hover (fundo `--panel-2`) fica em ~2,97:1, um pouco abaixo de 3:1.
 - As animações do check divergem: no app 0,45 s e escala 1,2; na demo do login 0,4 s e escala 1,18.
 - O brief `.impeccable/surfaces/src-pages-tarefas-jsx.md` ainda cita uma barra roxa no item selecionado do trilho; o código usa um estado neutro, que é o correto.
-- `.gitignore` ainda não tem `.vercel` (pedido no checklist de segurança do usuário).
+
+**Ações pendentes do usuário:**
+- **Supabase** → Authentication → URL Configuration:
+  - Site URL: `https://routinxp.vercel.app`.
+  - Adicionar `https://routinxp.vercel.app/**` às Redirect URLs, mantendo as antigas durante a transição.
+- **Cloudflare** → Turnstile → widget Routin: adicionar o hostname `routinxp.vercel.app`. Sem isso o CAPTCHA falha no domínio novo e o login quebra lá.
+- **Pasta local:** renomear `App - Rotina` para `RoutinXP` com o Claude fechado. Depois reabrir a pasta nova no Claude Code; o git e o link da Supabase CLI continuam funcionando, porque ficam dentro da pasta.
+- **Opcional:**
+  - renomear o projeto no painel do Supabase e o widget no Turnstile;
+  - apagar os dados de teste.
 
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
+
+### 2026-09-10 (noite), Claude Code (Opus 5): segurança, deploy, migrations, CAPTCHA e marca
+Feito:
+- Roteiro de `seguranca-e-criacao-repositorio.txt`:
+  - `.vercel` no `.gitignore`;
+  - histórico do git sem segredos;
+  - RLS confirmado no painel e por ataque anônimo à API;
+  - repositório privado no GitHub;
+  - Vercel com `vercel.json` (rewrite de SPA) e `.vercelignore`;
+  - deploy automático ligado.
+- Supabase CLI com migrations: baseline aplicado e `schema.sql` removido.
+- CAPTCHA com o Cloudflare Turnstile.
+- Marca **RoutinXP**:
+  - logo em `public/marca/` no login, na redefinição de senha e na barra do app;
+  - favicon novo;
+  - cores de destaque alinhadas à logo (roxo `#7C3AED`, verde `#22C55E`);
+  - repositório do GitHub renomeado para `Phnl121/RoutinXP`;
+  - projeto da Vercel renomeado para `routinxp`, com o domínio `routinxp.vercel.app`;
+  - `package.json` com o nome `routinxp`.
+
+Travou:
+- O terminal do painel do usuário não enxerga programas recém-instalados. Logins e senhas foram feitos pelo usuário num PowerShell externo, usando `npx.cmd`.
+- O primeiro `supabase link` foi feito em `C:\WINDOWS\system32` (terminal de administrador) e precisou ser refeito na pasta do projeto.
+- Limite de ~2 e-mails/hora do SMTP padrão do Supabase.
+
+Próximo:
+- Ações pendentes acima.
+- Testar a redefinição de senha no domínio novo.
+- SMTP próprio quando houver domínio comprado.
+- Passo 10 (XP/streak) usando migrations.
 
 ### 2026-09-10 (tarde), Claude Code (Opus 5): passo 9
 Feito:
@@ -80,7 +125,7 @@ Feito:
 - `PRODUCT.md` criado.
 - Três rodadas de direção visual; a escolhida foi a convenção de plataforma gamificada (DIO).
 - Login gamificado aprovado.
-- App renomeado para Routin.
+- App renomeado para RoutinXP.
 - Removida a promessa de "10 XP por tarefa".
 
 Travou:
@@ -93,7 +138,7 @@ Travou:
 
 Todas em 2026-09-10. Detalhes em `PRODUCT.md`.
 
-- **Nome do produto: Routin** (usuário).
+- **Nome do produto: RoutinXP** (usuário).
 - **Tela de categorias:** criar, editar e excluir, sem categorias pré-criadas. Categoria com tarefas não pode ser excluída.
 - **Confirmação de e-mail ligada;** "Esqueci minha senha" incluído.
 - **Visão Quadro (Kanban)** por status (Pendentes/Concluídas), convivendo com a Lista. Arrastar para Concluídas conclui a tarefa.

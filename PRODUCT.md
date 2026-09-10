@@ -95,7 +95,8 @@ One list for every area of life, with a reward loop that is deliberately simple:
 
 ## Brand Commitments
 
-- **Name: Routin** (user, 2026-09-10). Replaces "Rotina" in every user-visible place. The project folder and repo keep "App - Rotina".
+- **Name: RoutinXP** (user, 2026-09-10), always written with "XP" in capitals. It replaces the earlier "Rotina" and "Routin" everywhere: UI, GitHub repo (`Phnl121/RoutinXP`), Vercel project and domain. The local folder is renamed by the user outside the Claude session.
+- **Logo** (user, 2026-09-10): official files in `public/marca/`: horizontal, vertical, name only, icon SVG, and PNG 512/1024. Colors are purple #7C3AED and green #22C55E on a #16181D tile; the UI accent tokens follow these colors. Brief: `brief-logo-routinxp.txt`.
 
 - **Visual convention** (user, 2026-09-10): follow the gamified learning platforms rather than an invented world. DIO (web.dio.me) is the primary reference; Duolingo and Habitica set the craft bar. The first two directions (travel document, then a round of alternatives) were rejected for losing the gamification focus.
 - **Colors** (user, 2026-09-10): dark theme with two accents only, green for XP and level, purple for actions. Not DIO's full green/purple/yellow/pink palette. User-defined category colors are data, shown as small dots.
@@ -105,7 +106,8 @@ One list for every area of life, with a reward loop that is deliberately simple:
 
 - `escopo-mvp-v1.md`: the v1 scope, data model, and reward rules.
 - `prompt-inicial-code.txt`: the build order and working rules for this project.
-- No real users, usage data, testimonials, logo, or brand assets exist yet. Do not invent any.
+- `public/marca/`: the official RoutinXP logo in all variations, provided by the user.
+- No real users, usage data, or testimonials exist yet. Do not invent any.
 
 ## Product Principles
 

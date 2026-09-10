@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router'
 import { supabase } from '../lib/supabase'
 import { mensagemDeErro } from '../lib/authErrors'
 import { Aviso, CampoSenha } from '../components/AuthParts'
+import { Logo } from '../components/Logo'
 import { t } from '../i18n/pt-BR'
 import './auth.css'
 
@@ -37,7 +38,7 @@ export default function RedefinirSenha({ session, aoConcluir }) {
   return (
     <main className="auth-simples">
       <div className="auth-simples__col">
-        <span className="wordmark">{t.app.nome}</span>
+        <Logo />
         <div className="entrar__form panel">
           {!session ? (
             <div role="status">

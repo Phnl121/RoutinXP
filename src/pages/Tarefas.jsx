@@ -13,7 +13,7 @@ import { t } from '../i18n/pt-BR'
 import './tarefas.css'
 
 const tt = t.tarefas
-const CHAVE_VISAO = 'routin:visao'
+const CHAVE_VISAO = 'routinxp:visao'
 
 // A visão vem de ?visao=lista|quadro (link direto) ou da última escolha salva.
 function lerVisao() {

@@ -1,7 +1,7 @@
 // Todos os textos da interface ficam aqui, para facilitar a tradução no futuro.
 export const t = {
   app: {
-    nome: 'Routin',
+    nome: 'RoutinXP',
     carregando: 'Carregando…',
     sair: 'Sair',
   },

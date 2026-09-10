@@ -13,20 +13,21 @@
   --muted: #a3a7b3;
   --backdrop: rgb(6 7 10 / 0.72);
 
-  --green: #2bd576;
-  --green-tip: #8af5b5;
-  --green-wash: rgb(43 213 118 / 0.1);
-  --green-line: rgb(43 213 118 / 0.35);
-  --green-glow: rgb(43 213 118 / 0.6);
+  /* Verde e roxo alinhados à logo RoutinXP (public/marca). */
+  --green: #22c55e;
+  --green-tip: #86efac;
+  --green-wash: rgb(34 197 94 / 0.1);
+  --green-line: rgb(34 197 94 / 0.35);
+  --green-glow: rgb(34 197 94 / 0.6);
   --on-green: #0a2616;
 
-  --purple: #8e2de2;
-  --purple-hover: #9d47ec;
-  --purple-soft: #c28cf6;
-  --purple-glow: rgb(142 45 226 / 0.75);
-  --purple-halo: rgb(142 45 226 / 0.35);
-  --purple-selection: rgb(142 45 226 / 0.5);
-  --purple-link-line: rgb(194 140 246 / 0.4);
+  --purple: #7c3aed;
+  --purple-hover: #8b5cf6;
+  --purple-soft: #c4b5fd;
+  --purple-glow: rgb(124 58 237 / 0.75);
+  --purple-halo: rgb(124 58 237 / 0.35);
+  --purple-selection: rgb(124 58 237 / 0.5);
+  --purple-link-line: rgb(196 181 253 / 0.4);
   --on-purple: #ffffff;
 
   --radius: 16px;
@@ -106,6 +107,14 @@ select {
   font-stretch: 112.5%;
   letter-spacing: -0.025em;
   line-height: 1;
+}
+
+/* Logotipo: dimensionado pela altura; a largura segue a proporção do SVG. */
+.logo {
+  display: block;
+  height: var(--logo-h, 2.5rem);
+  width: auto;
+  max-width: 100%;
 }
 
 .panel {
