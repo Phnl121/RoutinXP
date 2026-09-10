@@ -7,7 +7,8 @@ Este arquivo é o ponto de handoff entre ferramentas (Code, Antigravity, ou qual
 
 Atualizado em 2026-09-10 (Claude Code), fim do passo 9.
 
-- Repositório git: **sim**, branch `main`, **sem remoto** (nada foi enviado ao GitHub ainda). Identidade local `Pedro <pedrocybernet01@gmail.com>`.
+- Repositório git: **sim**, branch `main`, remoto **privado** https://github.com/Phnl121/Routin (conta Phnl121). Identidade local `Pedro <pedrocybernet01@gmail.com>`.
+- Deploy: **Vercel**, projeto `phnl121/routin`, produção em **https://routin-six.vercel.app**. Variáveis `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` cadastradas no painel (Production e Preview). `vercel.json` faz o rewrite de SPA; `.vercelignore` impede `.env` de subir por deploy via CLI. Supabase Auth com Site URL de produção (configurado pelo usuário).
 - Projeto Vite: **sim**. React 19 + Vite 8 (JS), `react-router`, fonte Archivo auto-hospedada. Node 24 LTS em `C:\Program Files\nodejs` (pode não estar no PATH do shell; `.claude/launch.json` chama `node.exe` direto).
 - Supabase: client em `src/lib/supabase.js`; schema (`schema.sql`) rodado e confirmado; URLs de Auth configuradas pelo usuário para `localhost:5173`.
 - Impeccable: `PRODUCT.md`, `DESIGN.md` + `.impeccable/design.json` (atualizados após o passo 9), briefs em `.impeccable/surfaces/`.
@@ -26,7 +27,11 @@ Atualizado em 2026-09-10 (Claude Code), fim do passo 9.
 - Lógica de XP/streak (passo 10): **não iniciada**. Por enquanto concluir só grava `status = 'concluida'`; o XP não entra em `user_stats`. As linhas concluídas mostram o `xp_value` guardado (padrão 10) até o passo 10.
 - Dashboard / card de perfil (passo 11): não iniciado.
 - PWA (passo 12): não iniciado.
-- **Deploy na Vercel (passo 5.1, adicionado pelo usuário em `prompt-inicial-code.txt` e `escopo-mvp-v1.md`):** não feito. Depende de `gh auth login` e `vercel login` pelo usuário (ver `seguranca-e-criacao-repositorio.txt`).
+- **Configuração de segurança e deploy** (roteiro em `seguranca-e-criacao-repositorio.txt`):
+  - Etapas A a D feitas: histórico do git sem segredos, RLS confirmado no painel e por ataque anônimo à API, repositório privado criado, Vercel ligada ao projeto.
+  - Etapa E: URLs configuradas; falta o teste de cadastro, confirmação, login e redefinição de senha na URL de produção.
+  - Etapa F (tornar o repositório público): opcional, não feita.
+  - CLIs `gh` e `vercel` instaladas. O terminal do painel do usuário não as enxerga; quem roda os comandos é o Claude Code.
 
 **Dados de teste na conta real do usuário:** categorias Faculdade, Trabalho, Vida Pessoal e 8 tarefas de exemplo, algumas concluídas, criadas no teste do passo 9. Ainda não foi confirmado se devem ser apagadas.
 
