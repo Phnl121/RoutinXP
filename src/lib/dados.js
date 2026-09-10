@@ -26,31 +26,68 @@ export async function excluirCategoria(id) {
   ok(await supabase.from('categories').delete().eq('id', id))
 }
 
-const CAMPOS_TAREFA = 'id, titulo, status, data_prevista, xp_value, created_at, completed_at, category_id'
+export async function listarTags() {
+  return ok(await supabase.from('tags').select('id, nome, cor').order('nome'))
+}
+
+// Falha com código 23505 se já existir uma tag com o mesmo nome.
+export async function criarTag({ nome, cor }) {
+  return ok(await supabase.from('tags').insert({ nome: nome.trim(), cor }).select('id, nome, cor').single())
+}
+
+export async function atualizarTag(id, { nome, cor }) {
+  return ok(await supabase.from('tags').update({ nome: nome.trim(), cor }).eq('id', id).select('id, nome, cor').single())
+}
+
+// Os vínculos com tarefas saem junto (FK on delete cascade).
+export async function excluirTag(id) {
+  ok(await supabase.from('tags').delete().eq('id', id))
+}
+
+const CAMPOS_TAREFA = 'id, titulo, descricao, status, data_prevista, xp_value, created_at, completed_at, category_id, task_tags(tag_id)'
+
+// O Supabase devolve as tags como [{ tag_id }]; a interface usa tag_ids: [id, ...].
+function comTags({ task_tags, ...tarefa }) {
+  return { ...tarefa, tag_ids: (task_tags ?? []).map((x) => x.tag_id) }
+}
+
+const conteudo = ({ titulo, descricao, categoriaId, dataPrevista }) => ({
+  titulo: titulo.trim(),
+  descricao: descricao?.trim() || null,
+  category_id: categoriaId,
+  data_prevista: dataPrevista || null,
+})
+
+// Deixa a tarefa com exatamente estas tags: remove as que saíram e liga as novas.
+async function definirTags(taskId, tagIds) {
+  const remover = supabase.from('task_tags').delete().eq('task_id', taskId)
+  ok(await (tagIds.length ? remover.not('tag_id', 'in', `(${tagIds.join(',')})`) : remover))
+  if (tagIds.length) {
+    ok(
+      await supabase
+        .from('task_tags')
+        .upsert(
+          tagIds.map((tag_id) => ({ task_id: taskId, tag_id })),
+          { onConflict: 'task_id,tag_id', ignoreDuplicates: true },
+        ),
+    )
+  }
+}
 
 export async function listarTarefas() {
-  return ok(await supabase.from('tasks').select(CAMPOS_TAREFA).order('created_at'))
+  return ok(await supabase.from('tasks').select(CAMPOS_TAREFA).order('created_at')).map(comTags)
 }
 
-export async function criarTarefa({ titulo, categoriaId, dataPrevista }) {
-  return ok(
-    await supabase
-      .from('tasks')
-      .insert({ titulo: titulo.trim(), category_id: categoriaId, data_prevista: dataPrevista || null })
-      .select(CAMPOS_TAREFA)
-      .single(),
-  )
+export async function criarTarefa({ tagIds = [], ...campos }) {
+  const salva = comTags(ok(await supabase.from('tasks').insert(conteudo(campos)).select(CAMPOS_TAREFA).single()))
+  if (tagIds.length) await definirTags(salva.id, tagIds)
+  return { ...salva, tag_ids: tagIds }
 }
 
-export async function atualizarTarefa(id, { titulo, categoriaId, dataPrevista }) {
-  return ok(
-    await supabase
-      .from('tasks')
-      .update({ titulo: titulo.trim(), category_id: categoriaId, data_prevista: dataPrevista || null })
-      .eq('id', id)
-      .select(CAMPOS_TAREFA)
-      .single(),
-  )
+export async function atualizarTarefa(id, { tagIds = [], ...campos }) {
+  const salva = comTags(ok(await supabase.from('tasks').update(conteudo(campos)).eq('id', id).select(CAMPOS_TAREFA).single()))
+  await definirTags(id, tagIds)
+  return { ...salva, tag_ids: tagIds }
 }
 
 export async function excluirTarefa(id) {

@@ -61,6 +61,20 @@ let tarefas = [
   tarefa('t22', 'Mapa mental de História', 'c1', dia(-6), 8640 + 300, 15),
 ]
 
+let tags = [
+  { id: 'g1', nome: 'Urgente', cor: '#e27d8f' },
+  { id: 'g2', nome: 'Leitura', cor: '#6c9be8' },
+  { id: 'g3', nome: 'Em grupo', cor: '#e0a050' },
+]
+
+// Tags e descrições de algumas tarefas do exemplo.
+const TAGS_EXEMPLO = { t1: ['g1'], t2: ['g1', 'g3'], t4: ['g3'], t8: ['g2'], t3: ['g2'] }
+const DESCRICOES = {
+  t2: 'Questões 1 a 8 da lista 3, com os gráficos. Entregar em PDF no Moodle.',
+  t4: 'Conferir os números do trimestre antes de sexta.',
+}
+tarefas = tarefas.map((x) => ({ ...x, descricao: DESCRICOES[x.id] ?? null, tag_ids: TAGS_EXEMPLO[x.id] ?? [] }))
+
 let perfil = { primeiro_nome: 'Ana', sobrenome: 'Souza', data_nascimento: '2003-05-14', ocupacao: 'estudante' }
 
 // 690 XP = nível 4 com 240/250: uma conclusão já mostra a subida de nível.
@@ -87,24 +101,51 @@ export const previaApi = {
     categorias = categorias.filter((c) => c.id !== id)
     return espera(null)
   },
+  listarTags: () => espera([...tags].sort((a, b) => a.nome.localeCompare(b.nome))),
+  criarTag: ({ nome, cor }) => {
+    if (tags.some((g) => g.nome.toLowerCase() === nome.trim().toLowerCase())) return Promise.reject({ code: '23505' })
+    const g = { id: novoId(), nome: nome.trim(), cor }
+    tags = [...tags, g]
+    return espera(g)
+  },
+  atualizarTag: (id, { nome, cor }) => {
+    tags = tags.map((g) => (g.id === id ? { ...g, nome: nome.trim(), cor } : g))
+    return espera(tags.find((g) => g.id === id))
+  },
+  excluirTag: (id) => {
+    tags = tags.filter((g) => g.id !== id)
+    tarefas = tarefas.map((x) => ({ ...x, tag_ids: x.tag_ids.filter((g) => g !== id) }))
+    return espera(null)
+  },
   listarTarefas: () => espera(tarefas),
-  criarTarefa: ({ titulo, categoriaId, dataPrevista }) => {
+  criarTarefa: ({ titulo, descricao, categoriaId, dataPrevista, tagIds = [] }) => {
     const x = {
       id: novoId(),
       titulo: titulo.trim(),
+      descricao: descricao?.trim() || null,
       category_id: categoriaId,
       data_prevista: dataPrevista || null,
       status: 'pendente',
       completed_at: null,
       xp_value: 10,
       created_at: new Date().toISOString(),
+      tag_ids: tagIds,
     }
     tarefas = [...tarefas, x]
     return espera(x)
   },
-  atualizarTarefa: (id, { titulo, categoriaId, dataPrevista }) => {
+  atualizarTarefa: (id, { titulo, descricao, categoriaId, dataPrevista, tagIds = [] }) => {
     tarefas = tarefas.map((x) =>
-      x.id === id ? { ...x, titulo: titulo.trim(), category_id: categoriaId, data_prevista: dataPrevista || null } : x,
+      x.id === id
+        ? {
+            ...x,
+            titulo: titulo.trim(),
+            descricao: descricao?.trim() || null,
+            category_id: categoriaId,
+            data_prevista: dataPrevista || null,
+            tag_ids: tagIds,
+          }
+        : x,
     )
     return espera(tarefas.find((x) => x.id === id))
   },

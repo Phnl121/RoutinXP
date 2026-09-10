@@ -1,15 +1,19 @@
 import { useId, useRef, useState } from 'react'
 import { Dialogo } from './Dialogo'
 import { Aviso } from './AuthParts'
+import { SeletorTags } from './SeletorTags'
 import { mensagemErroDados } from '../lib/dadosErros'
 import { t } from '../i18n/pt-BR'
 
 const f = t.formTarefa
 
-export function TarefaDialog({ tarefa, categorias, categoriaPadrao, onFechar, onSalvar, onExcluir, onCriarCategoria }) {
+export function TarefaDialog({ tarefa, categorias, tags = [], categoriaPadrao, onFechar, onSalvar, onExcluir, onCriarCategoria, onCriarTag }) {
   const ref = useRef(null)
   const id = useId()
   const [titulo, setTitulo] = useState(tarefa?.titulo ?? '')
+  const [descricao, setDescricao] = useState(tarefa?.descricao ?? '')
+  const [tagIds, setTagIds] = useState(tarefa?.tag_ids ?? [])
+  const alternarTag = (tagId, marcar) => setTagIds((atuais) => (marcar ? [...new Set([...atuais, tagId])] : atuais.filter((x) => x !== tagId)))
   const [categoriaId, setCategoriaId] = useState(tarefa?.category_id ?? categoriaPadrao ?? categorias[0]?.id ?? '')
   const [data, setData] = useState(tarefa?.data_prevista ?? '')
   const [salvando, setSalvando] = useState(false)
@@ -21,7 +25,7 @@ export function TarefaDialog({ tarefa, categorias, categoriaPadrao, onFechar, on
     setSalvando(true)
     setErro(null)
     try {
-      await onSalvar({ id: tarefa?.id, titulo, categoriaId, dataPrevista: data })
+      await onSalvar({ id: tarefa?.id, titulo, descricao, categoriaId, dataPrevista: data, tagIds })
       fechar()
     } catch (e) {
       setErro(mensagemErroDados(e))
@@ -65,6 +69,25 @@ export function TarefaDialog({ tarefa, categorias, categoriaPadrao, onFechar, on
             />
           </div>
 
+          <div className="field">
+            <label className="label" htmlFor={`${id}-desc`}>
+              {f.descricao}
+            </label>
+            <textarea
+              id={`${id}-desc`}
+              className="input textarea"
+              rows={3}
+              maxLength={1000}
+              placeholder={f.descricaoExemplo}
+              aria-describedby={`${id}-descd`}
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+            />
+            <span className="hint" id={`${id}-descd`}>
+              {f.descricaoDica}
+            </span>
+          </div>
+
           <div className="dialogo__campos">
             <div className="field">
               <label className="label" htmlFor={`${id}-c`}>
@@ -98,6 +121,8 @@ export function TarefaDialog({ tarefa, categorias, categoriaPadrao, onFechar, on
               </span>
             </div>
           </div>
+
+          <SeletorTags tags={tags} selecionadas={tagIds} onAlternar={alternarTag} onCriar={onCriarTag} />
 
           {erro && <Aviso>{erro}</Aviso>}
 

@@ -4,7 +4,7 @@ import { t } from '../i18n/pt-BR'
 
 const tt = t.tarefas
 
-function Linhas({ tarefas, categoriasPorId, mostrarCategoria, arrastavel, recem, acoes }) {
+function Linhas({ tarefas, categoriasPorId, tagsPorId = {}, mostrarCategoria, arrastavel, recem, acoes }) {
   return (
     <ul className="linhas">
       {tarefas.map((tarefa) => (
@@ -12,6 +12,7 @@ function Linhas({ tarefas, categoriasPorId, mostrarCategoria, arrastavel, recem,
           key={tarefa.id}
           tarefa={tarefa}
           categoria={categoriasPorId[tarefa.category_id]}
+          tags={(tarefa.tag_ids ?? []).map((tagId) => tagsPorId[tagId]).filter(Boolean)}
           mostrarCategoria={mostrarCategoria}
           arrastavel={arrastavel}
           recem={recem === tarefa.id}
@@ -23,7 +24,7 @@ function Linhas({ tarefas, categoriasPorId, mostrarCategoria, arrastavel, recem,
 }
 
 // Lista agrupada por categoria (com "Todas") ou de uma categoria só.
-export function Lista({ grupos, mostrarTitulos, vazio, categoriasPorId, recem, acoes }) {
+export function Lista({ grupos, mostrarTitulos, vazio, categoriasPorId, tagsPorId, recem, acoes }) {
   const total = grupos.reduce((n, g) => n + g.tarefas.length, 0)
   return (
     <div className="panel lista">
@@ -41,6 +42,7 @@ export function Lista({ grupos, mostrarTitulos, vazio, categoriasPorId, recem, a
             <Linhas
               tarefas={g.tarefas}
               categoriasPorId={categoriasPorId}
+              tagsPorId={tagsPorId}
               mostrarCategoria={!mostrarTitulos}
               recem={recem}
               acoes={acoes}
@@ -53,7 +55,7 @@ export function Lista({ grupos, mostrarTitulos, vazio, categoriasPorId, recem, a
 }
 
 // Quadro: arrastar uma pendente para Concluídas conclui a tarefa. Não há volta (decisão da v1).
-export function Quadro({ pendentes, concluidas, categoriasPorId, mostrarCategoria, recem, acoes }) {
+export function Quadro({ pendentes, concluidas, categoriasPorId, tagsPorId, mostrarCategoria, recem, acoes }) {
   const [alvo, setAlvo] = useState(false)
 
   return (
@@ -66,6 +68,7 @@ export function Quadro({ pendentes, concluidas, categoriasPorId, mostrarCategori
           <Linhas
             tarefas={pendentes}
             categoriasPorId={categoriasPorId}
+            tagsPorId={tagsPorId}
             mostrarCategoria={mostrarCategoria}
             arrastavel
             recem={recem}
@@ -102,7 +105,7 @@ export function Quadro({ pendentes, concluidas, categoriasPorId, mostrarCategori
         </h2>
         {alvo && <p className="coluna__soltar">{tt.soltar}</p>}
         {concluidas.length ? (
-          <Linhas tarefas={concluidas} categoriasPorId={categoriasPorId} mostrarCategoria={mostrarCategoria} recem={recem} acoes={acoes} />
+          <Linhas tarefas={concluidas} categoriasPorId={categoriasPorId} tagsPorId={tagsPorId} mostrarCategoria={mostrarCategoria} recem={recem} acoes={acoes} />
         ) : (
           !alvo && <p className="coluna__vazio">{tt.vazio.concluidas}</p>
         )}

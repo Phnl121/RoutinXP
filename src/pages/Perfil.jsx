@@ -5,6 +5,7 @@ import { useDadosApp } from '../lib/dadosContexto'
 import { PERFIL_VAZIO, validarPerfil } from '../lib/perfil'
 import { mensagemErroDados } from '../lib/dadosErros'
 import { CamposPerfil } from '../components/CamposPerfil'
+import { GerenciarTags } from '../components/GerenciarTags'
 import { Aviso } from '../components/AuthParts'
 import { t } from '../i18n/pt-BR'
 
@@ -79,6 +80,13 @@ export default function Perfil() {
         ) : (
           <FormPerfil key={completo ? 'com-perfil' : 'sem-perfil'} inicial={d.perfil} salvar={d.salvarPerfil} />
         )}
+      </section>
+
+      <section className="panel pagina__painel" aria-labelledby="perfil-tags">
+        <h2 id="perfil-tags" className="label">
+          {t.tagsPerfil.titulo}
+        </h2>
+        <GerenciarTags tags={d.tags} tarefas={d.tarefas} onSalvar={d.salvarTag} onExcluir={d.excluirTag} />
       </section>
 
       <section className="panel pagina__painel" aria-labelledby="perfil-conta">

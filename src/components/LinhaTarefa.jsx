@@ -5,7 +5,7 @@ import { t } from '../i18n/pt-BR'
 
 const tt = t.tarefas
 
-export function LinhaTarefa({ tarefa, categoria, mostrarCategoria = true, arrastavel = false, recem = false, onConcluir, onEditar, onExcluir }) {
+export function LinhaTarefa({ tarefa, categoria, tags = [], mostrarCategoria = true, arrastavel = false, recem = false, onConcluir, onEditar, onExcluir }) {
   const feita = tarefa.status === 'concluida'
   const [arrastando, setArrastando] = useState(false)
   const mostrarCat = mostrarCategoria && Boolean(categoria)
@@ -14,6 +14,8 @@ export function LinhaTarefa({ tarefa, categoria, mostrarCategoria = true, arrast
   return (
     <li
       className="linha"
+      // A borda de cima de cada tarefa leva a cor da categoria.
+      style={categoria ? { '--cor-cat': categoria.cor } : undefined}
       data-feita={feita}
       data-recem={recem}
       data-arrastando={arrastando}
@@ -39,6 +41,14 @@ export function LinhaTarefa({ tarefa, categoria, mostrarCategoria = true, arrast
 
       <button type="button" className="linha__corpo" onClick={() => onEditar(tarefa)} aria-label={tt.editar(tarefa.titulo)}>
         <span className="linha__titulo">{tarefa.titulo}</span>
+        {/* Fora da tarefa aberta, a tag aparece só como a bolinha da cor; o nome fica na dica. */}
+        {tags.length > 0 && (
+          <span className="linha__tags" title={t.formTarefa.tagsDaTarefa(tags.map((g) => g.nome).join(', '))}>
+            {tags.map((g) => (
+              <span key={g.id} className="dot" style={{ background: g.cor }} />
+            ))}
+          </span>
+        )}
         {(mostrarCat || prazo) && (
           <span className="linha__meta" data-so-data={!mostrarCat}>
             {mostrarCat && (

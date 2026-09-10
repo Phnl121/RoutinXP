@@ -304,6 +304,38 @@
   height: 1rem;
 }
 
+/* ---------- Perfil: tags ---------- */
+
+.tags-lista {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tags-lista__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+}
+
+.tags-lista__item + .tags-lista__item {
+  border-top: 1px solid var(--rule);
+}
+
+.tags-lista__nome {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.tags-lista__nova {
+  justify-self: start;
+}
+
 /* ---------- Páginas simples (Perfil) ---------- */
 
 .pagina {

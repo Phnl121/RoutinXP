@@ -47,6 +47,7 @@ export default function Tarefas() {
 
   const categoriaSel = d.categorias.find((c) => c.id === selecionada) ?? null
   const categoriasPorId = Object.fromEntries(d.categorias.map((c) => [c.id, c]))
+  const tagsPorId = Object.fromEntries(d.tags.map((g) => [g.id, g]))
   const visiveis = categoriaSel ? d.tarefas.filter((x) => x.category_id === categoriaSel.id) : d.tarefas
   const pendentes = visiveis.filter((x) => x.status === 'pendente').sort(ordenarPendentes)
   const concluidas = visiveis.filter((x) => x.status === 'concluida').sort(ordenarConcluidas)
@@ -151,6 +152,7 @@ export default function Tarefas() {
         pendentes={pendentes}
         concluidas={concluidas}
         categoriasPorId={categoriasPorId}
+        tagsPorId={tagsPorId}
         mostrarCategoria={!categoriaSel}
         recem={d.recem}
         acoes={acoes}
@@ -163,6 +165,7 @@ export default function Tarefas() {
         mostrarTitulos={!categoriaSel}
         vazio={filtro === 'pendente' ? tt.vazio.pendentes : tt.vazio.concluidas}
         categoriasPorId={categoriasPorId}
+        tagsPorId={tagsPorId}
         recem={d.recem}
         acoes={acoes}
       />
@@ -230,6 +233,8 @@ export default function Tarefas() {
         <TarefaDialog
           tarefa={dlgTarefa.tarefa}
           categorias={d.categorias}
+          tags={d.tags}
+          onCriarTag={d.salvarTag}
           categoriaPadrao={categoriaSel?.id}
           onFechar={() => setDlgTarefa(null)}
           onSalvar={d.salvarTarefa}

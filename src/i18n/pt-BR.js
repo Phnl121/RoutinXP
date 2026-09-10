@@ -260,6 +260,40 @@ export const t = {
     excluir: 'Excluir tarefa',
     semCategoria: 'Toda tarefa pertence a uma categoria. Crie a primeira antes de adicionar tarefas.',
     criarCategoria: 'Criar categoria',
+    descricao: 'Descrição',
+    descricaoExemplo: 'O que precisa ser feito, links, detalhes…',
+    descricaoDica: 'Opcional.',
+    tags: 'Tags',
+    semTags: 'Nenhuma tag ainda. Crie uma para marcar tarefas parecidas.',
+    novaTag: 'Nova tag',
+    nomeTag: 'Nome da tag',
+    corTag: 'Cor da tag',
+    criarTag: 'Criar tag',
+    tagsDaTarefa: (nomes) => `Tags: ${nomes}`,
+  },
+
+  formTag: {
+    novaTitulo: 'Nova tag',
+    editarTitulo: 'Editar tag',
+    nome: 'Nome',
+    nomeExemplo: 'Ex.: Urgente',
+    maxNome: 40,
+    cor: 'Cor',
+    criar: 'Criar tag',
+    salvar: 'Salvar',
+    salvando: 'Salvando…',
+    cancelar: 'Cancelar',
+    excluir: 'Excluir tag',
+  },
+
+  tagsPerfil: {
+    titulo: 'Tags',
+    texto: 'Marque tarefas com tags. Na lista aparece só a cor; o nome aparece ao abrir a tarefa.',
+    vazio: 'Você ainda não criou tags.',
+    uso: (n) => (n === 0 ? 'sem tarefas' : `${n} ${n === 1 ? 'tarefa' : 'tarefas'}`),
+    editar: (nome) => `Editar tag ${nome}`,
+    editarCurto: 'Editar',
+    nova: 'Nova tag',
   },
 
   formCategoria: {
@@ -291,7 +325,9 @@ export const t = {
   dadosErros: {
     rede: 'Sem conexão com o servidor. Confira sua internet e tente de novo.',
     emUso: 'Esta categoria ainda tem tarefas. Mova ou exclua as tarefas antes.',
-    validacao: 'Confira os campos: o título vai até 200 caracteres e o nome da categoria até 60.',
+    validacao:
+      'Confira os campos: o título vai até 200 caracteres, a descrição até 1000, o nome da categoria até 60 e o da tag até 40.',
+    tagDuplicada: 'Você já tem uma tag com esse nome.',
     generico: 'Não deu para salvar agora. Tente de novo em instantes.',
   },
 }

@@ -109,6 +109,25 @@ Atualizado em 2026-09-10 (Claude Code): passo 12 (PWA) construído; com ele, tod
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
 
+### 2026-09-11, Claude Code (Opus 5): descrição, tags e borda de categoria
+Feito:
+- **Descrição** opcional nas tarefas (até 1000 caracteres), no formulário da tarefa.
+- **Tags** do usuário (nome + cor), várias por tarefa:
+  - no formulário, botões que ligam e desligam cada tag, com "Nova tag" criada ali mesmo;
+  - na lista e no Quadro aparece só a bolinha da cor de cada tag (o nome fica na dica do mouse e no formulário);
+  - no Perfil, seção "Tags" para criar, renomear, trocar a cor e excluir (excluir tira a tag das tarefas).
+- **Borda superior** de 2px na cor da categoria em cada tarefa (lista e Quadro).
+- Migration `20260911120000_descricao_e_tags`:
+  - coluna `descricao` em `tasks`;
+  - tabelas `tags` e `task_tags` com RLS;
+  - privilégios só nos campos de conteúdo;
+  - nome de tag único por usuário.
+  - **Ainda não aplicada em produção.**
+- Capturas em `.impeccable/review/tags/`.
+
+Próximo:
+- Aplicar a migration em produção antes do push. O app novo lê `tags` e `task_tags`.
+
 ### 2026-09-11, Claude Code (Opus 5): ajustes pedidos pelo usuário
 Feito:
 - "+ Nova tarefa" saiu da barra superior e foi para a linha do título da página de Tarefas, à direita. No celular continua o botão flutuante.

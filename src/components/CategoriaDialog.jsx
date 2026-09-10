@@ -4,13 +4,22 @@ import { Aviso } from './AuthParts'
 import { mensagemErroDados } from '../lib/dadosErros'
 import { t } from '../i18n/pt-BR'
 
-const f = t.formCategoria
+const CORES = t.formCategoria.cores
 
-export function CategoriaDialog({ categoria, totalTarefas, onFechar, onSalvar, onExcluir }) {
+// A mesma janela serve para tags (nome + cor): muda só o texto, e a tag pode ser
+// excluída mesmo em uso (ela sai das tarefas).
+export function TagDialog({ tag, onFechar, onSalvar, onExcluir }) {
+  return (
+    <CategoriaDialog categoria={tag} totalTarefas={0} textos={t.formTag} onFechar={onFechar} onSalvar={onSalvar} onExcluir={onExcluir} />
+  )
+}
+
+export function CategoriaDialog({ categoria, totalTarefas, onFechar, onSalvar, onExcluir, textos = t.formCategoria }) {
+  const f = textos
   const ref = useRef(null)
   const id = useId()
   const [nome, setNome] = useState(categoria?.nome ?? '')
-  const [cor, setCor] = useState(categoria?.cor ?? f.cores[0].valor)
+  const [cor, setCor] = useState(categoria?.cor ?? CORES[0].valor)
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState(null)
   const fechar = () => ref.current?.close()
@@ -56,7 +65,7 @@ export function CategoriaDialog({ categoria, totalTarefas, onFechar, onSalvar, o
             id={`${id}-n`}
             className="input"
             required
-            maxLength={60}
+            maxLength={f.maxNome ?? 60}
             autoFocus
             placeholder={f.nomeExemplo}
             value={nome}
@@ -67,7 +76,7 @@ export function CategoriaDialog({ categoria, totalTarefas, onFechar, onSalvar, o
         <fieldset className="cores">
           <legend className="label">{f.cor}</legend>
           <div className="cores__opcoes">
-            {f.cores.map((opcao) => (
+            {CORES.map((opcao) => (
               <label key={opcao.valor} className="cor" title={opcao.nome}>
                 <input
                   type="radio"

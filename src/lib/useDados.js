@@ -22,12 +22,13 @@ function mensagemDoGanho(xp, motivo) {
 }
 
 const buscarTudo = () =>
-  Promise.all([api.listarCategorias(), api.listarTarefas(), api.lerEstatisticas(), api.lerPerfil()])
+  Promise.all([api.listarCategorias(), api.listarTarefas(), api.lerEstatisticas(), api.lerPerfil(), api.listarTags()])
 
 // Estado de categorias, tarefas, estatísticas e perfil do usuário, com atualizações otimistas.
 export function useDados(userId) {
   const [perfil, setPerfil] = useState(null)
   const [categorias, setCategorias] = useState([])
+  const [tags, setTags] = useState([])
   const [tarefas, setTarefas] = useState([])
   const [stats, setStats] = useState(null)
   const [estado, setEstado] = useState('carregando') // 'carregando' | 'pronto' | 'erro'
@@ -35,11 +36,12 @@ export function useDados(userId) {
   const [recem, setRecem] = useState(null) // id da tarefa concluída por último (para a animação)
   const exclusao = useRef(null) // { tarefa, timer }
 
-  const aplicar = useCallback(([c, tf, s, p]) => {
+  const aplicar = useCallback(([c, tf, s, p, tg]) => {
     setCategorias(c)
     setTarefas(tf)
     setStats(s)
     setPerfil(p)
+    setTags(tg)
     setEstado('pronto')
   }, [])
   const falhouCarregar = useCallback(() => setEstado('erro'), [])
@@ -96,7 +98,8 @@ export function useDados(userId) {
     )
     try {
       const r = await api.concluirTarefa(id)
-      setTarefas((ts) => ts.map((x) => (x.id === id ? r.tarefa : x)))
+      // O servidor devolve a linha da tarefa, sem as tags: elas continuam as mesmas.
+      setTarefas((ts) => ts.map((x) => (x.id === id ? { ...x, ...r.tarefa, tag_ids: x.tag_ids } : x)))
       const texto = mensagemDoGanho(r.xp_ganho, r.motivo)
       if (texto) setAviso({ tipo: 'info', texto })
       return { xp: r.xp_ganho, motivo: r.motivo, estatisticas: r.estatisticas }
@@ -149,6 +152,19 @@ export function useDados(userId) {
     return salva
   }
 
+  async function salvarTag({ id, nome, cor }) {
+    const salva = id ? await api.atualizarTag(id, { nome, cor }) : await api.criarTag({ nome, cor })
+    setTags((ts) => (id ? ts.map((x) => (x.id === id ? salva : x)) : [...ts, salva]).sort((a, b) => a.nome.localeCompare(b.nome)))
+    return salva
+  }
+
+  // A tag sai também das tarefas (no banco, o vínculo é apagado em cascata).
+  async function excluirTag(id) {
+    await api.excluirTag(id)
+    setTags((ts) => ts.filter((x) => x.id !== id))
+    setTarefas((ts) => ts.map((x) => (x.tag_ids?.includes(id) ? { ...x, tag_ids: x.tag_ids.filter((g) => g !== id) } : x)))
+  }
+
   async function salvarPerfil(campos) {
     const salvo = await api.salvarPerfil(campos, Boolean(perfil), userId)
     setPerfil(salvo)
@@ -164,6 +180,9 @@ export function useDados(userId) {
     perfil,
     salvarPerfil,
     categorias,
+    tags,
+    salvarTag,
+    excluirTag,
     tarefas,
     stats,
     estado,
