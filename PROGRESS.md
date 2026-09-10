@@ -5,7 +5,7 @@ Este arquivo é o ponto de handoff entre ferramentas (Code, Antigravity, ou qual
 ## Estado atual
 (a ferramenta que estiver trabalhando atualiza esta seção a cada sessão: o que existe, o que está funcionando, o que está pela metade)
 
-Atualizado em 2026-09-10 (Claude Code): passo 11 construído, banco de produção atualizado; falta o deploy do frontend e o teste do usuário.
+Atualizado em 2026-09-10 (Claude Code): passo 11 no ar em produção; falta o teste do usuário.
 
 - Repositório git: **sim**, branch `main`, remoto **privado** https://github.com/Phnl121/RoutinXP (conta Phnl121). Identidade local `Pedro <pedrocybernet01@gmail.com>`.
 - Deploy: **Vercel**, projeto `phnl121/routinxp` (renomeado de `routin`), produção em **https://routinxp.vercel.app**.
@@ -46,7 +46,7 @@ Atualizado em 2026-09-10 (Claude Code): passo 11 construído, banco de produçã
   - O navegador não altera mais `status`, `completed_at` nem `xp_value` (privilégio por coluna).
   - Tarefas concluídas antes do passo 10 ficaram com XP 0.
   - No app: o "+XP" voa até a barra superior, o nível sobe em dois tempos com aviso, e há um aviso com o motivo quando a tarefa rende 0 XP ou o teto é atingido.
-- Painel, perfil e menu lateral (passo 11): **construído.**
+- Painel, perfil e menu lateral (passo 11): **no ar em produção, aguardando o teste do usuário.** A revisão final do Impeccable deu "fix". As 8 correções foram aplicadas (celular, acessibilidade do gráfico e da gaveta, botão flutuante em todas as páginas).
   - Menu lateral fixo e retrátil (estilo app do Claude) com Tarefas, Painel e Perfil. O estado recolhido fica salvo no navegador. No celular vira gaveta.
   - Painel (`/painel`) na estrutura "Linha do tempo do dia", escolhida pelo usuário:
     - nível, barra de XP e XP total;
@@ -96,14 +96,14 @@ Feito:
 - Migration de perfis aplicada em produção.
 - Rodada de estrutura do Painel no Impeccable: o usuário gerou imagens no Nano Banana a partir de `.impeccable/mocks/decision/PROMPTS-painel.md` e escolheu a "Linha do tempo do dia".
 - Painel construído e capturado em desktop, largura média e celular (`.impeccable/review/passo11/`).
+- Revisão final do Impeccable ("fix"), 8 correções aplicadas, `DESIGN.md` atualizado pelo documentador.
+- Push para a `main`; a Vercel publicou a versão nova em https://routinxp.vercel.app.
 
 Travou:
 - As capturas de celular por iframe no Edge headless ficavam presas em "Carregando". A solução foi um script CDP com viewport real de 390px, que espera os dados antes de capturar.
 
 Próximo:
-- Revisão final do Impeccable, correções e documentação no DESIGN.md.
-- Push para produção.
-- Teste do usuário: criar conta com os campos novos, Perfil, menu, lembrete e Painel.
+- Teste do usuário: criar conta com os campos novos, Perfil (inclusive completar o perfil numa conta antiga), menu, lembrete e Painel.
 - Passo 12 (PWA).
 
 ### 2026-09-10 (noite), Claude Code (Opus 5): segurança, deploy, migrations, CAPTCHA e marca

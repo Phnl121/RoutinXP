@@ -1,84 +1,601 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-10T12:00:00Z",
+  "generatedAt": "2026-09-10T22:38:11.780Z",
   "title": "Design System: RoutinXP",
   "extensions": {
     "colorMeta": {
-      "green": { "role": "primary", "displayName": "Level Green", "canonical": "#22c55e", "tonalRamp": ["#0a2616", "#0f4526", "#15673a", "#1d9150", "#22c55e", "#5fe399", "#86efac", "#d4fbe4"] },
-      "green-tip": { "role": "primary", "displayName": "Green Tip", "canonical": "#86efac", "tonalRamp": ["#0a2616", "#0f4526", "#15673a", "#1d9150", "#22c55e", "#5fe399", "#86efac", "#d4fbe4"] },
-      "green-wash": { "role": "primary", "displayName": "Green Wash", "canonical": "rgb(34 197 94 / 0.1)", "tonalRamp": ["#0a2616", "#0f4526", "#15673a", "#1d9150", "#22c55e", "#5fe399", "#86efac", "#d4fbe4"] },
-      "green-line": { "role": "primary", "displayName": "Green Line", "canonical": "rgb(34 197 94 / 0.35)", "tonalRamp": ["#0a2616", "#0f4526", "#15673a", "#1d9150", "#22c55e", "#5fe399", "#86efac", "#d4fbe4"] },
-      "green-glow": { "role": "primary", "displayName": "Green Glow", "canonical": "rgb(34 197 94 / 0.6)", "tonalRamp": ["#0a2616", "#0f4526", "#15673a", "#1d9150", "#22c55e", "#5fe399", "#86efac", "#d4fbe4"] },
-      "on-green": { "role": "primary", "displayName": "Deep Moss", "canonical": "#0a2616", "tonalRamp": ["#051309", "#0a2616", "#123d24", "#1b5634", "#257146", "#3a9060", "#6bb58a", "#c3e3cf"] },
-      "purple": { "role": "secondary", "displayName": "Action Violet", "canonical": "#7c3aed", "tonalRamp": ["#1e0833", "#361057", "#551a8a", "#7424c0", "#7c3aed", "#8b5cf6", "#c4b5fd", "#ecdcfd"] },
-      "purple-hover": { "role": "secondary", "displayName": "Violet Lift", "canonical": "#8b5cf6", "tonalRamp": ["#1e0833", "#361057", "#551a8a", "#7424c0", "#7c3aed", "#8b5cf6", "#c4b5fd", "#ecdcfd"] },
-      "purple-soft": { "role": "secondary", "displayName": "Soft Violet", "canonical": "#c4b5fd", "tonalRamp": ["#1e0833", "#361057", "#551a8a", "#7424c0", "#7c3aed", "#8b5cf6", "#c4b5fd", "#ecdcfd"] },
-      "purple-glow": { "role": "secondary", "displayName": "Violet Glow", "canonical": "rgb(124 58 237 / 0.75)", "tonalRamp": ["#1e0833", "#361057", "#551a8a", "#7424c0", "#7c3aed", "#8b5cf6", "#c4b5fd", "#ecdcfd"] },
-      "purple-halo": { "role": "secondary", "displayName": "Violet Halo", "canonical": "rgb(124 58 237 / 0.35)", "tonalRamp": ["#1e0833", "#361057", "#551a8a", "#7424c0", "#7c3aed", "#8b5cf6", "#c4b5fd", "#ecdcfd"] },
-      "purple-selection": { "role": "secondary", "displayName": "Violet Selection", "canonical": "rgb(124 58 237 / 0.5)", "tonalRamp": ["#1e0833", "#361057", "#551a8a", "#7424c0", "#7c3aed", "#8b5cf6", "#c4b5fd", "#ecdcfd"] },
-      "purple-link-line": { "role": "secondary", "displayName": "Link Line", "canonical": "rgb(196 181 253 / 0.4)", "tonalRamp": ["#1e0833", "#361057", "#551a8a", "#7424c0", "#7c3aed", "#8b5cf6", "#c4b5fd", "#ecdcfd"] },
-      "on-purple": { "role": "secondary", "displayName": "On Violet", "canonical": "#ffffff", "tonalRamp": ["#1a1a1a", "#333333", "#4d4d4d", "#737373", "#999999", "#bfbfbf", "#e6e6e6", "#ffffff"] },
-      "topbar": { "role": "neutral", "displayName": "Top Bar", "canonical": "#0d0e12", "tonalRamp": ["#0d0e12", "#121318", "#1c1d24", "#25262f", "#2e3039", "#454856", "#a3a7b3", "#f3f4f7"] },
-      "ground": { "role": "neutral", "displayName": "Ground", "canonical": "#121318", "tonalRamp": ["#0d0e12", "#121318", "#1c1d24", "#25262f", "#2e3039", "#454856", "#a3a7b3", "#f3f4f7"] },
-      "panel": { "role": "neutral", "displayName": "Panel", "canonical": "#1c1d24", "tonalRamp": ["#0d0e12", "#121318", "#1c1d24", "#25262f", "#2e3039", "#454856", "#a3a7b3", "#f3f4f7"] },
-      "panel-2": { "role": "neutral", "displayName": "Panel Two", "canonical": "#25262f", "tonalRamp": ["#0d0e12", "#121318", "#1c1d24", "#25262f", "#2e3039", "#454856", "#a3a7b3", "#f3f4f7"] },
-      "rule": { "role": "neutral", "displayName": "Rule", "canonical": "#2e3039", "tonalRamp": ["#0d0e12", "#121318", "#1c1d24", "#25262f", "#2e3039", "#454856", "#a3a7b3", "#f3f4f7"] },
-      "rule-strong": { "role": "neutral", "displayName": "Rule Strong", "canonical": "#454856", "tonalRamp": ["#0d0e12", "#121318", "#1c1d24", "#25262f", "#2e3039", "#454856", "#a3a7b3", "#f3f4f7"] },
-      "check-ring": { "role": "neutral", "displayName": "Check Ring", "canonical": "#6a6e7c", "tonalRamp": ["#0d0e12", "#1c1d24", "#2e3039", "#454856", "#6a6e7c", "#8a8e9b", "#a3a7b3", "#f3f4f7"] },
-      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#f3f4f7", "tonalRamp": ["#0d0e12", "#121318", "#1c1d24", "#25262f", "#2e3039", "#454856", "#a3a7b3", "#f3f4f7"] },
-      "muted": { "role": "neutral", "displayName": "Muted", "canonical": "#a3a7b3", "tonalRamp": ["#0d0e12", "#121318", "#1c1d24", "#25262f", "#2e3039", "#454856", "#a3a7b3", "#f3f4f7"] },
-      "backdrop": { "role": "neutral", "displayName": "Backdrop", "canonical": "rgb(6 7 10 / 0.72)", "tonalRamp": ["#06070a", "#0d0e12", "#121318", "#1c1d24", "#25262f", "#454856", "#a3a7b3", "#f3f4f7"] }
+      "green": {
+        "role": "primary",
+        "displayName": "Level Green",
+        "canonical": "#22c55e",
+        "tonalRamp": [
+          "#0a2616",
+          "#0f4526",
+          "#15673a",
+          "#1d9150",
+          "#22c55e",
+          "#5fe399",
+          "#86efac",
+          "#d4fbe4"
+        ]
+      },
+      "green-tip": {
+        "role": "primary",
+        "displayName": "Green Tip",
+        "canonical": "#86efac",
+        "tonalRamp": [
+          "#0a2616",
+          "#0f4526",
+          "#15673a",
+          "#1d9150",
+          "#22c55e",
+          "#5fe399",
+          "#86efac",
+          "#d4fbe4"
+        ]
+      },
+      "green-wash": {
+        "role": "primary",
+        "displayName": "Green Wash",
+        "canonical": "rgb(34 197 94 / 0.1)",
+        "tonalRamp": [
+          "#0a2616",
+          "#0f4526",
+          "#15673a",
+          "#1d9150",
+          "#22c55e",
+          "#5fe399",
+          "#86efac",
+          "#d4fbe4"
+        ]
+      },
+      "green-line": {
+        "role": "primary",
+        "displayName": "Green Line",
+        "canonical": "rgb(34 197 94 / 0.35)",
+        "tonalRamp": [
+          "#0a2616",
+          "#0f4526",
+          "#15673a",
+          "#1d9150",
+          "#22c55e",
+          "#5fe399",
+          "#86efac",
+          "#d4fbe4"
+        ]
+      },
+      "green-glow": {
+        "role": "primary",
+        "displayName": "Green Glow",
+        "canonical": "rgb(34 197 94 / 0.6)",
+        "tonalRamp": [
+          "#0a2616",
+          "#0f4526",
+          "#15673a",
+          "#1d9150",
+          "#22c55e",
+          "#5fe399",
+          "#86efac",
+          "#d4fbe4"
+        ]
+      },
+      "on-green": {
+        "role": "primary",
+        "displayName": "Deep Moss",
+        "canonical": "#0a2616",
+        "tonalRamp": [
+          "#051309",
+          "#0a2616",
+          "#123d24",
+          "#1b5634",
+          "#257146",
+          "#3a9060",
+          "#6bb58a",
+          "#c3e3cf"
+        ]
+      },
+      "purple": {
+        "role": "secondary",
+        "displayName": "Action Violet",
+        "canonical": "#7c3aed",
+        "tonalRamp": [
+          "#1e0833",
+          "#361057",
+          "#551a8a",
+          "#7424c0",
+          "#7c3aed",
+          "#8b5cf6",
+          "#c4b5fd",
+          "#ecdcfd"
+        ]
+      },
+      "purple-hover": {
+        "role": "secondary",
+        "displayName": "Violet Lift",
+        "canonical": "#8b5cf6",
+        "tonalRamp": [
+          "#1e0833",
+          "#361057",
+          "#551a8a",
+          "#7424c0",
+          "#7c3aed",
+          "#8b5cf6",
+          "#c4b5fd",
+          "#ecdcfd"
+        ]
+      },
+      "purple-soft": {
+        "role": "secondary",
+        "displayName": "Soft Violet",
+        "canonical": "#c4b5fd",
+        "tonalRamp": [
+          "#1e0833",
+          "#361057",
+          "#551a8a",
+          "#7424c0",
+          "#7c3aed",
+          "#8b5cf6",
+          "#c4b5fd",
+          "#ecdcfd"
+        ]
+      },
+      "purple-glow": {
+        "role": "secondary",
+        "displayName": "Violet Glow",
+        "canonical": "rgb(124 58 237 / 0.75)",
+        "tonalRamp": [
+          "#1e0833",
+          "#361057",
+          "#551a8a",
+          "#7424c0",
+          "#7c3aed",
+          "#8b5cf6",
+          "#c4b5fd",
+          "#ecdcfd"
+        ]
+      },
+      "purple-halo": {
+        "role": "secondary",
+        "displayName": "Violet Halo",
+        "canonical": "rgb(124 58 237 / 0.35)",
+        "tonalRamp": [
+          "#1e0833",
+          "#361057",
+          "#551a8a",
+          "#7424c0",
+          "#7c3aed",
+          "#8b5cf6",
+          "#c4b5fd",
+          "#ecdcfd"
+        ]
+      },
+      "purple-selection": {
+        "role": "secondary",
+        "displayName": "Violet Selection",
+        "canonical": "rgb(124 58 237 / 0.5)",
+        "tonalRamp": [
+          "#1e0833",
+          "#361057",
+          "#551a8a",
+          "#7424c0",
+          "#7c3aed",
+          "#8b5cf6",
+          "#c4b5fd",
+          "#ecdcfd"
+        ]
+      },
+      "purple-link-line": {
+        "role": "secondary",
+        "displayName": "Link Line",
+        "canonical": "rgb(196 181 253 / 0.4)",
+        "tonalRamp": [
+          "#1e0833",
+          "#361057",
+          "#551a8a",
+          "#7424c0",
+          "#7c3aed",
+          "#8b5cf6",
+          "#c4b5fd",
+          "#ecdcfd"
+        ]
+      },
+      "on-purple": {
+        "role": "secondary",
+        "displayName": "On Violet",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#1a1a1a",
+          "#333333",
+          "#4d4d4d",
+          "#737373",
+          "#999999",
+          "#bfbfbf",
+          "#e6e6e6",
+          "#ffffff"
+        ]
+      },
+      "topbar": {
+        "role": "neutral",
+        "displayName": "Top Bar",
+        "canonical": "#0d0e12",
+        "tonalRamp": [
+          "#0d0e12",
+          "#121318",
+          "#1c1d24",
+          "#25262f",
+          "#2e3039",
+          "#454856",
+          "#a3a7b3",
+          "#f3f4f7"
+        ]
+      },
+      "ground": {
+        "role": "neutral",
+        "displayName": "Ground",
+        "canonical": "#121318",
+        "tonalRamp": [
+          "#0d0e12",
+          "#121318",
+          "#1c1d24",
+          "#25262f",
+          "#2e3039",
+          "#454856",
+          "#a3a7b3",
+          "#f3f4f7"
+        ]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Panel",
+        "canonical": "#1c1d24",
+        "tonalRamp": [
+          "#0d0e12",
+          "#121318",
+          "#1c1d24",
+          "#25262f",
+          "#2e3039",
+          "#454856",
+          "#a3a7b3",
+          "#f3f4f7"
+        ]
+      },
+      "panel-2": {
+        "role": "neutral",
+        "displayName": "Panel Two",
+        "canonical": "#25262f",
+        "tonalRamp": [
+          "#0d0e12",
+          "#121318",
+          "#1c1d24",
+          "#25262f",
+          "#2e3039",
+          "#454856",
+          "#a3a7b3",
+          "#f3f4f7"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Rule",
+        "canonical": "#2e3039",
+        "tonalRamp": [
+          "#0d0e12",
+          "#121318",
+          "#1c1d24",
+          "#25262f",
+          "#2e3039",
+          "#454856",
+          "#a3a7b3",
+          "#f3f4f7"
+        ]
+      },
+      "rule-strong": {
+        "role": "neutral",
+        "displayName": "Rule Strong",
+        "canonical": "#454856",
+        "tonalRamp": [
+          "#0d0e12",
+          "#121318",
+          "#1c1d24",
+          "#25262f",
+          "#2e3039",
+          "#454856",
+          "#a3a7b3",
+          "#f3f4f7"
+        ]
+      },
+      "check-ring": {
+        "role": "neutral",
+        "displayName": "Check Ring",
+        "canonical": "#6a6e7c",
+        "tonalRamp": [
+          "#0d0e12",
+          "#1c1d24",
+          "#2e3039",
+          "#454856",
+          "#6a6e7c",
+          "#8a8e9b",
+          "#a3a7b3",
+          "#f3f4f7"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#f3f4f7",
+        "tonalRamp": [
+          "#0d0e12",
+          "#121318",
+          "#1c1d24",
+          "#25262f",
+          "#2e3039",
+          "#454856",
+          "#a3a7b3",
+          "#f3f4f7"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "canonical": "#a3a7b3",
+        "tonalRamp": [
+          "#0d0e12",
+          "#121318",
+          "#1c1d24",
+          "#25262f",
+          "#2e3039",
+          "#454856",
+          "#a3a7b3",
+          "#f3f4f7"
+        ]
+      },
+      "backdrop": {
+        "role": "neutral",
+        "displayName": "Backdrop",
+        "canonical": "rgb(6 7 10 / 0.72)",
+        "tonalRamp": [
+          "#06070a",
+          "#0d0e12",
+          "#121318",
+          "#1c1d24",
+          "#25262f",
+          "#454856",
+          "#a3a7b3",
+          "#f3f4f7"
+        ]
+      }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "The single marketing headline (login); extra-bold, 110% width." },
-      "display-compact": { "displayName": "Display Compact", "purpose": "Display at 60rem and below." },
-      "page-title": { "displayName": "Page Title", "purpose": "The one heading of an app screen (category name or \"Todas as tarefas\"); 110% width." },
-      "page-title-compact": { "displayName": "Page Title Compact", "purpose": "Page title at 60rem and below." },
-      "wordmark": { "displayName": "Wordmark", "purpose": "\"RoutinXP\" set in text, kept as a fallback only. The UI shows the horizontal logo (public/marca/routinxp-logo-horizontal.svg): 2.75rem tall on the login, 2.125rem in the top bar." },
-      "headline": { "displayName": "Headline", "purpose": "Titles inside panels, dialogs, empty states and simple pages." },
-      "body-lead": { "displayName": "Body Lead", "purpose": "One supporting paragraph under a display headline, muted, max 46ch." },
-      "body": { "displayName": "Body", "purpose": "Default text; tabular figures on at the root." },
-      "row-title": { "displayName": "Row Title", "purpose": "Task titles (clamped to two lines) and rail items." },
-      "meta": { "displayName": "Meta", "purpose": "Category line, due dates, counts, hints, secondary figures." },
-      "segment": { "displayName": "Segment", "purpose": "Segmented filter labels, sentence case with a count." },
-      "tab": { "displayName": "Tab", "purpose": "Uppercase underline tabs." },
-      "label": { "displayName": "Label", "purpose": "Uppercase field labels, toggles, rail title, Lista group headings, Quadro column titles." },
-      "badge": { "displayName": "Badge", "purpose": "NÍVEL pill; 0.8125rem inside the login level meter." },
-      "xp-figure": { "displayName": "XP Figure", "purpose": "XP counter, +n XP labels and the streak figure; tabular, counts up." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "The single marketing headline (login); extra-bold, 110% width."
+      },
+      "display-compact": {
+        "displayName": "Display Compact",
+        "purpose": "Display at 60rem and below."
+      },
+      "page-title": {
+        "displayName": "Page Title",
+        "purpose": "The one heading of an app screen (category name or \"Todas as tarefas\", \"Painel\", \"Perfil\"); 110% width."
+      },
+      "page-title-compact": {
+        "displayName": "Page Title Compact",
+        "purpose": "Page title at 60rem and below."
+      },
+      "wordmark": {
+        "displayName": "Wordmark",
+        "purpose": "\"RoutinXP\" set in text, kept as a fallback only. The UI shows the horizontal logo (public/marca/routinxp-logo-horizontal.svg): 2.75rem tall on the login, 2rem in the side menu, 1.875rem in the mobile top bar."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Titles inside panels, dialogs, empty states and single-task pages."
+      },
+      "stat-figure": {
+        "displayName": "Stat Figure",
+        "purpose": "Painel streak figures (\"6 dias\"), above their Label caption; tabular."
+      },
+      "body-lead": {
+        "displayName": "Body Lead",
+        "purpose": "One supporting paragraph under a display headline, muted, max 46ch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Default text; tabular figures on at the root."
+      },
+      "row-title": {
+        "displayName": "Row Title",
+        "purpose": "Task and timeline titles (clamped to two lines), rail and side-menu items."
+      },
+      "meta": {
+        "displayName": "Meta",
+        "purpose": "Category line, due dates, counts, hints, timeline times; 0.75rem for chart axis/cap labels and secondary figures."
+      },
+      "segment": {
+        "displayName": "Segment",
+        "purpose": "Segmented filter labels, sentence case with a count or a period (\"7 dias\")."
+      },
+      "tab": {
+        "displayName": "Tab",
+        "purpose": "Uppercase underline tabs."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase field labels, toggles, rail title, Lista group headings, Quadro column titles, Painel card titles and timeline day headings."
+      },
+      "badge": {
+        "displayName": "Badge",
+        "purpose": "NÍVEL pill; 0.8125rem inside the login level meter."
+      },
+      "xp-figure": {
+        "displayName": "XP Figure",
+        "purpose": "XP counter, +n XP labels, the top-bar streak figure and the Painel total; tabular, counts up."
+      }
     },
     "shadows": [
-      { "name": "panel-lift", "value": "0 1px 2px rgb(0 0 0 / 0.35), 0 16px 40px -12px rgb(0 0 0 / 0.55)", "purpose": "Token --shadow. Every panel, rail, dialog, account menu and toast; the single elevation." },
-      { "name": "action-glow", "value": "0 8px 20px -10px var(--purple-glow)", "purpose": "Primary button at rest." },
-      { "name": "action-glow-pressed", "value": "0 4px 10px -6px var(--purple-glow)", "purpose": "Primary button while pressed." },
-      { "name": "fab-glow", "value": "0 10px 24px -8px var(--purple-glow), var(--shadow)", "purpose": "Floating action button over content (60rem and below)." },
-      { "name": "focus-halo", "value": "0 0 0 3px var(--purple-halo)", "purpose": "Focused input, with a Soft Violet border." },
-      { "name": "selected-inset", "value": "inset 0 0 0 1px var(--rule-strong)", "purpose": "Selected rail item on desktop; neutral outline, not a lift." },
-      { "name": "swatch-ring", "value": "0 0 0 3px var(--panel), 0 0 0 5px var(--ink)", "purpose": "Checked color swatch in the category dialog." },
-      { "name": "level-up-pulse", "value": "0 6px 18px -4px var(--green-glow)", "purpose": "Transient, at the peak of the badge pulse on level change." }
+      {
+        "name": "panel-lift",
+        "value": "0 1px 2px rgb(0 0 0 / 0.35), 0 16px 40px -12px rgb(0 0 0 / 0.55)",
+        "purpose": "Token --shadow. Every panel, rail, dialog, account menu, toast, chart tooltip and the open mobile drawer; the single elevation. The docked side menu has none."
+      },
+      {
+        "name": "action-glow",
+        "value": "0 8px 20px -10px var(--purple-glow)",
+        "purpose": "Primary button at rest."
+      },
+      {
+        "name": "action-glow-pressed",
+        "value": "0 4px 10px -6px var(--purple-glow)",
+        "purpose": "Primary button while pressed."
+      },
+      {
+        "name": "fab-glow",
+        "value": "0 10px 24px -8px var(--purple-glow), var(--shadow)",
+        "purpose": "Floating action button over content (60rem and below)."
+      },
+      {
+        "name": "focus-halo",
+        "value": "0 0 0 3px var(--purple-halo)",
+        "purpose": "Focused input, with a Soft Violet border."
+      },
+      {
+        "name": "selected-inset",
+        "value": "inset 0 0 0 1px var(--rule-strong)",
+        "purpose": "Selected rail item on desktop and the side menu current page; neutral outline, not a lift."
+      },
+      {
+        "name": "swatch-ring",
+        "value": "0 0 0 3px var(--panel), 0 0 0 5px var(--ink)",
+        "purpose": "Checked color swatch in the category dialog."
+      },
+      {
+        "name": "level-up-pulse",
+        "value": "0 6px 18px -4px var(--green-glow)",
+        "purpose": "Transient, at the peak of the badge pulse on level change."
+      }
     ],
     "motion": [
-      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Token --ease-out. The single easing for every state transition and fill." },
-      { "name": "xp-fill", "value": "transform 0.7s ease-out", "purpose": "XP bar fill via translateX; matches the 700ms count-up (quartic ease-out)." },
-      { "name": "xp-flight", "value": "0.6s cubic-bezier(0.5, 0, 0.2, 1)", "purpose": "Login demo: +n XP flying from the row's XP label to the demo counter; scale 1.1 to 0.75, fades in the last 20%." },
-      { "name": "xp-flight-app", "value": "0.7s cubic-bezier(0.5, 0, 0.2, 1)", "purpose": "App: fixed-position +n XP (1rem, 800, green) from the completed row's check or the Quadro drop point to the top bar's XP figure; scale 1.15 to 0.75, fades in the last 20%. Stats apply on arrival; 850ms fallback timer. No flight for 0 XP." },
-      { "name": "level-hold", "value": "750ms", "purpose": "Bar holds full in the old level before snapping (no transition) to the new level; badge pulses. No animation on first load or stats resync." },
-      { "name": "level-toast-delay", "value": "1500ms", "purpose": "After the flight lands, the level toast waits for the fill-and-hold to play out before appearing." },
-      { "name": "badge-pulse", "value": "0.7s ease-out, scale 1.2 at 30%", "purpose": "NÍVEL badge on level change." },
-      { "name": "check-pop", "value": "0.45s ease-out, scale 1.2 at 40%", "purpose": "App task check on completion (login demo: 0.4s, 1.18)." },
-      { "name": "row-completed-wash", "value": "1.2s ease-out, from var(--green-wash)", "purpose": "Just-completed row flashes green and settles." },
-      { "name": "tab-bar", "value": "transform 0.3s ease-out (scaleX 0 to 1)", "purpose": "Active tab underline." },
-      { "name": "notice-in", "value": "0.35s ease-out, translateY(-4px) to 0", "purpose": "Error notice and level-up banner entrance." },
-      { "name": "dialog-in", "value": "0.35s ease-out, translateY(10px) scale(0.98) to rest", "purpose": "Modal dialog entrance." },
-      { "name": "toast-in", "value": "0.35s ease-out, translateY(12px) to 0", "purpose": "Toast entrance." },
-      { "name": "toast-timer", "value": "5s linear, scaleX 1 to 0", "purpose": "Undo toast time bar. Error and info toasts dismiss at 6s, the level toast at 5s." },
-      { "name": "reveal", "value": "0.15s ease-out opacity", "purpose": "Rail pencil and row Excluir overlay on hover/focus." },
-      { "name": "state", "value": "0.2s ease-out", "purpose": "Hover color, border and background changes." },
-      { "name": "reduced-motion", "value": "durations 0.01ms", "purpose": "prefers-reduced-motion collapses all animation and transition; count-up jumps to the target." }
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Token --ease-out. The single easing for every state transition and fill."
+      },
+      {
+        "name": "xp-fill",
+        "value": "transform 0.7s ease-out",
+        "purpose": "XP bar fill via translateX; matches the 700ms count-up (quartic ease-out)."
+      },
+      {
+        "name": "xp-flight",
+        "value": "0.6s cubic-bezier(0.5, 0, 0.2, 1)",
+        "purpose": "Login demo: +n XP flying from the row's XP label to the demo counter; scale 1.1 to 0.75, fades in the last 20%."
+      },
+      {
+        "name": "xp-flight-app",
+        "value": "0.7s cubic-bezier(0.5, 0, 0.2, 1)",
+        "purpose": "App: fixed-position +n XP (1rem, 800, green) from the completed row's check or the Quadro drop point to the top bar's XP figure; scale 1.15 to 0.75, fades in the last 20%. Stats apply on arrival; 850ms fallback timer. No flight for 0 XP."
+      },
+      {
+        "name": "level-hold",
+        "value": "750ms",
+        "purpose": "Bar holds full in the old level before snapping (no transition) to the new level; badge pulses. No animation on first load or stats resync."
+      },
+      {
+        "name": "level-toast-delay",
+        "value": "1500ms",
+        "purpose": "After the flight lands, the level toast waits for the fill-and-hold to play out before appearing."
+      },
+      {
+        "name": "badge-pulse",
+        "value": "0.7s ease-out, scale 1.2 at 30%",
+        "purpose": "NÍVEL badge on level change."
+      },
+      {
+        "name": "check-pop",
+        "value": "0.45s ease-out, scale 1.2 at 40%",
+        "purpose": "App task check on completion (login demo: 0.4s, 1.18)."
+      },
+      {
+        "name": "row-completed-wash",
+        "value": "1.2s ease-out, from var(--green-wash)",
+        "purpose": "Just-completed row flashes green and settles."
+      },
+      {
+        "name": "tab-bar",
+        "value": "transform 0.3s ease-out (scaleX 0 to 1)",
+        "purpose": "Active tab underline."
+      },
+      {
+        "name": "notice-in",
+        "value": "0.35s ease-out, translateY(-4px) to 0",
+        "purpose": "Error notice and level-up banner entrance."
+      },
+      {
+        "name": "dialog-in",
+        "value": "0.35s ease-out, translateY(10px) scale(0.98) to rest",
+        "purpose": "Modal dialog entrance."
+      },
+      {
+        "name": "toast-in",
+        "value": "0.35s ease-out, translateY(12px) to 0",
+        "purpose": "Toast entrance."
+      },
+      {
+        "name": "toast-timer",
+        "value": "5s linear, scaleX 1 to 0",
+        "purpose": "Undo toast time bar. Error and info toasts dismiss at 6s, the level toast at 5s."
+      },
+      {
+        "name": "menu-collapse",
+        "value": "grid-template-columns 0.25s ease-out",
+        "purpose": "Side menu between 16.25rem and the 4.25rem icon rail (desktop); choice persisted in localStorage."
+      },
+      {
+        "name": "drawer",
+        "value": "transform 0.3s ease-out, translateX(-100%) to 0; visibility hidden after close",
+        "purpose": "Mobile side-menu drawer; closed it leaves the tab order."
+      },
+      {
+        "name": "reveal",
+        "value": "0.15s ease-out opacity",
+        "purpose": "Rail pencil, row Excluir overlay and chart tooltip on hover/focus."
+      },
+      {
+        "name": "state",
+        "value": "0.2s ease-out",
+        "purpose": "Hover color, border and background changes."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "durations 0.01ms",
+        "purpose": "prefers-reduced-motion collapses all animation and transition; count-up jumps to the target."
+      }
     ],
     "breakpoints": [
-      { "name": "single-column", "value": "59.99rem", "purpose": "At or below: login becomes one 30rem column; app top bar wraps the level pill to a second row, rail becomes edge-bleeding chips, FAB replaces + Nova tarefa, page title 1.5rem, dialog fields stack." },
-      { "name": "narrow", "value": "47.99rem", "purpose": "At or below: Quadro columns scroll-snap horizontally at 86%; the row date moves to the category line in Quadro." },
-      { "name": "touch", "value": "(hover: none)", "purpose": "Row Excluir overlay hidden; deletion lives in the edit dialog." }
+      {
+        "name": "single-column",
+        "value": "59.99rem",
+        "purpose": "At or below: login becomes one 30rem column; the side menu becomes an off-canvas drawer; the top bar shows menu button + logo and wraps the level pill to a second row; FAB replaces + Nova tarefa on every page; Tarefas rail becomes edge-bleeding chips; page title 1.5rem; dialog fields stack."
+      },
+      {
+        "name": "painel-single",
+        "value": "@container (max-width: 58rem)",
+        "purpose": "Painel grid collapses to one column by content width (side menu open, collapsed or drawer), not window width."
+      },
+      {
+        "name": "narrow",
+        "value": "47.99rem",
+        "purpose": "At or below: Quadro columns scroll-snap horizontally at 86%; the row date moves to the category line in Quadro."
+      },
+      {
+        "name": "compact",
+        "value": "30rem",
+        "purpose": "At or below: Painel category bars stack name/count over a full-width bar; timeline time joins the category line."
+      },
+      {
+        "name": "touch",
+        "value": "(hover: none)",
+        "purpose": "Row Excluir overlay hidden; deletion lives in the edit dialog."
+      }
     ]
   },
   "components": [
@@ -139,12 +656,28 @@
       "css": ".ds-notice { display: flex; align-items: flex-start; gap: 0.65rem; margin: 0; padding: 0.8rem 0.9rem; border: 1px solid var(--rule-strong, #454856); border-radius: 10px; background: var(--panel-2, #25262f); color: var(--ink, #f3f4f7); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-size: 0.875rem; line-height: 1.45; } .ds-notice-tag { flex: none; margin-top: 0.1rem; padding: 0.2rem 0.45rem; border-radius: 999px; background: var(--ink, #f3f4f7); color: var(--ground, #121318); font-size: 0.6875rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1.2; }"
     },
     {
+      "name": "Side Menu",
+      "kind": "nav",
+      "refersTo": "side-menu",
+      "description": "Full-height primary navigation in the Top Bar tier: logo + collapse button, Tarefas / Painel / Perfil items with a neutral current page (Panel Two + Rule Strong inset, never violet), user card linking to Perfil at the bottom. Collapses to a 4.25rem icon rail; a drawer below 60rem.",
+      "html": "<aside class=\"ds-menu\"><div class=\"ds-menu-top\"><span class=\"ds-menu-logo\">RoutinXP</span><button class=\"ds-menu-btn\" aria-label=\"Recolher menu\" aria-expanded=\"true\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><rect x=\"1.75\" y=\"2.5\" width=\"12.5\" height=\"11\" rx=\"2\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M6 2.5v11\" stroke=\"currentColor\" stroke-width=\"2\"/></svg></button></div><nav class=\"ds-menu-nav\"><a href=\"#\" class=\"ds-menu-item\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M6 4h8M6 8h8M6 12h8M2.25 4h.01M2.25 8h.01M2.25 12h.01\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg><span>Tarefas</span></a><a href=\"#\" class=\"ds-menu-item\" aria-current=\"page\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M3 13.5V9.5M8 13.5V3.5M13 13.5V7\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg><span>Painel</span></a><a href=\"#\" class=\"ds-menu-item\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"5.25\" r=\"2.75\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M2.75 14c.6-2.8 2.7-4.25 5.25-4.25s4.65 1.45 5.25 4.25\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg><span>Perfil</span></a></nav><a href=\"#\" class=\"ds-menu-user\"><span class=\"ds-menu-av\">AN</span><span class=\"ds-menu-quem\"><span class=\"ds-menu-nome\">Ana Nunes</span><span class=\"ds-menu-nivel\">Nível 4</span></span></a></aside>",
+      "css": ".ds-menu { display: flex; flex-direction: column; gap: 1.25rem; width: 16.25rem; min-height: 26rem; padding: 0.875rem 0.75rem; background: var(--topbar, #0d0e12); border-right: 1px solid var(--rule, #2e3039); color: var(--muted, #a3a7b3); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; } .ds-menu-top { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; min-height: 2.75rem; padding-left: 0.35rem; } .ds-menu-logo { color: var(--ink, #f3f4f7); font-size: 1.5rem; font-weight: 800; font-stretch: 112.5%; letter-spacing: -0.025em; } .ds-menu-btn { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border: 0; border-radius: 10px; background: none; color: var(--muted, #a3a7b3); cursor: pointer; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1), color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-menu-btn:hover { background: var(--panel-2, #25262f); color: var(--ink, #f3f4f7); } .ds-menu-btn svg, .ds-menu-item svg { flex: none; width: 1.125rem; height: 1.125rem; } .ds-menu-nav { display: grid; gap: 2px; } .ds-menu-item { display: flex; align-items: center; gap: 0.75rem; min-height: 2.75rem; padding: 0 0.8rem; border-radius: 8px; font-weight: 600; color: var(--muted, #a3a7b3); text-decoration: none; white-space: nowrap; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1), color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-menu-item:hover { background: var(--panel-2, #25262f); color: var(--ink, #f3f4f7); } .ds-menu-item[aria-current='page'] { background: var(--panel-2, #25262f); box-shadow: inset 0 0 0 1px var(--rule-strong, #454856); color: var(--ink, #f3f4f7); } .ds-menu-user { display: flex; align-items: center; gap: 0.65rem; margin-top: auto; padding: 0.5rem; border-radius: 10px; color: var(--ink, #f3f4f7); text-decoration: none; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-menu-user:hover { background: var(--panel-2, #25262f); } .ds-menu-av { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; border: 2px solid var(--green, #22c55e); background: var(--panel-2, #25262f); font-size: 0.8125rem; font-weight: 700; } .ds-menu-quem { display: grid; min-width: 0; line-height: 1.25; } .ds-menu-nome { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.875rem; font-weight: 700; } .ds-menu-nivel { font-size: 0.75rem; color: var(--muted, #a3a7b3); } .ds-menu a:focus-visible, .ds-menu button:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 2px; }"
+    },
+    {
       "name": "Top Bar Level Pill",
       "kind": "nav",
       "refersTo": "level-pill",
-      "description": "App chrome: wordmark, the level pill (badge, compact XP bar, streak), compact action and avatar button. Skeleton variant while stats load.",
-      "html": "<header class=\"ds-topo\"><span class=\"ds-wordmark\">RoutinXP</span><div class=\"ds-pill\"><span class=\"ds-badge\">Nível 4</span><div class=\"ds-xp\"><div class=\"ds-xp-top\"><span class=\"ds-xp-val\">XP 90 / 250</span><span class=\"ds-xp-left\">faltam 160 XP</span></div><div class=\"ds-xp-track\" role=\"progressbar\" aria-valuemin=\"0\" aria-valuemax=\"250\" aria-valuenow=\"90\"><div class=\"ds-xp-fill\" style=\"--p:0.36\"></div></div></div><div class=\"ds-streak\"><span class=\"ds-streak-n\">6 dias</span><span class=\"ds-streak-l\">Streak</span></div></div><span class=\"ds-avatar\">AN</span></header><div class=\"ds-pill ds-pill--skel\" aria-busy=\"true\"><span class=\"ds-skel\"></span></div>",
-      "css": ".ds-topo { display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 1.5rem; padding: 0.875rem 2rem; background: var(--topbar, #0d0e12); border-bottom: 1px solid var(--rule, #2e3039); color: var(--ink, #f3f4f7); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-variant-numeric: tabular-nums; } .ds-wordmark { font-size: 1.625rem; font-weight: 800; font-stretch: 112.5%; letter-spacing: -0.025em; line-height: 1; } .ds-pill { justify-self: center; display: flex; align-items: center; gap: 1rem; padding: 0.45rem 1rem 0.45rem 0.5rem; background: var(--panel, #1c1d24); border: 1px solid var(--rule, #2e3039); border-radius: 999px; } .ds-pill--skel { width: 20rem; min-height: 3.1rem; padding-inline: 1rem; } .ds-skel { flex: 1; height: 0.5rem; border-radius: 999px; background: var(--panel-2, #25262f); } .ds-badge { display: inline-flex; padding: 0.3rem 0.65rem; border-radius: 999px; background: var(--green, #22c55e); color: var(--on-green, #0a2616); font-size: 0.6875rem; font-weight: 800; font-stretch: 112.5%; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1; white-space: nowrap; } .ds-xp { width: 14rem; display: grid; gap: 0.3rem; } .ds-xp-top { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; font-size: 0.75rem; } .ds-xp-val { font-weight: 800; letter-spacing: 0.02em; } .ds-xp-left { color: var(--muted, #a3a7b3); } .ds-xp-track { height: 0.5rem; border-radius: 999px; background: var(--panel-2, #25262f); overflow: hidden; } .ds-xp-fill { width: 100%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--green, #22c55e) calc(100% - 0.9rem), var(--green-tip, #86efac)); transform: translateX(calc((max(var(--p), 0.04) - 1) * 100%)); transition: transform 0.7s cubic-bezier(0.16,1,0.3,1); } .ds-streak { display: grid; line-height: 1.15; padding-left: 1rem; border-left: 1px solid var(--rule, #2e3039); } .ds-streak-n { font-weight: 800; white-space: nowrap; } .ds-streak-l { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted, #a3a7b3); } .ds-avatar { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; border: 2px solid var(--green, #22c55e); background: var(--panel-2, #25262f); font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-avatar:hover { background: var(--rule, #2e3039); }"
+      "description": "App chrome on desktop: the centered level pill (badge, compact XP bar, streak), compact action and avatar button; the logo lives in the side menu (mobile adds menu button + logo at the left). Skeleton variant while stats load.",
+      "html": "<header class=\"ds-topo\"><span></span><div class=\"ds-pill\"><span class=\"ds-badge\">Nível 4</span><div class=\"ds-xp\"><div class=\"ds-xp-top\"><span class=\"ds-xp-val\">XP 90 / 250</span><span class=\"ds-xp-left\">faltam 160 XP</span></div><div class=\"ds-xp-track\" role=\"progressbar\" aria-valuemin=\"0\" aria-valuemax=\"250\" aria-valuenow=\"90\"><div class=\"ds-xp-fill\" style=\"--p:0.36\"></div></div></div><div class=\"ds-streak\"><span class=\"ds-streak-n\">6 dias</span><span class=\"ds-streak-l\">Streak</span></div></div><span class=\"ds-avatar\">AN</span></header><div class=\"ds-pill ds-pill--skel\" aria-busy=\"true\"><span class=\"ds-skel\"></span></div>",
+      "css": ".ds-topo { display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 1.5rem; padding: 0.875rem 2rem; background: var(--topbar, #0d0e12); border-bottom: 1px solid var(--rule, #2e3039); color: var(--ink, #f3f4f7); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-variant-numeric: tabular-nums; } .ds-pill { justify-self: center; display: flex; align-items: center; gap: 1rem; padding: 0.45rem 1rem 0.45rem 0.5rem; background: var(--panel, #1c1d24); border: 1px solid var(--rule, #2e3039); border-radius: 999px; } .ds-pill--skel { width: 20rem; min-height: 3.1rem; padding-inline: 1rem; } .ds-skel { flex: 1; height: 0.5rem; border-radius: 999px; background: var(--panel-2, #25262f); } .ds-badge { display: inline-flex; padding: 0.3rem 0.65rem; border-radius: 999px; background: var(--green, #22c55e); color: var(--on-green, #0a2616); font-size: 0.6875rem; font-weight: 800; font-stretch: 112.5%; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1; white-space: nowrap; } .ds-xp { width: 14rem; display: grid; gap: 0.3rem; } .ds-xp-top { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; font-size: 0.75rem; } .ds-xp-val { font-weight: 800; letter-spacing: 0.02em; } .ds-xp-left { color: var(--muted, #a3a7b3); } .ds-xp-track { height: 0.5rem; border-radius: 999px; background: var(--panel-2, #25262f); overflow: hidden; } .ds-xp-fill { width: 100%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--green, #22c55e) calc(100% - 0.9rem), var(--green-tip, #86efac)); transform: translateX(calc((max(var(--p), 0.04) - 1) * 100%)); transition: transform 0.7s cubic-bezier(0.16,1,0.3,1); } .ds-streak { display: grid; line-height: 1.15; padding-left: 1rem; border-left: 1px solid var(--rule, #2e3039); } .ds-streak-n { font-weight: 800; white-space: nowrap; } .ds-streak-l { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted, #a3a7b3); } .ds-avatar { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; border: 2px solid var(--green, #22c55e); background: var(--panel-2, #25262f); font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-avatar:hover { background: var(--rule, #2e3039); }"
+    },
+    {
+      "name": "Streak Reminder",
+      "kind": "custom",
+      "refersTo": "streak-reminder",
+      "description": "Quiet Panel strip under the top bar when the streak is at risk: Muted clock, one plain sentence, \"Ver tarefas\" link off Tarefas, dismiss until tomorrow. No tag, no alarm color; distinct from the error notice.",
+      "html": "<div class=\"ds-lembrete\" role=\"status\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"6\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M8 4.75V8l2.25 1.5\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg><p>Você ainda não concluiu nenhuma tarefa hoje. Conclua uma para manter sua sequência de 6 dias.</p><a href=\"#\" class=\"ds-lembrete-link\">Ver tarefas</a><button class=\"ds-lembrete-x\" aria-label=\"Dispensar lembrete\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M4 4l8 8M12 4l-8 8\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg></button></div>",
+      "css": ".ds-lembrete { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem 0.7rem 1rem; background: var(--panel, #1c1d24); border: 1px solid var(--rule, #2e3039); border-radius: 10px; color: var(--ink, #f3f4f7); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-size: 0.875rem; } .ds-lembrete > svg { flex: none; width: 1.125rem; height: 1.125rem; color: var(--muted, #a3a7b3); } .ds-lembrete p { flex: 1; margin: 0; } .ds-lembrete-link { padding: 0.25rem 0; font-weight: 600; color: var(--purple-soft, #c4b5fd); text-decoration: underline; text-decoration-color: var(--purple-link-line, rgb(196 181 253 / 0.4)); text-underline-offset: 4px; white-space: nowrap; transition: text-decoration-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-lembrete-link:hover { text-decoration-color: var(--purple-soft, #c4b5fd); } .ds-lembrete-x { display: grid; place-items: center; flex: none; width: 2.25rem; height: 2.25rem; border: 0; border-radius: 8px; background: none; color: var(--muted, #a3a7b3); cursor: pointer; } .ds-lembrete-x:hover { background: var(--panel-2, #25262f); color: var(--ink, #f3f4f7); } .ds-lembrete-x svg { width: 0.875rem; height: 0.875rem; } .ds-lembrete a:focus-visible, .ds-lembrete button:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 2px; }"
     },
     {
       "name": "Category Rail",
@@ -179,6 +712,14 @@
       "css": ".ds-toast { position: relative; display: inline-flex; align-items: center; gap: 0.85rem; padding: 0.8rem 1.1rem; overflow: hidden; background: var(--panel-2, #25262f); border: 1px solid var(--rule-strong, #454856); border-radius: 10px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 16px 40px -12px rgb(0 0 0 / 0.55); color: var(--ink, #f3f4f7); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-size: 0.875rem; font-weight: 600; } .ds-toast-undo { padding: 0.25rem 0; border: 0; background: none; font: inherit; color: var(--purple-soft, #c4b5fd); text-decoration: underline; text-decoration-color: var(--purple-link-line, rgb(196 181 253 / 0.4)); text-underline-offset: 4px; cursor: pointer; } .ds-toast-undo:hover { text-decoration-color: var(--purple-soft, #c4b5fd); } .ds-toast-undo:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 2px; } .ds-toast--nivel { border-color: var(--green-line, rgb(34 197 94 / 0.35)); } .ds-toast-badge { display: inline-flex; padding: 0.3rem 0.65rem; border-radius: 999px; background: var(--green, #22c55e); color: var(--on-green, #0a2616); font-size: 0.6875rem; font-weight: 800; font-stretch: 112.5%; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1; white-space: nowrap; } .ds-toast-t { position: absolute; left: 0; bottom: 0; width: 100%; height: 2px; background: var(--rule-strong, #454856); transform-origin: left; animation: ds-toast-t 5s linear forwards; } @keyframes ds-toast-t { to { transform: scaleX(0); } }"
     },
     {
+      "name": "XP Bar Chart",
+      "kind": "card",
+      "refersTo": "chart-bar",
+      "description": "Painel XP per day: single-hue green bars with 4px rounded data ends, dashed Rule Strong daily-cap line as the scale reference, one direct label on the tallest bar, hover tooltip (Panel Two, Rule Strong, lift), visually hidden table for screen readers.",
+      "html": "<figure class=\"ds-chart\"><div class=\"ds-bar-area\"><div class=\"ds-bar-cap\" style=\"bottom:100%\"><span>teto diário · 150 XP</span></div><div class=\"ds-bar-col\"><span class=\"ds-bar\" style=\"height:13.333333333333334%\"></span></div><div class=\"ds-bar-col\"><span class=\"ds-bar\" style=\"height:23.333333333333332%\"></span></div><div class=\"ds-bar-col\"><span class=\"ds-bar\" style=\"height:0%\"></span></div><div class=\"ds-bar-col ds-bar-col--hover\"><span class=\"ds-bar-val\" style=\"bottom:calc(33.33333333333333% + 0.25rem)\">50 XP</span><span class=\"ds-bar\" style=\"height:33.33333333333333%\"></span><span class=\"ds-bar-tip\">qui 10 set · 50 XP · 3 tarefas</span></div><div class=\"ds-bar-col\"><span class=\"ds-bar\" style=\"height:10%\"></span></div><div class=\"ds-bar-col\"><span class=\"ds-bar\" style=\"height:6.666666666666667%\"></span></div><div class=\"ds-bar-col\"><span class=\"ds-bar\" style=\"height:16.666666666666664%\"></span></div></div><div class=\"ds-bar-axis\"><span>seg</span><span>ter</span><span>qua</span><span>qui</span><span>sex</span><span>sáb</span><span>dom</span></div></figure>",
+      "css": ".ds-chart { margin: 0; padding: 1.5rem; padding-top: 2.5rem; background: var(--panel, #1c1d24); border: 1px solid var(--rule, #2e3039); border-radius: 16px; color: var(--ink, #f3f4f7); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-variant-numeric: tabular-nums; } .ds-bar-area { position: relative; display: flex; align-items: flex-end; gap: 0.75rem; height: 12rem; border-bottom: 1px solid var(--rule, #2e3039); } .ds-bar-cap { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--rule-strong, #454856); pointer-events: none; } .ds-bar-cap span { position: absolute; right: 0; bottom: 0.25rem; font-size: 0.75rem; color: var(--muted, #a3a7b3); } .ds-bar-col { position: relative; flex: 1; height: 100%; display: flex; align-items: flex-end; justify-content: center; border-radius: 8px; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-bar-col:hover, .ds-bar-col--hover { background: var(--panel-2, #25262f); } .ds-bar { width: min(2.75rem, 72%); background: var(--green, #22c55e); border-radius: 4px 4px 0 0; } .ds-bar-val { position: absolute; font-size: 0.75rem; font-weight: 700; } .ds-bar-tip { position: absolute; top: 0; left: 50%; z-index: 2; padding: 0.35rem 0.55rem; background: var(--panel-2, #25262f); border: 1px solid var(--rule-strong, #454856); border-radius: 8px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 16px 40px -12px rgb(0 0 0 / 0.55); font-size: 0.75rem; font-weight: 600; white-space: nowrap; transform: translate(-50%, -110%); } .ds-bar-axis { display: flex; gap: 0.75rem; margin-top: 0.5rem; } .ds-bar-axis span { flex: 1; font-size: 0.75rem; color: var(--muted, #a3a7b3); text-align: center; }"
+    },
+    {
       "name": "Level Meter",
       "kind": "custom",
       "refersTo": "level-badge",
@@ -189,51 +730,87 @@
   ],
   "narrative": {
     "northStar": "The Level Always in View",
-    "overview": "RoutinXP follows the gamified learning-platform convention (DIO as the reference, Duolingo and Habitica as the craft bar) rather than an invented world. The system exists to make one moment land: a task is finished, \"+n XP\" flies to the counter, the number counts up, the bar fills, and on a level change the badge pulses. Everything else is quiet dark chrome that lets that moment be the brightest thing on screen.\n\nSurfaces are a near-black ground with slightly lifted panels, separated by 1px rules. Density is operational, not editorial: rows, fields and meters sit close, labels are small uppercase, and figures are tabular so numbers never jitter while counting. Type is one family, Archivo, pushed to extra-bold and slightly expanded for the headline, page title, wordmark and badges; everything else is plain weight at normal width. Inside the app the level meter lives in the top bar on every screen, which is where the North Star gets its name.\n\nTwo accents carry all meaning, and both are taken from the RoutinXP logo (Action Violet and Level Green are the logo's own violet and green). Green is progress (XP, level, fills, completed checks, the completion drop target). Purple is action (primary buttons, the FAB, the active tab bar, focus, link text). Selection is neutral. Every color is a custom property on `:root` so a later theme can swap the whole set by overriding variables on a `[data-tema]` scope; the system must stay expressible that way.",
+    "overview": "RoutinXP follows the gamified learning-platform convention (DIO as the reference, Duolingo and Habitica as the craft bar) rather than an invented world. The system exists to make one moment land: a task is finished, \"+n XP\" flies to the counter, the number counts up, the bar fills, and on a level change the badge pulses. Everything else is quiet dark chrome that lets that moment be the brightest thing on screen.\n\nSurfaces are a near-black ground with slightly lifted panels, separated by 1px rules. Density is operational, not editorial: rows, fields and meters sit close, labels are small uppercase, and figures are tabular so numbers never jitter while counting. Type is one family, Archivo, pushed to extra-bold and slightly expanded for the headline, page title, wordmark and badges; everything else is plain weight at normal width. Inside the app the level meter lives in the top bar on every screen, which is where the North Star gets its name.\n\nTwo accents carry all meaning, and both are taken from the RoutinXP logo (Action Violet and Level Green are the logo's own violet and green). Green is progress (XP, level, fills, completed checks, the completion drop target, the Painel's data). Purple is action (primary buttons, the FAB, the active tab bar, focus, link text). Selection is neutral. Every color is a custom property on `:root` so a later theme can swap the whole set by overriding variables on a `[data-tema]` scope; the system must stay expressible that way.",
     "keyCharacteristics": [
-      "Dark ground, lifted panels, 1px rules; no nested cards. App chrome sits one step darker than the ground.",
+      "Dark ground, lifted panels, 1px rules; no nested cards. App chrome (side menu and top bar) sits one step darker than the ground.",
       "Exactly two accents with fixed jobs: green = XP, level and completion; purple = actions. Selection is neutral.",
       "Archivo variable, extra-bold and 110-112.5% width for display, page title, wordmark and badges.",
       "Tabular figures everywhere; XP numbers animate by counting, never by swapping.",
       "Category color is data, shown as an 8px dot beside the category name (the color picker swatch is the only fill).",
+      "Charts are single-hue green magnitude, directly labeled once, with a table for screen readers.",
       "Motion is one ease-out curve; reduced-motion collapses it to near zero."
     ],
     "rules": [
-      { "name": "The Two Jobs Rule", "body": "Green means progress and purple means action; neither ever stands in for the other. No green buttons, no purple XP, no third accent. Purple never marks selection: a selected rail item, chip, segment or swatch is shown with neutrals (Panel Two, Rule Strong, Ink). The single violet indicator is the active underline-tab bar, which marks the current mode. Green is also never spent on something that earned nothing: a \"+0 XP\" is Muted, and no flight launches for it.", "section": "colors" },
-      { "name": "The Neutral Error Rule", "body": "Errors are not red. An error is a notice on `panel-2` with a small pill tag in inverted neutrals (ink fill, ground text) reading \"ERRO\", followed by a plain-language sentence. This keeps the palette to two accents and keeps failure unalarming. The same holds for due dates: today and overdue get Ink and weight, never red. And it holds for reduced rewards: when a completion earns less than usual (task created under 5 minutes ago, the daily XP cap reached or partly reached), an info toast names the reason in a plain sentence, in neutrals, with no tag and no red.", "section": "colors" },
-      { "name": "The Dot-Only Category Rule", "body": "User-chosen category colors are data. They appear as an 8px round dot beside the category name (rail, chips, row category line, Lista group headings), never as fills, borders, text color, or backgrounds, and never without the name. The one exception is the color picker, where the swatch itself is the choice and fills a 36px circle.", "section": "colors" },
-      { "name": "The Swappable Theme Rule", "body": "Components read colors only through the `:root` custom properties, effects included (glows, washes, halos, backdrop). A new theme is a new set of variable values, not new component CSS. The only color literals outside `:root` are the category swatch values, which are user data.", "section": "colors" },
-      { "name": "The Tabular Rule", "body": "`font-variant-numeric: tabular-nums` is set at the root and stays on; counting XP must never shift its neighbors.", "section": "typography" },
-      { "name": "The Width-for-Rank Rule", "body": "Only display, page title, wordmark and badges use the expanded width axis. Body, rows, rail, dialogs and forms stay at normal width.", "section": "typography" },
-      { "name": "The One Lift Rule", "body": "A panel has exactly one elevation. Content inside a panel is never another shadowed card; it is divided by rules. The level pill inside the top bar is a bordered Panel fill with no shadow.", "section": "elevation" },
-      { "name": "The Earned Record Rule", "body": "In the app's Concluídas, an earned \"+n XP\" stays full-strength Level Green: it is the record of what the task earned. A \"+0 XP\" is Muted because it records that nothing was earned, not because anything was collected. The login demo dims its completed \"+n XP\" to 40% only because there the XP has visibly flown to the counter, and the dimmed label reads as \"already collected\". Do not carry the dimming into real lists.", "section": "components" }
+      {
+        "name": "The Two Jobs Rule",
+        "body": "Green means progress and purple means action; neither ever stands in for the other. No green buttons, no purple XP, no third accent. Purple never marks selection: a current side-menu page, a selected rail item, chip, segment or swatch is shown with neutrals (Panel Two, Rule Strong, Ink). The single violet indicator is the active underline-tab bar, which marks the current mode. Green is also never spent on something that earned nothing: a \"+0 XP\" is Muted, and no flight launches for it.",
+        "section": "colors"
+      },
+      {
+        "name": "The Neutral Error Rule",
+        "body": "Errors are not red. An error is a notice on `panel-2` with a small pill tag in inverted neutrals (ink fill, ground text) reading \"ERRO\", followed by a plain-language sentence. This keeps the palette to two accents and keeps failure unalarming. The same holds for due dates: today and overdue get Ink and weight, never red. It holds for reduced rewards: when a completion earns less than usual (task created under 5 minutes ago, the daily XP cap reached or partly reached), an info toast names the reason in a plain sentence, in neutrals, with no tag and no red. And it holds for a streak at risk: the reminder is a Panel strip with a Muted clock, never an alarm.",
+        "section": "colors"
+      },
+      {
+        "name": "The Dot-Only Category Rule",
+        "body": "User-chosen category colors are data. They appear as an 8px round dot beside the category name (rail, chips, row category line, Lista group headings, the Painel's category bars and timeline items), never as fills, borders, text color, bars or backgrounds, and never without the name. The one exception is the color picker, where the swatch itself is the choice and fills a 36px circle.",
+        "section": "colors"
+      },
+      {
+        "name": "The Swappable Theme Rule",
+        "body": "Components read colors only through the `:root` custom properties, effects included (glows, washes, halos, backdrop). A new theme is a new set of variable values, not new component CSS. The only color literals outside `:root` are the category swatch values, which are user data.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "`font-variant-numeric: tabular-nums` is set at the root and stays on; counting XP must never shift its neighbors.",
+        "section": "typography"
+      },
+      {
+        "name": "The Width-for-Rank Rule",
+        "body": "Only display, page title, wordmark and badges use the expanded width axis. Body, rows, rail, side menu, charts, dialogs and forms stay at normal width.",
+        "section": "typography"
+      },
+      {
+        "name": "The One Lift Rule",
+        "body": "A panel has exactly one elevation. Content inside a panel is never another shadowed card; it is divided by rules. The level pill inside the top bar is a bordered Panel fill with no shadow, and the streak reminder is a bordered Panel strip with no shadow. The chart tooltip is the one floating element inside a card; it lifts because it hovers over the data, not because it is a card.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Earned Record Rule",
+        "body": "In the app's Concluídas and the Painel timeline, an earned \"+n XP\" stays full-strength Level Green: it is the record of what the task earned. A \"+0 XP\" is Muted because it records that nothing was earned, not because anything was collected. The login demo dims its completed \"+n XP\" to 40% only because there the XP has visibly flown to the counter, and the dimmed label reads as \"already collected\". Do not carry the dimming into real lists.",
+        "section": "components"
+      }
     ],
     "dos": [
       "Do read every color, including glows, washes, halos and the backdrop, through the `:root` custom properties so a theme can replace them in one place.",
       "Do keep green for XP, level and completion, and purple for actions and focus; use Soft Violet when violet must be read as text.",
-      "Do mark selection with neutrals: Panel Two fill plus a Rule Strong outline or border.",
+      "Do mark selection and the current page with neutrals: Panel Two fill plus a Rule Strong outline or border.",
       "Do put Deep Moss text on green fills and white text on violet fills.",
       "Do separate content inside a panel with 1px Rules; list items are rows, not cards.",
       "Do show category color as an 8px dot next to the category name; only the color picker fills a shape with it.",
-      "Do use underline tabs to switch views and the segmented pill to filter rows within a view.",
+      "Do use underline tabs to switch views and the segmented pill to filter rows or ranges within a view.",
       "Do show due dates relatively (\"hoje\", \"amanhã\", \"12 set\"), with today and overdue in Ink and weight.",
-      "Do keep an earned \"+n XP\" full-strength green in real lists; it is the earned record. Show \"+0 XP\" and the pending \"…\" in Muted.",
+      "Do keep an earned \"+n XP\" full-strength green in real lists and the timeline; it is the earned record. Show \"+0 XP\" and the pending \"…\" in Muted.",
       "Do name the reason in a neutral info toast when a completion earns less than usual.",
       "Do apply XP only when the flight lands, with a fallback timer so a stalled animation never withholds it.",
-      "Do use the horizontal logo as the wordmark (2.75rem login, 2.125rem top bar) and the icon as favicon.",
-      "Do report errors with the neutral notice and its ERRO pill tag.",
+      "Do draw charts in single-hue green with 4px rounded data ends, a neutral scale reference, one direct label on the extreme value, a hover tooltip, and a visually hidden table with the same data.",
+      "Do size responsive grids that sit beside the side menu by container query, not by window width.",
+      "Do use the horizontal logo as the wordmark (2.75rem login, 2rem side menu, 1.875rem mobile top bar) and the icon as favicon and collapsed-menu mark.",
+      "Do report errors with the neutral notice and its ERRO pill tag; keep reminders as a tagless Panel strip.",
       "Do animate XP by count-up plus a `translateX` fill on the shared ease-out `cubic-bezier(0.16, 1, 0.3, 1)`, and let reduced-motion collapse it.",
-      "Do keep primary buttons and inputs at least 48px tall and completion targets at least 44px.",
+      "Do keep primary buttons and inputs at least 48px tall, completion targets and navigation items at least 44px, and icon buttons 40px.",
       "Do draw new icons on the 16px grid with a 2px round-capped stroke in `currentColor`."
     ],
     "donts": [
-      "Don't add a third accent, or use red for errors, overdue dates or deletion.",
-      "Don't use purple, a colored side stripe, or the category color to mark a selected item.",
-      "Don't fill, border or tint surfaces with category colors.",
+      "Don't add a third accent, or use red for errors, overdue dates, deletion or a streak at risk.",
+      "Don't use purple, a colored side stripe, or the category color to mark a selected item or the current page.",
+      "Don't fill, border or tint surfaces or chart bars with category colors.",
       "Don't nest a shadowed card inside a panel.",
       "Don't use hard or offset shadows; the only shadows are the soft lift, the violet glows, the focus halo, the selected inset, the swatch ring and the transient level-up pulse.",
       "Don't add mascots, confetti, or streak-loss warnings in alarm colors; the reward is the XP flight, the fill and the badge pulse.",
       "Don't fly or color green an XP gain of zero, or show a reduced reward in red.",
+      "Don't label every bar, add gridlines, or use more than one hue for magnitude.",
       "Don't set body, rows or forms in the expanded width; that axis is for display, page title, wordmark and badges.",
       "Don't hardcode hex or rgb literals in component CSS; add a token instead.",
       "Don't show placeholder numbers while stats load; use the neutral skeleton."
