@@ -5,7 +5,7 @@ Este arquivo é o ponto de handoff entre ferramentas (Code, Antigravity, ou qual
 ## Estado atual
 (a ferramenta que estiver trabalhando atualiza esta seção a cada sessão: o que existe, o que está funcionando, o que está pela metade)
 
-Atualizado em 2026-09-10 (Claude Code): passo 11 no ar em produção; falta o teste do usuário.
+Atualizado em 2026-09-10 (Claude Code): passo 11 concluído e validado pelo usuário em produção. Próximo: passo 12 (PWA).
 
 - Repositório git: **sim**, branch `main`, remoto **privado** https://github.com/Phnl121/RoutinXP (conta Phnl121). Identidade local `Pedro <pedrocybernet01@gmail.com>`.
 - Deploy: **Vercel**, projeto `phnl121/routinxp` (renomeado de `routin`), produção em **https://routinxp.vercel.app**.
@@ -46,7 +46,7 @@ Atualizado em 2026-09-10 (Claude Code): passo 11 no ar em produção; falta o te
   - O navegador não altera mais `status`, `completed_at` nem `xp_value` (privilégio por coluna).
   - Tarefas concluídas antes do passo 10 ficaram com XP 0.
   - No app: o "+XP" voa até a barra superior, o nível sobe em dois tempos com aviso, e há um aviso com o motivo quando a tarefa rende 0 XP ou o teto é atingido.
-- Painel, perfil e menu lateral (passo 11): **no ar em produção, aguardando o teste do usuário.** A revisão final do Impeccable deu "fix". As 8 correções foram aplicadas (celular, acessibilidade do gráfico e da gaveta, botão flutuante em todas as páginas).
+- Painel, perfil e menu lateral (passo 11): **pronto e validado pelo usuário em produção.** A revisão final do Impeccable deu "fix". As 8 correções foram aplicadas (celular, acessibilidade do gráfico e da gaveta, botão flutuante em todas as páginas).
   - Menu lateral fixo e retrátil (estilo app do Claude) com Tarefas, Painel e Perfil. O estado recolhido fica salvo no navegador. No celular vira gaveta.
   - Painel (`/painel`) na estrutura "Linha do tempo do dia", escolhida pelo usuário:
     - nível, barra de XP e XP total;
@@ -77,11 +77,13 @@ Atualizado em 2026-09-10 (Claude Code): passo 11 no ar em produção; falta o te
 - As animações do check divergem: no app 0,45 s e escala 1,2; na demo do login 0,4 s e escala 1,18.
 - O brief `.impeccable/surfaces/src-pages-tarefas-jsx.md` ainda cita uma barra roxa no item selecionado do trilho; o código usa um estado neutro, que é o correto.
 
+**Pendências apontadas no DESIGN.md do passo 11 (bons ajustes para o Antigravity ou para o usuário):**
+- "Perfil salvo." aparece em verde; é o único verde que não marca XP, nível ou conclusão.
+- Com a gaveta do celular aberta, o Tab consegue sair dela (o foco entra e volta, mas não fica preso).
+- O build avisa que o pacote JS passa de 500 kB; dá para dividir por página (lazy loading).
+
 **Ações pendentes do usuário:**
-- **Supabase** → Authentication → URL Configuration:
-  - Site URL: `https://routinxp.vercel.app`.
-  - Adicionar `https://routinxp.vercel.app/**` às Redirect URLs, mantendo as antigas durante a transição.
-- **Cloudflare** → Turnstile → widget Routin: adicionar o hostname `routinxp.vercel.app`. Sem isso o CAPTCHA falha no domínio novo e o login quebra lá.
+- (Feito) URLs do Supabase Auth e hostname do Turnstile trocados para `routinxp.vercel.app`.
 - **Pasta local:** renomear `App - Rotina` para `RoutinXP` com o Claude fechado. Depois reabrir a pasta nova no Claude Code; o git e o link da Supabase CLI continuam funcionando, porque ficam dentro da pasta.
 - **Opcional:**
   - renomear o projeto no painel do Supabase e o widget no Turnstile;
@@ -102,8 +104,9 @@ Feito:
 Travou:
 - As capturas de celular por iframe no Edge headless ficavam presas em "Carregando". A solução foi um script CDP com viewport real de 390px, que espera os dados antes de capturar.
 
+Depois: o usuário testou e validou o passo 11 em produção.
+
 Próximo:
-- Teste do usuário: criar conta com os campos novos, Perfil (inclusive completar o perfil numa conta antiga), menu, lembrete e Painel.
 - Passo 12 (PWA).
 
 ### 2026-09-10 (noite), Claude Code (Opus 5): segurança, deploy, migrations, CAPTCHA e marca
