@@ -5,7 +5,7 @@ Este arquivo é o ponto de handoff entre ferramentas (Code, Antigravity, ou qual
 ## Estado atual
 (a ferramenta que estiver trabalhando atualiza esta seção a cada sessão: o que existe, o que está funcionando, o que está pela metade)
 
-Atualizado em 2026-09-10 (Claude Code): passo 11 concluído e validado pelo usuário em produção. Próximo: passo 12 (PWA).
+Atualizado em 2026-09-10 (Claude Code): passo 12 (PWA) construído; com ele, todos os passos do prompt inicial estão feitos.
 
 - Repositório git: **sim**, branch `main`, remoto **privado** https://github.com/Phnl121/RoutinXP (conta Phnl121). Identidade local `Pedro <pedrocybernet01@gmail.com>`.
 - Deploy: **Vercel**, projeto `phnl121/routinxp` (renomeado de `routin`), produção em **https://routinxp.vercel.app**.
@@ -59,7 +59,24 @@ Atualizado em 2026-09-10 (Claude Code): passo 11 concluído e validado pelo usu�
   - Lembrete de streak: aparece quando há streak e nenhuma conclusão hoje. Pode ser dispensado, e volta no dia seguinte.
   - A migration `20260910230000_perfis` (tabela `profiles` com RLS e validação de idade) **foi aplicada em produção**. Acesso anônimo à tabela testado e recusado.
   - Contas antigas não têm perfil. O app mostra "Complete seu perfil" e a página Perfil cria o perfil ao salvar.
-- PWA (passo 12): não iniciado.
+- PWA (passo 12): **construído.**
+  - `public/manifest.webmanifest` e ícones em `public/marca/`:
+    - 192 e 512 comuns;
+    - 512 "maskable", sem a moldura, para o Android recortar;
+    - 180 para o iPhone (`apple-touch`).
+  - Service worker:
+    - O modelo fica em `pwa/sw.js`. O build gera `dist/sw.js` com um plugin no `vite.config.js`, que injeta a lista de arquivos e uma versão calculada do conteúdo.
+    - Guarda a casca do app, então ele abre sem internet. A navegação vai primeiro à rede e usa o `index.html` guardado quando está offline.
+    - Supabase e Turnstile nunca passam pelo cache.
+    - Cada deploy vira uma versão nova, que assume sozinha.
+    - Só é registrado em produção (`src/main.jsx`). O `vercel.json` manda `no-cache` no `/sw.js`.
+    - Testado num build local de produção: ativa, guarda 13 arquivos e abre offline.
+  - Instalação (`src/lib/instalacao.js`):
+    - Android, Chrome e Edge usam o botão do navegador.
+    - iPhone mostra o passo a passo do Safari (`DialogoInstalarIos`).
+    - O convite aparece numa faixa no celular (`ConviteInstalar`), que some para sempre se dispensada e espera o lembrete de streak sair. Também há o item "Instalar app" no menu lateral.
+  - Sem internet: aviso neutro no topo (`useConexao`). Quando a internet volta, os dados são buscados de novo.
+  - Tarefas não funcionam offline; isso exigiria sincronização, que está fora da v1.
 - **Configuração de segurança e deploy** (roteiro em `seguranca-e-criacao-repositorio.txt`):
   - Etapas A a D feitas: histórico do git sem segredos, RLS confirmado no painel e por ataque anônimo à API, repositório privado criado, Vercel ligada ao projeto.
   - Etapa E: a Site URL do Supabase foi corrigida pelo usuário para routin-six. Falta:
@@ -91,6 +108,19 @@ Atualizado em 2026-09-10 (Claude Code): passo 11 concluído e validado pelo usu�
 
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
+
+### 2026-09-10 (madrugada), Claude Code (Opus 5): passo 12 (PWA)
+Feito:
+- Manifest, ícones, service worker gerado no build, convite para instalar (Android/computador e iPhone) e aviso sem conexão.
+- Capturas em `.impeccable/review/passo12/`.
+- Service worker testado offline num build local de produção.
+
+Travou:
+- Nada de bloqueio. Com o Edge headless e o user agent de iPhone, o primeiro clique no convite às vezes não abria o diálogo; no navegador do app abriu normalmente.
+
+Próximo:
+- Revisão final do Impeccable, DESIGN.md e push.
+- Teste do usuário no celular: instalar (Android pelo convite, iPhone pelo passo a passo), abrir pelo ícone, abrir sem internet.
 
 ### 2026-09-10 (fim da noite), Claude Code (Opus 5): passo 11
 Feito:
