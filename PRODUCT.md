@@ -52,6 +52,16 @@ One list for every area of life, with a reward loop that is deliberately simple:
 
 6. Board view (Kanban, Trello-style), added by the user on 2026-09-10 beyond the original scope. It lives alongside the category-grouped list, with a Lista / Quadro toggle that remembers the last choice. Columns are status: **Pendentes** and **Concluídas**, with category shown on each card as its name plus color. Dragging a card into Concluídas completes it and triggers the same XP/streak rule as the complete button. Open decision: moving a card back to Pendentes (un-completing, which would have to reverse XP) is **not** allowed in v1 unless the user decides otherwise.
 
+7. **Sidebar navigation** (user, 2026-09-10, step 11): a fixed, collapsible menu that works like the Claude desktop app sidebar. Expanded it shows labels; collapsed it becomes an icon rail. Pages: Tarefas, Painel (dashboard), Perfil. On phones it is a drawer.
+8. **Painel / dashboard with charts** (user, 2026-09-10, step 11). This loosens the "no complex historical charts" line: simple charts over the user's own data are in.
+   - Contents: level and XP bar, total XP, current and record streak, tasks completed, XP per day, completions per category (with the most completed one named), and similar.
+   - No data from other users.
+9. **Profile** (user, 2026-09-10, step 11):
+   - Sign-up asks first name, last name and date of birth, stored in a `profiles` table.
+   - The name appears in the profile and the sidebar.
+   - Accounts created before this complete their profile on the Perfil page.
+10. **Streak reminder** (user, 2026-09-10, step 11): when the streak is above zero and nothing was completed today (Brasília time), a neutral on-screen reminder invites the user to complete a task. No alarm colors, no guilt.
+
 **Auth:** Supabase email confirmation stays on (decided 2026-09-10). Sign-up ends in a "check your email" state, not a logged-in session. The free plan rate-limits confirmation emails. Includes "esqueci minha senha": reset link by email plus a screen to set the new password (decided 2026-09-10).
 
 **Hero number:** total XP is the number that makes people come back (decided 2026-09-10). Streak and record streak support it; they don't compete with it.

@@ -239,6 +239,14 @@ components:
     padding: "3px 12px 3px 0"
   task-row-hover:
     backgroundColor: "{colors.panel-2}"
+  task-row-xp:
+    textColor: "{colors.green}"
+    typography: "{typography.xp-figure}"
+  task-row-xp-zero:
+    textColor: "{colors.muted}"
+  xp-flight:
+    textColor: "{colors.green}"
+    typography: "{typography.xp-figure}"
   task-delete-overlay:
     backgroundColor: "{colors.panel-2}"
     textColor: "{colors.muted}"
@@ -266,6 +274,11 @@ components:
     textColor: "{colors.ink}"
     rounded: "{rounded.sm}"
     padding: "13px 18px"
+  toast-level:
+    backgroundColor: "{colors.panel-2}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sm}"
+    padding: "13px 18px"
   notice:
     backgroundColor: "{colors.panel-2}"
     textColor: "{colors.ink}"
@@ -286,6 +299,10 @@ components:
     textColor: "{colors.ink}"
     rounded: "50%"
     size: "40px"
+  logo-login:
+    height: "2.75rem"
+  logo-topbar:
+    height: "2.125rem"
 ---
 
 # Design System: RoutinXP
@@ -298,7 +315,7 @@ RoutinXP follows the gamified learning-platform convention (DIO as the reference
 
 Surfaces are a near-black ground with slightly lifted panels, separated by 1px rules. Density is operational, not editorial: rows, fields and meters sit close, labels are small uppercase, and figures are tabular so numbers never jitter while counting. Type is one family, Archivo, pushed to extra-bold and slightly expanded for the headline, page title, wordmark and badges; everything else is plain weight at normal width. Inside the app the level meter lives in the top bar on every screen, which is where the North Star gets its name.
 
-Two accents carry all meaning. Green is progress (XP, level, fills, completed checks, the completion drop target). Purple is action (primary buttons, the FAB, the active tab bar, focus, link text). Selection is neutral. Every color is a custom property on `:root` so a later theme can swap the whole set by overriding variables on a `[data-tema]` scope; the system must stay expressible that way.
+Two accents carry all meaning, and both are taken from the RoutinXP logo (Action Violet and Level Green are the logo's own violet and green). Green is progress (XP, level, fills, completed checks, the completion drop target). Purple is action (primary buttons, the FAB, the active tab bar, focus, link text). Selection is neutral. Every color is a custom property on `:root` so a later theme can swap the whole set by overriding variables on a `[data-tema]` scope; the system must stay expressible that way.
 
 **Key Characteristics:**
 - Dark ground, lifted panels, 1px rules; no nested cards. App chrome sits one step darker than the ground.
@@ -310,12 +327,12 @@ Two accents carry all meaning. Green is progress (XP, level, fills, completed ch
 
 ## Colors
 
-A cool, near-black neutral stack with two saturated accents whose roles never overlap. Translucent effect tokens derive from the accents so glows, washes and halos stay themeable.
+A cool, near-black neutral stack with two saturated accents whose roles never overlap. The two accent values are the logo's colors (public/marca), so the brand mark and the interface speak the same violet and green. Translucent effect tokens derive from the accents so glows, washes and halos stay themeable.
 
 ### Primary
-- **Level Green** (`green`): the progress color. XP fills, the NÍVEL badge, the avatar ring, completed checks and the check hover ring, "+n XP" labels and the flying "+n XP", the "Solte para concluir" drop hint, and the one highlighted phrase in a headline ("Suba de nível."). Text on a green fill always uses **Deep Moss** (`on-green`), never white.
+- **Level Green** (`green`): the progress color. XP fills, the NÍVEL badge (including the one inside the level toast), the avatar ring, completed checks and the check hover ring, earned "+n XP" labels and the flying "+n XP", the "Solte para concluir" drop hint, and the one highlighted phrase in a headline ("Suba de nível."). Text on a green fill always uses **Deep Moss** (`on-green`), never white.
 - **Green Tip** (`green-tip`): the lighter leading 0.9rem of the XP fill. Nowhere else.
-- **Green Wash** (`green-wash`) and **Green Line** (`green-line`): the completion surfaces. Wash is the fill of the Quadro drop target, the fading flash on a just-completed row, and the level-up banner; Line is the border of the drop target and of the level-up banner.
+- **Green Wash** (`green-wash`) and **Green Line** (`green-line`): the completion surfaces. Wash is the fill of the Quadro drop target, the fading flash on a just-completed row, and the login demo's level-up banner; Line is the border of the drop target, of that banner, and of the in-app level toast.
 - **Green Glow** (`green-glow`): the transient level-up pulse shadow only.
 
 ### Secondary
@@ -334,12 +351,12 @@ A cool, near-black neutral stack with two saturated accents whose roles never ov
 - **Check Ring** (`check-ring`): the 2px ring of an unchecked completion circle. It exists because Rule Strong fell below 3:1 on Panel; Check Ring holds at least 3:1 there (WCAG 1.4.11 non-text contrast).
 - **Backdrop** (`backdrop`): the scrim behind a modal dialog.
 - **Ink** (`ink`): primary text; today and overdue due dates; the fill of the neutral ERRO tag; the selected swatch ring.
-- **Muted** (`muted`): secondary text, labels, inactive tabs and segments, hints, "faltam n XP", category names, counts, future due dates, the Excluir label.
+- **Muted** (`muted`): secondary text, labels, inactive tabs and segments, hints, "faltam n XP", category names, counts, future due dates, the Excluir label, and a completed row's "+0 XP" and "…" (XP pending).
 
 ### Named Rules
-**The Two Jobs Rule.** Green means progress and purple means action; neither ever stands in for the other. No green buttons, no purple XP, no third accent. Purple never marks selection: a selected rail item, chip, segment or swatch is shown with neutrals (Panel Two, Rule Strong, Ink). The single violet indicator is the active underline-tab bar, which marks the current mode.
+**The Two Jobs Rule.** Green means progress and purple means action; neither ever stands in for the other. No green buttons, no purple XP, no third accent. Purple never marks selection: a selected rail item, chip, segment or swatch is shown with neutrals (Panel Two, Rule Strong, Ink). The single violet indicator is the active underline-tab bar, which marks the current mode. Green is also never spent on something that earned nothing: a "+0 XP" is Muted, and no flight launches for it.
 
-**The Neutral Error Rule.** Errors are not red. An error is a notice on `panel-2` with a small pill tag in inverted neutrals (ink fill, ground text) reading "ERRO", followed by a plain-language sentence. This keeps the palette to two accents and keeps failure unalarming. The same holds for due dates: today and overdue get Ink and weight, never red.
+**The Neutral Error Rule.** Errors are not red. An error is a notice on `panel-2` with a small pill tag in inverted neutrals (ink fill, ground text) reading "ERRO", followed by a plain-language sentence. This keeps the palette to two accents and keeps failure unalarming. The same holds for due dates: today and overdue get Ink and weight, never red. And it holds for reduced rewards: when a completion earns less than usual (task created under 5 minutes ago, the daily XP cap reached or partly reached), an info toast names the reason in a plain sentence, in neutrals, with no tag and no red.
 
 **The Dot-Only Category Rule.** User-chosen category colors are data. They appear as an 8px round dot beside the category name (rail, chips, row category line, Lista group headings), never as fills, borders, text color, or backgrounds, and never without the name. The one exception is the color picker, where the swatch itself is the choice and fills a 36px circle.
 
@@ -355,7 +372,7 @@ A cool, near-black neutral stack with two saturated accents whose roles never ov
 ### Hierarchy
 - **Display** (800, clamp 2.25rem to 3.5rem, width 110%, line-height 1.02): the single marketing headline (login). Balanced wrapping. At 60rem and below it uses **Display Compact** (clamp 1.875rem, 8vw, 2.5rem). One phrase may be Level Green when it names the reward.
 - **Page Title** (800, 2rem, width 110%, line-height 1.1, -0.02em): the one heading of an app screen, the category name or "Todas as tarefas". At 60rem and below it drops to **Page Title Compact** (1.5rem). Wraps anywhere rather than overflowing long category names.
-- **Wordmark** (800, 1.625rem, width 112.5%, line-height 1): "RoutinXP" in text; the UI shows the logo asset public/marca/routinxp-logo-horizontal.svg instead of this text wordmark.
+- **Wordmark** (800, 1.625rem, width 112.5%, line-height 1): "RoutinXP" set in text, kept as a fallback only. The UI never typesets the name; it shows the horizontal logo (see Logo under Components).
 - **Headline** (800, 1.5rem, line-height 1.15): titles inside panels, dialogs, empty states and simple pages (Redefinir senha, Nenhuma tarefa ainda).
 - **Body Lead** (400, 1.0625rem, line-height 1.55, max 46ch, muted): the one supporting paragraph under a display headline.
 - **Body** (400, 1rem, line-height 1.45): default; panel prose caps at 44ch at line-height 1.55.
@@ -455,13 +472,15 @@ The 40px avatar button (Panel Two circle, green ring, initials) opens a native `
 Rows are divided by 1px Rules between siblings, not boxed. A row is a three-column grid:
 1. A 44px completion target holding a 24px circle with a 2px Check Ring ring. Hovering the target turns the ring and the tick green.
 2. A text button (opens edit): Row Title, then a category line (8px dot and name in Meta muted), shown only when the view mixes categories.
-3. A right column: the **due date** for pending rows, the **"+n XP"** label for completed rows.
+3. A right column: the **due date** for pending rows, the **XP label** for completed rows.
 
 Due dates are relative: "hoje", "amanhã", then "12 set", and "sem data" when empty. Today is Ink at 600, overdue is Ink at 700, future is Muted. Never red, never an alarm. In a narrow Quadro column (48rem and below) the date leaves the right column and joins the category line, so the title keeps the full width.
 
 Hover gives the row a Panel Two background (8px radius). A pending row reveals an **Excluir** overlay (Panel Two, 8px radius, Muted text, Ink on hover) over the date on hover or focus-within, positioned out of flow so title and date never reflow; on touch devices (`hover: none`) it is hidden and deletion lives in the edit dialog. Completed rows: the circle fills green with a Deep Moss tick, the title goes Muted with a Rule Strong strike-through, the check target is disabled, and the row is not draggable. A just-completed row pops its check (scale 1.2, 0.45s) and flashes Green Wash that fades over 1.2s.
 
-**The Earned Record Rule.** In the app's Concluídas, "+n XP" stays full-strength Level Green: it is the record of what the task earned. The login demo dims its completed "+n XP" to 40% only because there the XP has visibly flown to the counter, and the dimmed label reads as "already collected". Do not carry the dimming into real lists.
+The server computes XP, so a completed row's XP label has three states: **pending** ("…" in Muted at 600, hidden from assistive tech) while the server answers; **zero** ("+0 XP" in Muted at 600) when the completion earned nothing; **earned** ("+n XP" in Level Green at 800) otherwise.
+
+**The Earned Record Rule.** In the app's Concluídas, an earned "+n XP" stays full-strength Level Green: it is the record of what the task earned. A "+0 XP" is Muted because it records that nothing was earned, not because anything was collected. The login demo dims its completed "+n XP" to 40% only because there the XP has visibly flown to the counter, and the dimmed label reads as "already collected". Do not carry the dimming into real lists.
 
 ### Lista
 One panel. In "Todas" the rows are grouped by category under Label-style headings carrying the category dot and count ("● FACULDADE · 3"); groups with no rows in the current filter are omitted, and rows drop their own category line since the heading carries it. When one category is selected the headings disappear. An empty filter shows a single Muted sentence inside the panel.
@@ -476,7 +495,11 @@ A native modal `<dialog>` (focus trapped, Esc and backdrop click close), Panel f
 A fieldset with a Label legend and eight 36px circular swatches, 11px apart, drawn from a fixed soft palette tuned to sit on dark (blue, teal, amber, rose, terracotta, sand, slate, lavender; values live in `formCategoria.cores`). Each swatch is a real radio with the color's name as its title. The checked swatch gets a two-step ring (Panel gap, then Ink); keyboard focus adds the Soft Violet outline 6px out. This is the one place a category color fills a shape.
 
 ### Toast
-Fixed, centered 1.5rem above the bottom (above the FAB on mobile), Panel Two fill, 1px Rule Strong border, 10px radius, Panel lift, 0.875rem at 600. The undo variant reads "Tarefa excluída" with a "Desfazer" link button and a 2px Rule Strong time bar along the bottom edge that shrinks to zero over 5s. The error variant leads with the ERRO tag and dismisses after 6s. Enters with a 12px rise. Announced politely (`role="status"`, or `alert` for errors).
+Fixed, centered 1.5rem above the bottom (above the FAB on mobile), Panel Two fill, 1px Rule Strong border, 10px radius, Panel lift, 0.875rem at 600. Enters with a 12px rise. One toast at a time. Announced politely (`role="status"`, or `alert` for errors). Four variants:
+- **Undo:** "Tarefa excluída" with a "Desfazer" link button and a 2px Rule Strong time bar along the bottom edge that shrinks to zero over 5s.
+- **Info:** one plain sentence naming the XP rule that applied ("Concluída! Você já ganhou os 150 XP de hoje. O streak continua valendo."). No tag, no accent, neutral border; dismisses after 6s.
+- **Level:** leads with a green NÍVEL n badge, then "Você subiu de nível!"; the border swaps to Green Line. Dismisses after 5s.
+- **Error:** leads with the ERRO tag and dismisses after 6s.
 
 ### Empty, Loading and Error States
 - **Loading:** a single Label-style line ("Carregando…") in the content area, plus the top-bar skeleton. No spinners, no fake rows.
@@ -493,7 +516,14 @@ Above the track: the XP figure ("XP 120 / 150") left, "faltam n XP" muted right,
 Badge (meter size) and XP bar side by side in a flex row, closed by a 1px Rule beneath. The compact progress header inside a panel (login demo). In the app the same parts live in the top bar's level pill.
 
 ### XP Flight and Level-Up (signature interaction)
-Completing a task launches "+n XP" (green, 800, 0.9375rem) from the row's XP label to the XP figure (0.6s, scale 1.1 to 0.75, fades in its last 20%). On arrival the figure counts up and the bar fills. On a level change the bar fills to 100% in the old level, holds 750ms, then snaps (no transition) to the new level at 0 and the badge pulses; a banner in Green Wash with a Green Line border (10px radius) confirms it. Changes are announced through a polite live region. The login demo runs the full sequence; the app wires the flight to the top-bar counter when XP is awarded.
+One gesture, in the login demo and in the app: "+n XP" in Level Green at 800 flies to the XP figure on the same curve (`cubic-bezier(0.5, 0, 0.2, 1)`), shrinking to 0.75 and fading in its last 20%. The figure counts up and the bar fills only when it arrives, so number, bar and flight read as one event.
+- **In the app:** the flight is fixed-position above everything (1rem, 0.7s, starting at scale 1.15), launched from the completed row's check or, in Quadro, from the point where the row was dropped, and aimed at the top bar's "XP n / m" figure. Stats are applied on arrival, and a fallback timer (850ms) applies them if the animation never ends (background tab). A completion that earned 0 XP launches no flight; stats apply at once.
+- **In the login demo:** the flight stays inside the demo panel (0.6s, from scale 1.1), starting at the row's XP label.
+- **Level-up in the top bar:** the bar fills to 100% in the old level (0.7s), holds 750ms, then snaps with no transition to the new level and the badge pulses. About 1.5s after arrival, once that sequence has played, the level toast confirms it. On first load, and whenever stats arrive or resync, the meter takes its values with no animation. The login demo confirms a level change with an inline banner (Green Wash fill, Green Line border, 10px radius) instead of a toast.
+- Reduced motion collapses the flight and the fill; the count jumps to its target.
+
+### Logo
+The brand mark lives in public/marca: horizontal logo (icon plus name), vertical logo, name alone, and the icon, each as SVG with PNG copies. The horizontal SVG is the wordmark everywhere, sized by height with its 1992:512 ratio reserved so the page never jumps: 2.75rem tall on the login, 2.125rem in the app top bar. The icon is the favicon (SVG, with a 512px PNG and apple-touch icon). The logo carries the accent colors; do not recolor, outline or typeset it.
 
 ### Avatar
 A Panel Two circle with a 2px green ring and initials at 700: 48px in a profile card, 40px as the top bar's account button (hover fill Rule). Never on the login.
@@ -509,7 +539,10 @@ A Panel Two circle with a 2px green ring and initials at 700: 48px in a profile 
 - **Do** show category color as an 8px dot next to the category name; only the color picker fills a shape with it.
 - **Do** use underline tabs to switch views and the segmented pill to filter rows within a view.
 - **Do** show due dates relatively ("hoje", "amanhã", "12 set"), with today and overdue in Ink and weight.
-- **Do** keep completed "+n XP" full-strength green in real lists; it is the earned record.
+- **Do** keep an earned "+n XP" full-strength green in real lists; it is the earned record. Show "+0 XP" and the pending "…" in Muted.
+- **Do** name the reason in a neutral info toast when a completion earns less than usual.
+- **Do** apply XP only when the flight lands, with a fallback timer so a stalled animation never withholds it.
+- **Do** use the horizontal logo as the wordmark (2.75rem login, 2.125rem top bar) and the icon as favicon.
 - **Do** report errors with the neutral notice and its ERRO pill tag.
 - **Do** animate XP by count-up plus a `translateX` fill on the shared ease-out `cubic-bezier(0.16, 1, 0.3, 1)`, and let reduced-motion collapse it.
 - **Do** keep primary buttons and inputs at least 48px tall and completion targets at least 44px.
@@ -522,6 +555,7 @@ A Panel Two circle with a 2px green ring and initials at 700: 48px in a profile 
 - **Don't** nest a shadowed card inside a panel.
 - **Don't** use hard or offset shadows; the only shadows are the soft lift, the violet glows, the focus halo, the selected inset, the swatch ring and the transient level-up pulse.
 - **Don't** add mascots, confetti, or streak-loss warnings in alarm colors; the reward is the XP flight, the fill and the badge pulse.
+- **Don't** fly or color green an XP gain of zero, or show a reduced reward in red.
 - **Don't** set body, rows or forms in the expanded width; that axis is for display, page title, wordmark and badges.
 - **Don't** hardcode hex or rgb literals in component CSS; add a token instead.
 - **Don't** show placeholder numbers while stats load; use the neutral skeleton.
