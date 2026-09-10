@@ -59,7 +59,7 @@ Atualizado em 2026-09-10 (Claude Code): passo 12 (PWA) construído; com ele, tod
   - Lembrete de streak: aparece quando há streak e nenhuma conclusão hoje. Pode ser dispensado, e volta no dia seguinte.
   - A migration `20260910230000_perfis` (tabela `profiles` com RLS e validação de idade) **foi aplicada em produção**. Acesso anônimo à tabela testado e recusado.
   - Contas antigas não têm perfil. O app mostra "Complete seu perfil" e a página Perfil cria o perfil ao salvar.
-- PWA (passo 12): **construído.**
+- PWA (passo 12): **no ar em produção, aguardando o teste do usuário no celular.** A revisão final do Impeccable deu "fix". As correções foram aplicadas: convite com botão de link, texto do aviso offline, passo a passo para iPhone e iPad, versão do service worker incluindo os ícones, splash e ícone recentrado.
   - `public/manifest.webmanifest` e ícones em `public/marca/`:
     - 192 e 512 comuns;
     - 512 "maskable", sem a moldura, para o Android recortar;
@@ -118,9 +118,15 @@ Feito:
 Travou:
 - Nada de bloqueio. Com o Edge headless e o user agent de iPhone, o primeiro clique no convite às vezes não abria o diálogo; no navegador do app abriu normalmente.
 
+- Revisão final do Impeccable ("fix"), correções aplicadas, `DESIGN.md` atualizado pelo documentador, push para produção.
+
 Próximo:
-- Revisão final do Impeccable, DESIGN.md e push.
-- Teste do usuário no celular: instalar (Android pelo convite, iPhone pelo passo a passo), abrir pelo ícone, abrir sem internet.
+- Teste do usuário no celular:
+  - instalar (Android pelo convite, iPhone pelo passo a passo);
+  - abrir pelo ícone;
+  - abrir sem internet.
+  - Conferir no iPhone onde fica o Compartilhar no Safari atual.
+- Depois da v1: pendências técnicas acima e ideias da v2 (conquistas, temas por nível).
 
 ### 2026-09-10 (fim da noite), Claude Code (Opus 5): passo 11
 Feito:
