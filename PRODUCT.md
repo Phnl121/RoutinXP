@@ -50,6 +50,8 @@ One list for every area of life, with a reward loop that is deliberately simple:
 4. Simple dashboard: total XP, current streak, record streak
 5. Category management: create, edit, delete categories (name + color). Added by the user on 2026-09-10, beyond the original scope, because tasks require a category and no categories are pre-seeded. New users start with zero categories, so first run must lead them to create one. A category that still has tasks cannot be deleted (FK `on delete restrict`); the UI must explain that instead of failing silently.
 
+6. Board view (Kanban, Trello-style), added by the user on 2026-09-10 beyond the original scope. It lives alongside the category-grouped list, with a Lista / Quadro toggle that remembers the last choice. Columns are status: **Pendentes** and **Concluídas**, with category shown on each card as its name plus color. Dragging a card into Concluídas completes it and triggers the same XP/streak rule as the complete button. Open decision: moving a card back to Pendentes (un-completing, which would have to reverse XP) is **not** allowed in v1 unless the user decides otherwise.
+
 **Auth:** Supabase email confirmation stays on (decided 2026-09-10). Sign-up ends in a "check your email" state, not a logged-in session. The free plan rate-limits confirmation emails. Includes "esqueci minha senha": reset link by email plus a screen to set the new password (decided 2026-09-10).
 
 **Hero number:** total XP is the number that makes people come back (decided 2026-09-10). Streak and record streak support it; they don't compete with it.
@@ -74,6 +76,11 @@ One list for every area of life, with a reward loop that is deliberately simple:
 **Terminology:** UI copy is in Portuguese. Use the scope's terms consistently: tarefa, categoria, concluída, pendente, XP, streak, streak recorde.
 
 **Language:** pt-BR only in v1, but all UI strings must live in one centralized place so an English translation can be added later without hunting through components. Dates and numbers formatted for pt-BR.
+
+## Brand Commitments
+
+- **Few colors** (user, 2026-09-10): the interface must not look loud or multicolored. User-defined category colors are data, and they must not turn the screen into a rainbow.
+- Must not feel: childish, cold like a spreadsheet, guilt-inducing when a streak is lost, or like a generic UI-kit template (user, 2026-09-10).
 
 ## Evidence on Hand
 
