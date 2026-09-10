@@ -68,7 +68,15 @@ One list for every area of life, with a reward loop that is deliberately simple:
 - Completing a task adds its `xp_value` to `xp_total`.
 - Streak goes up by 1 the first time a task is completed on a day with no prior completion.
 - Streak resets to zero if a full day passes with no completed task.
-- **XP per task is not decided** (user, 2026-09-10, superseding the "XP fixo" line in `escopo-mvp-v1.md`): some tasks may be worth more and others less. The `xp_value` column already stores each task's own value (schema default 10 until a rule exists). No UI copy may promise a fixed amount ("vale 10 XP"); demo data may show varied example values.
+- **XP rule** (user, 2026-09-10, superseding the "XP fixo" line in `escopo-mvp-v1.md`): the user never picks a task's XP, so there is nothing to inflate. All of it is computed in the database at completion (step 10), never by the client.
+  - Base: 10 XP per completed task.
+  - Bonus: +5 XP when completed on or before its `data_prevista`.
+  - Anti-farm: a task completed less than 5 minutes after it was created earns 0 XP.
+  - Daily cap: 150 XP per day; completions beyond the cap still count for the streak but add no XP.
+  - `tasks.xp_value` stores the XP actually awarded at completion.
+  - The task form has no XP field. UI copy must not promise a fixed amount per task.
+- **Delete task** (user, 2026-09-10): allowed, with an "Tarefa excluída · Desfazer" notice for a few seconds instead of a confirmation dialog.
+- **Undo completion** (user, 2026-09-10): not in v1. A completed task stays completed; in the Quadro, cards cannot be dragged back to Pendentes.
 
 **Data model:** `categories`, `tasks`, `user_stats` in Postgres with RLS restricting every row to its `user_id`. Full schema in `escopo-mvp-v1.md`.
 
