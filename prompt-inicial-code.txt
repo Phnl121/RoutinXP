@@ -1,0 +1,21 @@
+Contexto: este é o projeto "App - Rotina", um app de rotina gamificado (categorias de tarefas, XP e streak ao concluir), feito como projeto de portfólio. Antes de qualquer coisa, leia os arquivos escopo-mvp-v1.md e supabase-credentials.txt que já estão nesta pasta, eles têm o modelo de dados completo, as regras de XP/streak, as telas mínimas e as credenciais do Supabase. Siga esse escopo à risca, não adicione funcionalidade fora dele sem perguntar antes.
+
+Pré-requisito fixo, vale para o projeto inteiro:
+Instala o plugin Impeccable antes de qualquer trabalho visual: roda /plugin marketplace add pbakaus/impeccable e instala pelo /plugin. A partir daí, toda tela, todo componente e todo botão que você for construir precisa passar primeiro pelo Impeccable (via /impeccable, usando os comandos disponíveis como critique, audit ou polish) antes de você implementar, pra validar a direção de design. Só parte pra construção depois disso. Depois de implementado, roda de novo pra confirmar que ficou de acordo antes de considerar a etapa concluída. Essa regra vale para qualquer coisa visual do passo 8 em diante, não precisa aplicar em lógica de backend, schema de banco ou configuração que não é interface.
+
+Execute nesta ordem, e vá commitando no git a cada etapa concluída (mensagens curtas e claras):
+
+1. Inicializa um repositório git nesta pasta.
+2. Cria um .gitignore com pelo menos node_modules, .env, dist e adiciona supabase-credentials.txt também (não deve ir pro repositório). Faz isso antes do primeiro commit.
+3. Faz o primeiro commit só com o .gitignore e o escopo-mvp-v1.md.
+4. Cria o projeto React com Vite nesta mesma pasta.
+5. Cria o arquivo .env na raiz do projeto com as duas variáveis que estão em supabase-credentials.txt (VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY). Depois de criado, pode apagar o supabase-credentials.txt.
+6. Instala @supabase/supabase-js e configura o client apontando pras variáveis do .env.
+7. Gera o SQL das três tabelas do escopo (categories, tasks, user_stats) com RLS habilitado, restringindo cada linha ao user_id do usuário autenticado. Se você tiver como rodar esse SQL direto no banco (CLI do Supabase configurado, ou acesso via API), roda. Se não tiver, salva como schema.sql na pasta e me avisa que preciso rodar manualmente no SQL Editor do Supabase, sem seguir adiante até isso estar confirmado.
+8. Constrói a tela de login/cadastro usando Supabase Auth. Segue o pré-requisito do Impeccable antes de implementar.
+9. Constrói o CRUD de tarefas: criar, listar por categoria, editar, marcar como concluída. Segue o pré-requisito do Impeccable antes de implementar.
+10. Implementa a lógica de XP e streak conforme as regras do escopo, disparada ao concluir uma tarefa (essa parte é lógica, não precisa do Impeccable, só a UI que mostra o resultado precisa).
+11. Constrói o dashboard simples: XP total, streak atual, streak recorde. Segue o pré-requisito do Impeccable antes de implementar.
+12. Só depois de tudo isso funcionando: configura PWA (manifest, ícone, "adicionar à tela inicial").
+
+Não pare pra confirmar decisões que já estão fechadas no escopo (stack, ausência de integração com Calendar na v1, ausência de app nativo separado). Só me pergunte se travar em algo que realmente exige decisão minha, como o passo 7 se não conseguir rodar o SQL sozinho, ou se encontrar um bloqueio técnico real.
