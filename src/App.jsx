@@ -2,11 +2,14 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
 import { useSession } from './lib/useSession'
 import Entrar from './pages/Entrar'
 import RedefinirSenha from './pages/RedefinirSenha'
-import Inicio from './pages/Inicio'
+import Tarefas from './pages/Tarefas'
 import { t } from './i18n/pt-BR'
+import { emPrevia, sessaoPrevia } from './dev/previa'
 
 export default function App() {
-  const { session, recovery, clearRecovery } = useSession()
+  const real = useSession()
+  const { recovery, clearRecovery } = real
+  const session = emPrevia ? sessaoPrevia : real.session
 
   if (session === undefined) {
     return (
@@ -34,7 +37,7 @@ export default function App() {
             ) : recovery ? (
               <Navigate to="/redefinir-senha" replace />
             ) : (
-              <Inicio session={session} />
+              <Tarefas session={session} />
             )
           }
         />

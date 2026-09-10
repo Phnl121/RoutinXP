@@ -1,0 +1,39 @@
+Deploy do App - Rotina (GitHub + Vercel), passo a passo
+
+Dois momentos abaixo exigem você clicando em "autorizar" no navegador (login de conta). O resto é comando de terminal, pode mandar o Code rodar.
+
+1. [SÓ VOCÊ] Instalar a CLI do GitHub, se ainda não tiver:
+   winget install --id GitHub.cli
+   (pode pedir pro Code rodar esse comando, instalação não precisa de login)
+
+2. [SÓ VOCÊ] Autenticar no GitHub:
+   gh auth login
+   Segue o fluxo que abre no navegador e clica em autorizar. Só você consegue fazer isso.
+
+3. [CODE, depois do passo 2] Criar o repositório no GitHub e subir o código atual:
+   gh repo create app-rotina --private --source=. --remote=origin --push
+   (pode trocar --private por --public se já quiser deixar público desde já; dá pra mudar depois nas configurações do repositório no GitHub)
+
+4. [SÓ VOCÊ] Instalar a CLI da Vercel, se ainda não tiver:
+   npm install -g vercel
+   Depois autenticar:
+   vercel login
+   Escolhe "Continue with GitHub" e autoriza no navegador. De novo, só você clica.
+
+5. [CODE, depois do passo 4] Linkar a pasta do projeto a um projeto novo na Vercel:
+   vercel link
+   (confirma o nome do projeto quando for perguntado)
+
+6. [CODE] Cadastrar as variáveis de ambiente:
+   vercel env add VITE_SUPABASE_URL production
+   (cola o valor quando pedir)
+   vercel env add VITE_SUPABASE_PUBLISHABLE_KEY production
+   (cola o valor quando pedir)
+
+7. [CODE] Conectar o repositório do GitHub (criado no passo 3) ao projeto na Vercel, pra deploy automático a cada push:
+   vercel git connect --yes
+
+8. [CODE] Rodar o primeiro deploy manual, pra confirmar que está tudo certo:
+   vercel --prod
+
+A partir do passo 7, todo commit enviado (git push) pra branch principal do GitHub dispara um deploy novo sozinho na Vercel, sem precisar repetir nenhum desses comandos.

@@ -12,12 +12,13 @@ Execute nesta ordem, e vá commitando no git a cada etapa concluída (mensagens 
 3. Faz o primeiro commit só com o .gitignore e o escopo-mvp-v1.md.
 4. Cria o projeto React com Vite nesta mesma pasta.
 5. Cria o arquivo .env na raiz do projeto com as duas variáveis que estão em supabase-credentials.txt (VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY). Depois de criado, pode apagar o supabase-credentials.txt.
+5.1. Aqui é o ponto de fazer o primeiro deploy na Vercel, mesmo com o projeto ainda mínimo. Se você tiver como conectar via CLI ou API, faz. Se depender de login manual no painel da Vercel, me avisa nesse ponto pra eu conectar o repositório e cadastrar as variáveis de ambiente lá (VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY, não vêm do .env porque ele não vai pro git). A partir daqui todo commit na branch principal gera deploy automático, não precisa repetir esse passo depois.
 6. Instala @supabase/supabase-js e configura o client apontando pras variáveis do .env.
 7. Gera o SQL das três tabelas do escopo (categories, tasks, user_stats) com RLS habilitado, restringindo cada linha ao user_id do usuário autenticado. Se você tiver como rodar esse SQL direto no banco (CLI do Supabase configurado, ou acesso via API), roda. Se não tiver, salva como schema.sql na pasta e me avisa que preciso rodar manualmente no SQL Editor do Supabase, sem seguir adiante até isso estar confirmado.
 8. Constrói a tela de login/cadastro usando Supabase Auth. Segue o pré-requisito do Impeccable antes de implementar.
 9. Constrói o CRUD de tarefas: criar, listar por categoria, editar, marcar como concluída. Segue o pré-requisito do Impeccable antes de implementar.
 10. Implementa a lógica de XP e streak conforme as regras do escopo, disparada ao concluir uma tarefa (essa parte é lógica, não precisa do Impeccable, só a UI que mostra o resultado precisa).
 11. Constrói o dashboard simples: XP total, streak atual, streak recorde. Segue o pré-requisito do Impeccable antes de implementar.
-12. Só depois de tudo isso funcionando: configura PWA (manifest, ícone, "adicionar à tela inicial").
+12. Só depois de tudo isso funcionando: configura PWA (manifest, ícone, "adicionar à tela inicial"). O deploy em si já está rodando desde o passo 5.1.
 
 Não pare pra confirmar decisões que já estão fechadas no escopo (stack, ausência de integração com Calendar na v1, ausência de app nativo separado). Só me pergunte se travar em algo que realmente exige decisão minha, como o passo 7 se não conseguir rodar o SQL sozinho, ou se encontrar um bloqueio técnico real.

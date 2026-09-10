@@ -15,6 +15,7 @@ Validar o loop núcleo de recompensa (cadastrar → concluir → XP/streak) com 
 - Backend/DB/Auth: Supabase (Postgres + Auth prontos, plano free)
 - Deploy: Vercel (integra direto com o repositório, URL acessível de qualquer navegador)
 - PWA: manifest + service worker no fim do desenvolvimento, não é prioridade de dia 1
+- Deploy: contínuo desde cedo, não no final (revisão de uma decisão anterior, ver "Passos" abaixo)
 
 ## Modelo de dados (Postgres via Supabase)
 
@@ -60,10 +61,11 @@ Validar o loop núcleo de recompensa (cadastrar → concluir → XP/streak) com 
 3. Criar o projeto React com Vite localmente, na pasta do projeto.
 4. Abrir essa pasta no Claude Code.
 5. Primeiro prompt: configurar cliente Supabase, variáveis de ambiente, tela de login funcionando.
+5.1. Assim que o projeto Vite existir e rodar local (mesmo com pouca coisa pronta), conectar o repositório na Vercel e fazer o primeiro deploy. Cadastrar `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` manualmente nas variáveis de ambiente do projeto na Vercel (o `.env` não vai no git, então a Vercel não vê essas variáveis sozinha). A partir daqui, todo commit na branch principal gera deploy automático, não precisa repetir esse passo.
 6. Segundo prompt: CRUD de tarefas (criar, listar por categoria, marcar como concluída).
 7. Terceiro prompt: lógica de XP e streak disparada ao concluir tarefa, gravando em `user_stats`.
 8. Quarto prompt: dashboard com XP/streak.
-9. Só depois disso: PWA (manifest, ícone, "adicionar à tela inicial") e deploy no Vercel.
+9. Só no final: PWA (manifest, ícone, "adicionar à tela inicial"). O deploy em si já aconteceu desde o passo 5.1, e continua automático a cada commit.
 
 ## Risco a monitorar
 Projeto Supabase gratuito pausa automaticamente após 1 semana sem uso. Isso é um ponto real de atrito: se o hábito de mexer no projeto cair, o banco fica pausado e precisa ser reativado manualmente antes de continuar. Vale tratar isso como um sinal de alerta, não só um detalhe técnico.

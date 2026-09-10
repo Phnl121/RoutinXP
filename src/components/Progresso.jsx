@@ -20,7 +20,8 @@ function useNumeroAnimado(alvo, instantaneo) {
     const de = atual.current
     const inicio = performance.now()
     const passo = (agora) => {
-      const k = Math.min(1, (agora - inicio) / DURACAO_CONTAGEM)
+      // O timestamp do rAF pode ser anterior a `inicio`; sem o limite, o número ficaria negativo.
+      const k = Math.min(1, Math.max(0, (agora - inicio) / DURACAO_CONTAGEM))
       const v = Math.round(de + (alvo - de) * (1 - Math.pow(1 - k, 4)))
       atual.current = v
       setValor(v)

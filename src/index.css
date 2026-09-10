@@ -1,20 +1,32 @@
 :root {
   /* Convenção de plataforma gamificada (DIO / Duolingo / Habitica).
      Escuro + dois destaques: verde = XP e nível, roxo = ações.
-     Tudo em variáveis para permitir temas no futuro (ex.: [data-tema='...']). */
+     Toda cor passa por uma variável, para permitir temas no futuro (ex.: [data-tema='...']). */
   --ground: #121318;
+  --topbar: #0d0e12;
   --panel: #1c1d24;
   --panel-2: #25262f;
   --rule: #2e3039;
   --rule-strong: #454856;
+  --check-ring: #6a6e7c; /* anel do check vazio: 3,3:1 sobre o painel (WCAG 1.4.11) */
   --ink: #f3f4f7;
   --muted: #a3a7b3;
+  --backdrop: rgb(6 7 10 / 0.72);
 
   --green: #2bd576;
+  --green-tip: #8af5b5;
+  --green-wash: rgb(43 213 118 / 0.1);
+  --green-line: rgb(43 213 118 / 0.35);
+  --green-glow: rgb(43 213 118 / 0.6);
   --on-green: #0a2616;
+
   --purple: #8e2de2;
   --purple-hover: #9d47ec;
   --purple-soft: #c28cf6;
+  --purple-glow: rgb(142 45 226 / 0.75);
+  --purple-halo: rgb(142 45 226 / 0.35);
+  --purple-selection: rgb(142 45 226 / 0.5);
+  --purple-link-line: rgb(194 140 246 / 0.4);
   --on-purple: #ffffff;
 
   --radius: 16px;
@@ -50,13 +62,14 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
   color: inherit;
 }
 
 ::selection {
-  background: rgb(142 45 226 / 0.5);
+  background: var(--purple-selection);
   color: var(--ink);
 }
 
@@ -106,6 +119,7 @@ input {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.45rem;
   min-height: 3rem;
   padding: 0 1.5rem;
   border: 0;
@@ -115,11 +129,16 @@ input {
   font-weight: 700;
   letter-spacing: 0.01em;
   cursor: pointer;
-  box-shadow: 0 8px 20px -10px rgb(142 45 226 / 0.75);
+  box-shadow: 0 8px 20px -10px var(--purple-glow);
   transition:
     transform 0.12s var(--ease-out),
     background-color 0.2s var(--ease-out),
     box-shadow 0.2s var(--ease-out);
+}
+
+.btn svg {
+  width: 1rem;
+  height: 1rem;
 }
 
 .btn:hover {
@@ -128,12 +147,17 @@ input {
 
 .btn:active {
   transform: translateY(1px);
-  box-shadow: 0 4px 10px -6px rgb(142 45 226 / 0.75);
+  box-shadow: 0 4px 10px -6px var(--purple-glow);
 }
 
 .btn:disabled {
   cursor: progress;
   opacity: 0.7;
+}
+
+.btn--compacto {
+  min-height: 2.5rem;
+  padding: 0 1rem;
 }
 
 .link-btn {
@@ -144,7 +168,7 @@ input {
   font-weight: 600;
   color: var(--purple-soft);
   text-decoration: underline;
-  text-decoration-color: rgb(194 140 246 / 0.4);
+  text-decoration-color: var(--purple-link-line);
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
   cursor: pointer;
@@ -153,6 +177,57 @@ input {
 
 .link-btn:hover {
   text-decoration-color: var(--purple-soft);
+}
+
+/* Abas sublinhadas: Entrar / Criar conta, Lista / Quadro. */
+.tabs {
+  display: flex;
+  gap: 1.75rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.tabs button {
+  position: relative;
+  padding: 0.25rem 0 0.9rem;
+  border: 0;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s var(--ease-out);
+}
+
+.tabs button:hover {
+  color: var(--ink);
+}
+
+.tabs button::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--purple);
+  transform: scaleX(0);
+  transition: transform 0.3s var(--ease-out);
+}
+
+.tabs button[aria-pressed='true'] {
+  color: var(--ink);
+}
+
+.tabs button[aria-pressed='true']::after {
+  transform: scaleX(1);
+}
+
+.form {
+  display: grid;
+  gap: 1.25rem;
 }
 
 .field {
@@ -205,7 +280,7 @@ input {
 .input:focus-visible {
   outline: none;
   border-color: var(--purple-soft);
-  box-shadow: 0 0 0 3px rgb(142 45 226 / 0.35);
+  box-shadow: 0 0 0 3px var(--purple-halo);
 }
 
 .input:-webkit-autofill {
@@ -246,24 +321,11 @@ input {
   border-radius: 999px;
   background: var(--ink);
   color: var(--ground);
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   line-height: 1.2;
-}
-
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem clamp(1rem, 4vw, 2.5rem);
-  border-bottom: 1px solid var(--rule);
-  background: #0d0e12;
-}
-
-.inicio {
-  padding: 3rem clamp(1rem, 4vw, 2.5rem);
 }
 
 .carregando {

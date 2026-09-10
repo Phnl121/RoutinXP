@@ -60,55 +60,8 @@
   padding: 2rem;
 }
 
-.tabs {
-  display: flex;
-  gap: 1.75rem;
+.entrar__form .tabs {
   margin-bottom: 1.75rem;
-  border-bottom: 1px solid var(--rule);
-}
-
-.tabs button {
-  position: relative;
-  padding: 0.25rem 0 0.9rem;
-  border: 0;
-  background: none;
-  font-size: 0.875rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
-  cursor: pointer;
-  transition: color 0.2s var(--ease-out);
-}
-
-.tabs button:hover {
-  color: var(--ink);
-}
-
-.tabs button::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 3px;
-  border-radius: 3px 3px 0 0;
-  background: var(--purple);
-  transform: scaleX(0);
-  transition: transform 0.3s var(--ease-out);
-}
-
-.tabs button[aria-pressed='true'] {
-  color: var(--ink);
-}
-
-.tabs button[aria-pressed='true']::after {
-  transform: scaleX(1);
-}
-
-.form {
-  display: grid;
-  gap: 1.25rem;
 }
 
 .form__foot {

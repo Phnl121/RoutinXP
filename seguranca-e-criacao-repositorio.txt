@@ -1,0 +1,116 @@
+AUDITORIA DE SEGURANÇA E CHECKLIST DE CRIAÇÃO DO REPOSITÓRIO
+App de Rotina — GitHub + Vercel + Supabase
+
+Este documento substitui o deploy-vercel-passo-a-passo.txt como referência principal. Cada ação está marcada como [VOCÊ] (só você consegue fazer, é autenticação de conta) ou [CODE] (comando de terminal, pode ser executado pelo Claude Code).
+
+====================================================================
+1. PRINCÍPIO CENTRAL, entenda isso antes de tudo
+====================================================================
+A segurança deste app NÃO vem de esconder a URL ou a chave do Supabase. As duas ficam expostas no navegador de qualquer visitante assim que o site for publicado (é assim que toda SPA funciona, é inevitável, não é falha).
+
+A segurança real vem inteiramente do Row Level Security (RLS) do Postgres: cada linha das tabelas categories, tasks e user_stats só pode ser lida ou alterada por quem for o dono dela (auth.uid() = user_id). Se o RLS estiver desligado ou mal configurado em qualquer uma das três tabelas, qualquer pessoa com a URL pública do projeto consegue ler ou apagar os dados de todo mundo, direto pela API, sem nem precisar abrir o app.
+
+Antes do primeiro deploy público, é obrigatório confirmar (não assumir) que RLS está ativado e que existem políticas de SELECT, INSERT, UPDATE e DELETE nas três tabelas, cada uma restringindo a auth.uid() = user_id.
+
+====================================================================
+2. O QUE NUNCA PODE IR PRO REPOSITÓRIO (por gravidade)
+====================================================================
+
+GRAVE, compromete o banco inteiro se vazar:
+- A service_role key (ou secret key, nomenclatura nova) do Supabase. Essa chave ignora RLS completamente. Nunca deve tocar em código de frontend, nunca deve ser commitada, idealmente nunca deve nem ser colada em chat.
+- A senha do banco Postgres (a que você criou ao gerar o projeto no Supabase). Guarde só no gerenciador de senhas, nunca em arquivo de projeto.
+
+MODERADO, não compromete o banco (RLS protege), mas não deve vazar por higiene e organização:
+- .env (contém VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY)
+- supabase-credentials.txt (arquivo temporário de ponte, apagar depois que o .env existir)
+- .vercel/ (pasta que a CLI da Vercel cria ao linkar o projeto, guarda ID de projeto, não é secreto mas não deve ser versionado)
+
+SEM RELAÇÃO COM SEGURANÇA, mas deve ficar fora por tamanho/ruído:
+- node_modules/
+- dist/ (build gerado)
+
+Tudo isso entra no .gitignore, criado ANTES do primeiro commit.
+
+====================================================================
+3. O QUE É SEGURO EXPOR PUBLICAMENTE (e por quê)
+====================================================================
+- VITE_SUPABASE_URL: precisa ser pública, é o endereço que o navegador do usuário usa pra falar com o banco.
+- VITE_SUPABASE_PUBLISHABLE_KEY: projetada pra ser pública. Ela identifica o projeto, não concede acesso irrestrito. O acesso real é controlado pelo RLS (seção 1).
+- O código-fonte do frontend compilado: inevitavelmente público, qualquer SPA pode ter o JS lido via inspecionar elemento. Isso é normal, não é uma falha a corrigir.
+
+====================================================================
+4. LIMITES DE REQUISIÇÃO (rate limits) RELEVANTES
+====================================================================
+Supabase Auth (login/cadastro), valores padrão do projeto gratuito:
+- Cadastro/login: 30 requisições a cada 5 minutos
+- Magic link / OTP: 1 pedido por usuário a cada 60 segundos
+- Refresh de token: 150 requisições a cada 5 minutos
+Esses limites são ajustáveis nas configurações de Authentication do projeto, mas os padrões já bastam pro uso pessoal, não precisa mexer.
+
+Supabase Data API (a tabela em si, via REST):
+Não tem um limitador de requisição próprio documentado para todos os planos. A defesa contra uso abusivo aqui é o RLS, não um limite de taxa. Não existe uma proteção automática impedindo alguém de bater na API repetidamente, então RLS correto não é opcional.
+
+Vercel (plano Hobby, gratuito):
+- Até 1.000.000 de requisições de edge por mês
+- Até 100 deploys por dia
+- Uso é só pessoal/não comercial, portfólio se enquadra
+
+GitHub (uso normal do gh CLI):
+- 5.000 requisições de API por hora quando autenticado, irrelevante pro uso normal de criar um repositório e dar push.
+
+Nenhum desses limites é motivo de preocupação pro estágio atual do projeto. Estão aqui pra registro, não como alerta ativo.
+
+====================================================================
+5. CRIAÇÃO DO REPOSITÓRIO E DEPLOY, passo a passo com segurança embutida
+====================================================================
+
+PASSO 0 [CODE] — Antes de qualquer commit
+Confirma que existe um .gitignore com pelo menos:
+  node_modules
+  dist
+  .env
+  .env.local
+  .vercel
+  supabase-credentials.txt
+Só depois disso faz o primeiro commit.
+
+PASSO 1 [VOCÊ] — Autenticação no GitHub
+  winget install --id GitHub.cli
+  gh auth login
+Segue o fluxo no navegador e autoriza. Só você clica nisso.
+
+PASSO 2 [CODE] — Criar o repositório
+  gh repo create app-rotina --private --source=. --remote=origin --push
+Começa PRIVADO. Não torna público ainda, isso é decisão da seção 6.
+
+PASSO 3 [VOCÊ] — Autenticação na Vercel
+  npm install -g vercel
+  vercel login
+Escolhe "Continue with GitHub", autoriza no navegador. Só você clica.
+
+PASSO 4 [CODE] — Linkar o projeto
+  vercel link
+
+PASSO 5 [CODE] — Cadastrar variáveis de ambiente (não vêm do .env, que fica fora do git)
+  vercel env add VITE_SUPABASE_URL production
+  vercel env add VITE_SUPABASE_PUBLISHABLE_KEY production
+
+PASSO 6 [CODE] — Conectar o Git pra deploy automático a cada push
+  vercel git connect --yes
+
+PASSO 7 [CODE] — Primeiro deploy manual, pra confirmar que está tudo certo
+  vercel --prod
+
+PASSO 8 [VOCÊ, verificação manual obrigatória] — Configurar URLs de redirecionamento no Supabase
+Depois que o primeiro deploy gerar uma URL pública (algo.vercel.app), entra no painel do Supabase, em Authentication > URL Configuration, e adiciona essa URL como Site URL / Redirect URL. Sem isso, o fluxo de login/cadastro quebra em produção mesmo com tudo o mais certo.
+
+PASSO 9 [VOCÊ, verificação de segurança obrigatória, não pule] — Confirmar RLS
+No painel do Supabase, em Database > Tables, confirma que RLS está "Enabled" nas três tabelas (categories, tasks, user_stats), e que cada uma tem política restringindo por auth.uid() = user_id. Se o Code criou o schema, peça pra ele mostrar o SQL das políticas antes de aceitar como pronto, não assuma que "RLS habilitado" sozinho significa que a política está correta.
+
+====================================================================
+6. REPOSITÓRIO PÚBLICO, quando fizer sentido
+====================================================================
+Antes de trocar o repositório de privado pra público (relevante pra portfólio):
+1. [VOCÊ] Revisa o histórico de commits procurando por qualquer .env, chave ou senha que possa ter sido commitada por engano antes do .gitignore existir. Se achar algo, a chave/senha precisa ser trocada no Supabase, não basta apagar o commit (histórico de git pode ser recuperado).
+2. [VOCÊ] Confirma de novo o item 9 acima (RLS), porque público significa que qualquer pessoa pode ver o código e tentar acessar a API diretamente.
+3. Só depois disso, muda a visibilidade do repositório nas configurações dele no GitHub.

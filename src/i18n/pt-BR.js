@@ -92,8 +92,103 @@ export const t = {
     },
   },
 
-  inicio: {
-    titulo: 'Você entrou',
-    texto: (email) => `Conta: ${email}. A lista de tarefas chega na próxima etapa.`,
+  conta: {
+    menu: 'Conta',
+    sair: 'Sair',
+  },
+
+  topo: {
+    progresso: 'Seu progresso',
+    streak: 'Streak',
+    dias: (n) => `${n} ${n === 1 ? 'dia' : 'dias'}`,
+    novaTarefa: 'Nova tarefa',
+  },
+
+  trilho: {
+    titulo: 'Categorias',
+    todas: 'Todas',
+    pendentes: 'pendentes',
+    nova: 'Nova categoria',
+    editar: (nome) => `Editar categoria ${nome}`,
+  },
+
+  tarefas: {
+    tituloTodas: 'Todas as tarefas',
+    visoes: { rotulo: 'Visualização', lista: 'Lista', quadro: 'Quadro' },
+    filtro: { rotulo: 'Mostrar', pendentes: 'Pendentes', concluidas: 'Concluídas' },
+    soltar: 'Solte para concluir',
+    semData: 'sem data',
+    hoje: 'hoje',
+    amanha: 'amanhã',
+    concluir: (titulo) => `Concluir: ${titulo}`,
+    editar: (titulo) => `Editar: ${titulo}`,
+    excluir: 'Excluir',
+    excluirRotulo: (titulo) => `Excluir: ${titulo}`,
+    xp: (n) => `+${n} XP`,
+    carregando: 'Carregando tarefas…',
+    erroCarregar: 'Não foi possível carregar suas tarefas. Confira sua internet.',
+    tentarDeNovo: 'Tentar de novo',
+    vazio: {
+      semCategoriaTitulo: 'Comece criando uma categoria',
+      semCategoriaTexto:
+        'Categorias separam as áreas da sua rotina, como Faculdade ou Trabalho. Toda tarefa pertence a uma.',
+      semCategoriaAcao: 'Criar categoria',
+      semTarefaTitulo: 'Nenhuma tarefa ainda',
+      semTarefaTexto: 'Crie a primeira tarefa e comece a juntar XP.',
+      pendentes: 'Nada pendente por aqui.',
+      concluidas: 'Nenhuma tarefa concluída ainda.',
+    },
+    excluida: 'Tarefa excluída',
+    desfazer: 'Desfazer',
+  },
+
+  formTarefa: {
+    novaTitulo: 'Nova tarefa',
+    editarTitulo: 'Editar tarefa',
+    titulo: 'Título',
+    tituloExemplo: 'Ex.: Entregar relatório de Cálculo II',
+    categoria: 'Categoria',
+    data: 'Data prevista',
+    dataDica: 'Opcional.',
+    criar: 'Criar tarefa',
+    salvar: 'Salvar',
+    salvando: 'Salvando…',
+    cancelar: 'Cancelar',
+    excluir: 'Excluir tarefa',
+    semCategoria: 'Toda tarefa pertence a uma categoria. Crie a primeira antes de adicionar tarefas.',
+    criarCategoria: 'Criar categoria',
+  },
+
+  formCategoria: {
+    novaTitulo: 'Nova categoria',
+    editarTitulo: 'Editar categoria',
+    nome: 'Nome',
+    nomeExemplo: 'Ex.: Faculdade',
+    cor: 'Cor',
+    criar: 'Criar categoria',
+    salvar: 'Salvar',
+    salvando: 'Salvando…',
+    cancelar: 'Cancelar',
+    excluir: 'Excluir categoria',
+    emUso: (n) =>
+      `Esta categoria tem ${n} ${n === 1 ? 'tarefa' : 'tarefas'}. Mova ou exclua ${n === 1 ? 'essa tarefa' : 'essas tarefas'} antes de excluir a categoria.`,
+    // Tons suaves para aparecer como ponto no fundo escuro; sem verde e roxo saturados (reservados a XP e ações).
+    cores: [
+      { valor: '#6c9be8', nome: 'Azul' },
+      { valor: '#5fc4c0', nome: 'Turquesa' },
+      { valor: '#e0a050', nome: 'Âmbar' },
+      { valor: '#e27d8f', nome: 'Rosa' },
+      { valor: '#d98a6a', nome: 'Terracota' },
+      { valor: '#c9b37e', nome: 'Areia' },
+      { valor: '#8f9bb3', nome: 'Cinza-azulado' },
+      { valor: '#b39ddb', nome: 'Lavanda' },
+    ],
+  },
+
+  dadosErros: {
+    rede: 'Sem conexão com o servidor. Confira sua internet e tente de novo.',
+    emUso: 'Esta categoria ainda tem tarefas. Mova ou exclua as tarefas antes.',
+    validacao: 'Confira os campos: o título vai até 200 caracteres e o nome da categoria até 60.',
+    generico: 'Não deu para salvar agora. Tente de novo em instantes.',
   },
 }

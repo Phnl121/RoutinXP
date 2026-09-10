@@ -71,7 +71,7 @@
   flex: none;
   width: 1.5rem;
   height: 1.5rem;
-  border: 2px solid var(--rule-strong);
+  border: 2px solid var(--check-ring);
   border-radius: 50%;
   color: transparent;
   transition:
@@ -156,7 +156,7 @@
 .xp-voo {
   position: absolute;
   z-index: 2;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 800;
   color: var(--green);
   white-space: nowrap;
@@ -186,8 +186,8 @@
   margin-top: 1rem;
   padding: 0.85rem 1rem;
   border-radius: var(--radius-sm);
-  background: rgb(43 213 118 / 0.1);
-  border: 1px solid rgb(43 213 118 / 0.35);
+  background: var(--green-wash);
+  border: 1px solid var(--green-line);
   animation: notice-in 0.4s var(--ease-out);
 }
 
