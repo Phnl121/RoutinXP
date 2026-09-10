@@ -26,3 +26,6 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 *.local
+
+# Vercel CLI (ID do projeto; não é segredo, mas não se versiona)
+.vercel/
