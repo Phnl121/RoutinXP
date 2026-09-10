@@ -121,6 +121,21 @@
   gap: 1.5rem;
 }
 
+/* Cartão da tela de nova senha: não usa .entrar__form, que depende da grade do login. */
+.auth-simples__painel {
+  padding: 2rem;
+}
+
+.auth-simples__painel .form__foot {
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 44.99rem) {
+  .auth-simples__painel {
+    padding: 1.5rem;
+  }
+}
+
 @media (max-width: 59.99rem) {
   .entrar {
     place-items: start center;

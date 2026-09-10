@@ -39,7 +39,7 @@ export default function RedefinirSenha({ session, aoConcluir }) {
     <main className="auth-simples">
       <div className="auth-simples__col">
         <Logo />
-        <div className="entrar__form panel">
+        <div className="panel auth-simples__painel">
           {!session ? (
             <div role="status">
               <h1 className="auth__title">{a.redefinir.expiradoTitulo}</h1>
