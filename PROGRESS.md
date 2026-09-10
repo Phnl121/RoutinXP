@@ -10,7 +10,17 @@ Atualizado em 2026-09-10 (Claude Code), fim do passo 9.
 - Repositório git: **sim**, branch `main`, remoto **privado** https://github.com/Phnl121/Routin (conta Phnl121). Identidade local `Pedro <pedrocybernet01@gmail.com>`.
 - Deploy: **Vercel**, projeto `phnl121/routin`, produção em **https://routin-six.vercel.app**. Variáveis `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` cadastradas no painel (Production e Preview). `vercel.json` faz o rewrite de SPA; `.vercelignore` impede `.env` de subir por deploy via CLI. Supabase Auth com Site URL de produção (configurado pelo usuário).
 - Projeto Vite: **sim**. React 19 + Vite 8 (JS), `react-router`, fonte Archivo auto-hospedada. Node 24 LTS em `C:\Program Files\nodejs` (pode não estar no PATH do shell; `.claude/launch.json` chama `node.exe` direto).
-- Supabase: client em `src/lib/supabase.js`; schema (`schema.sql`) rodado e confirmado; URLs de Auth configuradas pelo usuário para `localhost:5173`.
+- Supabase: client em `src/lib/supabase.js`.
+  - **Migrations versionadas com a Supabase CLI** (dependência de desenvolvimento, versão 2.117.0).
+    - A pasta está ligada ao projeto `cowlksvjueoacwthytmg`.
+    - A migration inicial `supabase/migrations/20260910203320_schema_inicial.sql` (igual ao `schema.sql`) está marcada como aplicada; local e remoto batem.
+  - **Mudanças no banco daqui pra frente:**
+    - Criar a migration com `npx.cmd supabase migration new <nome>`.
+    - Escrever o SQL no arquivo gerado.
+    - Aplicar com `npx.cmd supabase db push`.
+    - Conferir com `npx.cmd supabase migration list`.
+  - No PowerShell, use `npx.cmd` (a política de execução bloqueia o `npx.ps1`) e rode sempre dentro da pasta do projeto. O `link` grava o estado em `supabase/.temp/`, que fica fora do git.
+  - As URLs de Auth foram configuradas pelo usuário.
 - Impeccable: `PRODUCT.md`, `DESIGN.md` + `.impeccable/design.json` (atualizados após o passo 9), briefs em `.impeccable/surfaces/`.
 - Auth (passo 8): **pronto**, aprovado na revisão final do Impeccable ("ship").
 - Tela de tarefas (passo 9): **pronta**, aprovada na revisão final do Impeccable ("fix", correções aplicadas, depois "ship").
