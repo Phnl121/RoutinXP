@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="RoutinXP">
+  <title>RoutinXP</title>
+  <rect x="8" y="8" width="496" height="496" rx="112" fill="#16181D" stroke="#262930" stroke-width="4"/>
+  <path d="M36 0L36 -309.6L254.25 -309.6Q288.45 -309.6 310.95 -296.1Q333.45 -282.6 344.7 -259.87Q355.95 -237.15 355.95 -210.15Q355.95 -181.35 342.23 -157.72Q328.5 -134.1 302.4 -119.7L364.95 0L267.75 0L216.9 -105.75L121.95 -105.75L121.95 0ZM121.95 -170.1L231.3 -170.1Q248.4 -170.1 258.3 -180.45Q268.2 -190.8 268.2 -207.9Q268.2 -219.6 263.7 -227.92Q259.2 -236.25 251.1 -240.3Q243 -244.35 231.3 -244.35L121.95 -244.35Z" transform="translate(29.9 439.0)" fill="#7C3AED"/>
+  <!-- recorte na cor do fundo para separar a seta do R -->
+  <path d="M 168.0 262.0 L 236.0 330.0 L 367.2 185.2" fill="none" stroke="#16181D" stroke-width="92" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 419.5 127.4 L 407.2 221.5 L 327.2 148.9 Z" fill="#16181D" stroke="#16181D" stroke-width="30" stroke-linejoin="round"/>
+  <!-- seta verde -->
+  <path d="M 168.0 262.0 L 236.0 330.0 L 367.2 185.2" fill="none" stroke="#22C55E" stroke-width="50" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 419.5 127.4 L 407.2 221.5 L 327.2 148.9 Z" fill="#22C55E" stroke="#22C55E" stroke-width="8" stroke-linejoin="round"/>
+</svg>
