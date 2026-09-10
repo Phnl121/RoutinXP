@@ -79,6 +79,10 @@ export const t = {
       naoConfere: 'As duas senhas não são iguais.',
     },
     erroTag: 'Erro',
+    captcha: {
+      aguarde: 'A verificação de segurança ainda não terminou. Aguarde um instante e tente de novo.',
+      falhou: 'A verificação de segurança não carregou. Recarregue a página ou desative bloqueadores de conteúdo.',
+    },
     erros: {
       credenciais: 'E-mail ou senha incorretos.',
       naoConfirmado: 'Confirme seu e-mail antes de entrar. O link foi enviado quando você criou a conta.',
@@ -89,6 +93,7 @@ export const t = {
       emailInvalido: 'Esse e-mail não parece válido. Confira se digitou certo.',
       rede: 'Sem conexão com o servidor. Confira sua internet e tente de novo.',
       generico: 'Algo deu errado. Tente de novo em instantes.',
+      captcha: 'A verificação de segurança não foi aceita. Tente de novo.',
     },
   },
 

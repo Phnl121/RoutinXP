@@ -64,6 +64,21 @@
   margin-bottom: 1.75rem;
 }
 
+/* CAPTCHA: continua renderizado (o Turnstile precisa rodar), mas fora do fluxo
+   até o Cloudflare pedir interação; assim não abre um vão vazio no formulário. */
+.captcha {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.captcha[data-visivel='false'] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
 .form__foot {
   display: grid;
   justify-items: center;

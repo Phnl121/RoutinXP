@@ -3,6 +3,8 @@ import { supabase } from '../lib/supabase'
 import { mensagemDeErro } from '../lib/authErrors'
 import { Aviso, CampoSenha } from '../components/AuthParts'
 import { DemoXp } from '../components/DemoXp'
+import { Captcha } from '../components/Captcha'
+import { captchaAtivo } from '../lib/captcha'
 import { t } from '../i18n/pt-BR'
 import './auth.css'
 
@@ -15,6 +17,8 @@ export default function Entrar() {
   const [senha, setSenha] = useState('')
   const [enviando, setEnviando] = useState(false)
   const [erro, setErro] = useState(null)
+  const [captchaToken, setCaptchaToken] = useState(null)
+  const [reinicioCaptcha, setReinicioCaptcha] = useState(0)
 
   function trocarModo(novo) {
     setModo(novo)
@@ -24,19 +28,33 @@ export default function Entrar() {
 
   async function enviar(evento) {
     evento.preventDefault()
+    if (captchaAtivo && !captchaToken) {
+      setErro(a.captcha.aguarde)
+      return
+    }
     setEnviando(true)
     setErro(null)
     const emailLimpo = email.trim()
+    const token = captchaToken ?? undefined
+    // O token do CAPTCHA vale uma vez: descarta e pede outro para a próxima tentativa.
+    if (captchaAtivo) {
+      setCaptchaToken(null)
+      setReinicioCaptcha((n) => n + 1)
+    }
 
     if (modo === 'entrar') {
-      const { error } = await supabase.auth.signInWithPassword({ email: emailLimpo, password: senha })
+      const { error } = await supabase.auth.signInWithPassword({
+        email: emailLimpo,
+        password: senha,
+        options: { captchaToken: token },
+      })
       if (error) setErro(mensagemDeErro(error))
       // Com sucesso, a sessão muda e o App leva para o início.
     } else if (modo === 'cadastrar') {
       const { data, error } = await supabase.auth.signUp({
         email: emailLimpo,
         password: senha,
-        options: { emailRedirectTo: window.location.origin },
+        options: { emailRedirectTo: window.location.origin, captchaToken: token },
       })
       if (error) setErro(mensagemDeErro(error))
       // O Supabase não revela que o e-mail já existe: devolve um usuário sem identidades.
@@ -45,6 +63,7 @@ export default function Entrar() {
     } else if (modo === 'esqueci') {
       const { error } = await supabase.auth.resetPasswordForEmail(emailLimpo, {
         redirectTo: `${window.location.origin}/redefinir-senha`,
+        captchaToken: token,
       })
       if (error) setErro(mensagemDeErro(error))
       else trocarModo('confira-reset')
@@ -129,6 +148,8 @@ export default function Entrar() {
                     dica={modo === 'cadastrar' ? a.dicaSenha : null}
                   />
                 )}
+
+                <Captcha onToken={setCaptchaToken} reinicio={reinicioCaptcha} />
 
                 {erro && <Aviso>{erro}</Aviso>}
 

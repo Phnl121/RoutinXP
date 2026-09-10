@@ -13,6 +13,7 @@ const porCodigo = {
   same_password: e.mesmaSenha,
   email_address_invalid: e.emailInvalido,
   validation_failed: e.emailInvalido,
+  captcha_failed: e.captcha,
 }
 
 // Traduz um erro do Supabase Auth para uma mensagem em pt-BR que diz o problema e a saída.
