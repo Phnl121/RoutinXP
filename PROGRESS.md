@@ -5,7 +5,7 @@ Este arquivo é o ponto de handoff entre ferramentas (Code, Antigravity, ou qual
 ## Estado atual
 (a ferramenta que estiver trabalhando atualiza esta seção a cada sessão: o que existe, o que está funcionando, o que está pela metade)
 
-Atualizado em 2026-09-10 (Claude Code), depois de segurança, deploy, migrations, CAPTCHA e marca RoutinXP. O próximo passo do roteiro é o 10.
+Atualizado em 2026-09-10 (Claude Code): passo 10 concluído, passo 11 em andamento.
 
 - Repositório git: **sim**, branch `main`, remoto **privado** https://github.com/Phnl121/RoutinXP (conta Phnl121). Identidade local `Pedro <pedrocybernet01@gmail.com>`.
 - Deploy: **Vercel**, projeto `phnl121/routinxp` (renomeado de `routin`), produção em **https://routinxp.vercel.app**.
@@ -37,8 +37,22 @@ Atualizado em 2026-09-10 (Claude Code), depois de segurança, deploy, migrations
   - Estados vazio, carregando e erro. No celular, chips roláveis, Quadro deslizante e botão flutuante "+".
   - Camada de dados em `src/lib/dados.js` + `src/lib/useDados.js` (atualizações otimistas).
 - **Pré-visualização de desenvolvimento:** `npm run dev` e abrir `/?previa` (opcional `&visao=quadro`). Mostra dados fictícios em memória, sem login, útil para capturas e revisão. Fica fora do build de produção (verificado).
-- Lógica de XP/streak (passo 10): **não iniciada**. Por enquanto concluir só grava `status = 'concluida'`; o XP não entra em `user_stats`. As linhas concluídas mostram o `xp_value` guardado (padrão 10) até o passo 10.
-- Dashboard / card de perfil (passo 11): não iniciado.
+- Lógica de XP/streak (passo 10): **pronta e validada pelo usuário em produção.**
+  - A migration `20260910220000_xp_e_streak` criou `concluir_tarefa(id)` e `minhas_estatisticas()`, calculadas no servidor no horário de Brasília.
+  - Regra de XP:
+    - 10 de base, +5 se concluída no prazo;
+    - 0 se a tarefa foi criada há menos de 5 min, e nesse caso também não conta pro streak;
+    - teto de 150 por dia.
+  - O navegador não altera mais `status`, `completed_at` nem `xp_value` (privilégio por coluna).
+  - Tarefas concluídas antes do passo 10 ficaram com XP 0.
+  - No app: o "+XP" voa até a barra superior, o nível sobe em dois tempos com aviso, e há um aviso com o motivo quando a tarefa rende 0 XP ou o teto é atingido.
+- Painel, perfil e menu lateral (passo 11): **em andamento.**
+  - O usuário está gerando imagens das três estruturas de Painel (`.impeccable/mocks/decision/PROMPTS-painel.md`).
+  - Decidido:
+    - menu lateral fixo e retrátil, estilo app do Claude, com Tarefas, Painel e Perfil;
+    - gráficos no Painel;
+    - cadastro com primeiro nome, sobrenome, data de nascimento (13 anos ou mais) e ocupação;
+    - lembrete de streak.
 - PWA (passo 12): não iniciado.
 - **Configuração de segurança e deploy** (roteiro em `seguranca-e-criacao-repositorio.txt`):
   - Etapas A a D feitas: histórico do git sem segredos, RLS confirmado no painel e por ataque anônimo à API, repositório privado criado, Vercel ligada ao projeto.

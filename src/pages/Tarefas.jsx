@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { useDados } from '../lib/useDados'
+import { useLocation } from 'react-router'
+import { useDadosApp } from '../lib/dadosContexto'
 import { ordenarConcluidas, ordenarPendentes } from '../lib/datas'
 import { calcularNivel } from '../lib/nivel'
-import { TopBar } from '../components/TopBar'
 import { Trilho } from '../components/Trilho'
 import { Lista, Quadro } from '../components/VisoesTarefas'
 import { TarefaDialog } from '../components/TarefaDialog'
@@ -27,14 +27,23 @@ function lerVisao() {
   }
 }
 
-export default function Tarefas({ session }) {
-  const d = useDados()
+export default function Tarefas() {
+  const d = useDadosApp()
+  const location = useLocation()
   const [selecionada, setSelecionada] = useState(null)
   const [visao, setVisao] = useState(lerVisao)
   const [filtro, setFiltro] = useState('pendente')
   const [dlgTarefa, setDlgTarefa] = useState(null) // { tarefa: objeto | null }
   const [dlgCategoria, setDlgCategoria] = useState(null) // { categoria: objeto | null }
   const [voos, setVoos] = useState([]) // "+XP" em voo até a barra superior
+
+  // "Nova tarefa" da barra superior (de qualquer página) chega aqui como estado da navegação.
+  const pedidoNovaTarefa = location.state?.novaTarefa ?? null
+  const [pedidoAtendido, setPedidoAtendido] = useState(null)
+  if (pedidoNovaTarefa && pedidoNovaTarefa !== pedidoAtendido) {
+    setPedidoAtendido(pedidoNovaTarefa)
+    setDlgTarefa({ tarefa: null })
+  }
 
   const categoriaSel = d.categorias.find((c) => c.id === selecionada) ?? null
   const categoriasPorId = Object.fromEntries(d.categorias.map((c) => [c.id, c]))
@@ -163,9 +172,7 @@ export default function Tarefas({ session }) {
   const temConteudo = d.estado === 'pronto' && d.categorias.length > 0 && d.tarefas.length > 0
 
   return (
-    <div className="app">
-      <TopBar stats={d.stats} email={session.user.email} onNovaTarefa={abrirNovaTarefa} />
-
+    <>
       <div className="app__corpo">
         <Trilho
           categorias={d.categorias}
@@ -251,6 +258,6 @@ export default function Tarefas({ session }) {
       ))}
 
       <Toast aviso={d.aviso} onDesfazer={d.desfazerExclusao} onFechar={d.fecharAviso} />
-    </div>
+    </>
   )
 }

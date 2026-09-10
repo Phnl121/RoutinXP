@@ -30,6 +30,28 @@ export function ordenarConcluidas(a, b) {
   return (b.completed_at ?? '').localeCompare(a.completed_at ?? '')
 }
 
+// Data de hoje no horário de Brasília, no formato do banco ("2026-09-10").
+export function hojeBrasilia() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date())
+}
+
+// Dia (Brasília) de um instante ISO, no formato "2026-09-10".
+export function diaBrasilia(instanteIso) {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date(instanteIso))
+}
+
+// Idade completa em anos numa data "AAAA-MM-DD", comparando com hoje em Brasília.
+export function idadeEm(dataNascimento) {
+  const [a, m, d] = dataNascimento.split('-').map(Number)
+  const [ha, hm, hd] = hojeBrasilia().split('-').map(Number)
+  return ha - a - (hm < m || (hm === m && hd < d) ? 1 : 0)
+}
+
+export function iniciaisDoPerfil(perfil, email) {
+  if (perfil?.primeiro_nome) return `${perfil.primeiro_nome[0]}${perfil.sobrenome?.[0] ?? ''}`.toUpperCase()
+  return iniciaisDoEmail(email)
+}
+
 export function iniciaisDoEmail(email) {
   const letras = (email ?? '').split('@')[0].replace(/[^a-zA-Z]/g, '')
   return (letras.slice(0, 2) || '?').toUpperCase()

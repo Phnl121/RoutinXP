@@ -3,6 +3,8 @@ import { useSession } from './lib/useSession'
 import Entrar from './pages/Entrar'
 import RedefinirSenha from './pages/RedefinirSenha'
 import Tarefas from './pages/Tarefas'
+import Shell from './pages/Shell'
+import Perfil from './pages/Perfil'
 import { t } from './i18n/pt-BR'
 import { emPrevia, sessaoPrevia } from './dev/previa'
 
@@ -29,18 +31,21 @@ export default function App() {
           path="/redefinir-senha"
           element={<RedefinirSenha session={session} aoConcluir={clearRecovery} />}
         />
+        {/* Páginas do app logado, dentro da casca com menu lateral. */}
         <Route
-          path="/"
           element={
             !session ? (
               <Navigate to="/entrar" replace />
             ) : recovery ? (
               <Navigate to="/redefinir-senha" replace />
             ) : (
-              <Tarefas session={session} />
+              <Shell session={session} />
             )
           }
-        />
+        >
+          <Route path="/" element={<Tarefas />} />
+          <Route path="/perfil" element={<Perfil />} />
+        </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

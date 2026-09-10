@@ -239,6 +239,14 @@ select {
   gap: 1.25rem;
 }
 
+/* Dois campos lado a lado; empilham quando o espaço aperta. */
+.campos-duplos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
 .field {
   display: grid;
   gap: 0.5rem;

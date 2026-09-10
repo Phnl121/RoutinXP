@@ -14,6 +14,8 @@ const porCodigo = {
   email_address_invalid: e.emailInvalido,
   validation_failed: e.emailInvalido,
   captcha_failed: e.captcha,
+  // Falha no trigger de cadastro (ex.: perfil com menos de 13 anos burlando o formulário).
+  unexpected_failure: e.cadastroDados,
 }
 
 // Traduz um erro do Supabase Auth para uma mensagem em pt-BR que diz o problema e a saída.

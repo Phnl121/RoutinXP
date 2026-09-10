@@ -48,8 +48,11 @@ let tarefas = [
   tarefa('t10', 'Atualizar README do portfólio', 'c2', null, 400, 10),
 ]
 
+let perfil = { primeiro_nome: 'Ana', sobrenome: 'Souza', data_nascimento: '2003-05-14', ocupacao: 'estudante' }
+
 // 690 XP = nível 4 com 240/250: uma conclusão já mostra a subida de nível.
-let stats = { xp_total: 690, streak_atual: 6, streak_recorde: 14, ultima_data_conclusao: dia(0) }
+// Última conclusão ontem: a pré-visualização mostra o lembrete de streak em risco.
+let stats = { xp_total: 690, streak_atual: 6, streak_recorde: 14, ultima_data_conclusao: dia(-1) }
 
 // Sem timer: capturas headless (tempo virtual, iframes) resolvem na hora.
 const espera = (valor) => Promise.resolve(structuredClone(valor))
@@ -113,7 +116,11 @@ export const previaApi = {
     tarefas = tarefas.map((x) =>
       x.id === id ? { ...x, status: 'concluida', completed_at: new Date().toISOString(), xp_value: xp } : x,
     )
-    stats = { ...stats, xp_total: stats.xp_total + xp }
+    stats = {
+      ...stats,
+      xp_total: stats.xp_total + xp,
+      ...(recente ? {} : { ultima_data_conclusao: hoje, streak_atual: stats.ultima_data_conclusao === hoje ? stats.streak_atual : stats.streak_atual + 1 }),
+    }
     return espera({
       tarefa: tarefas.find((x) => x.id === id),
       xp_ganho: xp,
@@ -122,4 +129,9 @@ export const previaApi = {
     })
   },
   lerEstatisticas: () => espera({ ...stats, xp_hoje: 0, teto_diario: 150 }),
+  lerPerfil: () => espera(perfil),
+  salvarPerfil: (campos) => {
+    perfil = { ...campos, primeiro_nome: campos.primeiro_nome.trim(), sobrenome: campos.sobrenome.trim() }
+    return espera(perfil)
+  },
 }

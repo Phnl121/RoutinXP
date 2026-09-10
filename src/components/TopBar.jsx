@@ -1,17 +1,23 @@
 import { supabase } from '../lib/supabase'
-import { iniciaisDoEmail } from '../lib/datas'
+import { iniciaisDoPerfil } from '../lib/datas'
+import { nomeCompleto } from '../lib/perfil'
 import { BadgeNivel, BarraXp } from './Progresso'
 import { useMedidorNivel } from '../lib/useMedidorNivel'
-import { IconeMais } from './icones'
+import { IconeMais, IconeMenu } from './icones'
 import { Logo } from './Logo'
 import { t } from '../i18n/pt-BR'
 
-export function TopBar({ stats, email, onNovaTarefa }) {
+// Barra superior do app: botão do menu (celular), logo (celular), medidor de nível,
+// "Nova tarefa" e menu da conta. No desktop a logo fica no menu lateral.
+export function TopBar({ stats, perfil, email, onNovaTarefa, onAbrirMenu }) {
   const medidor = useMedidorNivel(stats?.xp_total ?? 0, Boolean(stats))
   const streak = stats?.streak_atual ?? 0
 
   return (
     <header className="topo">
+      <button type="button" className="topo__menu" onClick={onAbrirMenu} aria-label={t.menu.abrir}>
+        <IconeMenu />
+      </button>
       <Logo className="topo__logo" />
 
       {stats ? (
@@ -38,9 +44,10 @@ export function TopBar({ stats, email, onNovaTarefa }) {
           {t.topo.novaTarefa}
         </button>
         <button type="button" className="avatar avatar--btn" popoverTarget="menu-conta" aria-label={t.conta.menu}>
-          {iniciaisDoEmail(email)}
+          {iniciaisDoPerfil(perfil, email)}
         </button>
         <div id="menu-conta" popover="auto" className="menu">
+          {perfil && <p className="menu__nome">{nomeCompleto(perfil)}</p>}
           <p className="menu__email">{email}</p>
           <button type="button" className="menu__item" onClick={() => supabase.auth.signOut()}>
             {t.conta.sair}

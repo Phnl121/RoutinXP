@@ -94,12 +94,61 @@ export const t = {
       rede: 'Sem conexão com o servidor. Confira sua internet e tente de novo.',
       generico: 'Algo deu errado. Tente de novo em instantes.',
       captcha: 'A verificação de segurança não foi aceita. Tente de novo.',
+      cadastroDados: 'Não foi possível criar a conta com esses dados. Confira os campos e a data de nascimento (13 anos ou mais).',
     },
   },
 
   conta: {
     menu: 'Conta',
     sair: 'Sair',
+  },
+
+  menu: {
+    rotulo: 'Navegação',
+    tarefas: 'Tarefas',
+    painel: 'Painel',
+    perfil: 'Perfil',
+    recolher: 'Recolher menu',
+    expandir: 'Expandir menu',
+    abrir: 'Abrir menu',
+    fechar: 'Fechar menu',
+    completarPerfil: 'Complete seu perfil',
+  },
+
+  lembrete: {
+    texto: (n) =>
+      `Você ainda não concluiu nenhuma tarefa hoje. Conclua uma para manter sua sequência de ${n} ${n === 1 ? 'dia' : 'dias'}.`,
+    acao: 'Ver tarefas',
+    dispensar: 'Dispensar lembrete',
+  },
+
+  perfil: {
+    titulo: 'Perfil',
+    tituloCompletar: 'Complete seu perfil',
+    textoCompletar: 'Seu nome aparece no menu e no painel. Leva menos de um minuto.',
+    campos: {
+      primeiroNome: 'Primeiro nome',
+      sobrenome: 'Sobrenome',
+      nascimento: 'Data de nascimento',
+      ocupacao: 'Ocupação',
+      escolha: 'Selecione',
+    },
+    ocupacoes: [
+      { valor: 'estudante', rotulo: 'Estudante' },
+      { valor: 'trabalho', rotulo: 'Trabalho' },
+      { valor: 'ambos', rotulo: 'Estudo e trabalho' },
+    ],
+    salvar: 'Salvar perfil',
+    salvando: 'Salvando…',
+    salvo: 'Perfil salvo.',
+    conta: 'Conta',
+    email: 'E-mail',
+    sair: 'Sair da conta',
+    erros: {
+      obrigatorio: 'Preencha nome, sobrenome, data de nascimento e ocupação.',
+      data: 'Informe uma data de nascimento válida.',
+      idade: 'É preciso ter 13 anos ou mais para usar o RoutinXP.',
+    },
   },
 
   topo: {

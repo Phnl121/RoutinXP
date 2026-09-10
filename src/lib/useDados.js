@@ -21,10 +21,12 @@ function mensagemDoGanho(xp, motivo) {
   return null
 }
 
-const buscarTudo = () => Promise.all([api.listarCategorias(), api.listarTarefas(), api.lerEstatisticas()])
+const buscarTudo = () =>
+  Promise.all([api.listarCategorias(), api.listarTarefas(), api.lerEstatisticas(), api.lerPerfil()])
 
-// Estado de categorias, tarefas e estatísticas do usuário, com atualizações otimistas.
-export function useDados() {
+// Estado de categorias, tarefas, estatísticas e perfil do usuário, com atualizações otimistas.
+export function useDados(userId) {
+  const [perfil, setPerfil] = useState(null)
   const [categorias, setCategorias] = useState([])
   const [tarefas, setTarefas] = useState([])
   const [stats, setStats] = useState(null)
@@ -33,10 +35,11 @@ export function useDados() {
   const [recem, setRecem] = useState(null) // id da tarefa concluída por último (para a animação)
   const exclusao = useRef(null) // { tarefa, timer }
 
-  const aplicar = useCallback(([c, tf, s]) => {
+  const aplicar = useCallback(([c, tf, s, p]) => {
     setCategorias(c)
     setTarefas(tf)
     setStats(s)
+    setPerfil(p)
     setEstado('pronto')
   }, [])
   const falhouCarregar = useCallback(() => setEstado('erro'), [])
@@ -146,12 +149,20 @@ export function useDados() {
     return salva
   }
 
+  async function salvarPerfil(campos) {
+    const salvo = await api.salvarPerfil(campos, Boolean(perfil), userId)
+    setPerfil(salvo)
+    return salvo
+  }
+
   async function excluirCategoria(id) {
     await api.excluirCategoria(id)
     setCategorias((cs) => cs.filter((c) => c.id !== id))
   }
 
   return {
+    perfil,
+    salvarPerfil,
     categorias,
     tarefas,
     stats,

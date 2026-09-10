@@ -1,0 +1,344 @@
+/* Casca do app: menu lateral fixo e retrátil + conteúdo. */
+
+.shell {
+  --menu-w: 16.25rem;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: var(--menu-w) minmax(0, 1fr);
+  transition: grid-template-columns 0.25s var(--ease-out);
+}
+
+.shell[data-recolhido='true'] {
+  --menu-w: 4.25rem;
+}
+
+.shell__conteudo {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Menu lateral ---------- */
+
+.menu-lateral {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 0.875rem 0.75rem;
+  overflow: hidden;
+  background: var(--topbar);
+  border-right: 1px solid var(--rule);
+}
+
+.menu-lateral__topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding-left: 0.35rem;
+}
+
+.menu-lateral__logo {
+  --logo-h: 2rem;
+}
+
+.menu-lateral__icone {
+  display: none;
+  width: 2rem;
+  height: 2rem;
+}
+
+.menu-lateral__botao {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    background-color 0.2s var(--ease-out),
+    color 0.2s var(--ease-out);
+}
+
+.menu-lateral__botao:hover {
+  background: var(--panel-2);
+  color: var(--ink);
+}
+
+.menu-lateral__botao svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.menu-lateral__fechar {
+  display: none;
+}
+
+.menu-lateral__nav {
+  display: grid;
+  gap: 2px;
+}
+
+.menu-lateral__item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  padding: 0 0.8rem;
+  border-radius: 8px;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 0.2s var(--ease-out),
+    color 0.2s var(--ease-out);
+}
+
+.menu-lateral__item svg {
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.menu-lateral__item:hover {
+  background: var(--panel-2);
+  color: var(--ink);
+}
+
+/* Página atual: seleção neutra (roxo fica só para ações). */
+.menu-lateral__item[aria-current='page'] {
+  background: var(--panel-2);
+  box-shadow: inset 0 0 0 1px var(--rule-strong);
+  color: var(--ink);
+}
+
+.menu-lateral__usuario {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  margin-top: auto;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color 0.2s var(--ease-out);
+}
+
+.menu-lateral__usuario:hover,
+.menu-lateral__usuario[aria-current='page'] {
+  background: var(--panel-2);
+}
+
+.menu-lateral__usuario .avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 0.8125rem;
+}
+
+.menu-lateral__quem {
+  display: grid;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.menu-lateral__nome {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.menu-lateral__nivel {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.menu-lateral__fundo {
+  display: none;
+}
+
+/* Recolhido (só no desktop): trilho de ícones com dica no hover. */
+@media (min-width: 60rem) {
+  .menu-lateral[data-recolhido='true'] .menu-lateral__topo {
+    flex-direction: column;
+    padding-left: 0;
+  }
+
+  .menu-lateral[data-recolhido='true'] .menu-lateral__logo {
+    display: none;
+  }
+
+  .menu-lateral[data-recolhido='true'] .menu-lateral__icone {
+    display: block;
+  }
+
+  .menu-lateral[data-recolhido='true'] .menu-lateral__item {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .menu-lateral[data-recolhido='true'] .menu-lateral__texto {
+    display: none;
+  }
+
+  .menu-lateral[data-recolhido='true'] .menu-lateral__usuario {
+    justify-content: center;
+    padding: 0.35rem;
+  }
+}
+
+/* ---------- Lembrete de streak ---------- */
+
+.lembrete {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: calc(100% - 2 * clamp(1rem, 3vw, 2rem));
+  max-width: 86rem;
+  margin: 1rem auto 0;
+  padding: 0.7rem 0.75rem 0.7rem 1rem;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}
+
+.lembrete > svg {
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  color: var(--muted);
+}
+
+.lembrete p {
+  flex: 1;
+  margin: 0;
+}
+
+.lembrete__fechar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.lembrete__fechar:hover {
+  background: var(--panel-2);
+  color: var(--ink);
+}
+
+.lembrete__fechar svg {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+/* ---------- Páginas simples (Perfil) ---------- */
+
+.pagina {
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+  width: min(100%, 44rem);
+  padding: clamp(1.25rem, 3vw, 2rem) clamp(1rem, 3vw, 2rem) 6rem;
+}
+
+.pagina__painel {
+  display: grid;
+  gap: 1rem;
+  padding: 1.75rem;
+}
+
+.pagina__painel > .link-btn {
+  justify-self: start;
+}
+
+.pagina__texto {
+  margin: 0;
+  max-width: 44ch;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.perfil__acoes {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.perfil__salvo {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--green);
+}
+
+.perfil__conta {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0;
+}
+
+.perfil__conta dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Celular: menu vira gaveta ---------- */
+
+@media (max-width: 59.99rem) {
+  .shell,
+  .shell[data-recolhido='true'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .menu-lateral {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 35;
+    width: min(18rem, 85vw);
+    transform: translateX(-100%);
+    transition: transform 0.3s var(--ease-out);
+    box-shadow: var(--shadow);
+  }
+
+  .menu-lateral[data-gaveta='true'] {
+    transform: none;
+  }
+
+  .menu-lateral__alternar {
+    display: none;
+  }
+
+  .menu-lateral__fechar {
+    display: grid;
+  }
+
+  .menu-lateral__fundo {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 34;
+    background: var(--backdrop);
+  }
+
+  .pagina__painel {
+    padding: 1.25rem;
+  }
+}

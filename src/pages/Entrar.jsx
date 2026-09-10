@@ -6,6 +6,8 @@ import { DemoXp } from '../components/DemoXp'
 import { Logo } from '../components/Logo'
 import { Captcha } from '../components/Captcha'
 import { captchaAtivo } from '../lib/captcha'
+import { CamposPerfil } from '../components/CamposPerfil'
+import { PERFIL_VAZIO, validarPerfil } from '../lib/perfil'
 import { t } from '../i18n/pt-BR'
 import './auth.css'
 
@@ -18,6 +20,7 @@ export default function Entrar() {
   const [senha, setSenha] = useState('')
   const [enviando, setEnviando] = useState(false)
   const [erro, setErro] = useState(null)
+  const [perfilCampos, setPerfilCampos] = useState(PERFIL_VAZIO)
   const [captchaToken, setCaptchaToken] = useState(null)
   const [reinicioCaptcha, setReinicioCaptcha] = useState(0)
 
@@ -29,6 +32,13 @@ export default function Entrar() {
 
   async function enviar(evento) {
     evento.preventDefault()
+    if (modo === 'cadastrar') {
+      const problema = validarPerfil(perfilCampos)
+      if (problema) {
+        setErro(problema)
+        return
+      }
+    }
     if (captchaAtivo && !captchaToken) {
       setErro(a.captcha.aguarde)
       return
@@ -55,7 +65,16 @@ export default function Entrar() {
       const { data, error } = await supabase.auth.signUp({
         email: emailLimpo,
         password: senha,
-        options: { emailRedirectTo: window.location.origin, captchaToken: token },
+        options: {
+          emailRedirectTo: window.location.origin,
+          captchaToken: token,
+          // O trigger de cadastro cria o perfil com estes dados (e confere a idade mínima).
+          data: {
+            ...perfilCampos,
+            primeiro_nome: perfilCampos.primeiro_nome.trim(),
+            sobrenome: perfilCampos.sobrenome.trim(),
+          },
+        },
       })
       if (error) setErro(mensagemDeErro(error))
       // O Supabase não revela que o e-mail já existe: devolve um usuário sem identidades.
@@ -120,6 +139,13 @@ export default function Entrar() {
               )}
 
               <form className="form" onSubmit={enviar}>
+                {modo === 'cadastrar' && (
+                  <CamposPerfil
+                    id="cadastro"
+                    valores={perfilCampos}
+                    aoMudar={(campo, valor) => setPerfilCampos((atual) => ({ ...atual, [campo]: valor }))}
+                  />
+                )}
                 <div className="field">
                   <span className="field__top">
                     <label className="label" htmlFor="entrar-email">

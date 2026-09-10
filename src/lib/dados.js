@@ -63,6 +63,22 @@ export async function concluirTarefa(id) {
   return ok(await supabase.rpc('concluir_tarefa', { p_task_id: id }))
 }
 
+const CAMPOS_PERFIL = 'primeiro_nome, sobrenome, data_nascimento, ocupacao'
+
+// null se a conta ainda não completou o perfil (criada antes do passo 11).
+export async function lerPerfil() {
+  return ok(await supabase.from('profiles').select(CAMPOS_PERFIL).maybeSingle())
+}
+
+// A idade mínima (13 anos) e o formato são conferidos também no banco.
+export async function salvarPerfil({ primeiro_nome, sobrenome, data_nascimento, ocupacao }, existe, userId) {
+  const campos = { primeiro_nome: primeiro_nome.trim(), sobrenome: sobrenome.trim(), data_nascimento, ocupacao }
+  const consulta = existe
+    ? supabase.from('profiles').update(campos).eq('user_id', userId)
+    : supabase.from('profiles').insert(campos)
+  return ok(await consulta.select(CAMPOS_PERFIL).single())
+}
+
 // { xp_total, streak_atual (já zerado se passou um dia sem concluir), streak_recorde, xp_hoje, teto_diario }
 export async function lerEstatisticas() {
   return ok(await supabase.rpc('minhas_estatisticas'))
