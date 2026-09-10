@@ -70,9 +70,12 @@ export default function Painel() {
 
           <section className="panel painel__cartao" aria-labelledby="painel-categorias">
             <header className="painel__cabeca">
-              <h2 id="painel-categorias" className="label">
-                {p.categorias}
-              </h2>
+              <div className="painel__titulos">
+                <h2 id="painel-categorias" className="label">
+                  {p.categorias}
+                </h2>
+                <span className="painel__resumo">{p.categoriasPeriodo(periodo)}</span>
+              </div>
               {resumo.maisConcluida && <span className="painel__destaque">{p.maisConcluida(resumo.maisConcluida.nome)}</span>}
             </header>
             {d.categorias.length === 0 ? (

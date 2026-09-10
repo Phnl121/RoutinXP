@@ -43,12 +43,19 @@ export function LinhaDoTempo({ tarefas, categoriasPorId, limite = 12 }) {
                   </span>
                   <span className="linha-tempo__texto">
                     <span className="linha-tempo__titulo">{tarefa.titulo}</span>
-                    {categoria && (
-                      <span className="linha-tempo__cat">
-                        <span className="dot" style={{ background: categoria.cor }} />
-                        {categoria.nome}
+                    <span className="linha-tempo__cat">
+                      {categoria && (
+                        <>
+                          <span className="dot" style={{ background: categoria.cor }} />
+                          {categoria.nome}
+                        </>
+                      )}
+                      {/* No celular a hora vem aqui, junto da categoria. */}
+                      <span className="linha-tempo__hora-curta" aria-hidden="true">
+                        {categoria ? ' · ' : ''}
+                        {horaBrasilia(tarefa.completed_at)}
                       </span>
-                    )}
+                    </span>
                   </span>
                   <time className="linha-tempo__hora" dateTime={tarefa.completed_at}>
                     {horaBrasilia(tarefa.completed_at)}

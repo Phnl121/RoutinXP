@@ -17,13 +17,19 @@ const ITENS = [
 // Menu lateral fixo e retrátil (como o do app do Claude). Desktop: expandido ou em trilho
 // de ícones. Celular: gaveta sobre a página, aberta pelo botão da barra superior.
 export function MenuLateral({ recolhido, onAlternar, gavetaAberta, onFecharGaveta, perfil, stats, email }) {
+  // Gaveta aberta: foco vai para dentro dela e Esc fecha. Ao fechar, o foco volta
+  // para o botão que abriu.
   useEffect(() => {
     if (!gavetaAberta) return undefined
+    document.querySelector('.menu-lateral__fechar')?.focus()
     const aoTeclar = (evento) => {
       if (evento.key === 'Escape') onFecharGaveta()
     }
     window.addEventListener('keydown', aoTeclar)
-    return () => window.removeEventListener('keydown', aoTeclar)
+    return () => {
+      window.removeEventListener('keydown', aoTeclar)
+      document.querySelector('.topo__menu')?.focus()
+    }
   }, [gavetaAberta, onFecharGaveta])
 
   const nivel = calcularNivel(stats?.xp_total ?? 0).nivel
@@ -31,7 +37,7 @@ export function MenuLateral({ recolhido, onAlternar, gavetaAberta, onFecharGavet
   return (
     <>
       {gavetaAberta && <div className="menu-lateral__fundo" onClick={onFecharGaveta} aria-hidden="true" />}
-      <aside className="menu-lateral" data-recolhido={recolhido} data-gaveta={gavetaAberta} aria-label={m.rotulo}>
+      <aside id="menu-lateral" className="menu-lateral" data-recolhido={recolhido} data-gaveta={gavetaAberta} aria-label={m.rotulo}>
         <div className="menu-lateral__topo">
           <Logo className="menu-lateral__logo" />
           <img className="menu-lateral__icone" src="/marca/routinxp-icone.svg" alt={t.app.nome} width="32" height="32" />

@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import { useDados } from '../lib/useDados'
 import { DadosContexto } from '../lib/dadosContexto'
 import { MenuLateral } from '../components/MenuLateral'
 import { TopBar } from '../components/TopBar'
 import { LembreteStreak } from '../components/LembreteStreak'
+import { IconeMais } from '../components/icones'
+import { t } from '../i18n/pt-BR'
 import './tarefas.css'
 import './shell.css'
 
@@ -34,6 +36,9 @@ export default function Shell({ session }) {
     setGavetaAberta(false)
   }
 
+  // Referência estável: o efeito da gaveta (foco e Esc) não deve rodar a cada render.
+  const fecharGaveta = useCallback(() => setGavetaAberta(false), [])
+
   function alternarMenu() {
     setRecolhido((atual) => {
       const novo = !atual
@@ -56,7 +61,7 @@ export default function Shell({ session }) {
           recolhido={recolhido}
           onAlternar={alternarMenu}
           gavetaAberta={gavetaAberta}
-          onFecharGaveta={() => setGavetaAberta(false)}
+          onFecharGaveta={fecharGaveta}
           perfil={d.perfil}
           stats={d.stats}
           email={session.user.email}
@@ -68,9 +73,17 @@ export default function Shell({ session }) {
             email={session.user.email}
             onNovaTarefa={novaTarefa}
             onAbrirMenu={() => setGavetaAberta(true)}
+            gavetaAberta={gavetaAberta}
           />
           <LembreteStreak stats={d.stats} />
           <Outlet context={{ session }} />
+          {/* No celular a barra não tem "Nova tarefa": o botão flutuante faz esse papel em
+              todas as páginas (a de Tarefas tem o próprio, que abre o formulário ali mesmo). */}
+          {location.pathname !== '/' && (
+            <button type="button" className="fab" onClick={novaTarefa} aria-label={t.topo.novaTarefa}>
+              <IconeMais />
+            </button>
+          )}
         </div>
       </div>
     </DadosContexto.Provider>

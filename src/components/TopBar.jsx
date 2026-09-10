@@ -9,13 +9,20 @@ import { t } from '../i18n/pt-BR'
 
 // Barra superior do app: botão do menu (celular), logo (celular), medidor de nível,
 // "Nova tarefa" e menu da conta. No desktop a logo fica no menu lateral.
-export function TopBar({ stats, perfil, email, onNovaTarefa, onAbrirMenu }) {
+export function TopBar({ stats, perfil, email, onNovaTarefa, onAbrirMenu, gavetaAberta }) {
   const medidor = useMedidorNivel(stats?.xp_total ?? 0, Boolean(stats))
   const streak = stats?.streak_atual ?? 0
 
   return (
     <header className="topo">
-      <button type="button" className="topo__menu" onClick={onAbrirMenu} aria-label={t.menu.abrir}>
+      <button
+        type="button"
+        className="topo__menu"
+        onClick={onAbrirMenu}
+        aria-label={t.menu.abrir}
+        aria-expanded={gavetaAberta}
+        aria-controls="menu-lateral"
+      >
         <IconeMenu />
       </button>
       <Logo className="topo__logo" />

@@ -18,24 +18,22 @@ export function GraficoBarras({ dados, teto, titulo }) {
         <div className="barras__teto" style={{ bottom: `${(teto / escala) * 100}%` }} aria-hidden="true">
           <span>{p.teto(teto)}</span>
         </div>
+        {/* As colunas são só visuais (dica no hover); leitor de tela usa a tabela abaixo. */}
         {dados.map((d, i) => (
           <div
             key={d.dia}
             className="barras__coluna"
             // Dica alinhada para dentro nas pontas, para não vazar do cartão.
             data-lado={i < dados.length / 3 ? 'inicio' : i >= (dados.length * 2) / 3 ? 'fim' : undefined}
-            tabIndex={0}
-            aria-label={p.barra(rotuloDiaSemana(d.dia), rotuloDiaMes(d.dia), d.xp, d.concluidas)}
+            aria-hidden="true"
           >
             {d === maior && d.xp > 0 && (
-              <span className="barras__valor" style={{ bottom: `calc(${(d.xp / escala) * 100}% + 0.25rem)` }} aria-hidden="true">
-                {d.xp}
+              <span className="barras__valor" style={{ bottom: `calc(${(d.xp / escala) * 100}% + 0.25rem)` }}>
+                {p.xp(d.xp)}
               </span>
             )}
-            <span className="barras__barra" style={{ height: `${(d.xp / escala) * 100}%` }} aria-hidden="true" />
-            <span className="barras__dica" aria-hidden="true">
-              {rotuloDiaSemana(d.dia)} {rotuloDiaMes(d.dia)} · {d.xp} XP · {d.concluidas}
-            </span>
+            <span className="barras__barra" style={{ height: `${(d.xp / escala) * 100}%` }} />
+            <span className="barras__dica">{p.barra(rotuloDiaSemana(d.dia), rotuloDiaMes(d.dia), d.xp, d.concluidas)}</span>
           </div>
         ))}
       </div>
