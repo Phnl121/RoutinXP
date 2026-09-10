@@ -109,6 +109,14 @@ Atualizado em 2026-09-10 (Claude Code): passo 12 (PWA) construído; com ele, tod
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
 
+### 2026-09-11, Claude Code (Opus 5): ajustes pedidos pelo usuário
+Feito:
+- "+ Nova tarefa" saiu da barra superior e foi para a linha do título da página de Tarefas, à direita. No celular continua o botão flutuante.
+- No computador, Painel e Perfil ficam sem botão de criar; o menu leva a Tarefas.
+- Barra superior virou grade 1fr | auto | 1fr: o medidor de nível fica sempre centralizado (desvio medido: 0 px com o menu aberto e recolhido).
+- `DESIGN.md` atualizado. Capturas em `.impeccable/review/ajustes/`.
+- Decidido com o usuário: não haverá painel administrativo na v1; a administração é feita pelo painel do Supabase.
+
 ### 2026-09-10 (madrugada), Claude Code (Opus 5): passo 12 (PWA)
 Feito:
 - Manifest, ícones, service worker gerado no build, convite para instalar (Android/computador e iPhone) e aviso sem conexão.

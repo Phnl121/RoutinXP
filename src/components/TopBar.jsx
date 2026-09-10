@@ -3,13 +3,14 @@ import { iniciaisDoPerfil } from '../lib/datas'
 import { nomeCompleto } from '../lib/perfil'
 import { BadgeNivel, BarraXp } from './Progresso'
 import { useMedidorNivel } from '../lib/useMedidorNivel'
-import { IconeMais, IconeMenu } from './icones'
+import { IconeMenu } from './icones'
 import { Logo } from './Logo'
 import { t } from '../i18n/pt-BR'
 
-// Barra superior do app: botão do menu (celular), logo (celular), medidor de nível,
-// "Nova tarefa" e menu da conta. No desktop a logo fica no menu lateral.
-export function TopBar({ stats, perfil, email, onNovaTarefa, onAbrirMenu, gavetaAberta }) {
+// Barra superior do app: botão do menu (celular), logo (celular), medidor de nível
+// (sempre no centro) e menu da conta. No desktop a logo fica no menu lateral.
+// "Nova tarefa" fica no título da página de Tarefas (e no botão flutuante no celular).
+export function TopBar({ stats, perfil, email, onAbrirMenu, gavetaAberta }) {
   const medidor = useMedidorNivel(stats?.xp_total ?? 0, Boolean(stats))
   const streak = stats?.streak_atual ?? 0
 
@@ -46,10 +47,6 @@ export function TopBar({ stats, perfil, email, onNovaTarefa, onAbrirMenu, gaveta
       )}
 
       <div className="topo__acoes">
-        <button type="button" className="btn btn--compacto topo__nova" onClick={onNovaTarefa}>
-          <IconeMais />
-          {t.topo.novaTarefa}
-        </button>
         <button type="button" className="avatar avatar--btn" popoverTarget="menu-conta" aria-label={t.conta.menu}>
           {iniciaisDoPerfil(perfil, email)}
         </button>

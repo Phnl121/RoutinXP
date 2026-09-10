@@ -186,7 +186,13 @@ export default function Tarefas() {
 
         <main className="app__main">
           <header className="main__cabeca">
-            <h1 className="main__titulo">{categoriaSel?.nome ?? tt.tituloTodas}</h1>
+            <div className="main__titulo-linha">
+              <h1 className="main__titulo">{categoriaSel?.nome ?? tt.tituloTodas}</h1>
+              <button type="button" className="btn btn--compacto main__nova" onClick={abrirNovaTarefa}>
+                <IconeMais />
+                {t.topo.novaTarefa}
+              </button>
+            </div>
             {temConteudo && (
               <div className="main__controles">
                 <div className="tabs" role="group" aria-label={tt.visoes.rotulo}>

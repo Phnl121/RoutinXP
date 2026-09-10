@@ -90,7 +90,6 @@ export default function Shell({ session }) {
             stats={d.stats}
             perfil={d.perfil}
             email={session.user.email}
-            onNovaTarefa={novaTarefa}
             onAbrirMenu={() => setGavetaAberta(true)}
             gavetaAberta={gavetaAberta}
           />
