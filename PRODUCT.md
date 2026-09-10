@@ -48,6 +48,9 @@ One list for every area of life, with a reward loop that is deliberately simple:
 2. Task list grouped by category, with pendente / concluída filter
 3. Create / edit task (title, category, due date)
 4. Simple dashboard: total XP, current streak, record streak
+5. Category management: create, edit, delete categories (name + color). Added by the user on 2026-09-10, beyond the original scope, because tasks require a category and no categories are pre-seeded. New users start with zero categories, so first run must lead them to create one. A category that still has tasks cannot be deleted (FK `on delete restrict`); the UI must explain that instead of failing silently.
+
+**Auth:** Supabase email confirmation stays on (decided 2026-09-10). Sign-up ends in a "check your email" state, not a logged-in session. The free plan rate-limits confirmation emails.
 
 **Reward rules (v1, simple on purpose):**
 - Completing a task adds its `xp_value` (default 10) to `xp_total`.
