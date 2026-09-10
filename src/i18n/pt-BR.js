@@ -145,9 +145,9 @@ export const t = {
     acao: 'Instalar',
     dispensar: 'Dispensar convite para instalar',
     ios: {
-      titulo: 'Instalar no iPhone',
-      texto: 'O iPhone instala pelo menu do Safari:',
-      passo1: 'Toque em Compartilhar, na barra do Safari.',
+      titulo: 'Instalar na tela de início',
+      texto: 'No iPhone e no iPad, a instalação é feita pelo navegador:',
+      passo1: 'Toque em Compartilhar. Ele fica na barra do navegador ou dentro do botão de mais opções (•••).',
       passo2: 'Escolha "Adicionar à Tela de Início".',
       passo3: 'Toque em "Adicionar". O RoutinXP aparece junto dos seus apps.',
       ok: 'Entendi',
@@ -155,7 +155,7 @@ export const t = {
   },
 
   conexao: {
-    offline: 'Sem conexão. Suas tarefas voltam a carregar quando a internet voltar.',
+    offline: 'Sem conexão. O que você mudar agora só será salvo quando a internet voltar.',
   },
 
   lembrete: {

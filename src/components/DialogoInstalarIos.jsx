@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { Dialogo } from './Dialogo'
 import { IconeCompartilhar } from './icones'
+import { dispensarConvite } from '../lib/instalacao'
 import { t } from '../i18n/pt-BR'
 
 const i = t.instalar.ios
@@ -25,7 +26,15 @@ export function DialogoInstalarIos({ onFechar }) {
         <li>{i.passo3}</li>
       </ol>
       <div className="dialogo__acoes">
-        <button type="button" className="btn" onClick={() => ref.current?.close()}>
+        <button
+          type="button"
+          className="btn"
+          onClick={() => {
+            // No iPhone o navegador não avisa quando o app é instalado: "Entendi" encerra o convite.
+            dispensarConvite()
+            ref.current?.close()
+          }}
+        >
           {i.ok}
         </button>
       </div>

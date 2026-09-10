@@ -94,13 +94,17 @@ export default function Shell({ session }) {
             onAbrirMenu={() => setGavetaAberta(true)}
             gavetaAberta={gavetaAberta}
           />
-          {!online && (
-            <div className="lembrete" role="status">
-              <IconeSemConexao />
-              <p>{t.conexao.offline}</p>
-            </div>
-          )}
-          <LembreteStreak stats={d.stats} />
+          {/* Região de status sempre montada: leitor de tela anuncia quando a conexão cai. */}
+          <div role="status">
+            {!online && (
+              <div className="lembrete">
+                <IconeSemConexao />
+                <p>{t.conexao.offline}</p>
+              </div>
+            )}
+          </div>
+          {/* Offline, o lembrete de streak espera: concluir agora não salvaria. */}
+          {online && <LembreteStreak stats={d.stats} />}
           {/* Um aviso por vez: o convite para instalar espera o lembrete de streak sair. */}
           {online && modoInstalacao && !streakEmRisco(d.stats, hojeBrasilia()) && <ConviteInstalar onInstalar={instalar} />}
           <Outlet context={{ session }} />

@@ -19,11 +19,13 @@ const PUBLICOS = [
 // calculada do conteúdo: qualquer mudança no app vira uma versão nova do service worker.
 function serviceWorker() {
   let saida = 'dist'
+  let publico = 'public'
   return {
     name: 'routinxp-service-worker',
     apply: 'build',
     configResolved(config) {
       saida = config.build.outDir
+      publico = config.publicDir
     },
     writeBundle(_, bundle) {
       const hash = createHash('sha256')
@@ -33,6 +35,9 @@ function serviceWorker() {
         gerados.push(`/${nome}`)
         hash.update(nome).update(item.type === 'chunk' ? item.code : item.source)
       }
+      // Os arquivos de public/ também entram na versão: trocar um ícone ou o manifest
+      // gera um service worker novo, e o app instalado busca a versão nova.
+      for (const arquivo of PUBLICOS) hash.update(arquivo).update(readFileSync(join(publico, arquivo)))
       const arquivos = [...new Set([...gerados, ...PUBLICOS])].sort()
       const modelo = readFileSync(new URL('./pwa/sw.js', import.meta.url), 'utf8')
       const sw = modelo

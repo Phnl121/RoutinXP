@@ -51,6 +51,30 @@ export function useInstalacao() {
   return useSyncExternalStore(assinar, modoInstalacao, () => null)
 }
 
+// Convite dispensado (pelo X da faixa ou pelo "Entendi" do passo a passo): não volta mais.
+const CHAVE_DISPENSADO = 'routinxp:instalar:dispensado'
+let dispensado = (() => {
+  try {
+    return localStorage.getItem(CHAVE_DISPENSADO) === '1'
+  } catch {
+    return false
+  }
+})()
+
+export function useConviteDispensado() {
+  return useSyncExternalStore(assinar, () => dispensado, () => true)
+}
+
+export function dispensarConvite() {
+  dispensado = true
+  try {
+    localStorage.setItem(CHAVE_DISPENSADO, '1')
+  } catch {
+    /* sem armazenamento: some só nesta sessão */
+  }
+  avisar()
+}
+
 // Abre a janela de instalação do navegador. Cada aviso do navegador só pode ser usado uma vez.
 export async function pedirInstalacao() {
   if (!pedido) return
