@@ -1,0 +1,25 @@
+# Dependências
+node_modules
+
+# Build
+dist
+dist-ssr
+
+# Variáveis de ambiente e credenciais
+.env
+.env.*
+!.env.example
+supabase-credentials.txt
+Claude outputs/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / SO
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+*.local
