@@ -5,77 +5,96 @@ Este arquivo é o ponto de handoff entre ferramentas (Code, Antigravity, ou qual
 ## Estado atual
 (a ferramenta que estiver trabalhando atualiza esta seção a cada sessão: o que existe, o que está funcionando, o que está pela metade)
 
-Atualizado em 2026-09-10 (Claude Code).
+Atualizado em 2026-09-10 (Claude Code), fim do passo 9.
 
-- Repositório git inicializado: **sim**. Branch `main`, identidade local `Pedro <pedrocybernet01@gmail.com>`. `.gitignore` cobre `node_modules`, `dist`, `.env*`, `supabase-credentials.txt`, `Claude outputs/`.
-- Projeto Vite criado: **sim**. React 19 + Vite 8, JavaScript (não TypeScript), `react-router` e fonte Archivo (`@fontsource-variable/archivo`). Node 24 LTS instalado via winget em `C:\Program Files\nodejs` (pode não estar no PATH do shell; `.claude/launch.json` chama `node.exe` direto).
-- Supabase client: **sim**. `src/lib/supabase.js` lê `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` do `.env` (fora do git; modelo em `.env.example`). `supabase-credentials.txt` foi apagado.
-- Schema Supabase (categories, tasks, user_stats) rodado: **sim, confirmado** via API. Arquivo `schema.sql`. RLS ativo nas 3 tabelas; um trigger cria a linha de `user_stats` no cadastro.
-- Configuração de URLs do Supabase Auth (Site URL `http://localhost:5173` e Redirect URLs): **feita pelo usuário**.
-- Plugin Impeccable: **disponível** (v4.3.1). Contexto em `PRODUCT.md`, sistema visual em `DESIGN.md` e `.impeccable/design.json`, contrato de direção em `.impeccable/surfaces/src-app-jsx.md`.
-- Auth (login/cadastro): **pronto** e aprovado na revisão final do Impeccable (disposição "ship").
-  - Entrar, criar conta (termina em "confira seu e-mail"), esqueci minha senha e redefinir senha (`/redefinir-senha`).
-  - Erros em pt-BR (`src/lib/authErrors.js`).
-  - A tela de login tem uma demonstração interativa de XP e nível, que não salva nada.
-  - `/` mostra uma página provisória (`src/pages/Inicio.jsx`) até o passo 9.
-- CRUD de tarefas: não iniciado (passo 9).
-- Tela de categorias: não iniciada (passo 9, adicionada ao escopo).
-- Visão Quadro (Kanban): não iniciada (passo 9, adicionada ao escopo).
-- Lógica de XP/streak: não iniciada (passo 10). Vai ser uma função no banco e vai exigir um segundo SQL rodado manualmente no SQL Editor.
-- Dashboard e card de perfil: não iniciados (passo 11).
-- PWA: não iniciado (passo 12).
+- Repositório git: **sim**, branch `main`, **sem remoto** (nada foi enviado ao GitHub ainda). Identidade local `Pedro <pedrocybernet01@gmail.com>`.
+- Projeto Vite: **sim**. React 19 + Vite 8 (JS), `react-router`, fonte Archivo auto-hospedada. Node 24 LTS em `C:\Program Files\nodejs` (pode não estar no PATH do shell; `.claude/launch.json` chama `node.exe` direto).
+- Supabase: client em `src/lib/supabase.js`; schema (`schema.sql`) rodado e confirmado; URLs de Auth configuradas pelo usuário para `localhost:5173`.
+- Impeccable: `PRODUCT.md`, `DESIGN.md` + `.impeccable/design.json` (atualizados após o passo 9), briefs em `.impeccable/surfaces/`.
+- Auth (passo 8): **pronto**, aprovado na revisão final do Impeccable ("ship").
+- Tela de tarefas (passo 9): **pronta**, aprovada na revisão final do Impeccable ("fix", correções aplicadas, depois "ship").
+  - Estrutura "Trilho de categorias", escolhida pelo usuário: barra superior com medidor de nível (NÍVEL, barra de XP, streak), trilho de categorias com contagem de pendentes, abas LISTA | QUADRO e filtro Pendentes/Concluídas.
+  - Lista agrupada por categoria.
+  - Quadro com Pendentes/Concluídas: arrastar para Concluídas conclui a tarefa, e não há volta.
+  - Criar/editar tarefa em diálogo, com título, categoria e data prevista; não há campo de XP.
+  - Excluir tarefa com "Desfazer" por 5 s.
+  - Categorias: criar, editar e excluir no trilho, com 8 cores. Uma categoria com tarefas não pode ser excluída, e a interface explica o motivo.
+  - Datas relativas ("hoje", "amanhã"); prazos de hoje e atrasados aparecem em tinta forte, sem vermelho.
+  - Estados vazio, carregando e erro. No celular, chips roláveis, Quadro deslizante e botão flutuante "+".
+  - Camada de dados em `src/lib/dados.js` + `src/lib/useDados.js` (atualizações otimistas).
+- **Pré-visualização de desenvolvimento:** `npm run dev` e abrir `/?previa` (opcional `&visao=quadro`). Mostra dados fictícios em memória, sem login, útil para capturas e revisão. Fica fora do build de produção (verificado).
+- Lógica de XP/streak (passo 10): **não iniciada**. Por enquanto concluir só grava `status = 'concluida'`; o XP não entra em `user_stats`. As linhas concluídas mostram o `xp_value` guardado (padrão 10) até o passo 10.
+- Dashboard / card de perfil (passo 11): não iniciado.
+- PWA (passo 12): não iniciado.
+- **Deploy na Vercel (passo 5.1, adicionado pelo usuário em `prompt-inicial-code.txt` e `escopo-mvp-v1.md`):** não feito. Depende de `gh auth login` e `vercel login` pelo usuário (ver `seguranca-e-criacao-repositorio.txt`).
 
-**Aguardando:** OK do usuário no visual do login para começar o passo 9.
+**Dados de teste na conta real do usuário:** categorias Faculdade, Trabalho, Vida Pessoal e 8 tarefas de exemplo, algumas concluídas, criadas no teste do passo 9. Ainda não foi confirmado se devem ser apagadas.
 
-**Pendências técnicas conhecidas (resolver no passo 9):**
-- Cores fixas no código em vez de variáveis: fundo da top bar `#0d0e12`, ponta clara da barra de XP `#8af5b5`, valores `rgb()` dos brilhos roxo e verde. Isso atrapalha a ideia de temas.
-- O detector do Impeccable aponta 4 valores fora do DESIGN.md: font-size `0.9375rem` (`demo.css`), `0.625rem` (`index.css`), `clamp(1.875rem, 8vw, 2.5rem)` (`auth.css`) e border-radius `3px` (`auth.css`).
+**Pendências técnicas conhecidas:**
+- Alvos de toque abaixo de 44px: botões do filtro segmentado (32px), chips de categoria no celular, chip "+ Nova categoria" e botão compacto da barra (40px). O DESIGN.md registra 44/48px como regra.
+- O anel do check vazio numa linha em hover (fundo `--panel-2`) fica em ~2,97:1, um pouco abaixo de 3:1.
+- As animações do check divergem: no app 0,45 s e escala 1,2; na demo do login 0,4 s e escala 1,18.
+- O brief `.impeccable/surfaces/src-pages-tarefas-jsx.md` ainda cita uma barra roxa no item selecionado do trilho; o código usa um estado neutro, que é o correto.
+- `.gitignore` ainda não tem `.vercel` (pedido no checklist de segurança do usuário).
 
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
 
-### 2026-09-10, Claude Code (Opus 5)
+### 2026-09-10 (tarde), Claude Code (Opus 5): passo 9
 Feito:
-- Passos 1 a 8 do prompt inicial.
-- `PRODUCT.md` criado com o `/impeccable init`.
-- Direção visual decidida em três rodadas pelo Impeccable. As duas primeiras foram recusadas; a terceira seguiu a convenção de plataforma gamificada, com a DIO como referência.
-- Login/cadastro gamificado construído, revisado pelo revisor do Impeccable (8 correções aplicadas, verdict "ship") e documentado no `DESIGN.md`.
-- App renomeado para Routin.
-- Removida a promessa "cada tarefa vale 10 XP".
+- Regra de XP anti-inflação decidida com o usuário (ver decisões).
+- Rodada de estrutura no Impeccable: o usuário gerou imagens no Nano Banana a partir dos prompts em `.impeccable/mocks/decision/PROMPTS-estrutura-tarefas.md` e escolheu o "Trilho de categorias".
+- Construção completa da tela de tarefas.
+- Teste real na conta do usuário: concluir, arrastar, excluir/desfazer, editar e bloqueio de exclusão de categoria.
+- Revisão final (8 correções) e veredito "ship".
+- `DESIGN.md` atualizado pelo documentador.
 
 Travou:
-- Node.js não estava instalado. Foi instalado via winget.
-- O git não tinha identidade. Foi configurada só no repositório.
-- O SQL precisou ser rodado manualmente, porque não há CLI nem chave de serviço.
+- A automação por teclado no navegador do app falha com o painel escondido; foi contornada chamando o próprio módulo de dados.
+- O Edge headless não tem a sessão do usuário; por isso foi criada a pré-visualização `/?previa`.
+- Os `.txt` de deploy/segurança do usuário entraram no commit `546987a` junto com o código. Nenhum segredo neles, e nada foi enviado a remoto.
 
 Próximo:
-- Passo 9: lista de tarefas agrupada por categoria, Quadro com Pendentes/Concluídas, criar/editar tarefa e tela de categorias.
-- Seguir o `DESIGN.md` e passar pelo Impeccable antes e depois.
+- Decidir o deploy (passo 5.1).
+- Passo 10: função SQL `concluir_tarefa` com a regra de XP, o streak e o fuso, rodada manualmente no SQL Editor. Depois ligar o voo do "+XP" até a barra superior.
 - Resolver as pendências técnicas acima.
+
+### 2026-09-10 (manhã), Claude Code (Opus 5): passos 1 a 8
+Feito:
+- Passos 1 a 8 do prompt inicial.
+- `PRODUCT.md` criado.
+- Três rodadas de direção visual; a escolhida foi a convenção de plataforma gamificada (DIO).
+- Login gamificado aprovado.
+- App renomeado para Routin.
+- Removida a promessa de "10 XP por tarefa".
+
+Travou:
+- Node.js não estava instalado (foi instalado via winget).
+- O git não tinha identidade.
+- O SQL precisou ser rodado manualmente.
 
 ## Decisões tomadas fora do escopo.md
 (qualquer decisão de implementação que não estava prevista no escopo original, pra não se perder entre ferramentas)
 
 Todas em 2026-09-10. Detalhes em `PRODUCT.md`.
 
-- **Nome do produto: Routin** (usuário). A pasta e o repositório continuam "App - Rotina".
-- **Tela de categorias** para criar, editar e excluir (usuário). Nenhuma categoria vem pré-criada, então o primeiro acesso precisa levar o usuário a criar uma. Uma categoria que ainda tem tarefas não pode ser excluída (FK `on delete restrict`), e a interface precisa explicar isso.
-- **Confirmação de e-mail ligada** (usuário).
-- **"Esqueci minha senha"** incluído, com link por e-mail e tela de nova senha (usuário).
-- **Visão Quadro (Kanban)** convivendo com a lista, com alternância Lista/Quadro (usuário).
-  - As colunas são por status: Pendentes e Concluídas.
-  - Arrastar para Concluídas conclui a tarefa.
-  - Em aberto: voltar uma tarefa concluída para Pendentes não é permitido na v1, porque teria que descontar XP.
-- **Níveis** calculados a partir do `xp_total`, sem coluna nova (usuário pediu níveis; a curva foi decidida pelo Claude e pode ser ajustada). A curva: 100 XP para o nível 2, e cada nível seguinte pede 50 a mais. Está em `src/lib/nivel.js`.
-- **Card de perfil** só dentro do app, nunca no login (usuário).
-- **Sem ranking e sem conquistas** na v1 (usuário).
-- **XP por tarefa ainda não definido** (usuário). Substitui o "XP fixo" do escopo; tarefas podem valer mais ou menos.
-  - A coluna `xp_value` já guarda o valor de cada tarefa (padrão 10).
-  - Nenhum texto da interface pode prometer um valor fixo.
-- **XP e streak gravados só pelo servidor.** `user_stats` não tem policy de insert/update pro cliente. O cálculo vai ser uma função SQL no passo 10.
+- **Nome do produto: Routin** (usuário).
+- **Tela de categorias:** criar, editar e excluir, sem categorias pré-criadas. Categoria com tarefas não pode ser excluída.
+- **Confirmação de e-mail ligada;** "Esqueci minha senha" incluído.
+- **Visão Quadro (Kanban)** por status (Pendentes/Concluídas), convivendo com a Lista. Arrastar para Concluídas conclui a tarefa.
+- **Desfazer conclusão:** não entra na v1 (usuário). Uma tarefa concluída não volta para Pendentes.
+- **Excluir tarefa:** permitido, com "Tarefa excluída · Desfazer" por 5 s em vez de confirmação (usuário).
+- **Níveis** calculados a partir do `xp_total`: 100 XP para o nível 2, e cada nível seguinte pede +50 (`src/lib/nivel.js`).
+- **Card de perfil** só dentro do app. Sem ranking e sem conquistas na v1.
+- **Regra de XP** (usuário): o usuário nunca escolhe o valor.
+  - Base de 10 XP por tarefa, +5 se concluída até a data prevista.
+  - Vale 0 XP se concluída menos de 5 minutos depois de criada.
+  - Teto de 150 XP por dia.
+  - Tudo calculado no banco (passo 10).
+  - O formulário de tarefa não tem campo de XP.
+- **XP e streak gravados só pelo servidor:** `user_stats` não tem policy de insert/update pro cliente (mais restrito que "CRUD completo", de propósito).
 - **Em aberto para o passo 10:** qual fuso define o "dia" do streak (sugestão: `America/Sao_Paulo`).
-- **Visual** (usuário): convenção de plataforma gamificada, com a DIO como referência e Duolingo e Habitica como régua de acabamento.
-  - Tema escuro com dois destaques: verde para XP e nível, roxo para ações.
-  - Fonte Archivo.
-  - Cores de categoria aparecem só como um ponto ao lado do nome.
-- **Ideia não agendada: temas desbloqueados por nível** (usuário). As cores já estão em variáveis CSS para permitir isso depois.
+- **Visual:** tema escuro com verde para XP e nível e roxo para ações, na convenção DIO/Duolingo/Habitica, com a fonte Archivo. Roxo nunca marca seleção; seleção é neutra.
+- **Estrutura da tela de tarefas:** "Trilho de categorias" (usuário).
+- **Deploy contínuo desde cedo** (usuário, passo 5.1 nos documentos). Ainda não executado: depende de login do usuário no GitHub e na Vercel.
+- **Ideia não agendada:** temas desbloqueados por nível. As cores já estão em variáveis CSS.
