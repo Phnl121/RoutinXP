@@ -126,12 +126,27 @@ Feito:
   - tabela `board_columns` com RLS; uma Pendentes e uma Concluídas por usuário, por índice único; só as colunas do usuário podem ser excluídas;
   - coluna `tasks.column_id` com FK composta (`on delete set null`) e privilégio de escrita.
   - As colunas fixas são criadas pelo app na primeira leitura.
-  - **Ainda não aplicada em produção.**
+  - **Aplicada em produção** (antes do push). Testado sem login: `board_columns` recusa leitura e gravação (401); `tasks` volta vazio.
 - Capturas em `.impeccable/review/kanban/`. DESIGN.md com a seção Kanban.
+- Revisão final do Impeccable ("fix"), 8 correções aplicadas:
+  - o selo diz "atrasada · 9 set", e o prazo entra no nome acessível;
+  - no Kanban, o selo e o XP ficam na linha da categoria, e a coluna usa tom de 12%;
+  - o filtro conta o que a visão mostra;
+  - excluir coluna com tarefas pede confirmação;
+  - dispensar o aviso de prazos libera o próximo;
+  - um só "hoje" (Brasília) para o selo;
+  - o erro ao criar as colunas fixas não é mais engolido;
+  - o DESIGN.md foi atualizado.
+- Deploy (autorizado pelo usuário): migration aplicada, depois push dos commits do calendário, das tarefas em tela cheia e do Kanban.
 
 Próximo:
-- Aplicar a migration **antes** do push: o app novo lê `board_columns` e sem ela a tela de Tarefas não carrega.
-- Push dos commits do calendário, das tarefas em tela cheia e do Kanban.
+- Teste do usuário em produção:
+  - Categorias e tags;
+  - filtro;
+  - capas e selos de prazo;
+  - aviso de prazos;
+  - Kanban (criar e colorir coluna, arrastar, concluir);
+  - Calendário.
 
 ### 2026-09-11, Claude Code (Opus 5): tarefas em tela cheia, filtro, capas e prazos
 Pedido do usuário: tirar categorias e tags da tela de Tarefas, dar a largura toda às tarefas, criar um filtro, pintar os cards (capa como no Trello, pela imagem que ele mandou), destacar os prazos, e melhorar o Kanban com colunas próprias e coloridas. O Kanban fica para a próxima parte, porque precisa de migration.
