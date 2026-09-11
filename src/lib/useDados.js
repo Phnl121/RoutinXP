@@ -29,6 +29,7 @@ const buscarTudo = () =>
     api.lerPerfil(),
     api.listarTags(),
     api.listarFontes(),
+    api.listarColunas(),
   ])
 
 // Estado de categorias, tarefas, estatísticas e perfil do usuário, com atualizações otimistas.
@@ -37,6 +38,7 @@ export function useDados(userId) {
   const [categorias, setCategorias] = useState([])
   const [tags, setTags] = useState([])
   const [fontes, setFontes] = useState([]) // calendários conectados (Integrações)
+  const [colunas, setColunas] = useState([]) // colunas do Kanban
   const [tarefas, setTarefas] = useState([])
   const [stats, setStats] = useState(null)
   const [estado, setEstado] = useState('carregando') // 'carregando' | 'pronto' | 'erro'
@@ -44,7 +46,8 @@ export function useDados(userId) {
   const [recem, setRecem] = useState(null) // id da tarefa concluída por último (para a animação)
   const exclusao = useRef(null) // { tarefa, timer }
 
-  const aplicar = useCallback(([c, tf, s, p, tg, fo]) => {
+  const aplicar = useCallback(([c, tf, s, p, tg, fo, co]) => {
+    setColunas(co)
     setCategorias(c)
     setTarefas(tf)
     setStats(s)
@@ -184,6 +187,42 @@ export function useDados(userId) {
     setTarefas((ts) => ts.map((x) => (x.tag_ids?.includes(id) ? { ...x, tag_ids: x.tag_ids.filter((g) => g !== id) } : x)))
   }
 
+  const porPosicao = (a, b) => a.posicao - b.posicao
+
+  async function salvarColuna({ id, ...campos }) {
+    const salva = id ? await api.atualizarColuna(id, campos) : await api.criarColuna(campos)
+    setColunas((cs) => (id ? cs.map((c) => (c.id === id ? salva : c)) : [...cs, salva]).sort(porPosicao))
+    return salva
+  }
+
+  // Troca a posição de duas colunas do meio (setas "mover" da janela da coluna).
+  async function trocarColunas(a, b) {
+    const [salvaA, salvaB] = await Promise.all([
+      api.atualizarColuna(a.id, { posicao: b.posicao }),
+      api.atualizarColuna(b.id, { posicao: a.posicao }),
+    ])
+    setColunas((cs) => cs.map((c) => (c.id === a.id ? salvaA : c.id === b.id ? salvaB : c)).sort(porPosicao))
+  }
+
+  async function excluirColuna(id) {
+    await api.excluirColuna(id)
+    setColunas((cs) => cs.filter((c) => c.id !== id))
+    setTarefas((ts) => ts.map((x) => (x.column_id === id ? { ...x, column_id: null } : x)))
+  }
+
+  // Arrastar entre colunas (menos Concluídas, que conclui): otimista, desfaz se falhar.
+  async function moverParaColuna(id, colunaId) {
+    const antes = tarefas.find((x) => x.id === id)
+    if (!antes || antes.status !== 'pendente' || (antes.column_id ?? null) === colunaId) return
+    setTarefas((ts) => ts.map((x) => (x.id === id ? { ...x, column_id: colunaId } : x)))
+    try {
+      await api.moverTarefaColuna(id, colunaId)
+    } catch (erro) {
+      setTarefas((ts) => ts.map((x) => (x.id === id ? antes : x)))
+      falhar(erro)
+    }
+  }
+
   async function salvarFonte({ id, ...campos }) {
     const salva = id ? await api.atualizarFonte(id, campos) : await api.criarFonte(campos)
     setFontes((fs) => (id ? fs.map((f) => (f.id === id ? salva : f)) : [...fs, salva]))
@@ -221,6 +260,11 @@ export function useDados(userId) {
     tags,
     salvarTag,
     excluirTag,
+    colunas,
+    salvarColuna,
+    trocarColunas,
+    excluirColuna,
+    moverParaColuna,
     fontes,
     salvarFonte,
     excluirFonte,

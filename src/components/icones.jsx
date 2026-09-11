@@ -110,6 +110,14 @@ export function IconeCalendario() {
   )
 }
 
+export function IconeReticencias() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M3.5 8h.01M8 8h.01M12.5 8h.01" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 export function IconeFiltro() {
   return (
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">

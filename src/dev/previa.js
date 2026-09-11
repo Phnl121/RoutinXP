@@ -76,6 +76,14 @@ const DESCRICOES = {
 }
 tarefas = tarefas.map((x) => ({ ...x, descricao: DESCRICOES[x.id] ?? null, tag_ids: TAGS_EXEMPLO[x.id] ?? [] }))
 
+// Kanban: Pendentes (vermelha, como no pedido do usuário), uma coluna do meio e Concluídas.
+let colunas = [
+  { id: 'k1', tipo: 'pendente', nome: 'Pendentes', cor: '#e27d8f', posicao: 0 },
+  { id: 'k2', tipo: 'custom', nome: 'Em andamento', cor: '#6c9be8', posicao: 10 },
+  { id: 'k3', tipo: 'concluida', nome: 'Concluídas', cor: null, posicao: 1000 },
+]
+tarefas = tarefas.map((x) => (['t2', 't4'].includes(x.id) ? { ...x, column_id: 'k2' } : { ...x, column_id: null }))
+
 // Calendários conectados (Integrações): um em dia, um com o link quebrado.
 let fontes = [
   {
@@ -130,6 +138,34 @@ export const previaApi = {
   excluirCategoria: (id) => {
     if (tarefas.some((x) => x.category_id === id)) return Promise.reject({ code: '23503' })
     categorias = categorias.filter((c) => c.id !== id)
+    return espera(null)
+  },
+  listarColunas: () => espera([...colunas].sort((a, b) => a.posicao - b.posicao)),
+  criarColuna: ({ nome, cor, posicao }) => {
+    const c = { id: novoId(), tipo: 'custom', nome: nome.trim(), cor: cor || null, posicao }
+    colunas = [...colunas, c]
+    return espera(c)
+  },
+  atualizarColuna: (id, campos) => {
+    colunas = colunas.map((c) =>
+      c.id === id
+        ? {
+            ...c,
+            ...(campos.nome !== undefined ? { nome: campos.nome.trim() } : {}),
+            ...(campos.cor !== undefined ? { cor: campos.cor || null } : {}),
+            ...(campos.posicao !== undefined ? { posicao: campos.posicao } : {}),
+          }
+        : c,
+    )
+    return espera(colunas.find((c) => c.id === id))
+  },
+  excluirColuna: (id) => {
+    colunas = colunas.filter((c) => c.id !== id)
+    tarefas = tarefas.map((x) => (x.column_id === id ? { ...x, column_id: null } : x))
+    return espera(null)
+  },
+  moverTarefaColuna: (id, colunaId) => {
+    tarefas = tarefas.map((x) => (x.id === id ? { ...x, column_id: colunaId } : x))
     return espera(null)
   },
   listarFontes: () => espera(fontes),

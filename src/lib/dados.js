@@ -103,18 +103,61 @@ export const previaFonte = (url) => chamarSincronizador({ modo: 'previa', url: n
 // { resultados: [{ id, novas, atualizadas } | { id, erro } | { id, pulada }] }
 export const sincronizarFontes = (fonteId) => chamarSincronizador({ modo: 'sincronizar', fonteId })
 
-const CAMPOS_TAREFA ='id, titulo, descricao, status, data_prevista, xp_value, created_at, completed_at, category_id, task_tags(tag_id)'
+// ---------- Kanban: colunas ----------
+const CAMPOS_COLUNA = 'id, tipo, nome, cor, posicao'
+
+// Garante as colunas fixas (Pendentes e Concluídas) na primeira vez.
+export async function listarColunas() {
+  let colunas = ok(await supabase.from('board_columns').select(CAMPOS_COLUNA).order('posicao'))
+  const faltam = [
+    { tipo: 'pendente', nome: 'Pendentes', posicao: 0 },
+    { tipo: 'concluida', nome: 'Concluídas', posicao: 1000 },
+  ].filter((padrao) => !colunas.some((c) => c.tipo === padrao.tipo))
+  if (faltam.length) {
+    // Duas abas ao mesmo tempo: o índice único recusa a duplicada, e basta ler de novo.
+    await supabase.from('board_columns').insert(faltam)
+    colunas = ok(await supabase.from('board_columns').select(CAMPOS_COLUNA).order('posicao'))
+  }
+  return colunas
+}
+
+export async function criarColuna({ nome, cor, posicao }) {
+  return ok(
+    await supabase.from('board_columns').insert({ nome: nome.trim(), cor: cor || null, posicao }).select(CAMPOS_COLUNA).single(),
+  )
+}
+
+export async function atualizarColuna(id, campos) {
+  const valores = {}
+  if (campos.nome !== undefined) valores.nome = campos.nome.trim()
+  if (campos.cor !== undefined) valores.cor = campos.cor || null
+  if (campos.posicao !== undefined) valores.posicao = campos.posicao
+  return ok(await supabase.from('board_columns').update(valores).eq('id', id).select(CAMPOS_COLUNA).single())
+}
+
+// As tarefas da coluna voltam para Pendentes (FK on delete set null).
+export async function excluirColuna(id) {
+  ok(await supabase.from('board_columns').delete().eq('id', id))
+}
+
+export async function moverTarefaColuna(id, colunaId) {
+  ok(await supabase.from('tasks').update({ column_id: colunaId }).eq('id', id))
+}
+
+const CAMPOS_TAREFA =
+  'id, titulo, descricao, status, data_prevista, xp_value, created_at, completed_at, category_id, column_id, task_tags(tag_id)'
 
 // O Supabase devolve as tags como [{ tag_id }]; a interface usa tag_ids: [id, ...].
 function comTags({ task_tags, ...tarefa }) {
   return { ...tarefa, tag_ids: (task_tags ?? []).map((x) => x.tag_id) }
 }
 
-const conteudo = ({ titulo, descricao, categoriaId, dataPrevista }) => ({
+const conteudo = ({ titulo, descricao, categoriaId, dataPrevista, colunaId }) => ({
   titulo: titulo.trim(),
   descricao: descricao?.trim() || null,
   category_id: categoriaId,
   data_prevista: dataPrevista || null,
+  ...(colunaId !== undefined ? { column_id: colunaId || null } : {}),
 })
 
 // Deixa a tarefa com exatamente estas tags: remove as que saíram e liga as novas.

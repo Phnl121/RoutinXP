@@ -7,13 +7,16 @@ import { t } from '../i18n/pt-BR'
 
 const f = t.formTarefa
 
-export function TarefaDialog({ tarefa, categorias, tags = [], categoriaPadrao, onFechar, onSalvar, onExcluir, onCriarCategoria, onCriarTag }) {
+export function TarefaDialog({ tarefa, categorias, tags = [], colunas = [], categoriaPadrao, onFechar, onSalvar, onExcluir, onCriarCategoria, onCriarTag }) {
   const ref = useRef(null)
   const id = useId()
   const [titulo, setTitulo] = useState(tarefa?.titulo ?? '')
   const [descricao, setDescricao] = useState(tarefa?.descricao ?? '')
   const [tagIds, setTagIds] = useState(tarefa?.tag_ids ?? [])
   const [idSalvo, setIdSalvo] = useState(tarefa?.id)
+  // Coluna do Kanban (só para pendentes, e só quando o usuário criou colunas próprias).
+  const [colunaId, setColunaId] = useState(tarefa?.column_id ?? '')
+  const mostrarColuna = colunas.length > 0 && tarefa?.status !== 'concluida'
   const alternarTag = (tagId, marcar) => setTagIds((atuais) => (marcar ? [...new Set([...atuais, tagId])] : atuais.filter((x) => x !== tagId)))
   const [categoriaId, setCategoriaId] = useState(tarefa?.category_id ?? categoriaPadrao ?? categorias[0]?.id ?? '')
   const [data, setData] = useState(tarefa?.data_prevista ?? '')
@@ -26,7 +29,15 @@ export function TarefaDialog({ tarefa, categorias, tags = [], categoriaPadrao, o
     setSalvando(true)
     setErro(null)
     try {
-      await onSalvar({ id: idSalvo, titulo, descricao, categoriaId, dataPrevista: data, tagIds })
+      await onSalvar({
+        id: idSalvo,
+        titulo,
+        descricao,
+        categoriaId,
+        dataPrevista: data,
+        tagIds,
+        ...(mostrarColuna ? { colunaId: colunas.some((c) => c.id === colunaId) ? colunaId : null } : {}),
+      })
       fechar()
     } catch (e) {
       // A tarefa foi criada e só as tags falharam: tentar de novo salva a mesma tarefa.
@@ -124,6 +135,24 @@ export function TarefaDialog({ tarefa, categorias, tags = [], categoriaPadrao, o
               </span>
             </div>
           </div>
+
+          {mostrarColuna && (
+            <div className="field">
+              <label className="label" htmlFor={`${id}-col`}>
+                {t.tarefas.kanban.campo}
+              </label>
+              <span className="select">
+                <select id={`${id}-col`} className="input" value={colunaId} onChange={(e) => setColunaId(e.target.value)}>
+                  <option value="">{t.tarefas.kanban.pendentes}</option>
+                  {colunas.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.nome}
+                    </option>
+                  ))}
+                </select>
+              </span>
+            </div>
+          )}
 
           <SeletorTags tags={tags} selecionadas={tagIds} onAlternar={alternarTag} onCriar={onCriarTag} />
 

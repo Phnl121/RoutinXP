@@ -5,7 +5,9 @@ import { ordenarConcluidas, ordenarPendentes } from '../lib/datas'
 import { calcularNivel } from '../lib/nivel'
 import { FILTRO_VAZIO, contarFiltros, filtrarTarefas } from '../lib/filtros'
 import { FiltroTarefas } from '../components/FiltroTarefas'
-import { Lista, Quadro } from '../components/VisoesTarefas'
+import { Lista } from '../components/VisoesTarefas'
+import { Kanban } from '../components/Kanban'
+import { ColunaDialog } from '../components/ColunaDialog'
 import { VisaoCalendario } from '../components/VisaoCalendario'
 import { TarefaDialog } from '../components/TarefaDialog'
 import { CategoriaDialog } from '../components/CategoriaDialog'
@@ -71,6 +73,7 @@ export default function Tarefas() {
   }, [])
   const [dlgTarefa, setDlgTarefa] = useState(null) // { tarefa: objeto | null }
   const [dlgCategoria, setDlgCategoria] = useState(null) // { categoria: objeto | null }
+  const [dlgColuna, setDlgColuna] = useState(null) // { coluna: objeto | null }
   const [voos, setVoos] = useState([]) // "+XP" em voo até a barra superior
 
   // "Nova tarefa" da barra superior (de qualquer página) chega aqui como estado da navegação.
@@ -101,6 +104,14 @@ export default function Tarefas() {
   }
 
   const abrirNovaTarefa = () => setDlgTarefa({ tarefa: null })
+
+  // Colunas do meio do Kanban (entre Pendentes e Concluídas), na ordem.
+  const colunasDoMeio = d.colunas.filter((c) => c.tipo === 'custom')
+  const proximaPosicao = () => Math.max(0, ...colunasDoMeio.map((c) => c.posicao)) + 10
+  function vizinhasDaColuna(coluna) {
+    const i = coluna ? colunasDoMeio.findIndex((c) => c.id === coluna.id) : -1
+    return { anterior: i > 0 ? colunasDoMeio[i - 1] : null, proxima: i >= 0 && i < colunasDoMeio.length - 1 ? colunasDoMeio[i + 1] : null }
+  }
 
   // Conclui e faz o "+XP" voar da tarefa até o contador da barra superior.
   // As estatísticas novas só entram quando o voo chega (o número conta e a barra enche);
@@ -193,14 +204,16 @@ export default function Tarefas() {
     )
   } else if (visao === 'quadro') {
     conteudo = (
-      <Quadro
-        pendentes={pendentes}
-        concluidas={concluidas}
+      <Kanban
+        tarefas={visiveis}
+        colunas={d.colunas}
         categoriasPorId={categoriasPorId}
         tagsPorId={tagsPorId}
-        mostrarCategoria
         recem={d.recem}
         acoes={acoes}
+        onMover={d.moverParaColuna}
+        onEditarColuna={(coluna) => setDlgColuna({ coluna })}
+        onNovaColuna={() => setDlgColuna({ coluna: null })}
       />
     )
   } else {
@@ -313,6 +326,7 @@ export default function Tarefas() {
           tarefa={dlgTarefa.tarefa}
           categorias={d.categorias}
           tags={d.tags}
+          colunas={colunasDoMeio}
           onCriarTag={d.salvarTag}
           categoriaPadrao={categoriaFiltrada}
           onFechar={() => setDlgTarefa(null)}
@@ -322,6 +336,19 @@ export default function Tarefas() {
             setDlgTarefa(null)
             setDlgCategoria({ categoria: null })
           }}
+        />
+      )}
+
+      {dlgColuna && (
+        <ColunaDialog
+          coluna={dlgColuna.coluna}
+          vizinhas={vizinhasDaColuna(dlgColuna.coluna)}
+          onFechar={() => setDlgColuna(null)}
+          onSalvar={({ id, ...campos }) =>
+            d.salvarColuna(id ? { id, ...campos } : { ...campos, posicao: proximaPosicao() })
+          }
+          onMover={d.trocarColunas}
+          onExcluir={d.excluirColuna}
         />
       )}
 

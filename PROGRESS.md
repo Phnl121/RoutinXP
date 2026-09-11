@@ -109,6 +109,30 @@ Atualizado em 2026-09-10 (Claude Code): passo 12 (PWA) construído; com ele, tod
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
 
+### 2026-09-11, Claude Code (Opus 5): Kanban com colunas próprias e coloridas
+Feito:
+- "Quadro" virou **Kanban**. Pendentes vem primeiro, depois as colunas criadas pelo usuário, e Concluídas por último.
+- Pendentes e Concluídas são fixas: dá para renomear e colorir, mas não mover nem excluir.
+- As colunas do usuário:
+  - são criadas no "+ Nova coluna";
+  - pela janela "⋯" dá para editar o nome e a cor ("Sem cor" ou uma das 8 cores), trocar a posição com a vizinha e excluir. Ao excluir, as tarefas voltam para Pendentes.
+- **A coluna colorida ganha o tom inteiro** (cor a 22% no fundo, 45% na borda); o card mantém a capa da categoria.
+- Mover tarefas:
+  - arrastar para qualquer coluna muda a coluna;
+  - soltar em Concluídas conclui com XP, sem volta;
+  - no celular e no teclado, use o campo "Coluna no Kanban" no formulário da tarefa.
+- No Kanban o selo de prazo fica na linha da categoria, para o título usar o card todo.
+- Migration `20260911200000_kanban_colunas`:
+  - tabela `board_columns` com RLS; uma Pendentes e uma Concluídas por usuário, por índice único; só as colunas do usuário podem ser excluídas;
+  - coluna `tasks.column_id` com FK composta (`on delete set null`) e privilégio de escrita.
+  - As colunas fixas são criadas pelo app na primeira leitura.
+  - **Ainda não aplicada em produção.**
+- Capturas em `.impeccable/review/kanban/`. DESIGN.md com a seção Kanban.
+
+Próximo:
+- Aplicar a migration **antes** do push: o app novo lê `board_columns` e sem ela a tela de Tarefas não carrega.
+- Push dos commits do calendário, das tarefas em tela cheia e do Kanban.
+
 ### 2026-09-11, Claude Code (Opus 5): tarefas em tela cheia, filtro, capas e prazos
 Pedido do usuário: tirar categorias e tags da tela de Tarefas, dar a largura toda às tarefas, criar um filtro, pintar os cards (capa como no Trello, pela imagem que ele mandou), destacar os prazos, e melhorar o Kanban com colunas próprias e coloridas. O Kanban fica para a próxima parte, porque precisa de migration.
 
