@@ -29,7 +29,7 @@ export function GerenciarTags({ tags, tarefas, onSalvar, onExcluir }) {
           ))}
         </ul>
       )}
-      <button type="button" className="trilho__nova tags-lista__nova" onClick={() => setDlg({ tag: null })}>
+      <button type="button" className="acao-nova tags-lista__nova" onClick={() => setDlg({ tag: null })}>
         <IconeMais />
         {g.nova}
       </button>

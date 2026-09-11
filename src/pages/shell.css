@@ -207,12 +207,12 @@
   gap: 0.75rem;
   width: calc(100% - 2 * clamp(1rem, 3vw, 2rem));
   max-width: 86rem;
-  margin: 1rem auto 0;
-  padding: 0.7rem 0.75rem 0.7rem 1rem;
+  margin: 0.75rem auto 0;
+  padding: 0.35rem 0.5rem 0.35rem 0.9rem;
   background: var(--panel);
   border: 1px solid var(--rule);
   border-radius: var(--radius-sm);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
 }
 
 .lembrete > svg {

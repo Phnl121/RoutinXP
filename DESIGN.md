@@ -190,7 +190,7 @@ components:
   top-bar:
     backgroundColor: "{colors.topbar}"
     textColor: "{colors.ink}"
-    padding: "14px 32px"
+    padding: "10px 32px"
   side-menu:
     backgroundColor: "{colors.topbar}"
     textColor: "{colors.muted}"
@@ -224,7 +224,7 @@ components:
     backgroundColor: "{colors.panel}"
     textColor: "{colors.ink}"
     rounded: "{rounded.sm}"
-    padding: "0.7rem 0.75rem 0.7rem 1rem"
+    padding: "0.35rem 0.5rem 0.35rem 0.9rem"
   level-pill:
     backgroundColor: "{colors.panel}"
     textColor: "{colors.ink}"
@@ -438,7 +438,7 @@ A cool, near-black neutral stack with two saturated accents whose roles never ov
 ### Neutral
 - **Top Bar** (`topbar`): the app chrome tier, one step darker than Ground: the sticky top bar and the full-height side menu (and its mobile drawer), so both read as frame rather than as panels. It is also the `theme-color` (index.html and the web manifest), because the top bar is what meets the phone's status bar.
 - **Ground** (`ground`): page background, input wells, the segmented-filter well.
-- **Panel** (`panel`): raised containers (form panel, demo panel, list panel and Kanban columns, the filter panel, Painel cards, Perfil panels, dialog, account menu, the level pill, the shell strips (streak reminder, offline strip, install invite), mobile category chips).
+- **Panel** (`panel`): raised containers (form panel, demo panel, Kanban columns, task cards in Lista, Calendário Dia and Linha do tempo, the filter panel, Painel cards, Perfil panels, dialog, account menu, the level pill, the shell strips (streak reminder, offline strip, install invite), mobile category chips).
 - **Panel Two** (`panel-2`): third tier. XP track and skeleton, row hover, side-menu item hover and current page, user-card hover, the selected rail item, the active segment, notice and toast backgrounds, the row's Excluir overlay, avatar fill, the chart column hover, the chart tooltip, the category-bar track.
 - **Rule** (`rule`): 1px panel borders, row dividers, tab baseline, input border at rest, unselected chip border, the streak divider, the side menu's right edge, the shell strips' border, the chart baseline, the 2px timeline connector.
 - **Rule Strong** (`rule-strong`): input hover border, notice and toast border, the selected rail item's and current side-menu item's inset outline, the dashed "+ Nova categoria" chip, the dashed daily-cap line on the XP chart, the chart tooltip border, the share-glyph chip in the iOS install steps, strike-through on completed titles, the destructive text action's underline, the toast time bar, scrollbar thumb.
@@ -452,7 +452,7 @@ A cool, near-black neutral stack with two saturated accents whose roles never ov
 
 **The Neutral Error Rule.** Errors are not red. An error is a notice on `panel-2` with a small pill tag in inverted neutrals (ink fill, ground text) reading "ERRO", followed by a plain-language sentence. This keeps the palette to two accents and keeps failure unalarming. The same holds for due dates: today and overdue get Ink and weight, never red. It holds for reduced rewards: when a completion earns less than usual (task created under 5 minutes ago, the daily XP cap reached or partly reached), an info toast names the reason in a plain sentence, in neutrals, with no tag and no red. And it holds for a streak at risk: the reminder is a Panel strip with a Muted clock, never an alarm. Losing the connection is the same: the offline strip is a Panel strip with a Muted no-connection icon and a plain sentence, no tag, no red.
 
-**The Dot-Only Category Rule.** User-chosen category colors are data. They appear as an 8px round dot beside the category name (rail, chips, row category line, Lista group headings, the Painel's category bars and timeline items), never as fills, text color, bars or backgrounds, and never without the name nearby. Two exceptions: the color picker, where the swatch itself is the choice and fills a 36px circle; and the task card's **cover** in its category color (user request, 2026-09-11, after a Trello reference): a solid band across the top of every task card, 0.625rem tall in Lista, Calendário Dia and Linha do tempo, and 1.5rem in Kanban, over a Panel Two card body where the text stays readable. On completed cards the cover fades to 40% of the category color, receding with the rest of the card. The narrow-width Calendário month is the other exception: it shows category dots with no names, because the day opens to the full list with names. **Tags** have their own shape, always rectangular, so a tag is never read as a category (categories are always round dots). On a task row tags are **labels, Trello-style** (user request, 2026-09-11): a row of 4px-radius labels above the title. Named mode: a 1.375rem pill, 0 0.5rem padding, 0.75rem at 700 in Ink on the tag color mixed 48% into Panel (55% on hover, the most that keeps Ink above 4.5:1 on all eight colors), ellipsized at 12rem. Color-only mode: a 2.5rem by 0.5rem bar in the full tag color. Clicking any label switches every label between the two modes (saved per browser); it never opens the task. Completed rows show labels at 55% opacity. In the task dialog and the Perfil list a tag is a 0.75rem swatch with 3px corners beside its name.
+**The Dot-Only Category Rule.** User-chosen category colors are data. They appear as an 8px round dot beside the category name (rail, chips, row category line, Lista group headings, the Painel's category bars and timeline items), never as fills, text color, bars or backgrounds, and never without the name nearby. Two exceptions: the color picker, where the swatch itself is the choice and fills a 36px circle; and the task card's **cover** in its category color (user request, 2026-09-11, after a Trello reference): a solid band across the top of every task card, 0.375rem tall in Lista, Calendário Dia and Linha do tempo, and 0.875rem in Kanban (density pass, 2026-09-11). The card body is Panel in Lista, Dia and Linha do tempo (Panel Two on hover) and Panel Two inside the Kanban columns (Rule on hover), so the card always sits one step above what holds it. Cards are separated by a 0.375rem gap, never wrapped in another panel. On completed cards the cover fades to 40% of the category color, receding with the rest of the card. The narrow-width Calendário month is the other exception: it shows category dots with no names, because the day opens to the full list with names. **Tags** have their own shape, always rectangular, so a tag is never read as a category (categories are always round dots). On a task row tags are **labels, Trello-style** (user request, 2026-09-11): a row of 4px-radius labels above the title. Named mode: a 1.25rem label, 0 0.4rem padding, 0.75rem at 700 in Ink on the tag color mixed 48% into Panel (55% on hover, the most that keeps Ink above 4.5:1 on all eight colors), ellipsized at 12rem. Color-only mode: a 2.5rem by 0.5rem bar in the full tag color. Clicking any label switches every label between the two modes (saved per browser); it never opens the task. On touch screens the label is too short to tap reliably, so it ignores taps and the tap opens the task; the switch is a mouse affordance. Completed rows show labels at 55% opacity. In the task dialog and the Perfil list a tag is a 0.75rem swatch with 3px corners beside its name.
 
 **The Swappable Theme Rule.** Components read colors only through the `:root` custom properties, effects included (glows, washes, halos, backdrop). A new theme is a new set of variable values, not new component CSS. The only color literals outside `:root` are the category swatch values, which are user data.
 
@@ -465,7 +465,7 @@ A cool, near-black neutral stack with two saturated accents whose roles never ov
 
 ### Hierarchy
 - **Display** (800, clamp 2.25rem to 3.5rem, width 110%, line-height 1.02): the single marketing headline (login). Balanced wrapping. At 60rem and below it uses **Display Compact** (clamp 1.875rem, 8vw, 2.5rem). One phrase may be Level Green when it names the reward.
-- **Page Title** (800, 2rem, width 110%, line-height 1.1, -0.02em): the one heading of an app screen: the category name or "Todas as tarefas", "Painel", "Perfil". At 60rem and below it drops to **Page Title Compact** (1.5rem). Wraps anywhere rather than overflowing long category names.
+- **Page Title** (800, 1.625rem, width 110%, line-height 1.1, -0.02em): the one heading of an app screen: the category name or "Todas as tarefas", "Painel", "Perfil". At 60rem and below it drops to **Page Title Compact** (1.375rem). Task card titles are 0.9375rem at 700. Wraps anywhere rather than overflowing long category names.
 - **Wordmark** (800, 1.625rem, width 112.5%, line-height 1): "RoutinXP" set in text, kept as a fallback only. The UI never typesets the name; it shows the horizontal logo (see Logo under Components).
 - **Headline** (800, 1.5rem, line-height 1.15): titles inside panels, dialogs, empty states and single-task pages (Redefinir senha, Nenhuma tarefa ainda).
 - **Stat Figure** (800, 1.5rem, line-height 1.1, tabular): the Painel's streak figures ("6 dias"), set above their Label caption (STREAK ATUAL, RECORDE).
@@ -488,7 +488,7 @@ A cool, near-black neutral stack with two saturated accents whose roles never ov
 
 **Login.** A 70rem frame, centered, with page padding clamp(1.5rem, 5vw, 3.5rem) vertical by clamp(1rem, 4vw, 2.5rem) horizontal. Two columns: a flexible story column and a fixed 25rem form column, column gap clamp(2.5rem, 7vw, 6rem), row gap 2.25rem. Below 60rem it becomes one 30rem column in the order wordmark, headline, form, demo, and the form panel padding drops from 2rem to 1.5rem. Single-task pages (password reset) use a 26rem centered column with 1.5rem gaps.
 
-**App shell.** Two columns at full height: the side menu (16.25rem, or 4.25rem when collapsed; the column width animates over 0.25s) and the content column. The content column stacks the sticky top bar (Top Bar fill, 1px Rule beneath, padding 0.875rem by clamp(1rem, 3vw, 2rem)), the shell strip when one applies (1rem below the bar, matching the page's side padding, max 86rem), then the current page. At most one strip shows at a time: offline, the offline strip alone; online, the streak reminder when the streak is at risk, otherwise the install invite (mobile only) while the app is installable and not dismissed. On desktop the top bar holds only the level pill and, at the right, the avatar button; the logo lives in the side menu. The bar is a three-column grid with equal flexible sides (1fr | auto | 1fr), so the level pill is always centered in the bar, whatever sits at either side.
+**App shell.** Two columns at full height: the side menu (16.25rem, or 4.25rem when collapsed; the column width animates over 0.25s) and the content column. The content column stacks the sticky top bar (Top Bar fill, 1px Rule beneath, padding 0.625rem by clamp(1rem, 3vw, 2rem)), the shell strip when one applies (0.75rem below the bar, matching the page's side padding, max 86rem), then the current page. At most one strip shows at a time: offline, the offline strip alone; online, the streak reminder when the streak is at risk, otherwise the install invite (mobile only) while the app is installable and not dismissed. On desktop the top bar holds only the level pill and, at the right, the avatar button; the logo lives in the side menu. The bar is a three-column grid with equal flexible sides (1fr | auto | 1fr), so the level pill is always centered in the bar, whatever sits at either side.
 
 **Tarefas page.** The body is capped at 90rem and centered, padding clamp(1.25rem, 3vw, 2rem) with 6rem at the bottom for the FAB and toast, in **one full-width column** (user request, 2026-09-11). Categories and tags are managed on their own page ("Categorias e tags"); narrowing the tasks happens through the Filter, not a side rail.
 
@@ -501,9 +501,9 @@ A cool, near-black neutral stack with two saturated accents whose roles never ov
 
 The filter applies to Lista, Kanban and Calendário alike; its footer counts what the current view shows (in Lista, "3 pendentes" or "5 concluídas"). With filters on, the page title reads "Tarefas filtradas".
 
-**Deadline Badge.** The due date on every task card is a 1.5rem, 6px-radius badge with a clock icon, 0.75rem at 700:
-- **future:** Muted on Panel;
-- **within 3 days (including tomorrow):** amber text on amber mixed 18% into Panel;
+**Deadline Badge.** The due date on every task card is a 1.25rem, 5px-radius badge (0 0.4rem padding) with a 0.75rem clock icon, 0.75rem at 700. Its tinted fills are translucent, so the badge reads the same on a Panel card, a Panel Two Kanban card and a hovered card:
+- **future:** Muted on Ink at 7%;
+- **within 3 days (including tomorrow):** amber text on amber at 18%;
 - **today:** solid amber with dark text;
 - **overdue:** solid rose with dark text;
 - **no date:** plain Muted "sem data".
@@ -517,9 +517,9 @@ The amber and rose come from the `--prazo-perto`, `--prazo-atrasado` and `--on-p
 
 **Simple pages (Perfil).** One column of panels, max 44rem wide and centered in the content column (it follows the side menu open or collapsed), 1.25rem apart, same page padding. Panels pad 1.75rem (1.25rem at 60rem and below). Field pairs sit in an auto-fit two-column grid (columns at least 9.5rem, 1rem gap) that stacks on its own when narrow.
 
-**At 60rem and below (single column).** The side menu leaves the grid and becomes an off-canvas drawer; the top bar gains a menu button at the left and the logo centered (equal 1fr sides), keeps the avatar at the right, and wraps the level pill to a full-width second row. "+ Nova tarefa" leaves the Tarefas title row; the FAB (present at every width) remains the create action. On Tarefas the "Filtrar" button stays in the title row (the filter panel stacks its chip groups), and the segmented filter returns to flow under the tabs. The page title drops to 1.5rem; dialog field pairs stack; the toast lifts to clear the FAB; the Painel level panel wraps its XP bar to a full-width second line.
+**At 60rem and below (single column).** The side menu leaves the grid and becomes an off-canvas drawer; the top bar gains a menu button at the left and the logo centered (equal 1fr sides), keeps the avatar at the right, and wraps the level pill to a full-width second row. "+ Nova tarefa" leaves the Tarefas title row; the FAB (present at every width) remains the create action. On Tarefas the "Filtrar" button stays in the title row (the filter panel stacks its chip groups), and the segmented filter returns to flow under the tabs. The page title drops to 1.375rem; dialog field pairs stack; the toast lifts to clear the FAB; the Painel level panel wraps its XP bar to a full-width second line.
 
-**At 48rem and below.** Kanban columns sit side by side at 86% width and scroll-snap horizontally; the Lista panel's inline padding tightens to 0.5rem.
+**At 48rem and below.** Kanban columns sit side by side at 86% width and scroll-snap horizontally. In Lista, Dia and Linha do tempo the deadline badge and XP leave the right column and drop to the meta line under the title, as in Kanban, so titles get the card's full width.
 
 **At 30rem and below.** Painel category bars put name and count on one line with the bar full width beneath, so the name is never cut; timeline items move the time onto the category line; the streak figures align left.
 
@@ -571,7 +571,7 @@ Solid, confident, one per form.
 A `panel-2` block with a 1px Rule Strong border, 10px radius, a small pill tag in inverted neutrals reading "ERRO", then the message in 0.875rem. Enters with a 4px slide-down. Announced with `role="alert"`. This is the pattern for every inline error in the app, including the load-failure state.
 
 ### Streak Reminder
-A quiet strip, distinct from the notice: it is not an error and never carries a tag. Shown under the top bar only when the streak is above zero and nothing was completed today (Brasília). Panel fill, 1px Rule border, 10px radius, no shadow, 0.875rem text. A leading 1.125rem clock icon in Muted, one plain sentence ("Conclua uma para manter sua sequência de 6 dias."), a "Ver tarefas" link button when not already on Tarefas, and a 36px dismiss button (Muted close icon, Panel Two and Ink on hover) that hides it until the next day. Announced with `role="status"`.
+A quiet strip, distinct from the notice: it is not an error and never carries a tag. Shown under the top bar only when the streak is above zero and nothing was completed today (Brasília). Panel fill, 1px Rule border, 10px radius, no shadow, 0.8125rem text, padding 0.35rem 0.5rem 0.35rem 0.9rem. A leading 1.125rem clock icon in Muted, one plain sentence ("Conclua uma para manter sua sequência de 6 dias."), a "Ver tarefas" link button when not already on Tarefas, and a 36px dismiss button (44px at 60rem and below) (Muted close icon, Panel Two and Ink on hover) that hides it until the next day. Announced with `role="status"`.
 
 ### Offline Strip
 The streak reminder's form carrying the connection state: Panel fill, 1px Rule border, 10px radius, no shadow, a leading 1.125rem no-connection icon in Muted and one plain sentence ("Sem conexão. O que você mudar agora só será salvo quando a internet voltar."). No link, no dismiss: it leaves when the connection returns. It renders inside a `role="status"` region that stays mounted, so screen readers hear the drop. While offline the streak reminder and the install invite stay hidden.
@@ -597,7 +597,7 @@ A pill well in Ground with a 1px Rule border and 3px inset; each segment is a 32
 ### Cards / Containers: Panel
 - **Corner Style:** 16px.
 - **Background:** Panel, with a 1px Rule border and the Panel lift shadow.
-- **Internal Padding:** 32px on forms; 28px on Perfil panels; 24px on Painel cards, narrow screens and demo panels; the list panel and Kanban columns use 8-16px so cards run nearly edge to edge.
+- **Internal Padding:** 32px on forms; 28px on Perfil panels; 24px on Painel cards, narrow screens and demo panels; Kanban columns use about 10px so cards run nearly edge to edge; Lista has no panel at all (the cards are the containers).
 - Sections inside a panel are separated by a 1px Rule, never by nested panels.
 
 ### App Top Bar
@@ -646,7 +646,7 @@ The third Tarefas tab (LISTA | QUADRO | CALENDÁRIO). Its mode control, a segmen
 - **Task pill** (Mês, Semana): a 1.5rem Panel Two pill, 6px radius, holding the category's 8px dot and the title (0.75rem at 600, ellipsized; the full title in the tooltip). Hover goes to Rule. Completed pills are Muted and struck through. Clicking one opens the task dialog.
 - **Mês:** one Panel with no padding, a Label row of weekday names (Sunday first), then a 7-column grid of cells. Cells are at least 7rem tall, 0.4rem padding, divided by 1px Rules. A cell shows up to three pills, then a Soft Violet "+n tarefas" that opens the day.
 - **Semana:** one Panel with seven day columns (at least 16rem tall) divided by 1px Rules. Each column heads with the Label weekday and the day number, then its pills.
-- **Dia and Linha do tempo:** the Lista panel and its rows, so completing works as everywhere (check, green wash, XP flight). Linha do tempo groups under Label headings with counts: Atrasadas (pending, past due), Hoje, Amanhã, each later date ("sáb, 12 de set"), then Sem data. Past completed tasks stay out; the list looks forward.
+- **Dia and Linha do tempo:** the Lista cards (no wrapping panel), so completing works as everywhere (check, green wash, XP flight). Linha do tempo groups under Label headings with counts: Atrasadas (pending, past due), Hoje, Amanhã, each later date ("sáb, 12 de set"), then Sem data. Past completed tasks stay out; the list looks forward.
 - **Undated tasks:** below Mês, Semana and Dia, a Meta line "n tarefas sem data não aparecem no calendário." followed by the link button "Ver na Linha do tempo".
 - **Narrow** (the view's own width at 44rem or less, by container query):
   - Mês cells shrink to 3.5rem. They drop pills and "+n", show up to four category dots (completed ones at 40%) and center the day number.

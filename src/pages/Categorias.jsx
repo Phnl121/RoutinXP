@@ -40,7 +40,7 @@ export default function Categorias() {
             ))}
           </ul>
         )}
-        <button type="button" className="trilho__nova tags-lista__nova" onClick={() => setDlg({ categoria: null })}>
+        <button type="button" className="acao-nova tags-lista__nova" onClick={() => setDlg({ categoria: null })}>
           <IconeMais />
           {c.nova}
         </button>

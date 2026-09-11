@@ -182,7 +182,7 @@ export function VisaoCalendario({ modo, onModo, tarefas, categoriasPorId, tagsPo
   } else if (modo === 'dia') {
     const lista = doDia(cursor)
     corpo = (
-      <div className="panel lista" ref={corpoRef} tabIndex={-1}>
+      <div className="lista" ref={corpoRef} tabIndex={-1}>
         {lista.length ? (
           <Grupo titulo={cursor === hoje ? c.hoje : rotuloDiaCurto(cursor)} tarefas={lista} Titulo="h3" {...props} />
         ) : (
@@ -213,7 +213,7 @@ export function VisaoCalendario({ modo, onModo, tarefas, categoriasPorId, tagsPo
     const totalAnteriores = anteriores.reduce((n, g) => n + g.tarefas.length, 0)
 
     corpo = (
-      <div className="panel lista" ref={corpoRef} tabIndex={-1}>
+      <div className="lista" ref={corpoRef} tabIndex={-1}>
         {totalAnteriores > 0 && (
           <button type="button" className="cal-anteriores" aria-expanded={verAnteriores} onClick={() => setVerAnteriores((v) => !v)}>
             {verAnteriores ? c.esconderAnteriores : c.verAnteriores(totalAnteriores)}

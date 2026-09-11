@@ -201,14 +201,6 @@ export const t = {
     novaTarefa: 'Nova tarefa',
   },
 
-  trilho: {
-    titulo: 'Categorias',
-    todas: 'Todas',
-    pendentes: 'pendentes',
-    nova: 'Nova categoria',
-    editar: (nome) => `Editar categoria ${nome}`,
-  },
-
   tarefas: {
     tituloTodas: 'Todas as tarefas',
     visoes: { rotulo: 'Visualização', lista: 'Lista', quadro: 'Kanban', calendario: 'Calendário' },

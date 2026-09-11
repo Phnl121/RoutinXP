@@ -109,6 +109,26 @@ Atualizado em 2026-09-11 (Claude Code): v1 completa (passos 1 a 12). v2 em andam
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
 
+### 2026-09-11, Claude Code (Opus 5): densidade (tela menos poluída)
+Feito (pedido do usuário: fonte um pouco menor, cards menores e mais juntos, menos poluição; passou pelo Impeccable antes e depois, distill + revisão final):
+- Lista sem painel em volta dos cards (era card dentro de card); o mesmo em Calendário Dia e Linha do tempo.
+- Cards mais baixos:
+  - título 0,9375rem;
+  - capa de 0,375rem na Lista e 0,875rem no Kanban;
+  - 0,375rem entre cards;
+  - check visível de 1,3rem (a área de toque continua 44px).
+- Etiquetas e selos de prazo menores (1,25rem de altura, texto 0,75rem). O fundo do selo agora é translúcido e aparece igual no card da Lista, no do Kanban e no hover.
+- Título da página 1,625rem (1,375rem no celular). Barra superior e faixa de aviso mais baixas.
+- Kanban: cards em Panel Two dentro das colunas, colunas de 15,5rem, menos espaço entre check e título.
+- Celular: na Lista o prazo desce para baixo do título, como no Kanban, e os títulos quebram menos. No toque a etiqueta não alterna nome/cor (curta demais para acertar); o toque abre a tarefa.
+- Código morto removido: `Trilho.jsx`, textos `t.trilho`, a visão `Quadro` antiga e o CSS de trilho/quadro. A classe `.trilho__nova` virou `.acao-nova`.
+- DESIGN.md atualizado com as novas medidas. Capturas antes/depois em `.impeccable/review/densidade/`.
+
+Próximo:
+- Publicar (push) quando o usuário autorizar.
+- `.impeccable/design.json` ainda não foi sincronizado com o DESIGN.md.
+- A revisão sugeriu limitar a largura da Lista em telas muito largas (o selo de prazo fica longe do título a 1440px). Ficou de fora porque o usuário pediu tarefas em largura total.
+
 ### 2026-09-11, Antigravity + Claude Code: área de toque de 44px no celular
 Feito:
 - Antigravity (commits `655895f` e `45cce7f`): em telas de até 60rem, subiu para 44px os controles tocáveis. São eles: filtro segmentado, chips do filtro e das tags, botão "Filtrar", botão compacto, "⋯" das colunas do Kanban e o × dos avisos.
