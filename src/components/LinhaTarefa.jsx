@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { formatarPrazo } from '../lib/datas'
+import { alternarTagsCompactas, useTagsCompactas } from '../lib/tagsCompactas'
 import { IconeCheck } from './icones'
 import { t } from '../i18n/pt-BR'
 
@@ -11,6 +12,7 @@ export function LinhaTarefa({ tarefa, categoria, tags = [], mostrarCategoria = t
   const mostrarCat = mostrarCategoria && Boolean(categoria)
   const prazo = feita ? null : formatarPrazo(tarefa.data_prevista)
   const nomesTags = tags.map((g) => g.nome).join(', ')
+  const compactas = useTagsCompactas()
 
   return (
     <li
@@ -40,37 +42,52 @@ export function LinhaTarefa({ tarefa, categoria, tags = [], mostrarCategoria = t
         </span>
       </button>
 
-      <button
-        type="button"
-        className="linha__corpo"
-        onClick={() => onEditar(tarefa)}
-        aria-label={nomesTags ? `${tt.editar(tarefa.titulo)}, ${t.formTarefa.tagsDaTarefa(nomesTags)}` : tt.editar(tarefa.titulo)}
-      >
-        <span className="linha__titulo">{tarefa.titulo}</span>
-        {(mostrarCat || prazo || nomesTags) && (
-          <span className="linha__meta" data-so-data={!mostrarCat && !nomesTags}>
-            {mostrarCat && (
-              <span className="linha__cat">
-                <span className="dot" style={{ background: categoria.cor }} />
-                {categoria.nome}
-              </span>
-            )}
-            {/* Fora da tarefa aberta, cada tag é só um anel na cor dela (a categoria é um ponto cheio). */}
-            {nomesTags && (
-              <span className="linha__tags" title={t.formTarefa.tagsDaTarefa(nomesTags)} aria-hidden="true">
-                {tags.map((g) => (
-                  <span key={g.id} className="tag-marca" style={{ '--c': g.cor }} />
-                ))}
-              </span>
-            )}
-            {prazo && (
-              <span className="linha__meta-data" data-prazo={prazo.estado}>
-                {prazo.texto}
-              </span>
-            )}
-          </span>
+      <div className="linha__principal">
+        {/* Etiquetas como no Trello: com o nome ou só a cor. Clicar em qualquer uma
+            alterna todas (a escolha fica salva). Não abre a tarefa. */}
+        {tags.length > 0 && (
+          <div className="etiquetas">
+            {tags.map((g) => (
+              <button
+                key={g.id}
+                type="button"
+                className="etiqueta"
+                data-compacta={compactas}
+                style={{ '--c': g.cor }}
+                title={g.nome}
+                aria-label={`${g.nome}: ${compactas ? t.etiquetas.mostrarNomes : t.etiquetas.soCores}`}
+                onClick={alternarTagsCompactas}
+              >
+                {!compactas && g.nome}
+              </button>
+            ))}
+          </div>
         )}
-      </button>
+
+        <button
+          type="button"
+          className="linha__corpo"
+          onClick={() => onEditar(tarefa)}
+          aria-label={nomesTags ? `${tt.editar(tarefa.titulo)}, ${t.formTarefa.tagsDaTarefa(nomesTags)}` : tt.editar(tarefa.titulo)}
+        >
+          <span className="linha__titulo">{tarefa.titulo}</span>
+          {(mostrarCat || prazo) && (
+            <span className="linha__meta" data-so-data={!mostrarCat}>
+              {mostrarCat && (
+                <span className="linha__cat">
+                  <span className="dot" style={{ background: categoria.cor }} />
+                  {categoria.nome}
+                </span>
+              )}
+              {prazo && (
+                <span className="linha__meta-data" data-prazo={prazo.estado}>
+                  {prazo.texto}
+                </span>
+              )}
+            </span>
+          )}
+        </button>
+      </div>
 
       {feita ? (
         tarefa.xp_value == null ? (

@@ -290,9 +290,14 @@ export const t = {
       `Esta tag está em ${n} ${n === 1 ? 'tarefa' : 'tarefas'} e vai sair ${n === 1 ? 'dela' : 'delas'}. Toque de novo para excluir.`,
   },
 
+  etiquetas: {
+    mostrarNomes: 'mostrar os nomes das tags',
+    soCores: 'mostrar só as cores das tags',
+  },
+
   tagsPerfil: {
     titulo: 'Tags',
-    texto: 'Marque tarefas com tags. Na lista aparece só a cor; o nome aparece ao abrir a tarefa.',
+    texto: 'Marque tarefas com tags. Elas aparecem como etiquetas nas tarefas; clique numa etiqueta para mostrar só as cores.',
     vazio: 'Você ainda não criou tags.',
     uso: (n) => (n === 0 ? 'sem tarefas' : `${n} ${n === 1 ? 'tarefa' : 'tarefas'}`),
     editar: (nome) => `Editar tag ${nome}`,

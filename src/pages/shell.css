@@ -343,6 +343,8 @@
   gap: 1.25rem;
   align-content: start;
   width: min(100%, 44rem);
+  /* Centralizada na área de conteúdo: acompanha o menu aberto ou recolhido. */
+  margin-inline: auto;
   padding: clamp(1.25rem, 3vw, 2rem) clamp(1rem, 3vw, 2rem) 6rem;
 }
 

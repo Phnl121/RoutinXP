@@ -597,22 +597,79 @@
   min-width: 0;
 }
 
-/* Marca de tag: um anel de 2px na cor da tag. A categoria é um ponto cheio;
-   o anel nunca se confunde com ela, mesmo com cores iguais. */
+/* Amostra de tag (formulário e Perfil): quadradinho arredondado na cor da tag.
+   A categoria é sempre um ponto redondo; a tag, sempre retangular. */
 .tag-marca {
   flex: none;
-  width: 0.5625rem;
-  height: 0.5625rem;
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 2px var(--c);
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 3px;
+  background: var(--c);
 }
 
-/* Tags na lista: só os anéis, em fila, na mesma linha da categoria. */
-.linha__tags {
-  display: inline-flex;
+/* Coluna do meio da linha: etiquetas em cima, título e meta embaixo. */
+.linha__principal {
+  display: grid;
+  min-width: 0;
+}
+
+/* ---------- Etiquetas (tags) na tarefa, estilo Trello ---------- */
+
+.etiquetas {
+  display: flex;
   flex-wrap: wrap;
-  align-items: center;
   gap: 0.3rem;
+  padding-top: 0.6rem;
+}
+
+.etiquetas + .linha__corpo {
+  padding-top: 0.35rem;
+}
+
+/* Com nome: pílula com fundo na cor da tag, escurecida para o texto claro ter contraste. */
+.etiqueta {
+  display: inline-flex;
+  align-items: center;
+  max-width: 12rem;
+  min-height: 1.375rem;
+  padding: 0 0.5rem;
+  border: 0;
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--c) 48%, var(--panel));
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition:
+    background-color 0.2s var(--ease-out),
+    min-width 0.2s var(--ease-out);
+}
+
+/* 55% é o máximo que mantém o texto claro acima de 4,5:1 em todas as oito cores. */
+.etiqueta:hover {
+  background: color-mix(in oklab, var(--c) 55%, var(--panel));
+}
+
+/* Só a cor: barrinha cheia, sem texto. */
+.etiqueta[data-compacta='true'] {
+  min-width: 2.5rem;
+  min-height: 0.5rem;
+  height: 0.5rem;
+  padding: 0;
+  background: var(--c);
+}
+
+.etiqueta[data-compacta='true']:hover {
+  filter: brightness(1.12);
+}
+
+.linha[data-feita='true'] .etiqueta {
+  opacity: 0.55;
 }
 
 /* ---------- Formulário: descrição e tags ---------- */

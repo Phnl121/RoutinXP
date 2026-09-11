@@ -109,6 +109,16 @@ Atualizado em 2026-09-10 (Claude Code): passo 12 (PWA) construído; com ele, tod
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
 
+### 2026-09-11, Claude Code (Opus 5): etiquetas estilo Trello e Perfil centralizado
+Feito:
+- O usuário não gostou dos anéis. As tags viraram **etiquetas como no Trello**, acima do título da tarefa:
+  - com nome: pílula na cor da tag, texto claro, contraste acima de 4,5:1 nas 8 cores;
+  - só cor: barrinha de 2,5rem.
+  - Clicar em qualquer etiqueta alterna todas entre os dois modos, e a escolha fica salva no navegador (`src/lib/tagsCompactas.js`). O clique não abre a tarefa.
+- No formulário e no Perfil, a tag é um quadradinho de cor (a categoria continua sendo ponto redondo).
+- Página de Perfil centralizada na área de conteúdo, com o menu aberto ou recolhido (desvio medido: 0 px).
+- DESIGN.md atualizado. Capturas `etiquetas-*.png` em `.impeccable/review/tags/` e `perfil-centralizado.png` em `.impeccable/review/ajustes/`.
+
 ### 2026-09-11, Claude Code (Opus 5): descrição, tags e borda de categoria
 Feito:
 - **Descrição** opcional nas tarefas (até 1000 caracteres), no formulário da tarefa.
