@@ -26,6 +26,7 @@ export function FonteDialog({ fonte, categorias, tags, onFechar, onSalvar, onExc
   const [previa, setPrevia] = useState(null) // { carregando } | { dados } | { erro }
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState(null)
+  const [etapaRemover, setEtapaRemover] = useState(false)
   const [removendo, setRemovendo] = useState(false)
   const [apagarPendentes, setApagarPendentes] = useState(false)
   const fechar = () => ref.current?.close()
@@ -80,18 +81,21 @@ export function FonteDialog({ fonte, categorias, tags, onFechar, onSalvar, onExc
   }
 
   async function remover() {
+    setRemovendo(true)
+    setErro(null)
     try {
       await onExcluir(fonte.id, apagarPendentes)
       fechar()
     } catch (e) {
       setErro(mensagemIntegracao(e))
+      setRemovendo(false)
     }
   }
 
   return (
     <Dialogo tituloId={`${id}-titulo`} onFechar={onFechar} dialogoRef={ref}>
       <h2 id={`${id}-titulo`} className="dialogo__titulo">
-        {removendo ? f.remover : fonte ? f.editarTitulo : f.novaTitulo}
+        {etapaRemover ? f.removerNome(fonte.nome) : fonte ? f.editarTitulo : f.novaTitulo}
       </h2>
 
       {categorias.length === 0 ? (
@@ -103,7 +107,7 @@ export function FonteDialog({ fonte, categorias, tags, onFechar, onSalvar, onExc
             </button>
           </div>
         </>
-      ) : removendo ? (
+      ) : etapaRemover ? (
         <>
           <fieldset className="opcoes-remover">
             <legend className="dialogo__texto">{f.removerTitulo}</legend>
@@ -117,12 +121,13 @@ export function FonteDialog({ fonte, categorias, tags, onFechar, onSalvar, onExc
             </label>
           </fieldset>
           {erro && <Aviso>{erro}</Aviso>}
+          {/* Destruição nunca é um botão roxo: a confirmação é a ação de texto, como nas outras janelas. */}
           <div className="dialogo__acoes">
-            <button type="button" className="link-btn" onClick={() => setRemovendo(false)}>
-              {f.cancelar}
+            <button type="button" className="dialogo__excluir" onClick={remover} disabled={removendo}>
+              {removendo ? f.removendo : f.confirmarRemover}
             </button>
-            <button type="button" className="btn" onClick={remover}>
-              {f.confirmarRemover}
+            <button type="button" className="link-btn" onClick={() => setEtapaRemover(false)} disabled={removendo}>
+              {f.cancelar}
             </button>
           </div>
         </>
@@ -253,7 +258,7 @@ export function FonteDialog({ fonte, categorias, tags, onFechar, onSalvar, onExc
 
           <div className="dialogo__acoes">
             {fonte && (
-              <button type="button" className="dialogo__excluir" onClick={() => setRemovendo(true)}>
+              <button type="button" className="dialogo__excluir" onClick={() => setEtapaRemover(true)}>
                 {f.remover}
               </button>
             )}

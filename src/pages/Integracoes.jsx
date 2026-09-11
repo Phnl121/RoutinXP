@@ -117,7 +117,13 @@ export default function Integracoes() {
                             {categoria.nome}
                           </span>
                         )}
-                        <span>{fonte.ultima_sync ? i.atualizado(quando(fonte.ultima_sync)) : i.nunca}</span>
+                        <span>
+                          {fonte.ultimo_erro && fonte.ultima_tentativa
+                            ? i.falhou(quando(fonte.ultima_tentativa))
+                            : fonte.ultima_sync
+                              ? i.atualizado(quando(fonte.ultima_sync))
+                              : i.nunca}
+                        </span>
                         <span>{i.tarefas(fonte.total_importadas)}</span>
                       </span>
                       {fonte.ultimo_erro && !resultados[fonte.id] && (

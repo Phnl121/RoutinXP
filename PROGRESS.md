@@ -133,6 +133,16 @@ Feito:
   - reserva de cada atividade antes de criar a tarefa, para não duplicar.
 - Tela `/integracoes`: lista de calendários com "Atualizar" e "Editar", passo a passo do Blackboard e janela de conectar com "Testar link" (prévia das próximas atividades), categoria, tag (cria a tag com o nome da disciplina) e opção de trazer as vencidas. Ao remover, escolhe manter ou apagar as tarefas pendentes.
 - Capturas em `.impeccable/review/integracoes/`.
+- Revisão final do Impeccable ("fix"), 8 correções aplicadas antes do deploy:
+  - `verify_jwt = false` para a função no `config.toml` (o agendamento não manda JWT; a função confere login e segredo);
+  - DNS resolvido e endereços privados recusados antes de cada leitura (SSRF), além de um limite de 10 testes de link a cada 10 min por usuário;
+  - agendamento a cada 30 min lendo em lotes só os calendários sem tentativa há 3 h (4 ao mesmo tempo, com prazo);
+  - `ultima_tentativa` separada de `ultima_sync`, para a tela mostrar "falhou há…" em vez de "atualizado";
+  - a contagem de tarefas ignora as excluídas;
+  - importação de cada atividade numa transação só (`importar_atividade`);
+  - trocar o link libera uma nova leitura na hora (trigger);
+  - categoria e tag da fonte presas ao mesmo usuário (FK composta);
+  - remover calendário confirma com a ação de texto, sem botão roxo.
 
 Próximo:
 - Aplicar a migration e publicar a função (`npx.cmd supabase functions deploy sincronizar-calendarios --no-verify-jwt --use-api`), depois o push.

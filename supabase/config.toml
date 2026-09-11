@@ -384,6 +384,10 @@ deno_version = 2
 # [edge_runtime.secrets]
 # secret_key = "env(SECRET_VALUE)"
 
+# O próprio código confere o login do usuário (ou o segredo do agendamento, que não manda JWT).
+[functions.sincronizar-calendarios]
+verify_jwt = false
+
 [analytics]
 enabled = true
 port = 54327

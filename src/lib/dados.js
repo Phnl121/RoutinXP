@@ -46,7 +46,8 @@ export async function excluirTag(id) {
 
 // ---------- Integrações: calendários iCal ----------
 // A url nunca volta do banco (privilégio por coluna); a tela mostra só o domínio.
-const CAMPOS_FONTE = 'id, nome, dominio, category_id, tag_id, importar_passadas, ultima_sync, ultimo_erro, total_importadas, created_at'
+const CAMPOS_FONTE =
+  'id, nome, dominio, category_id, tag_id, importar_passadas, ultima_sync, ultima_tentativa, ultimo_erro, total_importadas, created_at'
 
 // webcal:// é o mesmo link por https.
 export const normalizarLink = (url) => url.trim().replace(/^webcal:\/\//i, 'https://')

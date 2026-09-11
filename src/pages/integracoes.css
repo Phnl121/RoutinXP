@@ -188,6 +188,11 @@
   padding: 0;
 }
 
+/* Fora do .form, a linha de ações precisa do mesmo respiro que tem nas outras janelas. */
+.opcoes-remover ~ .dialogo__acoes {
+  margin-top: 1.5rem;
+}
+
 @media (max-width: 30rem) {
   .fontes__item {
     grid-template-columns: auto minmax(0, 1fr);

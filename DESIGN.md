@@ -563,7 +563,7 @@ The same strip form, on mobile only (hidden at 60rem and up, where the side menu
 ### Navigation: Side Menu
 The app's primary navigation, full height at the left, in the Top Bar tier with a 1px Rule right edge; sticky, no shadow.
 - **Top:** the horizontal logo (2rem tall) and, at the right, the collapse icon button.
-- **Items:** Tarefas, Painel, Perfil. 44px rows, 8px radius, a 1.125rem icon 0.75rem from the label, 600 weight, Muted at rest. Hover gives Panel Two and Ink. The **current page** is neutral: Panel Two fill, the Selected inset in Rule Strong, Ink text. Never violet, never a side stripe.
+- **Items:** Tarefas, Painel, Integrações (calendar icon), Perfil. 44px rows, 8px radius, a 1.125rem icon 0.75rem from the label, 600 weight, Muted at rest. Hover gives Panel Two and Ink. The **current page** is neutral: Panel Two fill, the Selected inset in Rule Strong, Ink text. Never violet, never a side stripe.
 - **Install item:** "Instalar app" with the download icon, the same recipe as the nav items (44px, 8px radius, 600, Muted at rest, Panel Two and Ink on hover, a native tooltip when collapsed). It sits at the bottom directly above the user card and appears only when the app can be installed.
 - **User card:** pinned to the bottom; a 36px avatar, the user's name (0.875rem, 700, ellipsized; "Complete seu perfil" when empty) over "Nível n" (0.75rem, Muted). 10px radius, 8px padding. It links to Perfil and has a hover state only (Panel Two); it never shows the current-page state, because the Perfil item already carries it.
 - **Collapsed (desktop):** a 4.25rem icon rail. The logo swaps for the 32px icon, the collapse button stacks under it, labels and the user card's text hide, items center their icons and show their name as a native tooltip. The choice persists in `localStorage`.
@@ -628,6 +628,22 @@ One language for every chart: magnitude is **single-hue Level Green**, the scale
 
 ### Timeline
 Recent completions (up to 12), grouped by day under Label headings ("HOJE", "ONTEM", "seg, 8 set"). Each item is a row: a 24px green circle with a Deep Moss check, the title (Row Title, clamped to two lines, breaking anywhere) over the category line (dot and name, Meta muted), the time (Meta muted), and the XP label right-aligned in a 3.75rem column: "+n XP" in green at 800, "+0 XP" in Muted at 600. Items are divided by 1px Rules, and a 2px Rule line runs vertically behind the check circles within each day, joining them. The circles are marks, not controls.
+
+### Integrações
+A simple page (the Perfil column: max 44rem, centered). A title row: Page Title "Integrações" at the left and, once a calendar exists, the compact "+ Conectar calendário" at the right. The row wraps, so the button drops below the title when there is no room; the title never breaks mid-word. Two panels follow.
+- **CALENDÁRIOS DA FACULDADE:** one Muted sentence, then one row per connected calendar, divided by 1px Rules:
+  - a 2.25rem Panel Two tile holding the Muted calendar icon;
+  - the course name at 600;
+  - a Meta muted line with the static tag label, the category dot and name, "atualizado há …" (or "falhou há …" when the last attempt failed) and the task count;
+  - a neutral Ink line at 600 for the error or for the last manual result ("2 tarefas novas.");
+  - "Atualizar" and "Editar" link buttons at the right, which drop under the text at 30rem and below.
+  A Meta hint closes the list ("Atualização automática a cada 3 horas."). Empty state: a Muted sentence and the primary "+ Conectar calendário".
+- **COMO PEGAR O LINK NO BLACKBOARD:** four steps in the numbered-steps list style, then a Meta note.
+- **Connect/edit dialog:** the standard Dialog.
+  - Fields: course name; the calendar link, whose field sits in a row with a "Testar link" link button; category and tag as a pair (the tag offers "Nova tag: {course}" by default); a checkbox to bring overdue activities.
+  - The preview answers inside the form: one Meta sentence with the counts, then up to five rows (title at 600, ellipsized; date in Muted at the right) between 1px Rules.
+  - Editing replaces the link field with a dashed Rule Strong box, "Link salvo (domain)" plus "Trocar link". The link is never shown back.
+  - "Remover calendário" is the pinned-left destructive action. It opens a second step titled "Remover {course}", with two radios (keep, or delete the pending imported tasks) and the destructive text action to confirm, never a violet fill.
 
 ### Perfil
 A simple page (Page Title, then three panels). The first holds the profile form: first name and surname, birth date and occupation, each pair in the auto-fit two-column grid, then the primary "Salvar perfil" with "Perfil salvo." (0.875rem, 600, Level Green, `role="status"`) beside it once saved. When the profile is incomplete the title becomes "Complete seu perfil" and one Muted sentence (44ch) leads the panel. The second panel, titled TAGS in Label style, has one Muted sentence (44ch), then the tag list: one row per tag (min 2.75rem, 1px Rules between rows) with the tag ring, the name at 600 (ellipsized), the use count in Meta muted ("2 tarefas", "sem tarefas") and an "Editar" link button; below, a "+ Nova tag" text action in the rail's "+ Nova categoria" style. Editing opens the category dialog with tag texts (name up to 40 characters, same color picker). A tag in use can be deleted, but only on a second press: the first shows a notice ("Esta tag está em N tarefas e vai sair delas…") and relabels the action "Excluir mesmo assim". The third panel, titled CONTA in Label style, lists the e-mail (Meta muted term, Ink value) and a "Sair da conta" link button.
