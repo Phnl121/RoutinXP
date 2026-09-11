@@ -5,7 +5,7 @@ Este arquivo é o ponto de handoff entre ferramentas (Code, Antigravity, ou qual
 ## Estado atual
 (a ferramenta que estiver trabalhando atualiza esta seção a cada sessão: o que existe, o que está funcionando, o que está pela metade)
 
-Atualizado em 2026-09-10 (Claude Code): passo 12 (PWA) construído; com ele, todos os passos do prompt inicial estão feitos.
+Atualizado em 2026-09-11 (Claude Code): v1 completa (passos 1 a 12). v2 em andamento e no ar: Integrações (calendários iCal), Calendário, Categorias e tags, filtro, capas e selos de prazo, Kanban com colunas próprias, área de toque de 44px no celular. O log de sessões abaixo tem o detalhe mais recente; algumas descrições antigas desta seção (trilho, Quadro) já foram substituídas.
 
 - Repositório git: **sim**, branch `main`, remoto **privado** https://github.com/Phnl121/RoutinXP (conta Phnl121). Identidade local `Pedro <pedrocybernet01@gmail.com>`.
 - Deploy: **Vercel**, projeto `phnl121/routinxp` (renomeado de `routin`), produção em **https://routinxp.vercel.app**.
@@ -108,6 +108,23 @@ Atualizado em 2026-09-10 (Claude Code): passo 12 (PWA) construído; com ele, tod
 
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
+
+### 2026-09-11, Antigravity + Claude Code: área de toque de 44px no celular
+Feito:
+- Antigravity (commits `655895f` e `45cce7f`): em telas de até 60rem, subiu para 44px os controles tocáveis. São eles: filtro segmentado, chips do filtro e das tags, botão "Filtrar", botão compacto, "⋯" das colunas do Kanban e o × dos avisos.
+- Claude Code conferiu os commits e corrigiu:
+  - a largura das setas do calendário (estavam 36×44, agora 44×44);
+  - o commit do `calendario.css`, que tinha ficado de fora;
+  - esta entrada, que tinha entrado no meio da sessão do Kanban;
+  - um comentário deslocado em `tarefas.css`.
+
+Próximo:
+- Acabamentos que faltam para o Antigravity (itens 2 a 6 da lista):
+  - "Perfil salvo." sem verde;
+  - prender o Tab na gaveta do celular;
+  - contraste do círculo do check;
+  - igualar a animação do check;
+  - brief de Tarefas sem o trilho.
 
 ### 2026-09-11, Claude Code (Opus 5): Kanban com colunas próprias e coloridas
 Feito:

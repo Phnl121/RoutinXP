@@ -366,3 +366,15 @@
     border-top: 1px solid var(--rule);
   }
 }
+
+/* Área de toque mínima de 44px no celular (DESIGN.md): setas quadradas, "Hoje" mais alto. */
+@media (max-width: 59.99rem) {
+  .cal__seta {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .cal__hoje {
+    min-height: 2.75rem;
+  }
+}
