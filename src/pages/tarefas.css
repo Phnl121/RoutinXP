@@ -1470,6 +1470,18 @@
 
 @media (max-width: 59.99rem) {
   /* Celular: laterais iguais para a marca ficar no centro; menu à esquerda, avatar à direita. */
+
+  /* Ajuste de tamanho de toque para dispositivos móveis */
+  .segmentos button,
+  .tag-chip,
+  .botao-filtro,
+  .btn--compacto {
+    min-height: 2.75rem;
+  }
+  .kanban__editar {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
   .topo {
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     grid-template-areas:
