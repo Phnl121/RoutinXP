@@ -80,7 +80,13 @@ export async function listarTarefas() {
 
 export async function criarTarefa({ tagIds = [], ...campos }) {
   const salva = comTags(ok(await supabase.from('tasks').insert(conteudo(campos)).select(CAMPOS_TAREFA).single()))
-  if (tagIds.length) await definirTags(salva.id, tagIds)
+  try {
+    if (tagIds.length) await definirTags(salva.id, tagIds)
+  } catch (erro) {
+    // A tarefa já existe: quem chamou passa a editá-la, em vez de criar outra ao tentar de novo.
+    erro.tarefaSalva = salva
+    throw erro
+  }
   return { ...salva, tag_ids: tagIds }
 }
 

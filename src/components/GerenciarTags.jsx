@@ -19,7 +19,7 @@ export function GerenciarTags({ tags, tarefas, onSalvar, onExcluir }) {
         <ul className="tags-lista">
           {tags.map((tag) => (
             <li key={tag.id} className="tags-lista__item">
-              <span className="dot" style={{ background: tag.cor }} />
+              <span className="tag-marca" style={{ '--c': tag.cor }} />
               <span className="tags-lista__nome">{tag.nome}</span>
               <span className="hint">{g.uso(uso(tag.id))}</span>
               <button type="button" className="link-btn" onClick={() => setDlg({ tag })} aria-label={g.editar(tag.nome)}>
@@ -33,7 +33,15 @@ export function GerenciarTags({ tags, tarefas, onSalvar, onExcluir }) {
         <IconeMais />
         {g.nova}
       </button>
-      {dlg && <TagDialog tag={dlg.tag} onFechar={() => setDlg(null)} onSalvar={onSalvar} onExcluir={onExcluir} />}
+      {dlg && (
+        <TagDialog
+          tag={dlg.tag}
+          totalTarefas={dlg.tag ? uso(dlg.tag.id) : 0}
+          onFechar={() => setDlg(null)}
+          onSalvar={onSalvar}
+          onExcluir={onExcluir}
+        />
+      )}
     </>
   )
 }

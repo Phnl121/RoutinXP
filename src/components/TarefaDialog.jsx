@@ -13,6 +13,7 @@ export function TarefaDialog({ tarefa, categorias, tags = [], categoriaPadrao, o
   const [titulo, setTitulo] = useState(tarefa?.titulo ?? '')
   const [descricao, setDescricao] = useState(tarefa?.descricao ?? '')
   const [tagIds, setTagIds] = useState(tarefa?.tag_ids ?? [])
+  const [idSalvo, setIdSalvo] = useState(tarefa?.id)
   const alternarTag = (tagId, marcar) => setTagIds((atuais) => (marcar ? [...new Set([...atuais, tagId])] : atuais.filter((x) => x !== tagId)))
   const [categoriaId, setCategoriaId] = useState(tarefa?.category_id ?? categoriaPadrao ?? categorias[0]?.id ?? '')
   const [data, setData] = useState(tarefa?.data_prevista ?? '')
@@ -25,9 +26,11 @@ export function TarefaDialog({ tarefa, categorias, tags = [], categoriaPadrao, o
     setSalvando(true)
     setErro(null)
     try {
-      await onSalvar({ id: tarefa?.id, titulo, descricao, categoriaId, dataPrevista: data, tagIds })
+      await onSalvar({ id: idSalvo, titulo, descricao, categoriaId, dataPrevista: data, tagIds })
       fechar()
     } catch (e) {
+      // A tarefa foi criada e só as tags falharam: tentar de novo salva a mesma tarefa.
+      if (e?.tarefaSalva) setIdSalvo(e.tarefaSalva.id)
       setErro(mensagemErroDados(e))
       setSalvando(false)
     }

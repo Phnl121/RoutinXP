@@ -450,6 +450,11 @@
   margin-top: 0.35rem;
 }
 
+/* Concluída: a borda recua junto com o resto da linha. */
+.linhas > .linha[data-feita='true'] {
+  border-top-color: color-mix(in oklab, var(--cor-cat, var(--rule)) 40%, transparent);
+}
+
 .linha {
   position: relative;
   display: grid;
@@ -592,13 +597,22 @@
   min-width: 0;
 }
 
-/* Tags na lista: só as bolinhas de cor, em fila, logo abaixo do título. */
+/* Marca de tag: um anel de 2px na cor da tag. A categoria é um ponto cheio;
+   o anel nunca se confunde com ela, mesmo com cores iguais. */
+.tag-marca {
+  flex: none;
+  width: 0.5625rem;
+  height: 0.5625rem;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px var(--c);
+}
+
+/* Tags na lista: só os anéis, em fila, na mesma linha da categoria. */
 .linha__tags {
   display: inline-flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.3rem;
-  justify-self: start;
-  padding: 0.15rem 0;
 }
 
 /* ---------- Formulário: descrição e tags ---------- */
@@ -620,7 +634,9 @@
   border: 0;
 }
 
+/* A legenda não é item da grade: o espaço até os botões vem da margem. */
 .tags-campo legend {
+  margin-bottom: 0.75rem;
   padding: 0;
 }
 
@@ -671,19 +687,25 @@
   height: 0.8rem;
 }
 
+/* Nova tag: uma linha simples (nome, "Criar tag", fechar) e as cores embaixo. */
 .tag-nova {
   display: grid;
   gap: 0.75rem;
-  padding: 0.9rem;
-  border: 1px solid var(--rule);
-  border-radius: var(--radius-sm);
 }
 
-.tag-nova__acoes {
+.tag-nova__linha {
   display: flex;
-  justify-content: flex-end;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
+}
+
+.tag-nova__linha .input {
+  flex: 1;
+  min-width: 0;
+}
+
+.tag-nova__linha .link-btn {
+  flex: none;
 }
 
 /* A data aparece na coluna da direita; no Quadro estreito ela desce para a linha de categoria. */

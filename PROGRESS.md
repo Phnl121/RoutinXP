@@ -122,11 +122,20 @@ Feito:
   - tabelas `tags` e `task_tags` com RLS;
   - privilégios só nos campos de conteúdo;
   - nome de tag único por usuário.
-  - **Ainda não aplicada em produção.**
+  - **Aplicada em produção.** Acesso anônimo às tabelas novas testado e recusado.
 - Capturas em `.impeccable/review/tags/`.
+- Revisão final do Impeccable ("fix"), 8 correções aplicadas:
+  - tag vira **anel** (a categoria é ponto cheio), na mesma linha da categoria;
+  - nomes das tags no nome acessível da tarefa;
+  - "Nova tag" como linha simples, sem caixa e sem segundo botão roxo;
+  - excluir tag em uso pede um segundo toque;
+  - borda apagada em tarefas concluídas;
+  - se as tags falharem ao criar a tarefa, tentar de novo edita a mesma tarefa em vez de duplicar;
+  - DESIGN.md e brief de Tarefas atualizados.
+- Deploy (autorizado pelo usuário): migration aplicada e push para a `main`.
 
 Próximo:
-- Aplicar a migration em produção antes do push. O app novo lê `tags` e `task_tags`.
+- Teste do usuário: descrição, tags (criar no formulário e no Perfil, excluir em uso) e borda colorida.
 
 ### 2026-09-11, Claude Code (Opus 5): ajustes pedidos pelo usuário
 Feito:

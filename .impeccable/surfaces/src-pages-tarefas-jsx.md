@@ -12,9 +12,10 @@ Main app surface `/`: category-grouped task list with Pendentes/Concluídas filt
 ## Structure (locked by the user)
 
 "Trilho de categorias", seed key d1ee812b (surface round, structures dealt 7/3/6; the user picked the second dealt card after generating Nano Banana images of all three).
-- Top bar: wordmark, a compact level meter (NÍVEL badge + XP bar + streak) in a pill, "+ Nova tarefa", avatar with account menu.
-- Left rail: CATEGORIAS, "Todas" plus each category with its dot and pending count, the selected item marked by a 3px purple bar, edit on hover, "+ Nova categoria" once at the bottom.
-- Main: page title (category name or "Todas as tarefas"), LISTA | QUADRO underline tabs, a Pendentes/Concluídas segmented filter in Lista.
+- Top bar (shell): the level meter (NÍVEL badge + XP bar + streak) in a pill, always centered; avatar with account menu at the right. The wordmark lives in the side menu.
+- Left rail: CATEGORIAS, "Todas" plus each category with its dot and pending count, the selected item marked with the neutral selection (Panel Two + Rule Strong inset, never purple), edit on hover, "+ Nova categoria" once at the bottom.
+- Main: a title row (category name or "Todas as tarefas" at the left, compact "+ Nova tarefa" at the right), LISTA | QUADRO underline tabs, a Pendentes/Concluídas segmented filter in Lista. A FAB opens the new-task dialog at every width.
+- Rows (user request 2026-09-11): a 2px top border in the category color on every task row (faded on completed rows); tags as rings on the meta line; description and tag names only inside the task dialog. Tags are managed in Perfil.
 - Quadro: two panels, Pendentes and Concluídas. Dragging a pending row into Concluídas completes it; no dragging back (v1 decision).
 - Mobile: the level meter wraps to a second top-bar row, the rail becomes scrollable chips, the Quadro columns scroll-snap horizontally, a purple FAB replaces "+ Nova tarefa".
 

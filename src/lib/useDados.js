@@ -79,7 +79,14 @@ export function useDados(userId) {
   const falhar = (erro) => setAviso({ tipo: 'erro', texto: mensagemErroDados(erro) })
 
   async function salvarTarefa({ id, ...campos }) {
-    const salva = id ? await api.atualizarTarefa(id, campos) : await api.criarTarefa(campos)
+    let salva
+    try {
+      salva = id ? await api.atualizarTarefa(id, campos) : await api.criarTarefa(campos)
+    } catch (erro) {
+      // Criou a tarefa mas falhou ao ligar as tags: ela entra na lista (sem tags).
+      if (erro?.tarefaSalva) setTarefas((ts) => [...ts, erro.tarefaSalva])
+      throw erro
+    }
     setTarefas((ts) => (id ? ts.map((x) => (x.id === id ? salva : x)) : [...ts, salva]))
     return salva
   }

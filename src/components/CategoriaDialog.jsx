@@ -8,9 +8,16 @@ const CORES = t.formCategoria.cores
 
 // A mesma janela serve para tags (nome + cor): muda só o texto, e a tag pode ser
 // excluída mesmo em uso (ela sai das tarefas).
-export function TagDialog({ tag, onFechar, onSalvar, onExcluir }) {
+export function TagDialog({ tag, totalTarefas, onFechar, onSalvar, onExcluir }) {
   return (
-    <CategoriaDialog categoria={tag} totalTarefas={0} textos={t.formTag} onFechar={onFechar} onSalvar={onSalvar} onExcluir={onExcluir} />
+    <CategoriaDialog
+      categoria={tag}
+      totalTarefas={totalTarefas}
+      textos={t.formTag}
+      onFechar={onFechar}
+      onSalvar={onSalvar}
+      onExcluir={onExcluir}
+    />
   )
 }
 
@@ -22,6 +29,7 @@ export function CategoriaDialog({ categoria, totalTarefas, onFechar, onSalvar, o
   const [cor, setCor] = useState(categoria?.cor ?? CORES[0].valor)
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState(null)
+  const [confirmando, setConfirmando] = useState(false)
   const fechar = () => ref.current?.close()
 
   async function enviar(evento) {
@@ -38,10 +46,18 @@ export function CategoriaDialog({ categoria, totalTarefas, onFechar, onSalvar, o
   }
 
   async function excluir() {
-    // A FK impede excluir categoria com tarefas; explica antes de tentar.
     if (totalTarefas > 0) {
-      setErro(f.emUso(totalTarefas))
-      return
+      // Categoria: a FK impede excluir com tarefas; explica antes de tentar.
+      if (f.emUso) {
+        setErro(f.emUso(totalTarefas))
+        return
+      }
+      // Tag: pode sair das tarefas, mas só depois de um segundo toque que confirma.
+      if (!confirmando) {
+        setConfirmando(true)
+        setErro(f.confirmar(totalTarefas))
+        return
+      }
     }
     try {
       await onExcluir(categoria.id)
@@ -98,7 +114,7 @@ export function CategoriaDialog({ categoria, totalTarefas, onFechar, onSalvar, o
         <div className="dialogo__acoes">
           {categoria && (
             <button type="button" className="dialogo__excluir" onClick={excluir}>
-              {f.excluir}
+              {confirmando ? f.excluirConfirmar : f.excluir}
             </button>
           )}
           <button type="button" className="link-btn" onClick={fechar}>

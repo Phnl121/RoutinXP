@@ -1,6 +1,6 @@
 import { useId, useState } from 'react'
 import { Aviso } from './AuthParts'
-import { IconeMais } from './icones'
+import { IconeFechar, IconeMais } from './icones'
 import { mensagemErroDados } from '../lib/dadosErros'
 import { t } from '../i18n/pt-BR'
 
@@ -8,7 +8,8 @@ const f = t.formTarefa
 const CORES = t.formCategoria.cores
 
 // Tags da tarefa: cada tag é um botão que liga/desliga (seleção neutra, nunca roxa).
-// "Nova tag" abre um mini formulário aqui mesmo; a tag criada já entra marcada.
+// "Nova tag" abre uma linha simples aqui mesmo (sem caixa, sem segundo botão roxo);
+// a tag criada já entra marcada.
 export function SeletorTags({ tags, selecionadas, onAlternar, onCriar }) {
   const id = useId()
   const [criando, setCriando] = useState(false)
@@ -46,7 +47,7 @@ export function SeletorTags({ tags, selecionadas, onAlternar, onCriar }) {
           const marcada = selecionadas.includes(tag.id)
           return (
             <button key={tag.id} type="button" className="tag-chip" aria-pressed={marcada} onClick={() => onAlternar(tag.id, !marcada)}>
-              <span className="dot" style={{ background: tag.cor }} />
+              <span className="tag-marca" style={{ '--c': tag.cor }} />
               {tag.nome}
             </button>
           )
@@ -61,27 +62,35 @@ export function SeletorTags({ tags, selecionadas, onAlternar, onCriar }) {
 
       {criando && (
         <div className="tag-nova">
-          <input
-            className="input"
-            aria-label={f.nomeTag}
-            placeholder={f.nomeTag}
-            maxLength={40}
-            autoFocus
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-            onKeyDown={(e) => {
-              // Enter cria a tag, sem enviar o formulário da tarefa.
-              if (e.key === 'Enter') {
-                e.preventDefault()
-                criar()
-              }
-              if (e.key === 'Escape') {
-                e.preventDefault()
-                e.stopPropagation()
-                cancelar()
-              }
-            }}
-          />
+          <div className="tag-nova__linha">
+            <input
+              className="input"
+              aria-label={f.nomeTag}
+              placeholder={f.nomeTag}
+              maxLength={40}
+              autoFocus
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              onKeyDown={(e) => {
+                // Enter cria a tag, sem enviar o formulário da tarefa; Esc fecha só esta linha.
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  criar()
+                }
+                if (e.key === 'Escape') {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  cancelar()
+                }
+              }}
+            />
+            <button type="button" className="link-btn" onClick={criar} disabled={salvando || !nome.trim()}>
+              {f.criarTag}
+            </button>
+            <button type="button" className="lembrete__fechar" onClick={cancelar} aria-label={f.cancelarTag}>
+              <IconeFechar />
+            </button>
+          </div>
           <div className="cores__opcoes" role="radiogroup" aria-label={f.corTag}>
             {CORES.map((opcao) => (
               <label key={opcao.valor} className="cor" title={opcao.nome}>
@@ -99,14 +108,6 @@ export function SeletorTags({ tags, selecionadas, onAlternar, onCriar }) {
             ))}
           </div>
           {erro && <Aviso>{erro}</Aviso>}
-          <div className="tag-nova__acoes">
-            <button type="button" className="link-btn" onClick={cancelar}>
-              {f.cancelar}
-            </button>
-            <button type="button" className="btn btn--compacto" onClick={criar} disabled={salvando || !nome.trim()}>
-              {f.criarTag}
-            </button>
-          </div>
         </div>
       )}
     </fieldset>

@@ -10,6 +10,7 @@ export function LinhaTarefa({ tarefa, categoria, tags = [], mostrarCategoria = t
   const [arrastando, setArrastando] = useState(false)
   const mostrarCat = mostrarCategoria && Boolean(categoria)
   const prazo = feita ? null : formatarPrazo(tarefa.data_prevista)
+  const nomesTags = tags.map((g) => g.nome).join(', ')
 
   return (
     <li
@@ -39,22 +40,27 @@ export function LinhaTarefa({ tarefa, categoria, tags = [], mostrarCategoria = t
         </span>
       </button>
 
-      <button type="button" className="linha__corpo" onClick={() => onEditar(tarefa)} aria-label={tt.editar(tarefa.titulo)}>
+      <button
+        type="button"
+        className="linha__corpo"
+        onClick={() => onEditar(tarefa)}
+        aria-label={nomesTags ? `${tt.editar(tarefa.titulo)}, ${t.formTarefa.tagsDaTarefa(nomesTags)}` : tt.editar(tarefa.titulo)}
+      >
         <span className="linha__titulo">{tarefa.titulo}</span>
-        {/* Fora da tarefa aberta, a tag aparece só como a bolinha da cor; o nome fica na dica. */}
-        {tags.length > 0 && (
-          <span className="linha__tags" title={t.formTarefa.tagsDaTarefa(tags.map((g) => g.nome).join(', '))}>
-            {tags.map((g) => (
-              <span key={g.id} className="dot" style={{ background: g.cor }} />
-            ))}
-          </span>
-        )}
-        {(mostrarCat || prazo) && (
-          <span className="linha__meta" data-so-data={!mostrarCat}>
+        {(mostrarCat || prazo || nomesTags) && (
+          <span className="linha__meta" data-so-data={!mostrarCat && !nomesTags}>
             {mostrarCat && (
               <span className="linha__cat">
                 <span className="dot" style={{ background: categoria.cor }} />
                 {categoria.nome}
+              </span>
+            )}
+            {/* Fora da tarefa aberta, cada tag é só um anel na cor dela (a categoria é um ponto cheio). */}
+            {nomesTags && (
+              <span className="linha__tags" title={t.formTarefa.tagsDaTarefa(nomesTags)} aria-hidden="true">
+                {tags.map((g) => (
+                  <span key={g.id} className="tag-marca" style={{ '--c': g.cor }} />
+                ))}
               </span>
             )}
             {prazo && (

@@ -269,6 +269,7 @@ export const t = {
     nomeTag: 'Nome da tag',
     corTag: 'Cor da tag',
     criarTag: 'Criar tag',
+    cancelarTag: 'Cancelar nova tag',
     tagsDaTarefa: (nomes) => `Tags: ${nomes}`,
   },
 
@@ -284,6 +285,9 @@ export const t = {
     salvando: 'Salvando…',
     cancelar: 'Cancelar',
     excluir: 'Excluir tag',
+    excluirConfirmar: 'Excluir mesmo assim',
+    confirmar: (n) =>
+      `Esta tag está em ${n} ${n === 1 ? 'tarefa' : 'tarefas'} e vai sair ${n === 1 ? 'dela' : 'delas'}. Toque de novo para excluir.`,
   },
 
   tagsPerfil: {
