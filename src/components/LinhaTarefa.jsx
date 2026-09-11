@@ -1,10 +1,20 @@
 import { useState } from 'react'
 import { formatarPrazo } from '../lib/datas'
 import { alternarTagsCompactas, useTagsCompactas } from '../lib/tagsCompactas'
-import { IconeCheck } from './icones'
+import { IconeCheck, IconeRelogio } from './icones'
 import { t } from '../i18n/pt-BR'
 
 const tt = t.tarefas
+
+// Selo de prazo (como no Trello): relógio + data, com cor pela urgência.
+function Prazo({ prazo }) {
+  return (
+    <span className="prazo" data-prazo={prazo.estado}>
+      {prazo.estado !== 'sem' && <IconeRelogio />}
+      {prazo.texto}
+    </span>
+  )
+}
 
 export function LinhaTarefa({ tarefa, categoria, tags = [], mostrarCategoria = true, arrastavel = false, recem = false, onConcluir, onEditar, onExcluir }) {
   const feita = tarefa.status === 'concluida'
@@ -80,8 +90,8 @@ export function LinhaTarefa({ tarefa, categoria, tags = [], mostrarCategoria = t
                 </span>
               )}
               {prazo && (
-                <span className="linha__meta-data" data-prazo={prazo.estado}>
-                  {prazo.texto}
+                <span className="linha__meta-data">
+                  <Prazo prazo={prazo} />
                 </span>
               )}
             </span>
@@ -101,8 +111,8 @@ export function LinhaTarefa({ tarefa, categoria, tags = [], mostrarCategoria = t
           </span>
         )
       ) : (
-        <span className="linha__data" data-prazo={prazo.estado}>
-          {prazo.texto}
+        <span className="linha__data">
+          <Prazo prazo={prazo} />
         </span>
       )}
 

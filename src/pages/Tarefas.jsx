@@ -1,16 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 import { useDadosApp } from '../lib/dadosContexto'
 import { ordenarConcluidas, ordenarPendentes } from '../lib/datas'
 import { calcularNivel } from '../lib/nivel'
-import { Trilho } from '../components/Trilho'
+import { FILTRO_VAZIO, contarFiltros, filtrarTarefas } from '../lib/filtros'
+import { FiltroTarefas } from '../components/FiltroTarefas'
 import { Lista, Quadro } from '../components/VisoesTarefas'
 import { VisaoCalendario } from '../components/VisaoCalendario'
 import { TarefaDialog } from '../components/TarefaDialog'
 import { CategoriaDialog } from '../components/CategoriaDialog'
 import { Toast } from '../components/Toast'
 import { Aviso } from '../components/AuthParts'
-import { IconeMais } from '../components/icones'
+import { IconeFiltro, IconeMais } from '../components/icones'
 import { t } from '../i18n/pt-BR'
 import './tarefas.css'
 
@@ -54,10 +55,20 @@ function salvar(chave, valor) {
 export default function Tarefas() {
   const d = useDadosApp()
   const location = useLocation()
-  const [selecionada, setSelecionada] = useState(null)
+  const [filtro, setFiltroTarefas] = useState(FILTRO_VAZIO)
+  const [filtroAberto, setFiltroAberto] = useState(false)
   const [visao, setVisao] = useState(lerVisao)
   const [modoCal, setModoCal] = useState(lerModoCal)
-  const [filtro, setFiltro] = useState('pendente')
+  const [situacao, setSituacao] = useState('pendente')
+
+  // O link direto (?visao=…&modo=…) vale só na abertura; depois manda a escolha salva.
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    if (!url.searchParams.has('visao') && !url.searchParams.has('modo')) return
+    url.searchParams.delete('visao')
+    url.searchParams.delete('modo')
+    window.history.replaceState(window.history.state, '', url)
+  }, [])
   const [dlgTarefa, setDlgTarefa] = useState(null) // { tarefa: objeto | null }
   const [dlgCategoria, setDlgCategoria] = useState(null) // { categoria: objeto | null }
   const [voos, setVoos] = useState([]) // "+XP" em voo até a barra superior
@@ -70,18 +81,14 @@ export default function Tarefas() {
     setDlgTarefa({ tarefa: null })
   }
 
-  const categoriaSel = d.categorias.find((c) => c.id === selecionada) ?? null
   const categoriasPorId = Object.fromEntries(d.categorias.map((c) => [c.id, c]))
   const tagsPorId = Object.fromEntries(d.tags.map((g) => [g.id, g]))
-  const visiveis = categoriaSel ? d.tarefas.filter((x) => x.category_id === categoriaSel.id) : d.tarefas
+  const filtrosAtivos = contarFiltros(filtro)
+  const visiveis = filtrosAtivos ? filtrarTarefas(d.tarefas, filtro) : d.tarefas
   const pendentes = visiveis.filter((x) => x.status === 'pendente').sort(ordenarPendentes)
   const concluidas = visiveis.filter((x) => x.status === 'concluida').sort(ordenarConcluidas)
-
-  const pendentesPorCategoria = {}
-  for (const x of d.tarefas) {
-    if (x.status === 'pendente') pendentesPorCategoria[x.category_id] = (pendentesPorCategoria[x.category_id] ?? 0) + 1
-  }
-  const totalPendentes = d.tarefas.filter((x) => x.status === 'pendente').length
+  // Uma categoria só no filtro: ela vira a sugestão de categoria da tarefa nova.
+  const categoriaFiltrada = filtro.categorias.length === 1 ? filtro.categorias[0] : undefined
 
   function trocarVisao(nova) {
     setVisao(nova)
@@ -133,10 +140,10 @@ export default function Tarefas() {
     onExcluir: d.excluir,
   }
 
-  const listaFiltrada = filtro === 'pendente' ? pendentes : concluidas
-  const grupos = categoriaSel
-    ? [{ categoria: categoriaSel, tarefas: listaFiltrada }]
-    : d.categorias.map((c) => ({ categoria: c, tarefas: listaFiltrada.filter((x) => x.category_id === c.id) })).filter((g) => g.tarefas.length)
+  const listaFiltrada = situacao === 'pendente' ? pendentes : concluidas
+  const grupos = d.categorias
+    .map((c) => ({ categoria: c, tarefas: listaFiltrada.filter((x) => x.category_id === c.id) }))
+    .filter((g) => g.tarefas.length)
 
   let conteudo
   if (d.estado === 'carregando') {
@@ -191,7 +198,7 @@ export default function Tarefas() {
         concluidas={concluidas}
         categoriasPorId={categoriasPorId}
         tagsPorId={tagsPorId}
-        mostrarCategoria={!categoriaSel}
+        mostrarCategoria
         recem={d.recem}
         acoes={acoes}
       />
@@ -200,8 +207,8 @@ export default function Tarefas() {
     conteudo = (
       <Lista
         grupos={grupos}
-        mostrarTitulos={!categoriaSel}
-        vazio={filtro === 'pendente' ? tt.vazio.pendentes : tt.vazio.concluidas}
+        mostrarTitulos
+        vazio={filtrosAtivos ? tt.filtros.nenhuma : situacao === 'pendente' ? tt.vazio.pendentes : tt.vazio.concluidas}
         categoriasPorId={categoriasPorId}
         tagsPorId={tagsPorId}
         recem={d.recem}
@@ -215,24 +222,34 @@ export default function Tarefas() {
   return (
     <>
       <div className="app__corpo">
-        <Trilho
-          categorias={d.categorias}
-          pendentesPorCategoria={pendentesPorCategoria}
-          totalPendentes={totalPendentes}
-          selecionada={categoriaSel?.id ?? null}
-          onSelecionar={setSelecionada}
-          onNova={() => setDlgCategoria({ categoria: null })}
-          onEditar={(categoria) => setDlgCategoria({ categoria })}
-        />
-
         <main className="app__main">
           <header className="main__cabeca">
             <div className="main__titulo-linha">
-              <h1 className="main__titulo">{categoriaSel?.nome ?? tt.tituloTodas}</h1>
-              <button type="button" className="btn btn--compacto main__nova" onClick={abrirNovaTarefa}>
-                <IconeMais />
-                {t.topo.novaTarefa}
-              </button>
+              <h1 className="main__titulo">{filtrosAtivos ? tt.filtros.tituloFiltrado : tt.tituloTodas}</h1>
+              <div className="titulo-acoes">
+                {temConteudo && (
+                  <button
+                    type="button"
+                    className="botao-filtro"
+                    aria-expanded={filtroAberto}
+                    aria-controls="filtro-tarefas"
+                    aria-label={tt.filtros.rotulo(filtrosAtivos)}
+                    onClick={() => setFiltroAberto((aberto) => !aberto)}
+                  >
+                    <IconeFiltro />
+                    {tt.filtros.botao}
+                    {filtrosAtivos > 0 && (
+                      <span className="botao-filtro__n" aria-hidden="true">
+                        {filtrosAtivos}
+                      </span>
+                    )}
+                  </button>
+                )}
+                <button type="button" className="btn btn--compacto main__nova" onClick={abrirNovaTarefa}>
+                  <IconeMais />
+                  {t.topo.novaTarefa}
+                </button>
+              </div>
             </div>
             {temConteudo && (
               <div className="main__controles">
@@ -258,10 +275,10 @@ export default function Tarefas() {
                 )}
                 {visao === 'lista' && (
                   <div className="segmentos" role="group" aria-label={tt.filtro.rotulo}>
-                    <button type="button" aria-pressed={filtro === 'pendente'} onClick={() => setFiltro('pendente')}>
+                    <button type="button" aria-pressed={situacao === 'pendente'} onClick={() => setSituacao('pendente')}>
                       {tt.filtro.pendentes} · {pendentes.length}
                     </button>
-                    <button type="button" aria-pressed={filtro === 'concluida'} onClick={() => setFiltro('concluida')}>
+                    <button type="button" aria-pressed={situacao === 'concluida'} onClick={() => setSituacao('concluida')}>
                       {tt.filtro.concluidas} · {concluidas.length}
                     </button>
                   </div>
@@ -269,6 +286,18 @@ export default function Tarefas() {
               </div>
             )}
           </header>
+          {temConteudo && filtroAberto && (
+            <FiltroTarefas
+              id="filtro-tarefas"
+              filtro={filtro}
+              onMudar={setFiltroTarefas}
+              onLimpar={() => setFiltroTarefas(FILTRO_VAZIO)}
+              categorias={d.categorias}
+              tags={d.tags}
+              total={visiveis.length}
+              ativos={filtrosAtivos}
+            />
+          )}
           {conteudo}
         </main>
       </div>
@@ -285,7 +314,7 @@ export default function Tarefas() {
           categorias={d.categorias}
           tags={d.tags}
           onCriarTag={d.salvarTag}
-          categoriaPadrao={categoriaSel?.id}
+          categoriaPadrao={categoriaFiltrada}
           onFechar={() => setDlgTarefa(null)}
           onSalvar={d.salvarTarefa}
           onExcluir={d.excluir}

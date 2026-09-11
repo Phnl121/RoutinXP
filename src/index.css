@@ -20,6 +20,10 @@
   --green-line: rgb(34 197 94 / 0.35);
   --green-glow: rgb(34 197 94 / 0.6);
   --on-green: #0a2616;
+  /* Prazos (pedido do usuário, 2026-09-11): perto de vencer em âmbar, atrasado em rosa. */
+  --prazo-perto: #e0a050;
+  --prazo-atrasado: #e27d8f;
+  --on-prazo: #1d1407;
 
   --purple: #7c3aed;
   --purple-hover: #8b5cf6;

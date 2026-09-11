@@ -109,6 +109,39 @@ Atualizado em 2026-09-10 (Claude Code): passo 12 (PWA) construído; com ele, tod
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
 
+### 2026-09-11, Claude Code (Opus 5): tarefas em tela cheia, filtro, capas e prazos
+Pedido do usuário: tirar categorias e tags da tela de Tarefas, dar a largura toda às tarefas, criar um filtro, pintar os cards (capa como no Trello, pela imagem que ele mandou), destacar os prazos, e melhorar o Kanban com colunas próprias e coloridas. O Kanban fica para a próxima parte, porque precisa de migration.
+
+Feito:
+- **Página "Categorias e tags"** (`/categorias`), no menu lateral: categorias (pendentes, editar, nova) e tags (saíram do Perfil). O trilho de categorias saiu da tela de Tarefas, que agora ocupa a largura toda.
+- **Filtro** (botão com funil ao lado de "Nova tarefa"):
+  - busca pelo nome (e pela descrição, sem diferenciar acentos);
+  - categorias e tags, com várias escolhas;
+  - prazo: atrasadas, hoje, próximos 7 dias ou sem data.
+  - Vale para Lista, Quadro e Calendário. O botão mostra quantos filtros estão ativos e há "Limpar filtros".
+  - Com uma categoria só no filtro, ela vira a sugestão da tarefa nova.
+- **Capa na cor da categoria** em cada card (faixa no topo e corpo escuro; mais alta no Quadro), no lugar do contorno.
+- **Selo de prazo** com relógio:
+  - cinza no futuro;
+  - âmbar claro até 3 dias antes;
+  - âmbar cheio no dia;
+  - rosa cheio quando atrasado.
+  - Tokens novos `--prazo-perto`, `--prazo-atrasado` e `--on-prazo` em `index.css`.
+- **Aviso de prazos** no topo ("Você tem 2 tarefas para hoje e 1 atrasada."), dispensável até o dia seguinte. A fila de avisos virou: streak em risco, depois prazos, depois o convite para instalar. Dispensar o de streak libera o de prazos.
+- **Correções da revisão do calendário:**
+  - a Linha do tempo mostra os dias anteriores (recolhidos) e as concluídas sem data;
+  - títulos da Semana em até 2 linhas;
+  - foco do teclado preservado ao trocar de modo;
+  - no celular, o dia inteiro é tocável e o leitor de tela diz quantas tarefas o dia tem;
+  - a pílula concluída avisa que está concluída;
+  - o ano aparece quando a data não é do ano atual;
+  - o link direto `?visao=…&modo=…` vale só na abertura;
+  - o controle de modos desce quando falta espaço.
+- Capturas em `.impeccable/review/tarefas2/`.
+
+Próximo:
+- Kanban com colunas próprias e coloridas: migration nova, que precisa de autorização.
+
 ### 2026-09-11, Claude Code (Opus 5): visão Calendário nas tarefas
 Feito:
 - Terceira aba **CALENDÁRIO** em Tarefas, ao lado de Lista e Quadro, com quatro modos (Mês, Semana, Dia, Linha do tempo) no mesmo lugar do filtro da Lista:

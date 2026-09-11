@@ -110,6 +110,32 @@ export function IconeCalendario() {
   )
 }
 
+export function IconeFiltro() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M2.5 3.5h11L9.25 8.5v4L6.75 14V8.5Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+export function IconeLupa() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="2" />
+      <path d="m10.5 10.5 3 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+export function IconeEtiqueta() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M2.25 2.25h5.5l6 6-5.5 5.5-6-6Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M5.25 5.25h.01" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 export function IconeSetaEsquerda() {
   return (
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">

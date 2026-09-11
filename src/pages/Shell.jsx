@@ -10,7 +10,8 @@ import { DialogoInstalarIos } from '../components/DialogoInstalarIos'
 import { IconeMais, IconeSemConexao } from '../components/icones'
 import { pedirInstalacao, useInstalacao } from '../lib/instalacao'
 import { useConexao } from '../lib/useConexao'
-import { streakEmRisco } from '../lib/lembrete'
+import { contarPrazos, streakEmRisco } from '../lib/lembrete'
+import { LembretePrazos } from '../components/LembretePrazos'
 import { hojeBrasilia } from '../lib/datas'
 import { t } from '../i18n/pt-BR'
 import './tarefas.css'
@@ -63,6 +64,27 @@ export default function Shell({ session }) {
   const instalar = () => (modoInstalacao === 'ios' ? setDlgIos(true) : pedirInstalacao())
 
   const online = useConexao()
+  const hoje = hojeBrasilia()
+  const chaveStreak = `routinxp:lembrete:${hoje}`
+  const [streakDispensado, setStreakDispensado] = useState(() => {
+    try {
+      return localStorage.getItem(chaveStreak) === '1'
+    } catch {
+      return false
+    }
+  })
+  function dispensarStreak() {
+    setStreakDispensado(true)
+    try {
+      localStorage.setItem(chaveStreak, '1')
+    } catch {
+      /* sem armazenamento: some só nesta sessão */
+    }
+  }
+  // Fila de avisos (um por vez): streak em risco, depois prazos, depois o convite para instalar.
+  const streakVisivel = streakEmRisco(d.stats, hoje) && !streakDispensado
+  const prazos = contarPrazos(d.tarefas, hoje)
+  const temPrazos = prazos.paraHoje + prazos.atrasadas > 0
   const { estado, carregar } = d
   // A internet voltou depois de uma falha de carregamento: busca os dados de novo.
   useEffect(() => {
@@ -103,9 +125,9 @@ export default function Shell({ session }) {
             )}
           </div>
           {/* Offline, o lembrete de streak espera: concluir agora não salvaria. */}
-          {online && <LembreteStreak stats={d.stats} />}
-          {/* Um aviso por vez: o convite para instalar espera o lembrete de streak sair. */}
-          {online && modoInstalacao && !streakEmRisco(d.stats, hojeBrasilia()) && <ConviteInstalar onInstalar={instalar} />}
+          {online && streakVisivel && <LembreteStreak stats={d.stats} onDispensar={dispensarStreak} />}
+          {online && !streakVisivel && <LembretePrazos tarefas={d.tarefas} />}
+          {online && modoInstalacao && !streakVisivel && !temPrazos && <ConviteInstalar onInstalar={instalar} />}
           <Outlet context={{ session }} />
           {dlgIos && <DialogoInstalarIos onFechar={() => setDlgIos(false)} />}
           {/* No celular a barra não tem "Nova tarefa": o botão flutuante faz esse papel em

@@ -42,6 +42,7 @@ let tarefas = [
   tarefa('t4', 'Revisar slides da reunião de sexta', 'c3', dia(3)),
   tarefa('t5', 'Enviar planilha de horas', 'c3', null),
   tarefa('t6', 'Pagar conta de luz', 'c4', dia(5)),
+  tarefa('t23', 'Enviar comprovante de matrícula', 'c1', dia(-2)),
   tarefa('t7', 'Academia às 19h', 'c4', dia(0), 30, 15),
   tarefa('t8', 'Ler artigo sobre UX', 'c2', null, 90, 10),
   tarefa('t9', 'Resumo de Direito Civil', 'c1', dia(0), 150, 15),

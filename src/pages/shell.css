@@ -222,6 +222,11 @@
   color: var(--muted);
 }
 
+/* Prazos: o relógio em âmbar chama atenção sem virar alarme. */
+.lembrete--prazos > svg {
+  color: var(--prazo-perto);
+}
+
 .lembrete p {
   flex: 1;
   margin: 0;

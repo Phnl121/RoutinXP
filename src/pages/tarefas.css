@@ -184,9 +184,11 @@
 
 /* ---------- Corpo ---------- */
 
+/* As tarefas ocupam a largura toda: categorias e tags ficam na página própria, e o filtro
+   substitui o antigo trilho lateral. */
 .app__corpo {
   display: grid;
-  grid-template-columns: 16rem minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: clamp(1.5rem, 3vw, 2.5rem);
   align-items: start;
   align-content: start;
@@ -368,6 +370,113 @@
    fora do fluxo: trocar Lista/Quadro nunca muda a altura da linha das abas. */
 .main__controles {
   position: relative;
+  container-type: inline-size;
+}
+
+/* Sem espaço para abas e filtro na mesma linha, o filtro desce para baixo das abas. */
+@container (max-width: 38rem) {
+  .main__controles .segmentos {
+    position: static;
+    margin-top: 0.85rem;
+  }
+}
+
+/* ---------- Filtro ---------- */
+
+.titulo-acoes {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.botao-filtro {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  padding: 0 0.9rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: none;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.botao-filtro:hover,
+.botao-filtro[aria-expanded='true'] {
+  border-color: var(--rule-strong);
+  background: var(--panel-2);
+}
+
+.botao-filtro svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.botao-filtro__n {
+  display: grid;
+  place-items: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--ink);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  color: var(--ground);
+}
+
+.filtros {
+  display: grid;
+  gap: 1.1rem;
+  margin-bottom: 1.25rem;
+  padding: 1.25rem;
+}
+
+.filtros__busca {
+  position: relative;
+}
+
+.filtros__busca svg {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  width: 1rem;
+  height: 1rem;
+  color: var(--muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.filtros__busca .input {
+  padding-left: 2.5rem;
+}
+
+.filtros__grupo {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.filtros__grupo legend {
+  margin-bottom: 0.6rem;
+  padding: 0;
+}
+
+.filtros__rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--rule);
 }
 
 .segmentos {
@@ -441,19 +550,31 @@
 
 /* Cada tarefa é um card com contorno fino na cor da categoria, nos quatro lados:
    marca onde uma termina e a outra começa (pedido do usuário, 2026-09-11). */
+/* Cada tarefa é um card com capa na cor da categoria, como no Trello: uma faixa colorida
+   no topo e o corpo escuro, onde o texto fica legível (pedido do usuário, 2026-09-11). */
 .linhas > .linha {
   padding-left: 0.25rem;
-  border: 1px solid var(--cor-cat, var(--rule));
+  border-top: var(--capa, 0.625rem) solid var(--cor-cat, var(--rule-strong));
   border-radius: 8px;
+  background: var(--panel-2);
+}
+
+.linhas > .linha:hover {
+  background: var(--rule);
 }
 
 .linhas > .linha + .linha {
   margin-top: 0.5rem;
 }
 
-/* Concluída: o contorno recua junto com o resto do card. */
+/* Concluída: a capa recua junto com o resto do card. */
 .linhas > .linha[data-feita='true'] {
-  border-color: color-mix(in oklab, var(--cor-cat, var(--rule)) 40%, transparent);
+  border-top-color: color-mix(in oklab, var(--cor-cat, var(--rule-strong)) 40%, var(--panel-2));
+}
+
+/* No Kanban a capa é mais alta, como no Trello. */
+.quadro {
+  --capa: 1.5rem;
 }
 
 .linha {
@@ -778,15 +899,48 @@
   white-space: nowrap;
 }
 
-/* Prazo: hoje e atrasada ganham tinta e peso, nunca vermelho (sem culpa). */
-[data-prazo='hoje'] {
-  color: var(--ink);
+/* Selo de prazo: cinza no futuro; âmbar quando falta pouco (até 3 dias); âmbar cheio
+   no dia; rosa cheio quando passou (pedido do usuário, 2026-09-11). */
+.prazo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 1.5rem;
+  padding: 0 0.5rem;
+  border-radius: 6px;
+  background: var(--panel);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.prazo svg {
+  flex: none;
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.prazo[data-prazo='sem'] {
+  padding: 0;
+  background: none;
   font-weight: 600;
 }
 
-[data-prazo='atrasada'] {
-  color: var(--ink);
-  font-weight: 700;
+.prazo[data-prazo='breve'],
+.prazo[data-prazo='amanha'] {
+  background: color-mix(in oklab, var(--prazo-perto) 18%, var(--panel));
+  color: var(--prazo-perto);
+}
+
+.prazo[data-prazo='hoje'] {
+  background: var(--prazo-perto);
+  color: var(--on-prazo);
+}
+
+.prazo[data-prazo='atrasada'] {
+  background: var(--prazo-atrasado);
+  color: var(--on-prazo);
 }
 
 .linha__xp {

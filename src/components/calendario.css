@@ -71,6 +71,31 @@
   text-transform: uppercase;
 }
 
+.cal__titulo:focus {
+  outline: none;
+}
+
+.cal .lista:focus {
+  outline: none;
+}
+
+.cal-anteriores {
+  justify-self: start;
+  margin: 0.4rem 0.5rem 0.25rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--purple-soft);
+  cursor: pointer;
+}
+
+.cal-anteriores:hover {
+  text-decoration: underline;
+}
+
 .cal__nota {
   display: flex;
   flex-wrap: wrap;
@@ -195,6 +220,7 @@
 }
 
 .cal-celula {
+  position: relative;
   display: grid;
   align-content: start;
   gap: 0.25rem;
@@ -250,6 +276,26 @@
   border-left: 1px solid var(--rule);
 }
 
+/* Na semana há espaço para o título em até 2 linhas. */
+.cal-semana .cal-pilula {
+  align-items: flex-start;
+  padding: 0.3rem 0.45rem;
+}
+
+.cal-semana .cal-pilula .dot {
+  margin-top: 0.3rem;
+}
+
+.cal-semana .cal-pilula__titulo {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  line-height: 1.3;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 .cal-semana__cabeca {
   display: flex;
   align-items: center;
@@ -292,6 +338,13 @@
 
   .cal-celula .cal-num {
     justify-self: center;
+  }
+
+  /* O dia inteiro vira o alvo do toque (maior que 44px), não só o número. */
+  .cal-celula .cal-num::after {
+    content: '';
+    position: absolute;
+    inset: 0;
   }
 
   .cal-pontos {

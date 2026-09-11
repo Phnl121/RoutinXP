@@ -7,6 +7,7 @@ import Shell from './pages/Shell'
 import Perfil from './pages/Perfil'
 import Painel from './pages/Painel'
 import Integracoes from './pages/Integracoes'
+import Categorias from './pages/Categorias'
 import { t } from './i18n/pt-BR'
 import { emPrevia, sessaoPrevia } from './dev/previa'
 
@@ -47,6 +48,7 @@ export default function App() {
         >
           <Route path="/" element={<Tarefas />} />
           <Route path="/painel" element={<Painel />} />
+          <Route path="/categorias" element={<Categorias />} />
           <Route path="/integracoes" element={<Integracoes />} />
           <Route path="/perfil" element={<Perfil />} />
         </Route>

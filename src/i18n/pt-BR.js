@@ -213,6 +213,19 @@ export const t = {
     tituloTodas: 'Todas as tarefas',
     visoes: { rotulo: 'Visualização', lista: 'Lista', quadro: 'Quadro', calendario: 'Calendário' },
     filtro: { rotulo: 'Mostrar', pendentes: 'Pendentes', concluidas: 'Concluídas' },
+    filtros: {
+      botao: 'Filtrar',
+      rotulo: (n) => (n ? `Filtrar, ${n} ${n === 1 ? 'filtro ativo' : 'filtros ativos'}` : 'Filtrar'),
+      busca: 'Buscar pelo nome',
+      categorias: 'Categorias',
+      tags: 'Tags',
+      prazo: 'Prazo',
+      prazos: { qualquer: 'Qualquer', atrasadas: 'Atrasadas', hoje: 'Hoje', semana: 'Próximos 7 dias', 'sem-data': 'Sem data' },
+      limpar: 'Limpar filtros',
+      resultado: (n) => `${n} ${n === 1 ? 'tarefa' : 'tarefas'}`,
+      nenhuma: 'Nenhuma tarefa com esses filtros.',
+      tituloFiltrado: 'Tarefas filtradas',
+    },
     calendario: {
       modos: { rotulo: 'Modo do calendário', mes: 'Mês', semana: 'Semana', dia: 'Dia', linha: 'Linha do tempo' },
       anterior: { mes: 'Mês anterior', semana: 'Semana anterior', dia: 'Dia anterior' },
@@ -222,7 +235,13 @@ export const t = {
       amanha: 'Amanhã',
       atrasadas: 'Atrasadas',
       semDataTitulo: 'Sem data',
-      abrirDia: (dia) => `Abrir ${dia}`,
+      abrirDia: (dia, n = 0, feitas = 0) =>
+        n
+          ? `Abrir ${dia}, ${n} ${n === 1 ? 'tarefa' : 'tarefas'}${feitas ? `, ${feitas} ${feitas === 1 ? 'concluída' : 'concluídas'}` : ''}`
+          : `Abrir ${dia}`,
+      concluida: 'concluída',
+      verAnteriores: (n) => `Mostrar ${n} ${n === 1 ? 'tarefa concluída' : 'tarefas concluídas'} de dias anteriores`,
+      esconderAnteriores: 'Esconder dias anteriores',
       mais: (n) => `+${n} ${n === 1 ? 'tarefa' : 'tarefas'}`,
       maisRotulo: (n, dia) => `Ver mais ${n} ${n === 1 ? 'tarefa' : 'tarefas'} de ${dia}`,
       diaVazio: 'Nada marcado para este dia.',
@@ -390,6 +409,31 @@ export const t = {
   etiquetas: {
     mostrarNomes: 'mostrar os nomes das tags',
     soCores: 'mostrar só as cores das tags',
+  },
+
+  categoriasPagina: {
+    titulo: 'Categorias e tags',
+    categorias: 'Categorias',
+    texto: 'Categorias separam as áreas da sua rotina, como Faculdade ou Trabalho. Toda tarefa pertence a uma.',
+    vazio: 'Nenhuma categoria ainda.',
+    pendentes: (n) => (n === 0 ? 'sem pendentes' : `${n} ${n === 1 ? 'pendente' : 'pendentes'}`),
+    editar: (nome) => `Editar categoria ${nome}`,
+    nova: 'Nova categoria',
+  },
+
+  prazosAviso: {
+    texto: (hoje, atrasadas) => {
+      const partes = []
+      if (hoje) partes.push(`${hoje} ${hoje === 1 ? 'tarefa para hoje' : 'tarefas para hoje'}`)
+      // "1 tarefa atrasada" sozinho; "2 tarefas para hoje e 1 atrasada" junto.
+      if (atrasadas) {
+        const nome = hoje ? '' : atrasadas === 1 ? 'tarefa ' : 'tarefas '
+        partes.push(`${atrasadas} ${nome}${atrasadas === 1 ? 'atrasada' : 'atrasadas'}`)
+      }
+      return `Você tem ${partes.join(' e ')}.`
+    },
+    acao: 'Ver tarefas',
+    dispensar: 'Dispensar aviso de prazos',
   },
 
   tagsPerfil: {

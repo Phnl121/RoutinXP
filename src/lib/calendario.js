@@ -1,7 +1,11 @@
 // Datas do calendário de tarefas. Todo dia é uma string "AAAA-MM-DD" (como data_prevista);
 // as contas usam meia-noite UTC, então não há deslocamento de fuso no meio do caminho.
 
+import { hojeBrasilia } from './datas'
+
 const DIA_MS = 86400000
+// O ano só aparece quando não é o ano atual.
+const outroAno = (data) => data.getUTCFullYear() !== Number(hojeBrasilia().slice(0, 4))
 
 const paraData = (dia) => {
   const [a, m, d] = dia.split('-').map(Number)
@@ -39,20 +43,29 @@ export const NOMES_SEMANA = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb']
 // "setembro de 2026"
 export const rotuloMes = (dia) => formato({ month: 'long', year: 'numeric' }).format(paraData(dia))
 
-// "quinta-feira, 11 de setembro"
-export const rotuloDiaLongo = (dia) => formato({ weekday: 'long', day: 'numeric', month: 'long' }).format(paraData(dia))
+// "quinta-feira, 10 de setembro" (com o ano quando não é o atual)
+export function rotuloDiaLongo(dia) {
+  const data = paraData(dia)
+  return formato({ weekday: 'long', day: 'numeric', month: 'long', ...(outroAno(data) ? { year: 'numeric' } : {}) }).format(data)
+}
 
-// "qui, 11 set"
-export const rotuloDiaCurto = (dia) =>
-  formato({ weekday: 'short', day: 'numeric', month: 'short' }).format(paraData(dia)).replaceAll('.', '')
+// "qui, 10 de set" (com o ano quando não é o atual)
+export function rotuloDiaCurto(dia) {
+  const data = paraData(dia)
+  return formato({ weekday: 'short', day: 'numeric', month: 'short', ...(outroAno(data) ? { year: 'numeric' } : {}) })
+    .format(data)
+    .replaceAll('.', '')
+}
 
-// "6–12 de setembro" ou "30 ago – 5 set"
+// "6–12 de setembro", "30 ago – 5 set" ou "27 dez 2026 – 2 jan 2027"
 export function rotuloSemana(dia) {
   const inicio = paraData(inicioSemana(dia))
   const fim = paraData(somarDias(inicioSemana(dia), 6))
+  const ano = (data) => (inicio.getUTCFullYear() !== fim.getUTCFullYear() || outroAno(data) ? ` ${data.getUTCFullYear()}` : '')
   if (inicio.getUTCMonth() === fim.getUTCMonth()) {
-    return `${inicio.getUTCDate()}–${fim.getUTCDate()} de ${formato({ month: 'long' }).format(fim)}`
+    return `${inicio.getUTCDate()}–${fim.getUTCDate()} de ${formato({ month: 'long' }).format(fim)}${ano(fim)}`
   }
   const mesCurto = (data) => formato({ month: 'short' }).format(data).replace('.', '')
-  return `${inicio.getUTCDate()} ${mesCurto(inicio)} – ${fim.getUTCDate()} ${mesCurto(fim)}`
+  const soNoFim = inicio.getUTCFullYear() === fim.getUTCFullYear()
+  return `${inicio.getUTCDate()} ${mesCurto(inicio)}${soNoFim ? '' : ano(inicio)} – ${fim.getUTCDate()} ${mesCurto(fim)}${ano(fim)}`
 }

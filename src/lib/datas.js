@@ -10,9 +10,11 @@ export function formatarPrazo(iso) {
   hoje.setHours(0, 0, 0, 0)
   const diferenca = Math.round((alvo - hoje) / 86400000)
   if (diferenca === 0) return { texto: t.tarefas.hoje, estado: 'hoje' }
-  if (diferenca === 1) return { texto: t.tarefas.amanha, estado: 'futura' }
+  if (diferenca === 1) return { texto: t.tarefas.amanha, estado: 'amanha' }
   const nomeMes = new Intl.DateTimeFormat('pt-BR', { month: 'short' }).format(alvo).replace('.', '')
-  return { texto: `${dia} ${nomeMes}`, estado: diferenca < 0 ? 'atrasada' : 'futura' }
+  // "breve": vence em até 3 dias; ganha destaque para não passar batido.
+  const estado = diferenca < 0 ? 'atrasada' : diferenca <= 3 ? 'breve' : 'futura'
+  return { texto: `${dia} ${nomeMes}`, estado }
 }
 
 // Pendentes: data prevista mais próxima primeiro; sem data no fim.
