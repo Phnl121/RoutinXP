@@ -5,6 +5,7 @@ import { ordenarConcluidas, ordenarPendentes } from '../lib/datas'
 import { calcularNivel } from '../lib/nivel'
 import { Trilho } from '../components/Trilho'
 import { Lista, Quadro } from '../components/VisoesTarefas'
+import { VisaoCalendario } from '../components/VisaoCalendario'
 import { TarefaDialog } from '../components/TarefaDialog'
 import { CategoriaDialog } from '../components/CategoriaDialog'
 import { Toast } from '../components/Toast'
@@ -15,15 +16,38 @@ import './tarefas.css'
 
 const tt = t.tarefas
 const CHAVE_VISAO = 'routinxp:visao'
+const CHAVE_MODO_CAL = 'routinxp:calendario:modo'
+const VISOES = ['lista', 'quadro', 'calendario']
+const MODOS_CAL = ['mes', 'semana', 'dia', 'linha']
 
-// A visão vem de ?visao=lista|quadro (link direto) ou da última escolha salva.
+// A visão vem de ?visao=lista|quadro|calendario (link direto) ou da última escolha salva.
 function lerVisao() {
   const daUrl = new URLSearchParams(window.location.search).get('visao')
-  if (daUrl === 'lista' || daUrl === 'quadro') return daUrl
+  if (VISOES.includes(daUrl)) return daUrl
   try {
-    return localStorage.getItem(CHAVE_VISAO) === 'quadro' ? 'quadro' : 'lista'
+    const salva = localStorage.getItem(CHAVE_VISAO)
+    return VISOES.includes(salva) ? salva : 'lista'
   } catch {
     return 'lista'
+  }
+}
+
+function lerModoCal() {
+  const daUrl = new URLSearchParams(window.location.search).get('modo')
+  if (MODOS_CAL.includes(daUrl)) return daUrl
+  try {
+    const salvo = localStorage.getItem(CHAVE_MODO_CAL)
+    return MODOS_CAL.includes(salvo) ? salvo : 'mes'
+  } catch {
+    return 'mes'
+  }
+}
+
+function salvar(chave, valor) {
+  try {
+    localStorage.setItem(chave, valor)
+  } catch {
+    /* armazenamento indisponível: a escolha vale só nesta sessão */
   }
 }
 
@@ -32,6 +56,7 @@ export default function Tarefas() {
   const location = useLocation()
   const [selecionada, setSelecionada] = useState(null)
   const [visao, setVisao] = useState(lerVisao)
+  const [modoCal, setModoCal] = useState(lerModoCal)
   const [filtro, setFiltro] = useState('pendente')
   const [dlgTarefa, setDlgTarefa] = useState(null) // { tarefa: objeto | null }
   const [dlgCategoria, setDlgCategoria] = useState(null) // { categoria: objeto | null }
@@ -60,11 +85,12 @@ export default function Tarefas() {
 
   function trocarVisao(nova) {
     setVisao(nova)
-    try {
-      localStorage.setItem(CHAVE_VISAO, nova)
-    } catch {
-      /* armazenamento indisponível: a escolha vale só nesta sessão */
-    }
+    salvar(CHAVE_VISAO, nova)
+  }
+
+  function trocarModoCal(novo) {
+    setModoCal(novo)
+    salvar(CHAVE_MODO_CAL, novo)
   }
 
   const abrirNovaTarefa = () => setDlgTarefa({ tarefa: null })
@@ -146,6 +172,18 @@ export default function Tarefas() {
         </button>
       </div>
     )
+  } else if (visao === 'calendario') {
+    conteudo = (
+      <VisaoCalendario
+        modo={modoCal}
+        onModo={trocarModoCal}
+        tarefas={visiveis}
+        categoriasPorId={categoriasPorId}
+        tagsPorId={tagsPorId}
+        recem={d.recem}
+        acoes={acoes}
+      />
+    )
   } else if (visao === 'quadro') {
     conteudo = (
       <Quadro
@@ -205,7 +243,19 @@ export default function Tarefas() {
                   <button type="button" aria-pressed={visao === 'quadro'} onClick={() => trocarVisao('quadro')}>
                     {tt.visoes.quadro}
                   </button>
+                  <button type="button" aria-pressed={visao === 'calendario'} onClick={() => trocarVisao('calendario')}>
+                    {tt.visoes.calendario}
+                  </button>
                 </div>
+                {visao === 'calendario' && (
+                  <div className="segmentos cal-modos" role="group" aria-label={tt.calendario.modos.rotulo}>
+                    {MODOS_CAL.map((m) => (
+                      <button key={m} type="button" aria-pressed={modoCal === m} onClick={() => trocarModoCal(m)}>
+                        {tt.calendario.modos[m]}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 {visao === 'lista' && (
                   <div className="segmentos" role="group" aria-label={tt.filtro.rotulo}>
                     <button type="button" aria-pressed={filtro === 'pendente'} onClick={() => setFiltro('pendente')}>

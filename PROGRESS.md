@@ -109,6 +109,21 @@ Atualizado em 2026-09-10 (Claude Code): passo 12 (PWA) construído; com ele, tod
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
 
+### 2026-09-11, Claude Code (Opus 5): visão Calendário nas tarefas
+Feito:
+- Terceira aba **CALENDÁRIO** em Tarefas, ao lado de Lista e Quadro, com quatro modos (Mês, Semana, Dia, Linha do tempo) no mesmo lugar do filtro da Lista:
+  - navegação "‹ Hoje ›" com o período;
+  - Mês: grade de domingo a sábado com até 3 pílulas por dia (ponto da categoria + título) e "+n tarefas";
+  - Semana: 7 colunas de pílulas;
+  - clicar no número do dia abre o modo Dia; clicar numa pílula abre a tarefa;
+  - Dia e Linha do tempo usam as linhas da Lista (concluir, voo do XP, etiquetas);
+  - Linha do tempo agrupa Atrasadas, Hoje, Amanhã, cada data seguinte e Sem data.
+- As tarefas sem data não entram na grade; um aviso leva à Linha do tempo.
+- O modo e a visão ficam salvos no navegador; `?visao=calendario&modo=mes|semana|dia|linha` abre direto.
+- Celular: o mês mostra só os pontos das categorias e a semana vira lista vertical (container query).
+- Código em `src/components/VisaoCalendario.jsx`, `src/components/calendario.css` e `src/lib/calendario.js`. Capturas em `.impeccable/review/calendario/`. DESIGN.md e brief de Tarefas atualizados.
+- Sem mudança no banco.
+
 ### 2026-09-11, Claude Code (Opus 5): v2, aba Integrações (calendários iCal / Blackboard)
 Decidido com o usuário:
 - A v2 começa pela integração com o calendário da faculdade (Blackboard Ultra da FAPCE).

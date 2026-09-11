@@ -612,6 +612,19 @@ One panel. In "Todas" the rows are grouped by category under Label-style heading
 ### Quadro
 Two panels side by side, Pendentes and Concluídas, each titled in Label style with a count. Pending rows are draggable (grab cursor); the dragged row stays dark and dims to 40% in place, never lifting into a card. While a row is over Concluídas the column becomes the drop target: border Green Line, fill Green Wash, and a "Solte para concluir" line in green 700. Dropping completes the task exactly as the check does. There is no drag back to Pendentes. Empty columns show a Muted sentence.
 
+### Calendário
+The third Tarefas tab (LISTA | QUADRO | CALENDÁRIO). Its mode control, a segmented filter with Mês, Semana, Dia and Linha do tempo, sits where the Lista filter sits: at the right, above the tab baseline. It drops under the tabs at 60rem and below. The mode and the view are remembered, and `?visao=calendario&modo=…` links straight to them. The category rail filters it like the other views.
+- **Navigation bar** (Mês, Semana, Dia): two 36px chevron icon buttons around a "Hoje" pill (1px Rule border, 0.8125rem at 700, Rule Strong on hover), then the period at 1.125rem/800 ("Setembro de 2026", "6–12 de setembro", "Quinta-feira, 10 de setembro"), announced politely.
+- **Day number:** a 28px pill button at 700 (32px when narrow) that opens the Dia mode. **Today** takes the neutral selection (Panel Two fill plus the Rule Strong inset), never green or violet. Days of the neighbouring month are Muted, their cell sits on a Ground wash, and their pills fall to 60%.
+- **Task pill** (Mês, Semana): a 1.5rem Panel Two pill, 6px radius, holding the category's 8px dot and the title (0.75rem at 600, ellipsized; the full title in the tooltip). Hover goes to Rule. Completed pills are Muted and struck through. Clicking one opens the task dialog.
+- **Mês:** one Panel with no padding, a Label row of weekday names (Sunday first), then a 7-column grid of cells. Cells are at least 7rem tall, 0.4rem padding, divided by 1px Rules. A cell shows up to three pills, then a Soft Violet "+n tarefas" that opens the day.
+- **Semana:** one Panel with seven day columns (at least 16rem tall) divided by 1px Rules. Each column heads with the Label weekday and the day number, then its pills.
+- **Dia and Linha do tempo:** the Lista panel and its rows, so completing works as everywhere (check, green wash, XP flight). Linha do tempo groups under Label headings with counts: Atrasadas (pending, past due), Hoje, Amanhã, each later date ("sáb, 12 de set"), then Sem data. Past completed tasks stay out; the list looks forward.
+- **Undated tasks:** below Mês, Semana and Dia, a Meta line "n tarefas sem data não aparecem no calendário." followed by the link button "Ver na Linha do tempo".
+- **Narrow** (the view's own width at 44rem or less, by container query):
+  - Mês cells shrink to 3.5rem. They drop pills and "+n", show up to four category dots (completed ones at 40%) and center the day number.
+  - Semana stacks its days vertically, divided by Rules.
+
 ### Painel
 The progress overview. Every card is a Panel titled in Label style; a header row holds the title and, at the right, its control or highlight. Empty cards show one Muted sentence.
 - **Level panel:** the NÍVEL badge, the XP bar (flexible) and "n XP no total" in XP Figure weight, one row. It takes values without the count-up.
