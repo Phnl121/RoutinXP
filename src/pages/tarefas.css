@@ -1169,8 +1169,9 @@
 /* ---------- Telas menores ---------- */
 
 @media (max-width: 59.99rem) {
+  /* Celular: laterais iguais para a marca ficar no centro; menu à esquerda, avatar à direita. */
   .topo {
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     grid-template-areas:
       'menu logo acoes'
       'nivel nivel nivel';
@@ -1180,10 +1181,12 @@
 
   .topo__menu {
     display: grid;
+    justify-self: start;
   }
 
   .topo__logo {
     display: block;
+    justify-self: center;
   }
 
   .topo__nivel {
