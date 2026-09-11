@@ -89,14 +89,11 @@ Atualizado em 2026-09-11 (Claude Code): v1 completa (passos 1 a 12). v2 em andam
 **Dados de teste na conta real do usuário:** categorias Faculdade, Trabalho, Vida Pessoal e 8 tarefas de exemplo, algumas concluídas, criadas no teste do passo 9. Ainda não foi confirmado se devem ser apagadas.
 
 **Pendências técnicas conhecidas:**
-- Alvos de toque abaixo de 44px: botões do filtro segmentado (32px), chips de categoria no celular, chip "+ Nova categoria" e botão compacto da barra (40px). O DESIGN.md registra 44/48px como regra.
-- O anel do check vazio numa linha em hover (fundo `--panel-2`) fica em ~2,97:1, um pouco abaixo de 3:1.
-- As animações do check divergem: no app 0,45 s e escala 1,2; na demo do login 0,4 s e escala 1,18.
-- O brief `.impeccable/surfaces/src-pages-tarefas-jsx.md` ainda cita uma barra roxa no item selecionado do trilho; o código usa um estado neutro, que é o correto.
+- (Resolvido em 2026-09-11) Alvos de toque de 44px no celular: filtro segmentado, chips, "Filtrar", botão compacto, "⋯" das colunas e o × dos avisos. Os chips de categoria saíram junto com o trilho.
+- (Resolvido em 2026-09-11) Contraste do anel do check, animação do check igual no app e na demo, e brief de Tarefas sem o trilho.
 
 **Pendências apontadas no DESIGN.md do passo 11 (bons ajustes para o Antigravity ou para o usuário):**
-- "Perfil salvo." aparece em verde; é o único verde que não marca XP, nível ou conclusão.
-- Com a gaveta do celular aberta, o Tab consegue sair dela (o foco entra e volta, mas não fica preso).
+- (Resolvido em 2026-09-11) "Perfil salvo." sem verde e Tab preso na gaveta do celular.
 - O build avisa que o pacote JS passa de 500 kB; dá para dividir por página (lazy loading).
 
 **Ações pendentes do usuário:**
@@ -108,6 +105,24 @@ Atualizado em 2026-09-11 (Claude Code): v1 completa (passos 1 a 12). v2 em andam
 
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
+
+### 2026-09-11, Claude Code (Opus 5): acabamentos 2 a 6 (antes destinados ao Antigravity)
+Feito (o usuário decidiu não passar ao Antigravity):
+- "Perfil salvo." em Muted, não mais em verde (verde só para XP, nível e conclusão).
+- Gaveta do celular: o foco fica preso nela enquanto está aberta. Tab e Shift+Tab dão a volta pelos controles visíveis.
+- Anel do check vazio: `--check-ring` passou de `#6a6e7c` para `#7a7e8c`. Agora tem pelo menos 3:1 em todo fundo de card: 4,2:1 no Panel, 3,7:1 no Panel Two e 3,3:1 no Rule, que é o hover do Kanban.
+- Animação do check: um único `@keyframes check-in` em `index.css` (escala 1,2, 0,45s), usado no app e na demo do login. Antes havia duas definições com o mesmo nome, e uma sobrescrevia a outra.
+- Brief `.impeccable/surfaces/src-pages-tarefas-jsx.md` reescrito para a tela atual: sem trilho, com filtro, Kanban com colunas, capas e densidade.
+- DESIGN.md atualizado nos pontos acima, sem mais menções ao trilho removido nem ao nome "Quadro".
+- `.impeccable/design.json`:
+  - `check-ring` atualizado;
+  - componente "Category Rail" removido;
+  - textos de trilho e Quadro corrigidos.
+- Revisão final do Impeccable: as correções de documentação que ela pediu foram aplicadas.
+
+Próximo:
+- Publicar (push) quando o usuário autorizar.
+- `.impeccable/design.json`: o componente "Task Row" ainda descreve as linhas antigas, separadas por fio dentro de um painel. A sincronização completa com o DESIGN.md (capas, densidade, Kanban) continua pendente.
 
 ### 2026-09-11, Claude Code (Opus 5): densidade (tela menos poluída)
 Feito (pedido do usuário: fonte um pouco menor, cards menores e mais juntos, menos poluição; passou pelo Impeccable antes e depois, distill + revisão final):

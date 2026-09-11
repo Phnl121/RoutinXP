@@ -19,13 +19,32 @@ const ITENS = [
 // Menu lateral fixo e retrátil (como o do app do Claude). Desktop: expandido ou em trilho
 // de ícones. Celular: gaveta sobre a página, aberta pelo botão da barra superior.
 export function MenuLateral({ recolhido, onAlternar, gavetaAberta, onFecharGaveta, perfil, stats, email, onInstalar }) {
-  // Gaveta aberta: foco vai para dentro dela e Esc fecha. Ao fechar, o foco volta
-  // para o botão que abriu.
+  // Gaveta aberta: foco vai para dentro dela, fica preso nela (Tab e Shift+Tab dão a volta)
+  // e Esc fecha. Ao fechar, o foco volta para o botão que abriu.
   useEffect(() => {
     if (!gavetaAberta) return undefined
     document.querySelector('.menu-lateral__fechar')?.focus()
     const aoTeclar = (evento) => {
-      if (evento.key === 'Escape') onFecharGaveta()
+      if (evento.key === 'Escape') {
+        onFecharGaveta()
+        return
+      }
+      if (evento.key !== 'Tab') return
+      const gaveta = document.getElementById('menu-lateral')
+      if (!gaveta) return
+      // Só os focáveis visíveis: o botão de recolher fica escondido no celular.
+      const focaveis = [...gaveta.querySelectorAll('a[href], button:not(:disabled)')].filter((el) => el.getClientRects().length > 0)
+      if (!focaveis.length) return
+      const primeiro = focaveis[0]
+      const ultimo = focaveis[focaveis.length - 1]
+      const ativo = document.activeElement
+      if (evento.shiftKey && (ativo === primeiro || !gaveta.contains(ativo))) {
+        evento.preventDefault()
+        ultimo.focus()
+      } else if (!evento.shiftKey && (ativo === ultimo || !gaveta.contains(ativo))) {
+        evento.preventDefault()
+        primeiro.focus()
+      }
     }
     window.addEventListener('keydown', aoTeclar)
     return () => {

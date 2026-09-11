@@ -8,7 +8,9 @@
   --panel-2: #25262f;
   --rule: #2e3039;
   --rule-strong: #454856;
-  --check-ring: #6a6e7c; /* anel do check vazio: 3,3:1 sobre o painel (WCAG 1.4.11) */
+  /* Anel do check vazio: pelo menos 3:1 (WCAG 1.4.11) em todo fundo de card:
+     4,2:1 no Panel, 3,7:1 no Panel Two (hover, Kanban) e 3,3:1 no Rule (hover no Kanban). */
+  --check-ring: #7a7e8c;
   --ink: #f3f4f7;
   --muted: #a3a7b3;
   --backdrop: rgb(6 7 10 / 0.72);
@@ -347,6 +349,14 @@ select {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   line-height: 1.2;
+}
+
+/* Check concluído: o círculo pulsa uma vez. Uma definição só, usada no app e na demo do login
+   (0,45s, escala 1,2). */
+@keyframes check-in {
+  40% {
+    transform: scale(1.2);
+  }
 }
 
 .carregando {

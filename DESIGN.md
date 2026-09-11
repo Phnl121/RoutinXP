@@ -8,7 +8,7 @@ colors:
   panel-2: "#25262f"
   rule: "#2e3039"
   rule-strong: "#454856"
-  check-ring: "#6a6e7c"
+  check-ring: "#7a7e8c"
   ink: "#f3f4f7"
   muted: "#a3a7b3"
   backdrop: "rgb(6 7 10 / 0.72)"
@@ -258,21 +258,6 @@ components:
     backgroundColor: "{colors.green}"
     rounded: "{rounded.pill}"
     height: "8px"
-  rail-item:
-    backgroundColor: "transparent"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.row}"
-    padding: "0 14px"
-    height: "44px"
-  rail-item-selected:
-    backgroundColor: "{colors.panel-2}"
-    textColor: "{colors.ink}"
-  rail-chip:
-    backgroundColor: "{colors.panel}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.pill}"
-    padding: "0 14px"
-    height: "40px"
   segment-well:
     backgroundColor: "{colors.ground}"
     rounded: "{rounded.pill}"
@@ -424,7 +409,7 @@ Two accents carry all meaning, and both are taken from the RoutinXP logo (Action
 A cool, near-black neutral stack with two saturated accents whose roles never overlap. The two accent values are the logo's colors (public/marca), so the brand mark and the interface speak the same violet and green. Translucent effect tokens derive from the accents so glows, washes and halos stay themeable.
 
 ### Primary
-- **Level Green** (`green`): the progress color. XP fills, the NÍVEL badge (including the one inside the level toast), the avatar ring, completed checks and the check hover ring, earned "+n XP" labels and the flying "+n XP", the "Solte para concluir" drop hint, and the one highlighted phrase in a headline ("Suba de nível."). On the Painel it is every data mark: the XP-per-day bars, the category bars, the timeline's check circles and its earned "+n XP". It also colors the one save confirmation ("Perfil salvo."). Text on a green fill always uses **Deep Moss** (`on-green`), never white.
+- **Level Green** (`green`): the progress color. XP fills, the NÍVEL badge (including the one inside the level toast), the avatar ring, completed checks and the check hover ring, earned "+n XP" labels and the flying "+n XP", the "Solte para concluir" drop hint, and the one highlighted phrase in a headline ("Suba de nível."). On the Painel it is every data mark: the XP-per-day bars, the category bars, the timeline's check circles and its earned "+n XP". Text on a green fill always uses **Deep Moss** (`on-green`), never white.
 - **Green Tip** (`green-tip`): the lighter leading 0.9rem of the XP fill. Nowhere else.
 - **Green Wash** (`green-wash`) and **Green Line** (`green-line`): the completion surfaces. Wash is the fill of the Kanban drop target, the fading flash on a just-completed row, and the login demo's level-up banner; Line is the border of the drop target, of that banner, and of the in-app level toast.
 - **Green Glow** (`green-glow`): the transient level-up pulse shadow only.
@@ -438,21 +423,21 @@ A cool, near-black neutral stack with two saturated accents whose roles never ov
 ### Neutral
 - **Top Bar** (`topbar`): the app chrome tier, one step darker than Ground: the sticky top bar and the full-height side menu (and its mobile drawer), so both read as frame rather than as panels. It is also the `theme-color` (index.html and the web manifest), because the top bar is what meets the phone's status bar.
 - **Ground** (`ground`): page background, input wells, the segmented-filter well.
-- **Panel** (`panel`): raised containers (form panel, demo panel, Kanban columns, task cards in Lista, Calendário Dia and Linha do tempo, the filter panel, Painel cards, Perfil panels, dialog, account menu, the level pill, the shell strips (streak reminder, offline strip, install invite), mobile category chips).
-- **Panel Two** (`panel-2`): third tier. XP track and skeleton, row hover, side-menu item hover and current page, user-card hover, the selected rail item, the active segment, notice and toast backgrounds, the row's Excluir overlay, avatar fill, the chart column hover, the chart tooltip, the category-bar track.
+- **Panel** (`panel`): raised containers (form panel, demo panel, Kanban columns, task cards in Lista, Calendário Dia and Linha do tempo, the filter panel, Painel cards, Perfil panels, dialog, account menu, the level pill, the shell strips (streak reminder, offline strip, install invite)).
+- **Panel Two** (`panel-2`): third tier. XP track and skeleton, row hover, side-menu item hover and current page, user-card hover, a selected filter chip, the active segment, notice and toast backgrounds, the row's Excluir overlay, avatar fill, the chart column hover, the chart tooltip, the category-bar track.
 - **Rule** (`rule`): 1px panel borders, row dividers, tab baseline, input border at rest, unselected chip border, the streak divider, the side menu's right edge, the shell strips' border, the chart baseline, the 2px timeline connector.
-- **Rule Strong** (`rule-strong`): input hover border, notice and toast border, the selected rail item's and current side-menu item's inset outline, the dashed "+ Nova categoria" chip, the dashed daily-cap line on the XP chart, the chart tooltip border, the share-glyph chip in the iOS install steps, strike-through on completed titles, the destructive text action's underline, the toast time bar, scrollbar thumb.
-- **Check Ring** (`check-ring`): the 2px ring of an unchecked completion circle. It exists because Rule Strong fell below 3:1 on Panel; Check Ring holds at least 3:1 there (WCAG 1.4.11 non-text contrast).
+- **Rule Strong** (`rule-strong`): input hover border, notice and toast border, the current side-menu item's inset outline, a selected filter chip's border, the dashed "+ Nova coluna" Kanban slot, the dashed daily-cap line on the XP chart, the chart tooltip border, the share-glyph chip in the iOS install steps, strike-through on completed titles, the destructive text action's underline, the toast time bar, scrollbar thumb.
+- **Check Ring** (`check-ring`): the 2px ring of an unchecked completion circle. It exists because Rule Strong fell below 3:1 on Panel. Check Ring holds at least 3:1 (WCAG 1.4.11 non-text contrast) on every surface a card can have: 4.2:1 on Panel, 3.7:1 on Panel Two (hovered row, Kanban card) and 3.3:1 on Rule (hovered Kanban card).
 - **Backdrop** (`backdrop`): the scrim behind a modal dialog and behind the open mobile drawer.
 - **Ink** (`ink`): primary text; today and overdue due dates; the fill of the neutral ERRO tag; the selected swatch ring; the chart's one direct value label; the "Mais concluída" line.
 - **Muted** (`muted`): secondary text, labels, inactive tabs and segments, side-menu items at rest, icon buttons at rest, the shell strips' leading icons (clock, no connection, download), the iOS install step numbers, hints, "faltam n XP", category names, counts, future due dates, chart axis and cap labels, timeline times, the Excluir label, and a completed row's or timeline item's "+0 XP" and "…" (XP pending).
 
 ### Named Rules
-**The Two Jobs Rule.** Green means progress and purple means action; neither ever stands in for the other. No green buttons, no purple XP, no third accent. Purple never marks selection: a current side-menu page, a selected rail item, chip, segment or swatch is shown with neutrals (Panel Two, Rule Strong, Ink). The single violet indicator is the active underline-tab bar, which marks the current mode. Green is also never spent on something that earned nothing: a "+0 XP" is Muted, and no flight launches for it.
+**The Two Jobs Rule.** Green means progress and purple means action; neither ever stands in for the other. No green buttons, no purple XP, no third accent. Purple never marks selection: a current side-menu page, a selected chip, segment or swatch is shown with neutrals (Panel Two, Rule Strong, Ink). The single violet indicator is the active underline-tab bar, which marks the current mode. Green is also never spent on something that earned nothing: a "+0 XP" is Muted, and no flight launches for it.
 
 **The Neutral Error Rule.** Errors are not red. An error is a notice on `panel-2` with a small pill tag in inverted neutrals (ink fill, ground text) reading "ERRO", followed by a plain-language sentence. This keeps the palette to two accents and keeps failure unalarming. The same holds for due dates: today and overdue get Ink and weight, never red. It holds for reduced rewards: when a completion earns less than usual (task created under 5 minutes ago, the daily XP cap reached or partly reached), an info toast names the reason in a plain sentence, in neutrals, with no tag and no red. And it holds for a streak at risk: the reminder is a Panel strip with a Muted clock, never an alarm. Losing the connection is the same: the offline strip is a Panel strip with a Muted no-connection icon and a plain sentence, no tag, no red.
 
-**The Dot-Only Category Rule.** User-chosen category colors are data. They appear as an 8px round dot beside the category name (rail, chips, row category line, Lista group headings, the Painel's category bars and timeline items), never as fills, text color, bars or backgrounds, and never without the name nearby. Two exceptions: the color picker, where the swatch itself is the choice and fills a 36px circle; and the task card's **cover** in its category color (user request, 2026-09-11, after a Trello reference): a solid band across the top of every task card, 0.375rem tall in Lista, Calendário Dia and Linha do tempo, and 0.875rem in Kanban (density pass, 2026-09-11). The card body is Panel in Lista, Dia and Linha do tempo (Panel Two on hover) and Panel Two inside the Kanban columns (Rule on hover), so the card always sits one step above what holds it. Cards are separated by a 0.375rem gap, never wrapped in another panel. On completed cards the cover fades to 40% of the category color, receding with the rest of the card. The narrow-width Calendário month is the other exception: it shows category dots with no names, because the day opens to the full list with names. **Tags** have their own shape, always rectangular, so a tag is never read as a category (categories are always round dots). On a task row tags are **labels, Trello-style** (user request, 2026-09-11): a row of 4px-radius labels above the title. Named mode: a 1.25rem label, 0 0.4rem padding, 0.75rem at 700 in Ink on the tag color mixed 48% into Panel (55% on hover, the most that keeps Ink above 4.5:1 on all eight colors), ellipsized at 12rem. Color-only mode: a 2.5rem by 0.5rem bar in the full tag color. Clicking any label switches every label between the two modes (saved per browser); it never opens the task. On touch screens the label is too short to tap reliably, so it ignores taps and the tap opens the task; the switch is a mouse affordance. Completed rows show labels at 55% opacity. In the task dialog and the Perfil list a tag is a 0.75rem swatch with 3px corners beside its name.
+**The Dot-Only Category Rule.** User-chosen category colors are data. They appear as an 8px round dot beside the category name (filter chips, the Categorias e tags list, row category line, Lista group headings, the Painel's category bars and timeline items), never as fills, text color, bars or backgrounds, and never without the name nearby. Two exceptions: the color picker, where the swatch itself is the choice and fills a 36px circle; and the task card's **cover** in its category color (user request, 2026-09-11, after a Trello reference): a solid band across the top of every task card, 0.375rem tall in Lista, Calendário Dia and Linha do tempo, and 0.875rem in Kanban (density pass, 2026-09-11). The card body is Panel in Lista, Dia and Linha do tempo (Panel Two on hover) and Panel Two inside the Kanban columns (Rule on hover), so the card always sits one step above what holds it. Cards are separated by a 0.375rem gap, never wrapped in another panel. On completed cards the cover fades to 40% of the category color, receding with the rest of the card. The narrow-width Calendário month is the other exception: it shows category dots with no names, because the day opens to the full list with names. **Tags** have their own shape, always rectangular, so a tag is never read as a category (categories are always round dots). On a task row tags are **labels, Trello-style** (user request, 2026-09-11): a row of 4px-radius labels above the title. Named mode: a 1.25rem label, 0 0.4rem padding, 0.75rem at 700 in Ink on the tag color mixed 48% into Panel (55% on hover, the most that keeps Ink above 4.5:1 on all eight colors), ellipsized at 12rem. Color-only mode: a 2.5rem by 0.5rem bar in the full tag color. Clicking any label switches every label between the two modes (saved per browser); it never opens the task. On touch screens the label is too short to tap reliably, so it ignores taps and the tap opens the task; the switch is a mouse affordance. Completed rows show labels at 55% opacity. In the task dialog and the Perfil list a tag is a 0.75rem swatch with 3px corners beside its name.
 
 **The Swappable Theme Rule.** Components read colors only through the `:root` custom properties, effects included (glows, washes, halos, backdrop). A new theme is a new set of variable values, not new component CSS. The only color literals outside `:root` are the category swatch values, which are user data.
 
@@ -471,7 +456,7 @@ A cool, near-black neutral stack with two saturated accents whose roles never ov
 - **Stat Figure** (800, 1.5rem, line-height 1.1, tabular): the Painel's streak figures ("6 dias"), set above their Label caption (STREAK ATUAL, RECORDE).
 - **Body Lead** (400, 1.0625rem, line-height 1.55, max 46ch, muted): the one supporting paragraph under a display headline.
 - **Body** (400, 1rem, line-height 1.45): default; panel prose caps at 44ch at line-height 1.55.
-- **Row Title** (600, 1rem, line-height 1.3): task titles and timeline titles, clamped to two lines. Rail and side-menu items use the same weight; the selected rail item goes 700.
+- **Row Title** (600, 1rem, line-height 1.3): task titles and timeline titles, clamped to two lines. Side-menu items use the same weight.
 - **Meta** (400, 0.8125rem): category line, due dates, counts, hints, timeline times. XP-bar secondary text, chart axis labels, the cap label and the user card's level line run 0.75rem.
 - **Segment** (700, 0.8125rem): segmented filter labels, sentence case with a " · n" count, or a period ("7 dias").
 - **Tab** (800, 0.875rem, 0.06em, uppercase): underline tabs.
@@ -523,18 +508,18 @@ The amber and rose come from the `--prazo-perto`, `--prazo-atrasado` and `--on-p
 
 **At 30rem and below.** Painel category bars put name and count on one line with the bar full width beneath, so the name is never cut; timeline items move the time onto the category line; the streak figures align left.
 
-Spacing rhythm is a short step scale (8, 12, 16, 20, 24, 28, 32px): 8px between label and input, 20px between form fields, 16px between paired fields, 20px between Painel cards and between Perfil panels, 28px between tabs, 24px demo panel and Painel card padding, 32px form panel padding, 28px dialog and Perfil panel padding. Primary buttons and inputs are at least 48px tall; row check targets, rail items and side-menu items are 44px; the compact top-bar button, the menu and collapse buttons and mobile chips are 40px.
+Spacing rhythm is a short step scale (8, 12, 16, 20, 24, 28, 32px): 8px between label and input, 20px between form fields, 16px between paired fields, 20px between Painel cards and between Perfil panels, 28px between tabs, 24px demo panel and Painel card padding, 32px form panel padding, 28px dialog and Perfil panel padding. Primary buttons and inputs are at least 48px tall; row check targets and side-menu items are 44px; the compact top-bar button and the menu and collapse buttons are 40px on desktop. At 60rem and below every touch target is at least 44px.
 
 ## Elevation & Depth
 
 Depth is tonal first: chrome (top bar and side menu, darker), ground, panel, panel-2, each step separated by a 1px rule. On top of that, panels, the account menu, dialogs, the toast, the chart tooltip and the open mobile drawer carry one soft, diffuse drop shadow, and violet-filled actions carry a violet-tinted glow. The docked desktop side menu has no shadow; it is separated by its 1px Rule edge. There are no hard or offset shadows. Modal dialogs and the open drawer dim everything behind them with the Backdrop scrim.
 
 ### Shadow Vocabulary
-- **Panel lift** (`--shadow`: `0 1px 2px rgb(0 0 0 / 0.35), 0 16px 40px -12px rgb(0 0 0 / 0.55)`): every panel, the rail, dialog, account menu, toast, chart tooltip and the open mobile drawer; always the same.
+- **Panel lift** (`--shadow`: `0 1px 2px rgb(0 0 0 / 0.35), 0 16px 40px -12px rgb(0 0 0 / 0.55)`): every panel, dialog, account menu, toast, chart tooltip and the open mobile drawer; always the same.
 - **Action glow** (`0 8px 20px -10px var(--purple-glow)`): primary button at rest; tightens to `0 4px 10px -6px` on press.
 - **FAB glow** (`0 10px 24px -8px var(--purple-glow)` plus Panel lift): the floating action button, which sits over content.
 - **Focus halo** (`0 0 0 3px var(--purple-halo)`): focused input, paired with a Soft Violet border.
-- **Selected inset** (`inset 0 0 0 1px var(--rule-strong)`): the selected rail item on desktop and the side menu's current page. An outline, not a lift.
+- **Selected inset** (`inset 0 0 0 1px var(--rule-strong)`): the side menu's current page. An outline, not a lift.
 - **Swatch ring** (`0 0 0 3px var(--panel), 0 0 0 5px var(--ink)`): the checked color swatch.
 - **Level-up pulse** (`0 6px 18px -4px var(--green-glow)`): transient only, at the peak of the badge's scale pulse.
 
@@ -543,7 +528,7 @@ Depth is tonal first: chrome (top bar and side menu, darker), ground, panel, pan
 
 ## Shapes
 
-Soft, friendly geometry without going bubbly. Containers (panels, rail, dialog) round at 16px; controls (buttons, inputs, notices, toast, shell strips, account menu, user card, icon buttons, level-up banner) at 10px; interactive rows, rail and side-menu items, menu items, chart columns on hover, the chart tooltip, the iOS step chip and small overlays at 8px. Data ends round at 4px: an XP bar rounds only its top corners and a category bar only its right end, so the baseline stays square. Anything that represents a count, a state token or a filter is a full pill: the NÍVEL badge, the XP track and fill, the level pill, the ERRO tag, the segmented well and its segments, mobile category chips, and the 3px active-tab bar. Circles are reserved for identity, completion, color and the floating action: the avatar, the task check, the timeline check, the category dot, the color swatch, the FAB. Borders are always 1px, solid except the dashed "+ Nova categoria" chip and the dashed daily-cap line; rings on the avatar and task check are 2px, and so is the timeline connector.
+Soft, friendly geometry without going bubbly. Containers (panels, dialog) round at 16px; controls (buttons, inputs, notices, toast, shell strips, account menu, user card, icon buttons, level-up banner) at 10px; interactive rows and task cards, side-menu items, menu items, chart columns on hover, the chart tooltip, the iOS step chip and small overlays at 8px. Data ends round at 4px: an XP bar rounds only its top corners and a category bar only its right end, so the baseline stays square. Anything that represents a count, a state token or a filter is a full pill: the NÍVEL badge, the XP track and fill, the level pill, the ERRO tag, the segmented well and its segments, the filter chips, and the 3px active-tab bar. Circles are reserved for identity, completion, color and the floating action: the avatar, the task check, the timeline check, the category dot, the color swatch, the FAB. Borders are always 1px, solid except the dashed "+ Nova coluna" Kanban slot and the dashed daily-cap line; rings on the avatar and task check are 2px, and so is the timeline connector.
 
 The icon family is drawn in-house on a 16px grid: 2px strokes (2.2px for the check), round caps and joins, no fills, color through `currentColor`. Thirteen glyphs exist (plus, check, pencil, list, chart, person, side-menu panel, menu, clock, close, download, share, no connection); new icons follow the same stroke. Icons sit at 1rem in buttons and the iOS step chip, and 1.125rem in the side menu and the shell strips.
 
@@ -586,7 +571,7 @@ The app's primary navigation, full height at the left, in the Top Bar tier with 
 - **Install item:** "Instalar app" with the download icon, the same recipe as the nav items (44px, 8px radius, 600, Muted at rest, Panel Two and Ink on hover, a native tooltip when collapsed). It sits at the bottom directly above the user card and appears only when the app can be installed.
 - **User card:** pinned to the bottom; a 36px avatar, the user's name (0.875rem, 700, ellipsized; "Complete seu perfil" when empty) over "Nível n" (0.75rem, Muted). 10px radius, 8px padding. It links to Perfil and has a hover state only (Panel Two); it never shows the current-page state, because the Perfil item already carries it.
 - **Collapsed (desktop):** a 4.25rem icon rail. The logo swaps for the 32px icon, the collapse button stacks under it, labels and the user card's text hide, items center their icons and show their name as a native tooltip. The choice persists in `localStorage`.
-- **Drawer (60rem and below):** off-canvas at the left, min(18rem, 85vw) wide, slides in over 0.3s with the Panel lift, over the Backdrop scrim. When closed it is `visibility: hidden` so it leaves the tab order. The top bar's menu button opens it; focus moves to the drawer's close button, and returns to the menu button on close. Esc, the scrim, the close button or a route change close it. The collapse button is hidden here.
+- **Drawer (60rem and below):** off-canvas at the left, min(18rem, 85vw) wide, slides in over 0.3s with the Panel lift, over the Backdrop scrim. When closed it is `visibility: hidden` so it leaves the tab order. The top bar's menu button opens it; focus moves to the drawer's close button, stays trapped inside the drawer while it is open (Tab and Shift+Tab wrap around its visible controls), and returns to the menu button on close. Esc, the scrim, the close button or a route change close it. The collapse button is hidden here.
 
 ### Navigation: Underline Tabs
 Uppercase Tab-style labels in Muted, 28px apart, over a 1px Rule baseline. The active tab turns Ink and gets a 3px fully rounded Action Violet bar that scales in from the center over the baseline (0.3s ease-out). Hover lifts the label to Ink. Use for switching what a screen *is*: modes and views (Entrar / Criar conta, Lista / Kanban / Calendário).
@@ -640,7 +625,7 @@ The second Tarefas tab, named **Kanban** (user request, 2026-09-11). Columns sit
 - Empty columns show one Muted sentence ("Arraste tarefas para cá.").
 
 ### Calendário
-The third Tarefas tab (LISTA | QUADRO | CALENDÁRIO). Its mode control, a segmented filter with Mês, Semana, Dia and Linha do tempo, sits where the Lista filter sits: at the right, above the tab baseline. It drops under the tabs at 60rem and below. The mode and the view are remembered, and `?visao=calendario&modo=…` links straight to them. The category rail filters it like the other views.
+The third Tarefas tab (LISTA | KANBAN | CALENDÁRIO). Its mode control, a segmented filter with Mês, Semana, Dia and Linha do tempo, sits where the Lista filter sits: at the right, above the tab baseline. It drops under the tabs at 60rem and below. The mode and the view are remembered, and `?visao=calendario&modo=…` links straight to them. The Filter applies to it like the other views.
 - **Navigation bar** (Mês, Semana, Dia): two 36px chevron icon buttons around a "Hoje" pill (1px Rule border, 0.8125rem at 700, Rule Strong on hover), then the period at 1.125rem/800 ("Setembro de 2026", "6–12 de setembro", "Quinta-feira, 10 de setembro"), announced politely.
 - **Day number:** a 28px pill button at 700 (32px when narrow) that opens the Dia mode. **Today** takes the neutral selection (Panel Two fill plus the Rule Strong inset), never green or violet. Days of the neighbouring month are Muted, their cell sits on a Ground wash, and their pills fall to 60%.
 - **Task pill** (Mês, Semana): a 1.5rem Panel Two pill, 6px radius, holding the category's 8px dot and the title (0.75rem at 600, ellipsized; the full title in the tooltip). Hover goes to Rule. Completed pills are Muted and struck through. Clicking one opens the task dialog.
@@ -686,7 +671,7 @@ A simple page (the Perfil column: max 44rem, centered). A title row: Page Title 
   - "Remover calendário" is the pinned-left destructive action. It opens a second step titled "Remover {course}", with two radios (keep, or delete the pending imported tasks) and the destructive text action to confirm, never a violet fill.
 
 ### Perfil
-A simple page (Page Title, then two panels). The first holds the profile form: first name and surname, birth date and occupation, each pair in the auto-fit two-column grid, then the primary "Salvar perfil" with "Perfil salvo." (0.875rem, 600, Level Green, `role="status"`) beside it once saved. When the profile is incomplete the title becomes "Complete seu perfil" and one Muted sentence (44ch) leads the panel. The second panel, titled CONTA in Label style, lists the e-mail (Meta muted term, Ink value) and a "Sair da conta" link button.
+A simple page (Page Title, then two panels). The first holds the profile form: first name and surname, birth date and occupation, each pair in the auto-fit two-column grid, then the primary "Salvar perfil" with "Perfil salvo." (0.875rem, 600, Muted, `role="status"`; never green, which stays for XP, level and completion) beside it once saved. When the profile is incomplete the title becomes "Complete seu perfil" and one Muted sentence (44ch) leads the panel. The second panel, titled CONTA in Label style, lists the e-mail (Meta muted term, Ink value) and a "Sair da conta" link button.
 
 ### Dialog
 A native modal `<dialog>` (focus trapped, Esc and backdrop click close), Panel fill, 1px Rule, 16px radius, Panel lift, width min(100% - 2rem, 32rem), 28px padding, over the Backdrop scrim. Enters with a 10px rise and 0.98 scale (0.35s ease-out). A Headline title, then a standard form (fields 20px apart; a pair of fields, such as category and date, sits in two columns and stacks at 60rem and below), then the action row: destructive text action pinned left (only when editing), then "Cancelar" as a link button, then the primary button at the right. Errors appear as a notice above the actions.

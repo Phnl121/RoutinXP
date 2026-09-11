@@ -720,11 +720,7 @@
   }
 }
 
-@keyframes check-in {
-  40% {
-    transform: scale(1.2);
-  }
-}
+/* @keyframes check-in fica em index.css, compartilhado com a demo do login. */
 
 .linha__corpo {
   display: grid;

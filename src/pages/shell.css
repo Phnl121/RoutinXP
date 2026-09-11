@@ -376,10 +376,11 @@
   gap: 1rem;
 }
 
+/* Confirmação neutra: o verde fica só para XP, nível e conclusão. */
 .perfil__salvo {
   font-size: 0.875rem;
   font-weight: 600;
-  color: var(--green);
+  color: var(--muted);
 }
 
 .perfil__conta {

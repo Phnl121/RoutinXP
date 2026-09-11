@@ -307,13 +307,13 @@
       "check-ring": {
         "role": "neutral",
         "displayName": "Check Ring",
-        "canonical": "#6a6e7c",
+        "canonical": "#7a7e8c",
         "tonalRamp": [
           "#0d0e12",
           "#1c1d24",
           "#2e3039",
           "#454856",
-          "#6a6e7c",
+          "#7a7e8c",
           "#8a8e9b",
           "#a3a7b3",
           "#f3f4f7"
@@ -404,7 +404,7 @@
       },
       "row-title": {
         "displayName": "Row Title",
-        "purpose": "Task and timeline titles (clamped to two lines), rail and side-menu items."
+        "purpose": "Task and timeline titles (clamped to two lines) and side-menu items."
       },
       "meta": {
         "displayName": "Meta",
@@ -420,7 +420,7 @@
       },
       "label": {
         "displayName": "Label",
-        "purpose": "Uppercase field labels, toggles, rail title, Lista group headings, Quadro column titles, Painel card titles and timeline day headings."
+        "purpose": "Uppercase field labels, toggles, Lista group headings, Kanban column titles, Painel card titles and timeline day headings."
       },
       "badge": {
         "displayName": "Badge",
@@ -435,7 +435,7 @@
       {
         "name": "panel-lift",
         "value": "0 1px 2px rgb(0 0 0 / 0.35), 0 16px 40px -12px rgb(0 0 0 / 0.55)",
-        "purpose": "Token --shadow. Every panel, rail, dialog, account menu, toast, chart tooltip and the open mobile drawer; the single elevation. The docked side menu has none."
+        "purpose": "Token --shadow. Every panel, dialog, account menu, toast, chart tooltip and the open mobile drawer; the single elevation. The docked side menu has none."
       },
       {
         "name": "action-glow",
@@ -460,7 +460,7 @@
       {
         "name": "selected-inset",
         "value": "inset 0 0 0 1px var(--rule-strong)",
-        "purpose": "Selected rail item on desktop and the side menu current page; neutral outline, not a lift."
+        "purpose": "The side menu current page; neutral outline, not a lift."
       },
       {
         "name": "swatch-ring",
@@ -492,7 +492,7 @@
       {
         "name": "xp-flight-app",
         "value": "0.7s cubic-bezier(0.5, 0, 0.2, 1)",
-        "purpose": "App: fixed-position +n XP (1rem, 800, green) from the completed row's check or the Quadro drop point to the top bar's XP figure; scale 1.15 to 0.75, fades in the last 20%. Stats apply on arrival; 850ms fallback timer. No flight for 0 XP."
+        "purpose": "App: fixed-position +n XP (1rem, 800, green) from the completed row's check or the Kanban drop point to the top bar's XP figure; scale 1.15 to 0.75, fades in the last 20%. Stats apply on arrival; 850ms fallback timer. No flight for 0 XP."
       },
       {
         "name": "level-hold",
@@ -557,7 +557,7 @@
       {
         "name": "reveal",
         "value": "0.15s ease-out opacity",
-        "purpose": "Rail pencil, row Excluir overlay and chart tooltip on hover/focus."
+        "purpose": "Row Excluir overlay and chart tooltip on hover/focus."
       },
       {
         "name": "state",
@@ -574,7 +574,7 @@
       {
         "name": "single-column",
         "value": "59.99rem",
-        "purpose": "At or below: login becomes one 30rem column; the side menu becomes an off-canvas drawer; the top bar shows menu button + logo and wraps the level pill to a second row; FAB replaces + Nova tarefa on every page; Tarefas rail becomes edge-bleeding chips; page title 1.5rem; dialog fields stack; the install invite strip shows only here."
+        "purpose": "At or below: login becomes one 30rem column; the side menu becomes an off-canvas drawer; the top bar shows menu button + logo and wraps the level pill to a second row; FAB replaces + Nova tarefa on every page; page title 1.375rem; dialog fields stack; the install invite strip shows only here."
       },
       {
         "name": "painel-single",
@@ -584,7 +584,7 @@
       {
         "name": "narrow",
         "value": "47.99rem",
-        "purpose": "At or below: Quadro columns scroll-snap horizontally at 86%; the row date moves to the category line in Quadro."
+        "purpose": "At or below: Kanban columns scroll-snap horizontally at 86%; in Lista, Dia and Linha do tempo the deadline badge and XP move to the meta line under the title, as in Kanban."
       },
       {
         "name": "compact",
@@ -627,8 +627,8 @@
       "name": "Underline Tabs",
       "kind": "nav",
       "refersTo": "tab",
-      "description": "View/mode switch (Entrar / Criar conta, Lista / Quadro) with a rounded violet bar that scales in under the active tab.",
-      "html": "<div class=\"ds-tabs\" role=\"group\"><button aria-pressed=\"true\">Lista</button><button aria-pressed=\"false\">Quadro</button></div>",
+      "description": "View/mode switch (Entrar / Criar conta, Lista / Kanban / Calendário) with a rounded violet bar that scales in under the active tab.",
+      "html": "<div class=\"ds-tabs\" role=\"group\"><button aria-pressed=\"true\">Lista</button><button aria-pressed=\"false\">Kanban</button></div>",
       "css": ".ds-tabs { display: flex; gap: 1.75rem; border-bottom: 1px solid var(--rule, #2e3039); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; } .ds-tabs button { position: relative; padding: 0.25rem 0 0.9rem; border: 0; background: none; font: inherit; font-size: 0.875rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted, #a3a7b3); cursor: pointer; transition: color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-tabs button:hover, .ds-tabs button[aria-pressed='true'] { color: var(--ink, #f3f4f7); } .ds-tabs button::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; border-radius: 999px; background: var(--purple, #7c3aed); transform: scaleX(0); transition: transform 0.3s cubic-bezier(0.16,1,0.3,1); } .ds-tabs button[aria-pressed='true']::after { transform: scaleX(1); } .ds-tabs button:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 2px; }"
     },
     {
@@ -678,14 +678,6 @@
       "description": "Quiet Panel strip under the top bar when the streak is at risk: Muted clock, one plain sentence, \"Ver tarefas\" link off Tarefas, dismiss until tomorrow. No tag, no alarm color; distinct from the error notice. The same strip form carries the offline notice (Muted no-connection icon, no dismiss) and, on mobile, the install invite (download icon, \"Instalar\" link, dismiss forever); one strip at a time.",
       "html": "<div class=\"ds-lembrete\" role=\"status\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"6\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M8 4.75V8l2.25 1.5\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg><p>Você ainda não concluiu nenhuma tarefa hoje. Conclua uma para manter sua sequência de 6 dias.</p><a href=\"#\" class=\"ds-lembrete-link\">Ver tarefas</a><button class=\"ds-lembrete-x\" aria-label=\"Dispensar lembrete\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M4 4l8 8M12 4l-8 8\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg></button></div>",
       "css": ".ds-lembrete { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem 0.7rem 1rem; background: var(--panel, #1c1d24); border: 1px solid var(--rule, #2e3039); border-radius: 10px; color: var(--ink, #f3f4f7); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-size: 0.875rem; } .ds-lembrete > svg { flex: none; width: 1.125rem; height: 1.125rem; color: var(--muted, #a3a7b3); } .ds-lembrete p { flex: 1; margin: 0; } .ds-lembrete-link { padding: 0.25rem 0; font-weight: 600; color: var(--purple-soft, #c4b5fd); text-decoration: underline; text-decoration-color: var(--purple-link-line, rgb(196 181 253 / 0.4)); text-underline-offset: 4px; white-space: nowrap; transition: text-decoration-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-lembrete-link:hover { text-decoration-color: var(--purple-soft, #c4b5fd); } .ds-lembrete-x { display: grid; place-items: center; flex: none; width: 2.25rem; height: 2.25rem; border: 0; border-radius: 8px; background: none; color: var(--muted, #a3a7b3); cursor: pointer; } .ds-lembrete-x:hover { background: var(--panel-2, #25262f); color: var(--ink, #f3f4f7); } .ds-lembrete-x svg { width: 0.875rem; height: 0.875rem; } .ds-lembrete a:focus-visible, .ds-lembrete button:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 2px; }"
-    },
-    {
-      "name": "Category Rail",
-      "kind": "nav",
-      "refersTo": "rail-item",
-      "description": "Desktop category filter: dot, name, pending count; neutral selected state; pencil fades in over the count on hover.",
-      "html": "<nav class=\"ds-rail\"><h2 class=\"ds-rail-t\">Categorias</h2><ul><li><button class=\"ds-rail-i\" aria-current=\"true\"><span class=\"ds-rail-nome\">Todas</span><span class=\"ds-rail-n\">6</span></button></li><li class=\"ds-rail-cat\"><button class=\"ds-rail-i\"><span class=\"ds-dot\" style=\"background:#6c9be8\"></span><span class=\"ds-rail-nome\">Faculdade</span><span class=\"ds-rail-n\">3</span></button><button class=\"ds-rail-edit\" aria-label=\"Editar Faculdade\"><svg viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M10.2 3.3 12.7 5.8 5.8 12.7H3.3V10.2Z M8.8 4.7 11.3 7.2\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></button></li></ul><button class=\"ds-rail-nova\"><svg viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M8 3v10M3 8h10\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg>Nova categoria</button></nav>",
-      "css": ".ds-rail { width: 16rem; padding: 1.25rem 0.75rem 1rem; background: var(--panel, #1c1d24); border: 1px solid var(--rule, #2e3039); border-radius: 16px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 16px 40px -12px rgb(0 0 0 / 0.55); color: var(--ink, #f3f4f7); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; } .ds-rail ul { display: grid; gap: 2px; margin: 0; padding: 0; list-style: none; } .ds-rail li { position: relative; } .ds-rail-t { margin: 0 0.75rem 0.75rem; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted, #a3a7b3); } .ds-rail-i { display: flex; align-items: center; gap: 0.65rem; width: 100%; min-height: 2.75rem; padding: 0 0.85rem; border: 0; border-radius: 8px; background: none; color: inherit; font: inherit; font-weight: 600; text-align: left; cursor: pointer; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-rail-i:hover { background: var(--panel-2, #25262f); } .ds-rail-i[aria-current='true'] { background: var(--panel-2, #25262f); box-shadow: inset 0 0 0 1px var(--rule-strong, #454856); font-weight: 700; } .ds-rail-nome { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .ds-rail-n { margin-left: auto; font-size: 0.8125rem; color: var(--muted, #a3a7b3); transition: opacity 0.15s; } .ds-dot { flex: none; width: 0.5rem; height: 0.5rem; border-radius: 50%; } .ds-rail-edit { position: absolute; right: 0.35rem; top: 50%; display: grid; place-items: center; width: 2rem; height: 2rem; border: 0; border-radius: 8px; background: none; color: var(--muted, #a3a7b3); opacity: 0; transform: translateY(-50%); cursor: pointer; transition: opacity 0.15s, color 0.15s, background-color 0.15s; } .ds-rail-edit svg, .ds-rail-nova svg { width: 1rem; height: 1rem; } .ds-rail-cat:hover .ds-rail-edit, .ds-rail-edit:focus-visible { opacity: 1; } .ds-rail-cat:hover .ds-rail-n { opacity: 0; } .ds-rail-edit:hover { color: var(--ink, #f3f4f7); background: var(--rule, #2e3039); } .ds-rail-nova { display: flex; align-items: center; gap: 0.5rem; width: 100%; min-height: 2.75rem; margin-top: 0.5rem; padding: 0 0.85rem; border: 0; border-top: 1px solid var(--rule, #2e3039); background: none; font: inherit; font-size: 0.875rem; font-weight: 600; color: var(--purple-soft, #c4b5fd); cursor: pointer; } .ds-rail-nova:hover { color: var(--ink, #f3f4f7); } .ds-rail button:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 2px; }"
     },
     {
       "name": "Task Row",
@@ -743,7 +735,7 @@
     "rules": [
       {
         "name": "The Two Jobs Rule",
-        "body": "Green means progress and purple means action; neither ever stands in for the other. No green buttons, no purple XP, no third accent. Purple never marks selection: a current side-menu page, a selected rail item, chip, segment or swatch is shown with neutrals (Panel Two, Rule Strong, Ink). The single violet indicator is the active underline-tab bar, which marks the current mode. Green is also never spent on something that earned nothing: a \"+0 XP\" is Muted, and no flight launches for it.",
+        "body": "Green means progress and purple means action; neither ever stands in for the other. No green buttons, no purple XP, no third accent. Purple never marks selection: a current side-menu page, a selected chip, segment or swatch is shown with neutrals (Panel Two, Rule Strong, Ink). The single violet indicator is the active underline-tab bar, which marks the current mode. Green is also never spent on something that earned nothing: a \"+0 XP\" is Muted, and no flight launches for it.",
         "section": "colors"
       },
       {
@@ -753,7 +745,7 @@
       },
       {
         "name": "The Dot-Only Category Rule",
-        "body": "User-chosen category colors are data. They appear as an 8px round dot beside the category name (rail, chips, row category line, Lista group headings, the Painel's category bars and timeline items), never as fills, borders, text color, bars or backgrounds, and never without the name. The one exception is the color picker, where the swatch itself is the choice and fills a 36px circle.",
+        "body": "User-chosen category colors are data. They appear as an 8px round dot beside the category name (filter chips, the Categorias e tags list, row category line, Lista group headings, the Painel's category bars and timeline items), never as fills, borders, text color, bars or backgrounds, and never without the name. The one exception is the color picker, where the swatch itself is the choice and fills a 36px circle.",
         "section": "colors"
       },
       {
@@ -768,7 +760,7 @@
       },
       {
         "name": "The Width-for-Rank Rule",
-        "body": "Only display, page title, wordmark and badges use the expanded width axis. Body, rows, rail, side menu, charts, dialogs and forms stay at normal width.",
+        "body": "Only display, page title, wordmark and badges use the expanded width axis. Body, rows, side menu, charts, dialogs and forms stay at normal width.",
         "section": "typography"
       },
       {
