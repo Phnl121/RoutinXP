@@ -1,21 +1,44 @@
+import { Link, useLocation } from 'react-router'
 import { supabase } from '../lib/supabase'
 import { iniciaisDoPerfil } from '../lib/datas'
 import { nomeCompleto } from '../lib/perfil'
+import { duracao, formatarTempo, restanteDe, useAgora, useFocoApp } from '../lib/foco'
 import { BadgeNivel, BarraXp } from './Progresso'
 import { useMedidorNivel } from '../lib/useMedidorNivel'
-import { IconeMenu } from './icones'
+import { IconeFoco, IconeMenu, IconePausa } from './icones'
 import { Logo } from './Logo'
 import { t } from '../i18n/pt-BR'
 
 // Barra superior do app: botão do menu (celular), logo (celular), medidor de nível
 // (sempre no centro) e menu da conta. No desktop a logo fica no menu lateral.
 // "Nova tarefa" fica no título da página de Tarefas (e no botão flutuante no celular).
+// Sessão de foco em andamento, fora da página Foco: um atalho com o tempo que falta.
+function ChipFoco({ estado }) {
+  const agora = useAgora(estado.rodando, 1000)
+  const restante = restanteDe(estado, agora)
+  // Parado, o chip diz por quê: esperando o próximo foco ou pausado no meio.
+  const aguardando = !estado.rodando && estado.fase === 'foco' && restante >= duracao(estado.config, 'foco')
+  const fase = aguardando ? t.foco.proximo : t.foco.fases[estado.fase]
+  const rotulo = estado.rodando || aguardando ? fase : `${fase} ${t.foco.pausado}`
+  const tempo = formatarTempo(restante)
+  return (
+    <Link to="/foco" className="topo__foco" data-pausado={!estado.rodando} aria-label={t.foco.chipRotulo(rotulo, tempo)}>
+      {estado.rodando ? <IconeFoco /> : <IconePausa />}
+      <span>{t.foco.chip(rotulo, tempo)}</span>
+    </Link>
+  )
+}
+
 export function TopBar({ stats, perfil, email, onAbrirMenu, gavetaAberta }) {
   const medidor = useMedidorNivel(stats?.xp_total ?? 0, Boolean(stats))
   const streak = stats?.streak_atual ?? 0
+  const foco = useFocoApp()
+  const { pathname } = useLocation()
+  const focoFora = foco && foco.estado.fase !== 'parado' && pathname !== '/foco'
 
   return (
-    <header className="topo">
+    <header className="topo" data-foco={Boolean(focoFora)}>
+      {focoFora && <ChipFoco estado={foco.estado} />}
       <button
         type="button"
         className="topo__menu"

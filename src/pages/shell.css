@@ -199,6 +199,46 @@
   }
 }
 
+/* ---------- Atalho da sessão de foco (barra superior) ---------- */
+
+/* No computador ocupa o lado esquerdo da barra, que fica vazio (a logo está no menu). */
+.topo__foco {
+  grid-area: menu;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  padding: 0 0.95rem 0 0.8rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--panel);
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    border-color 0.2s var(--ease-out),
+    background-color 0.2s var(--ease-out);
+}
+
+.topo__foco:hover {
+  border-color: var(--rule-strong);
+  background: var(--panel-2);
+}
+
+.topo__foco svg {
+  width: 1rem;
+  height: 1rem;
+  color: var(--muted);
+}
+
+.topo__foco[data-pausado='true'] {
+  color: var(--muted);
+}
+
 /* ---------- Lembrete de streak ---------- */
 
 .lembrete {
@@ -405,6 +445,17 @@
   .lembrete__fechar {
     min-height: 2.75rem;
     width: 2.75rem;
+  }
+
+  /* Celular: o atalho do foco toma o lugar da logo, no centro da barra. */
+  .topo[data-foco='true'] .topo__logo {
+    display: none;
+  }
+
+  .topo__foco {
+    grid-area: logo;
+    justify-self: center;
+    min-height: 2.75rem;
   }
 
   .menu-lateral {

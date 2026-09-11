@@ -5,7 +5,7 @@ Este arquivo é o ponto de handoff entre ferramentas (Code, Antigravity, ou qual
 ## Estado atual
 (a ferramenta que estiver trabalhando atualiza esta seção a cada sessão: o que existe, o que está funcionando, o que está pela metade)
 
-Atualizado em 2026-09-11 (Claude Code): v1 completa (passos 1 a 12). v2 em andamento e no ar: Integrações (calendários iCal), Calendário, Categorias e tags, filtro, capas e selos de prazo, Kanban com colunas próprias, área de toque de 44px no celular. O log de sessões abaixo tem o detalhe mais recente; algumas descrições antigas desta seção (trilho, Quadro) já foram substituídas.
+Atualizado em 2026-09-11 (Claude Code): v1 completa (passos 1 a 12). v2 em andamento e no ar: Integrações (calendários iCal), Calendário, Categorias e tags, filtro, capas e selos de prazo, Kanban com colunas próprias, área de toque de 44px no celular. Página Foco (pomodoro + Spotify) pronta localmente, aguardando a migration `focus_sessions` e o deploy. O log de sessões abaixo tem o detalhe mais recente; algumas descrições antigas desta seção (trilho, Quadro) já foram substituídas.
 
 - Repositório git: **sim**, branch `main`, remoto **privado** https://github.com/Phnl121/RoutinXP (conta Phnl121). Identidade local `Pedro <pedrocybernet01@gmail.com>`.
 - Deploy: **Vercel**, projeto `phnl121/routinxp` (renomeado de `routin`), produção em **https://routinxp.vercel.app**.
@@ -105,6 +105,45 @@ Atualizado em 2026-09-11 (Claude Code): v1 completa (passos 1 a 12). v2 em andam
 
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
+
+### 2026-09-11, Claude Code (Opus 5): página Foco (pomodoro + Spotify)
+Pedido do usuário: uma aba de pomodoro com intervalos configuráveis, cronômetro na tela, várias tarefas de categorias diferentes na sessão e música do Spotify tocando no app.
+
+Decisões do usuário:
+- o nome é "Foco";
+- XP só vem das tarefas;
+- Spotify pela opção A (player embutido a partir de um link colado, sem conectar conta);
+- o histórico entra no Painel.
+
+Estrutura "Montar e rodar", escolhida na página de decisão do Impeccable (seed 5557813b).
+
+Feito:
+- Página `/foco` no menu lateral (`src/pages/Foco.jsx`, `foco.css`).
+  - Parada: Intervalos (atalhos 25/5 e 50/10, ou Personalizado com 4 campos), tarefas da sessão como cards da Lista e "Iniciar foco" com a Música ao lado.
+  - Ao iniciar, o painel de intervalos vira o relógio (transição de vista do navegador): fase e ciclo, pílulas da rodada, mm:ss grande, Pausar/Retomar, Pular, Encerrar (com Desfazer).
+  - Aparecem a tarefa atual ("Agora") e a fila. Concluir ali dá XP com o voo do "+XP" (lógica extraída para `src/lib/useVooXp.js`, usada também em Tarefas).
+- Cronômetro (`src/lib/foco.js`):
+  - guarda a hora de término, sobrevive a recarregar, sincroniza abas pelo `storage`;
+  - a pausa começa sozinha; o foco seguinte espera o Iniciar;
+  - no fim de cada fase há som curto, vibração e notificação (com a aba escondida);
+  - a tela fica acesa enquanto roda com a página à vista.
+- A casca mantém a página Foco montada depois da primeira visita, então o cronômetro e a música continuam ao trocar de página. A barra superior mostra o atalho "Foco 18:42" (no celular, no lugar da logo), e a aba do navegador mostra o tempo.
+- Spotify (`src/lib/spotify.js`, `src/components/PlayerSpotify.jsx`): iFrame API oficial.
+  - Aceita link de playlist, álbum, música ou podcast (open.spotify.com, com ou sem /intl-xx/) ou URI.
+  - Recusa links curtos com explicação.
+  - Pausa a música nas pausas e retoma no foco (opção marcável).
+  - O link fica salvo no navegador.
+- Janela "Adicionar tarefas" (`src/components/SeletorTarefas.jsx`): busca, filtro por categoria e caixas de marcar neutras.
+- Painel: cartão "Minutos de foco" com barras por dia no mesmo período (7/30 dias), em `src/components/GraficoFoco.jsx`.
+- Banco: migration `supabase/migrations/20260911220000_sessoes_foco.sql` com a tabela `focus_sessions` (id gerado no navegador como chave, então reenviar não duplica; `concluida_em` é a hora do servidor; RLS; o cliente só insere `id` e `minutos`).
+  - Sem internet, o bloco fica guardado no navegador e é reenviado depois.
+  - Se a tabela ainda não existir, o app carrega normalmente (os minutos de foco vêm vazios).
+- Revisão final do Impeccable: "fix" com 7 correções, todas aplicadas (área de toque dos links, Desfazer ao encerrar, estado no atalho da barra, rótulos, setinhas dos campos, contrato atualizado).
+
+Próximo:
+- **Aplicar a migration no Supabase** (`db push`) e publicar, quando o usuário autorizar. Sem a migration, os blocos de foco ficam só no navegador até ela existir.
+- Testar no celular real: o aviso de fim de fase com a tela bloqueada, e o Spotify logado.
+- Limitação conhecida: com a aba escondida há muito tempo, o navegador pode atrasar o aviso em até cerca de 1 minuto; no iPhone o aviso com o app fechado não é garantido.
 
 ### 2026-09-11, Claude Code (Opus 5): acabamentos 2 a 6 (antes destinados ao Antigravity)
 Feito (o usuário decidiu não passar ao Antigravity):

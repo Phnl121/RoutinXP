@@ -30,7 +30,27 @@ const buscarTudo = () =>
     api.listarTags(),
     api.listarFontes(),
     api.listarColunas(),
+    // Os minutos de foco são extras: se falharem, o resto do app carrega mesmo assim.
+    api.listarFocos().catch(() => []),
   ])
+
+// Blocos de foco que não chegaram ao banco (sem internet): ficam guardados e vão depois.
+const chavePendentes = (userId) => `routinxp:focos-pendentes:${userId}`
+function lerPendentes(userId) {
+  try {
+    const lista = JSON.parse(localStorage.getItem(chavePendentes(userId)))
+    return Array.isArray(lista) ? lista : []
+  } catch {
+    return []
+  }
+}
+function gravarPendentes(userId, lista) {
+  try {
+    localStorage.setItem(chavePendentes(userId), JSON.stringify(lista))
+  } catch {
+    /* sem armazenamento: o bloco se perde se a internet não voltar nesta aba */
+  }
+}
 
 // Estado de categorias, tarefas, estatísticas e perfil do usuário, com atualizações otimistas.
 export function useDados(userId) {
@@ -40,13 +60,17 @@ export function useDados(userId) {
   const [fontes, setFontes] = useState([]) // calendários conectados (Integrações)
   const [colunas, setColunas] = useState([]) // colunas do Kanban
   const [tarefas, setTarefas] = useState([])
+  const [focos, setFocos] = useState([]) // blocos de foco dos últimos 31 dias
   const [stats, setStats] = useState(null)
   const [estado, setEstado] = useState('carregando') // 'carregando' | 'pronto' | 'erro'
   const [aviso, setAviso] = useState(null) // { tipo: 'desfazer', tarefa } | { tipo: 'erro', texto }
   const [recem, setRecem] = useState(null) // id da tarefa concluída por último (para a animação)
   const exclusao = useRef(null) // { tarefa, timer }
 
-  const aplicar = useCallback(([c, tf, s, p, tg, fo, co]) => {
+  const aplicar = useCallback(([c, tf, s, p, tg, fo, co, fc]) => {
+    // Blocos ainda não enviados aparecem desde já (vão ao banco em seguida).
+    const pendentes = lerPendentes(userId).filter((b) => !fc.some((f) => f.id === b.id))
+    setFocos([...fc, ...pendentes])
     setColunas(co)
     setCategorias(c)
     setTarefas(tf)
@@ -55,7 +79,7 @@ export function useDados(userId) {
     setTags(tg)
     setFontes(fo)
     setEstado('pronto')
-  }, [])
+  }, [userId])
   const falhouCarregar = useCallback(() => setEstado('erro'), [])
 
   // "Tentar de novo": volta ao estado de carregamento e busca outra vez.
@@ -242,6 +266,36 @@ export function useDados(userId) {
     return r
   }
 
+  // Bloco de foco completo (página Foco): aparece na hora e vai ao banco. Sem internet, fica
+  // guardado no navegador e é reenviado quando os dados carregarem de novo.
+  const enviarFoco = useCallback(
+    async (bloco) => {
+      try {
+        await api.registrarFoco(bloco)
+        gravarPendentes(userId, lerPendentes(userId).filter((b) => b.id !== bloco.id))
+      } catch {
+        const pendentes = lerPendentes(userId)
+        if (!pendentes.some((b) => b.id === bloco.id)) gravarPendentes(userId, [...pendentes, bloco])
+      }
+    },
+    [userId],
+  )
+
+  const registrarFoco = useCallback(
+    (bloco) => {
+      const completo = { ...bloco, concluida_em: new Date().toISOString() }
+      setFocos((fs) => (fs.some((f) => f.id === bloco.id) ? fs : [...fs, completo]))
+      return enviarFoco(completo)
+    },
+    [enviarFoco],
+  )
+
+  // Depois de carregar, reenvia o que ficou guardado.
+  useEffect(() => {
+    if (estado !== 'pronto') return
+    lerPendentes(userId).forEach((bloco) => enviarFoco(bloco))
+  }, [estado, userId, enviarFoco])
+
   async function salvarPerfil(campos) {
     const salvo = await api.salvarPerfil(campos, Boolean(perfil), userId)
     setPerfil(salvo)
@@ -271,6 +325,8 @@ export function useDados(userId) {
     sincronizarFontes,
     previaFonte: api.previaFonte,
     tarefas,
+    focos,
+    registrarFoco,
     stats,
     estado,
     aviso,

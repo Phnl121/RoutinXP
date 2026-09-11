@@ -114,6 +114,20 @@ let fontes = [
   },
 ]
 
+// Blocos de foco (página Foco e Painel): dois hoje e alguns nos últimos dias.
+const blocoFoco = (id, minutosAtras, minutos = 25) => ({ id, minutos, concluida_em: instante(minutosAtras) })
+let focos = [
+  blocoFoco('b1', 5760 + 200, 50),
+  blocoFoco('b2', 4320 + 120),
+  blocoFoco('b3', 4320 + 90),
+  blocoFoco('b4', 2880 + 60),
+  blocoFoco('b5', 1440 + 180, 50),
+  blocoFoco('b6', 1440 + 150),
+  blocoFoco('b7', 1440 + 120),
+  blocoFoco('b8', 95),
+  blocoFoco('b9', 60),
+]
+
 let perfil = { primeiro_nome: 'Ana', sobrenome: 'Souza', data_nascimento: '2003-05-14', ocupacao: 'estudante' }
 
 // 690 XP = nível 4 com 240/250: uma conclusão já mostra a subida de nível.
@@ -289,6 +303,11 @@ export const previaApi = {
       motivo,
       estatisticas: { ...stats, xp_hoje: xpHoje + xp, teto_diario: 150 },
     })
+  },
+  listarFocos: () => espera(focos),
+  registrarFoco: ({ id, minutos }) => {
+    if (!focos.some((f) => f.id === id)) focos = [...focos, { id, minutos, concluida_em: new Date().toISOString() }]
+    return espera(null)
   },
   lerEstatisticas: () => espera({ ...stats, xp_hoje: 0, teto_diario: 150 }),
   lerPerfil: () => espera(perfil),

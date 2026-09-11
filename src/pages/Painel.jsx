@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useDadosApp } from '../lib/dadosContexto'
 import { calcularNivel } from '../lib/nivel'
-import { resumoPainel } from '../lib/painel'
+import { resumoFoco, resumoPainel } from '../lib/painel'
+import { GraficoFoco } from '../components/GraficoFoco'
 import { BadgeNivel, BarraXp } from '../components/Progresso'
 import { GraficoBarras } from '../components/GraficoBarras'
 import { GraficoCategorias } from '../components/GraficoCategorias'
@@ -17,6 +18,7 @@ export default function Painel() {
   const [periodo, setPeriodo] = useState(7)
 
   const resumo = useMemo(() => resumoPainel(d.tarefas, d.categorias, periodo), [d.tarefas, d.categorias, periodo])
+  const foco = useMemo(() => resumoFoco(d.focos, periodo), [d.focos, periodo])
   const categoriasPorId = useMemo(() => Object.fromEntries(d.categorias.map((c) => [c.id, c])), [d.categorias])
 
   if (d.estado === 'carregando') {
@@ -84,6 +86,25 @@ export default function Painel() {
               <p className="painel__vazio">{p.semConclusoes}</p>
             ) : (
               <GraficoCategorias linhas={resumo.porCategoria} />
+            )}
+          </section>
+
+          <section className="panel painel__cartao" aria-labelledby="painel-foco">
+            <header className="painel__cabeca">
+              <div className="painel__titulos">
+                <h2 id="painel-foco" className="label">
+                  {p.foco.titulo}
+                </h2>
+                <span className="painel__resumo">{p.categoriasPeriodo(periodo)}</span>
+              </div>
+            </header>
+            {foco.focos === 0 ? (
+              <p className="painel__vazio">{p.foco.vazio}</p>
+            ) : (
+              <>
+                <p className="painel__resumo">{p.foco.resumo(foco.focos, foco.minutos)}</p>
+                <GraficoFoco dados={foco.porDia} titulo={p.foco.titulo} />
+              </>
             )}
           </section>
         </div>

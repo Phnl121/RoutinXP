@@ -18,9 +18,12 @@ export function Toast({ aviso, onDesfazer, onFechar }) {
 
   if (!aviso) return <div className="toast-area" aria-live="polite" />
 
+  // "Desfazer" serve à exclusão de tarefa (padrão) e a quem trouxer o próprio texto e ação
+  // (ex.: encerrar a sessão de foco).
   const texto =
-    aviso.tipo === 'desfazer' ? t.tarefas.excluida : aviso.tipo === 'nivel' ? t.tarefas.nivelAlcancado : aviso.texto
-  const chave = aviso.tarefa?.id ?? (aviso.tipo === 'nivel' ? `nivel-${aviso.nivel}` : aviso.texto)
+    aviso.tipo === 'desfazer' ? (aviso.texto ?? t.tarefas.excluida) : aviso.tipo === 'nivel' ? t.tarefas.nivelAlcancado : aviso.texto
+  const chave = aviso.chave ?? aviso.tarefa?.id ?? (aviso.tipo === 'nivel' ? `nivel-${aviso.nivel}` : aviso.texto)
+  const desfazer = aviso.onDesfazer ?? onDesfazer
 
   return (
     <div className="toast-area" aria-live="polite">
@@ -30,7 +33,7 @@ export function Toast({ aviso, onDesfazer, onFechar }) {
         <span>{texto}</span>
         {aviso.tipo === 'desfazer' && (
           <>
-            <button type="button" className="link-btn" onClick={onDesfazer}>
+            <button type="button" className="link-btn" onClick={desfazer}>
               {t.tarefas.desfazer}
             </button>
             <span className="toast__tempo" aria-hidden="true" />

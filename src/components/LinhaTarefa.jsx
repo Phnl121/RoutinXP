@@ -16,7 +16,20 @@ function Prazo({ prazo }) {
   )
 }
 
-export function LinhaTarefa({ tarefa, categoria, tags = [], mostrarCategoria = true, arrastavel = false, recem = false, onConcluir, onEditar, onExcluir }) {
+// excluirTexto / excluirRotulo trocam o "Excluir" do hover (na página Foco ele tira a tarefa da sessão).
+export function LinhaTarefa({
+  tarefa,
+  categoria,
+  tags = [],
+  mostrarCategoria = true,
+  arrastavel = false,
+  recem = false,
+  onConcluir,
+  onEditar,
+  onExcluir,
+  excluirTexto = tt.excluir,
+  excluirRotulo = tt.excluirRotulo,
+}) {
   const feita = tarefa.status === 'concluida'
   const [arrastando, setArrastando] = useState(false)
   const mostrarCat = mostrarCategoria && Boolean(categoria)
@@ -129,8 +142,8 @@ export function LinhaTarefa({ tarefa, categoria, tags = [], mostrarCategoria = t
       )}
 
       {!feita && (
-        <button type="button" className="linha__excluir" onClick={() => onExcluir(tarefa.id)} aria-label={tt.excluirRotulo(tarefa.titulo)}>
-          {tt.excluir}
+        <button type="button" className="linha__excluir" onClick={() => onExcluir(tarefa.id)} aria-label={excluirRotulo(tarefa.titulo)}>
+          {excluirTexto}
         </button>
       )}
     </li>

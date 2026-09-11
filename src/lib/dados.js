@@ -229,3 +229,17 @@ export async function salvarPerfil({ primeiro_nome, sobrenome, data_nascimento, 
 export async function lerEstatisticas() {
   return ok(await supabase.rpc('minhas_estatisticas'))
 }
+
+// ---------- Foco (pomodoro) ----------
+
+// Blocos de foco dos últimos 31 dias (o Painel mostra até 30).
+export async function listarFocos() {
+  const desde = new Date(Date.now() - 31 * 86400000).toISOString()
+  return ok(await supabase.from('focus_sessions').select('id, minutos, concluida_em').gte('concluida_em', desde).order('concluida_em'))
+}
+
+// O id vem do navegador (gerado quando o bloco começa): enviar o mesmo bloco de novo não duplica.
+export async function registrarFoco({ id, minutos }) {
+  const { error } = await supabase.from('focus_sessions').insert({ id, minutos })
+  if (error && error.code !== '23505') throw error
+}

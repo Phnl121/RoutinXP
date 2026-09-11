@@ -123,6 +123,14 @@ typography:
     fontWeight: 800
     letterSpacing: "0.02em"
     fontFeature: "'tnum'"
+  focus-clock:
+    fontFamily: "'Archivo Variable', 'Archivo', system-ui, sans-serif"
+    fontSize: "clamp(3.75rem, 11cqi, 6rem)"
+    fontWeight: 800
+    lineHeight: 1
+    letterSpacing: "-0.03em"
+    fontVariation: "'wdth' 110"
+    fontFeature: "'tnum'"
 rounded:
   data: "4px"
   row: "8px"
@@ -381,6 +389,69 @@ components:
     height: "2rem"
   logo-topbar:
     height: "1.875rem"
+  button-outline:
+    backgroundColor: "transparent"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sm}"
+    padding: "0 20px"
+    height: "48px"
+  button-outline-hover:
+    backgroundColor: "{colors.panel-2}"
+    textColor: "{colors.ink}"
+  button-start-focus:
+    backgroundColor: "{colors.purple}"
+    textColor: "{colors.on-purple}"
+    rounded: "{rounded.sm}"
+    height: "3.75rem"
+    width: "100%"
+  checkbox:
+    backgroundColor: "transparent"
+    rounded: "{rounded.data}"
+    size: "1.125rem"
+  checkbox-checked:
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.ground}"
+    rounded: "{rounded.data}"
+    size: "1.125rem"
+  focus-chip:
+    backgroundColor: "{colors.panel}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.pill}"
+    padding: "0 0.95rem 0 0.8rem"
+    height: "2.5rem"
+  focus-chip-hover:
+    backgroundColor: "{colors.panel-2}"
+  focus-chip-paused:
+    backgroundColor: "{colors.panel}"
+    textColor: "{colors.muted}"
+  focus-page:
+    width: "78rem"
+  focus-clock-panel:
+    backgroundColor: "{colors.panel}"
+    textColor: "{colors.ink}"
+    typography: "{typography.focus-clock}"
+    rounded: "{rounded.md}"
+  focus-clock-paused:
+    textColor: "{colors.muted}"
+  cycle-pill:
+    backgroundColor: "{colors.rule-strong}"
+    rounded: "{rounded.pill}"
+    width: "1.75rem"
+    height: "0.375rem"
+  cycle-pill-done:
+    backgroundColor: "{colors.ink}"
+  task-picker-row:
+    backgroundColor: "transparent"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.row}"
+    padding: "0.55rem 0.6rem"
+    height: "3.25rem"
+  task-picker-row-selected:
+    backgroundColor: "{colors.panel-2}"
+  focus-chart-bar:
+    backgroundColor: "{colors.green}"
+    rounded: "{rounded.data}"
+    width: "min(2.75rem, 72%)"
 ---
 
 # Design System: RoutinXP
@@ -463,17 +534,18 @@ A cool, near-black neutral stack with two saturated accents whose roles never ov
 - **Label** (700, 0.75rem, 0.07em, uppercase, muted): field labels, field toggles, the filter's group titles, Lista group headings and Kanban column titles (both carry " · n"), Painel card titles and the timeline's day headings (HOJE, ONTEM). The streak caption runs 0.6875rem.
 - **Badge** (800, 0.6875rem, width 112.5%, 0.06em, uppercase): NÍVEL pill; 0.8125rem inside the login level meter.
 - **XP Figure** (800, tabular): "XP 120 / 150", "+n XP", the top bar's streak figure ("6 dias") and the Painel's "n XP no total".
+- **Focus Clock** (800, clamp(3.75rem, 11cqi, 6rem), sized by its container, width 110%, line-height 1, -0.03em, tabular): the time left on the Foco page's clock and nowhere else. It is the largest type in the app. Ink while running, Muted while paused.
 
 ### Named Rules
 **The Tabular Rule.** `font-variant-numeric: tabular-nums` is set at the root and stays on; counting XP must never shift its neighbors.
 
-**The Width-for-Rank Rule.** Only display, page title, wordmark and badges use the expanded width axis. Body, rows, rail, side menu, charts, dialogs and forms stay at normal width.
+**The Width-for-Rank Rule.** Only display, page title, wordmark and badges use the expanded width axis. Body, rows, rail, side menu, charts, dialogs and forms stay at normal width. The Focus Clock is the one addition: the time on the Foco page reads as a scoreboard figure.
 
 ## Layout
 
 **Login.** A 70rem frame, centered, with page padding clamp(1.5rem, 5vw, 3.5rem) vertical by clamp(1rem, 4vw, 2.5rem) horizontal. Two columns: a flexible story column and a fixed 25rem form column, column gap clamp(2.5rem, 7vw, 6rem), row gap 2.25rem. Below 60rem it becomes one 30rem column in the order wordmark, headline, form, demo, and the form panel padding drops from 2rem to 1.5rem. Single-task pages (password reset) use a 26rem centered column with 1.5rem gaps.
 
-**App shell.** Two columns at full height: the side menu (16.25rem, or 4.25rem when collapsed; the column width animates over 0.25s) and the content column. The content column stacks the sticky top bar (Top Bar fill, 1px Rule beneath, padding 0.625rem by clamp(1rem, 3vw, 2rem)), the shell strip when one applies (0.75rem below the bar, matching the page's side padding, max 86rem), then the current page. At most one strip shows at a time: offline, the offline strip alone; online, the streak reminder when the streak is at risk, otherwise the install invite (mobile only) while the app is installable and not dismissed. On desktop the top bar holds only the level pill and, at the right, the avatar button; the logo lives in the side menu. The bar is a three-column grid with equal flexible sides (1fr | auto | 1fr), so the level pill is always centered in the bar, whatever sits at either side.
+**App shell.** Two columns at full height: the side menu (16.25rem, or 4.25rem when collapsed; the column width animates over 0.25s) and the content column. The content column stacks the sticky top bar (Top Bar fill, 1px Rule beneath, padding 0.625rem by clamp(1rem, 3vw, 2rem)), the shell strip when one applies (0.75rem below the bar, matching the page's side padding, max 86rem), then the current page. At most one strip shows at a time: offline, the offline strip alone; online, the streak reminder when the streak is at risk, otherwise the install invite (mobile only) while the app is installable and not dismissed. On desktop the top bar holds only the level pill and, at the right, the avatar button; the logo lives in the side menu. During a focus session, on any page other than Foco, the focus chip takes the otherwise empty left side (see App Top Bar). The bar is a three-column grid with equal flexible sides (1fr | auto | 1fr), so the level pill is always centered in the bar, whatever sits at either side.
 
 **Tarefas page.** The body is capped at 90rem and centered, padding clamp(1.25rem, 3vw, 2rem) with 6rem at the bottom for the FAB and toast, in **one full-width column** (user request, 2026-09-11). Categories and tags are managed on their own page ("Categorias e tags"); narrowing the tasks happens through the Filter, not a side rail.
 
@@ -499,6 +571,12 @@ The amber and rose come from the `--prazo-perto`, `--prazo-atrasado` and `--on-p
 **Main column (Tarefas).** A title row (page title at the left, the compact "+ Nova tarefa" button at the right, vertically centered), then a controls row: the underline tabs own the baseline; in Lista the segmented filter sits above that baseline at the right, positioned out of flow so switching Lista/Kanban/Calendário never changes the height of the tab row. Content follows 1.5rem below. Kanban is a row of columns (see Kanban).
 
 **Painel.** The same 90rem cap and page padding. Page title, then a grid of a wide column (1.65fr: level panel, XP-per-day card, category card, 1.25rem apart) and a narrow column (1fr: the timeline panel), 1.25rem gap, top-aligned. The grid responds to its own width through a container query, not to the window, because the side menu (open, collapsed or drawer) changes the space: at 58rem of content width and below it becomes one column. Cards pad 1.5rem; the level panel pads 1.25rem by 1.5rem.
+
+**Foco page.** Capped at 78rem and centered, with the Tarefas page padding (6rem at the bottom), 1.25rem between the header and the grid. The header holds the Page Title "Foco" at the left and today's count at the right ("Hoje · 2 focos · 50 min" in 0.875rem at 600, Muted), baseline-aligned and wrapping. Below it is a two-column grid: main at 1.55fr, side at 1fr, gaps of 1.25rem by clamp(1.25rem, 2.5vw, 2rem), top-aligned, with each column stacking its blocks 1.5rem apart. The page has two phases on the same grid:
+- **Montar** (setting up): main holds the Intervalos panel, then the session's tasks; side holds Iniciar foco, then Música.
+- **Rodar** (running): main holds the clock panel, then Agora (the current task); side holds the queue, then Música.
+
+Música keeps the same slot in both phases, so the player never restarts. The grid responds to its own width through a container query: at 52rem of content width and below it becomes one column, ordered stage (Intervalos or clock), then Iniciar or Agora, then tasks, then music. At 60rem and below the page's link buttons grow to 44px targets. The page stays mounted in the shell while hidden, so the timer and the music carry on across pages.
 
 **Simple pages (Perfil).** One column of panels, max 44rem wide and centered in the content column (it follows the side menu open or collapsed), 1.25rem apart, same page padding. Panels pad 1.75rem (1.25rem at 60rem and below). Field pairs sit in an auto-fit two-column grid (columns at least 9.5rem, 1rem gap) that stacks on its own when narrow.
 
@@ -528,9 +606,9 @@ Depth is tonal first: chrome (top bar and side menu, darker), ground, panel, pan
 
 ## Shapes
 
-Soft, friendly geometry without going bubbly. Containers (panels, dialog) round at 16px; controls (buttons, inputs, notices, toast, shell strips, account menu, user card, icon buttons, level-up banner) at 10px; interactive rows and task cards, side-menu items, menu items, chart columns on hover, the chart tooltip, the iOS step chip and small overlays at 8px. Data ends round at 4px: an XP bar rounds only its top corners and a category bar only its right end, so the baseline stays square. Anything that represents a count, a state token or a filter is a full pill: the NÍVEL badge, the XP track and fill, the level pill, the ERRO tag, the segmented well and its segments, the filter chips, and the 3px active-tab bar. Circles are reserved for identity, completion, color and the floating action: the avatar, the task check, the timeline check, the category dot, the color swatch, the FAB. Borders are always 1px, solid except the dashed "+ Nova coluna" Kanban slot and the dashed daily-cap line; rings on the avatar and task check are 2px, and so is the timeline connector.
+Soft, friendly geometry without going bubbly. Containers (panels, dialog) round at 16px; controls (buttons, inputs, notices, toast, shell strips, account menu, user card, icon buttons, level-up banner) at 10px; interactive rows and task cards, side-menu items, menu items, chart columns on hover, the chart tooltip, the iOS step chip and small overlays at 8px. Data ends round at 4px: an XP bar rounds only its top corners and a category bar only its right end, so the baseline stays square. Anything that represents a count, a state token or a filter is a full pill: the NÍVEL badge, the XP track and fill, the level pill, the ERRO tag, the segmented well and its segments, the filter chips, and the 3px active-tab bar. Circles are reserved for identity, completion, color and the floating action: the avatar, the task check, the timeline check, the category dot, the color swatch, the FAB. Borders are always 1px, solid except the dashed "+ Nova coluna" Kanban slot and the dashed daily-cap line; rings on the avatar and task check are 2px, and so is the timeline connector. Checkboxes are squares at the 4px data radius with a 2px ring, so a selection box never reads as the round completion check. The Foco cycle pills are full pills, because they count.
 
-The icon family is drawn in-house on a 16px grid: 2px strokes (2.2px for the check), round caps and joins, no fills, color through `currentColor`. Thirteen glyphs exist (plus, check, pencil, list, chart, person, side-menu panel, menu, clock, close, download, share, no connection); new icons follow the same stroke. Icons sit at 1rem in buttons and the iOS step chip, and 1.125rem in the side menu and the shell strips.
+The icon family is drawn in-house on a 16px grid: 2px strokes (2.2px for the check), round caps and joins, no fills, color through `currentColor`. Thirteen glyphs exist (plus, check, pencil, list, chart, person, side-menu panel, menu, clock, close, download, share, no connection); new icons follow the same stroke. The Foco page adds a stopwatch (the Foco nav item and the running focus chip), play, pause and skip glyphs, all on that stroke with no fills. Icons sit at 1rem in buttons and the iOS step chip, and 1.125rem in the side menu and the shell strips.
 
 ## Components
 
@@ -543,6 +621,8 @@ Solid, confident, one per form.
 - **Link button:** Soft Violet text, 600 weight, 0.875rem, underline in Link Line with 4px offset that goes solid on hover. Used for secondary routes, dismissals and the one action inside a strip ("Esqueci minha senha", "Cancelar", "Desfazer", "Ver tarefas", "Instalar", "Sair da conta").
 - **Destructive text action:** Muted text, 600 weight, 0.875rem, underline in Rule Strong; hover turns Ink. Pinned to the left of a dialog's action row ("Excluir"). Destruction is never a violet fill and never red.
 - **Icon button:** a 40px square, 10px radius, no fill, Muted icon; hover gives Panel Two and Ink. The top bar's menu button and the side menu's collapse and close buttons. Always carries an `aria-label`.
+- **Outline:** the secondary beside a primary ("Pular" beside Pausar on the Foco clock). 48px tall, 10px radius, 1.25rem side padding, a 1px Rule Strong border, no fill, Ink label at 700, and a 1rem icon 0.45rem from the label. On hover the border rises to Muted and the fill becomes Panel Two. It is drawn like the Filtrar button, at full button height. Never violet.
+- **Start focus:** the primary button at full column width and 3.75rem tall, with a 1.0625rem label at 0.02em and a 1.125rem play icon. Used only for "Iniciar foco" while a Foco session is being set up; it is the page's one violet action in that phase.
 - **FAB:** at every width, a 56px Action Violet circle with a plus icon, fixed at the bottom-right (2rem on desktop, 1.25rem at 60rem and below; safe-area aware), carrying the FAB glow; hover brightens it, press scales it to 0.94. One tap opens the new-task dialog. At 60rem and below it replaces the Tarefas title row's "+ Nova tarefa". It appears on every page: the shell renders it everywhere except Tarefas, which renders its own that opens the dialog in place.
 
 ### Inputs / Fields
@@ -551,6 +631,8 @@ Solid, confident, one per form.
 - **Textarea:** the same well, three rows (min 5.5rem), 0.7rem by 0.95rem padding, line-height 1.5, resizable vertically only. Used for the task description.
 - **Focus:** border turns Soft Violet with the 3px violet halo; no outline. Hover raises the border to Rule Strong. Autofill is forced back to Ground and Ink.
 - **Error:** reported through the notice below the fields, not by recoloring inputs.
+- **Number with unit:** the same well with its unit ("min", "focos") set inside at the right (0.95rem in, 0.875rem Muted, 3.75rem reserved). Browser spinners are removed (`appearance: textfield`) because the number is typed, and out-of-range values are clamped to their limits on blur. Used for the Foco intervals.
+- **Checkbox:** a neutral 1.125rem square, 4px radius, 2px Check Ring border, no fill. Checked, it takes an Ink fill and border with a 2px Ground tick. Border and fill change over 0.15s. Selection is neutral, so a checkbox is never violet, and never green (green is the completion circle). Used in the task picker and the Foco music option.
 
 ### Notice (error)
 A `panel-2` block with a 1px Rule Strong border, 10px radius, a small pill tag in inverted neutrals reading "ERRO", then the message in 0.875rem. Enters with a 4px slide-down. Announced with `role="alert"`. This is the pattern for every inline error in the app, including the load-failure state.
@@ -567,7 +649,7 @@ The same strip form, on mobile only (hidden at 60rem and up, where the side menu
 ### Navigation: Side Menu
 The app's primary navigation, full height at the left, in the Top Bar tier with a 1px Rule right edge; sticky, no shadow.
 - **Top:** the horizontal logo (2rem tall) and, at the right, the collapse icon button.
-- **Items:** Tarefas, Painel, Integrações (calendar icon), Perfil. 44px rows, 8px radius, a 1.125rem icon 0.75rem from the label, 600 weight, Muted at rest. Hover gives Panel Two and Ink. The **current page** is neutral: Panel Two fill, the Selected inset in Rule Strong, Ink text. Never violet, never a side stripe.
+- **Items**, in this order: Tarefas (list icon), Foco (stopwatch), Painel (chart), Categorias e tags (tag), Integrações (calendar), Perfil (person). 44px rows, 8px radius, a 1.125rem icon 0.75rem from the label, 600 weight, Muted at rest. Hover gives Panel Two and Ink. The **current page** is neutral: Panel Two fill, the Selected inset in Rule Strong, Ink text. Never violet, never a side stripe.
 - **Install item:** "Instalar app" with the download icon, the same recipe as the nav items (44px, 8px radius, 600, Muted at rest, Panel Two and Ink on hover, a native tooltip when collapsed). It sits at the bottom directly above the user card and appears only when the app can be installed.
 - **User card:** pinned to the bottom; a 36px avatar, the user's name (0.875rem, 700, ellipsized; "Complete seu perfil" when empty) over "Nível n" (0.75rem, Muted). 10px radius, 8px padding. It links to Perfil and has a hover state only (Panel Two); it never shows the current-page state, because the Perfil item already carries it.
 - **Collapsed (desktop):** a 4.25rem icon rail. The logo swaps for the 32px icon, the collapse button stacks under it, labels and the user card's text hide, items center their icons and show their name as a native tooltip. The choice persists in `localStorage`.
@@ -586,7 +668,14 @@ A pill well in Ground with a 1px Rule border and 3px inset; each segment is a 32
 - Sections inside a panel are separated by a 1px Rule, never by nested panels.
 
 ### App Top Bar
-Sticky, Top Bar fill, 1px Rule beneath. Center: the **level pill**, a Panel fill with a 1px Rule border, fully rounded, holding the NÍVEL badge, a compact XP bar (clamp 10rem, 24vw, 20rem wide, 0.3rem between figure row and track) and the streak ("6 dias" in XP Figure over a 0.6875rem STREAK label), the streak split off by a 1px Rule. Right: compact "+ Nova tarefa" and the avatar button. On desktop there is nothing at the left; the logo is in the side menu. At 60rem and below the left holds the menu icon button and the logo (1.875rem tall), the right holds only the avatar, and the pill stretches across a second row. Until stats load, the pill renders as a **skeleton**: the same pill shape at clamp(16rem, 36vw, 30rem) with a single 8px Panel Two bar and `aria-busy`, never placeholder numbers.
+Sticky, Top Bar fill, 1px Rule beneath. Center: the **level pill**, a Panel fill with a 1px Rule border, fully rounded, holding the NÍVEL badge, a compact XP bar (clamp 10rem, 24vw, 20rem wide, 0.3rem between figure row and track) and the streak ("6 dias" in XP Figure over a 0.6875rem STREAK label), the streak split off by a 1px Rule. Right: compact "+ Nova tarefa" and the avatar button. On desktop the left is empty except for the focus chip; the logo is in the side menu. At 60rem and below the left holds the menu icon button and the logo (1.875rem tall), the right holds only the avatar, and the pill stretches across a second row. Until stats load, the pill renders as a **skeleton**: the same pill shape at clamp(16rem, 36vw, 30rem) with a single 8px Panel Two bar and `aria-busy`, never placeholder numbers.
+
+**Focus chip.** While a focus session is under way and the user is on another page, the top bar carries a link back to Foco. It is a 2.5rem pill (Panel fill, 1px Rule border, 0 0.95rem 0 0.8rem padding, 0.45rem gap) with a 1rem Muted icon and the label at 0.875rem and 700, tabular. It has three states:
+- **Running:** the stopwatch icon and the phase with the time left ("Foco 18:42", "Pausa 4:10"), in Ink.
+- **Paused mid-block:** the pause icon and "Foco pausado 18:42", in Muted.
+- **Waiting for the next focus:** the pause icon and "Próximo foco 25:00", in Muted.
+
+On hover the border rises to Rule Strong and the fill becomes Panel Two. Its accessible name reads "Foco, 18:42 restantes. Abrir a página Foco". On desktop it sits at the left of the bar, in the space the side menu's logo leaves empty. At 60rem and below it replaces the logo in the center (2.75rem tall). It never shows on Foco itself, or when no session is under way.
 
 ### Account Menu
 The 40px avatar button (Panel Two circle, green ring, initials) opens a native `popover`: Panel fill, 1px Rule, 10px radius, Panel lift, min 15rem, 8px padding. The user's name (0.875rem, 700) and e-mail (Meta muted) sit on top; items are full-width 8px-radius rows at 600 weight with a Panel Two hover ("Sair"). Light-dismiss and Esc come from the platform.
@@ -643,6 +732,7 @@ The progress overview. Every card is a Panel titled in Label style; a header row
 - **XP per day:** titled "Sua semana" or "Seus últimos 30 dias", with the 7 / 30 dias segmented filter in flow at the right and a Muted summary line ("n tarefas concluídas · n XP") below.
 - **Conclusões por categoria:** a Muted period line under the title and "Mais concluída: …" in Ink at 600 at the right.
 - **Linha do tempo:** the tall narrow card. Its header holds the title and two streak figures (STREAK ATUAL, RECORDE) in Stat Figure over Label captions, closed by a 1px Rule.
+- **Minutos de foco:** the last card of the wide column, after the categories. It follows the same 7 / 30 dias period, with a Muted summary ("3 focos completos · 75 min") and the focus-minutes chart. Empty: one Muted sentence.
 
 ### Charts (signature for data)
 One language for every chart: magnitude is **single-hue Level Green**, the scale is neutral, and each value is readable without the hover.
@@ -650,9 +740,38 @@ One language for every chart: magnitude is **single-hue Level Green**, the scale
 - **Hover:** the column gets a Panel Two 8px-radius wash and a tooltip appears above ("seg 8 set · 50 XP · 3 tarefas"): Panel Two, 1px Rule Strong border, 8px radius, Panel lift, 0.75rem at 600, fading in over 0.15s. Near the chart's ends the tooltip aligns inward so it never leaves the card.
 - **Accessibility:** the bars are `aria-hidden`; a visually hidden table (Dia, XP, Tarefas) carries the same data, captioned with the card title.
 - **Category bars:** one row per category in a three-column grid (name up to 11rem, bar, count in 2.25rem), 0.75rem apart. The name is the 8px category dot plus the name at 600, ellipsized; the bar is a 0.75rem Panel Two track with a green fill scaled to the largest category, both square at the start and 4px round at the end; the count is 700, right-aligned. The category color appears only on the dot.
+- **Focus minutes:** the XP-bar grammar reused for the minutes of completed focus per day. Bars are green, because green is the Painel's data mark. Only the tallest bar carries a direct label ("50 min"). The hover tooltip reads "seg 8 set · 50 min · 2 focos", and a hidden table carries the same data (Dia, Minutos, Focos). There is no cap line: minutes have no daily ceiling, so the tallest day sets the scale.
 
 ### Timeline
 Recent completions (up to 12), grouped by day under Label headings ("HOJE", "ONTEM", "seg, 8 set"). Each item is a row: a 24px green circle with a Deep Moss check, the title (Row Title, clamped to two lines, breaking anywhere) over the category line (dot and name, Meta muted), the time (Meta muted), and the XP label right-aligned in a 3.75rem column: "+n XP" in green at 800, "+0 XP" in Muted at 600. Items are divided by 1px Rules, and a 2px Rule line runs vertically behind the check circles within each day, joining them. The circles are marks, not controls.
+
+### Foco
+A pomodoro page reached from the side menu (stopwatch icon, after Tarefas). For its grid and phases, see Layout. Everything on it is existing parts, plus the clock.
+- **Intervalos panel** (montar): a Panel with 1.25rem by 1.5rem padding and 1rem gaps, titled INTERVALOS in Label style. Below the title, a segmented filter sits in flow, left-aligned: 25 / 5, 50 / 10, Personalizado. Personalizado opens four number-with-unit fields in an auto-fit grid (columns at least 9rem, 0.9rem by 1rem gap): Foco, Pausa and Pausa longa in "min", and "Pausa longa a cada" in "focos". A Meta hint states the plan in one sentence.
+- **Clock panel** (rodar): a centered Panel with padding clamp(1.75rem, 4cqi, 2.75rem) on top and 1.5rem on the sides and bottom, 1rem gaps. It holds, top to bottom:
+  - the phase line in Label style, in Ink ("FOCO · 2 DE 4", "PRÓXIMO FOCO · 3 DE 4", "PAUSA · 2 DE 4 · PAUSADO");
+  - the cycle pills;
+  - the time in Focus Clock type (`role="timer"`);
+  - a centered, wrapping controls row 0.75rem apart: the primary Pausar, Retomar or Iniciar foco (min 10rem) and the outline Pular;
+  - "Encerrar sessão" as a link button.
+
+  Paused, the phase line and the time turn Muted (0.3s).
+- **Cycle pills:** one 1.75rem by 0.375rem full pill per focus in the round, 0.4rem apart. They are `aria-hidden`, since the phase line says the same in words. A done focus is Ink, the current focus is Ink mixed 45% into Rule Strong, and the rest are Rule Strong. The fill changes over 0.3s.
+- **Sections without panels:** the session's tasks, Agora and Música are not panels. Each is a Label heading (min 2rem, 0.5rem above the content) with its one action at the right, followed by the content directly, so no card sits inside a card.
+- **Tasks:** the headings read "TAREFAS DA SESSÃO · 3" in montar and "NA FILA · 2" in rodar, with "+ Adicionar tarefas" as a link button (0.8rem plus icon). The tasks are the Lista task cards, unchanged: cover, labels, deadline badge, check, green wash and XP flight. The card's Excluir overlay reads "Tirar" and only takes the task out of the session; on touch it stays visible. Finished tasks gather under "CONCLUÍDAS · n", 1rem below. The empty state is one Muted sentence in a 1px dashed Rule Strong box (10px radius, 1rem by 1.1rem padding).
+- **Música:** MÚSICA with "Trocar link" at the right. Below it, in order:
+  - the Spotify embed, 152px tall at full width;
+  - while editing, the link field and a compact "Usar" button in one 2.75rem row, with a Meta hint that the error text replaces;
+  - the "Pausar a música nas pausas" checkbox row (2.75rem, 0.875rem at 600);
+  - a Meta hint about 30-second previews.
+
+  A load failure shows the ERRO notice and a "Tentar de novo" link button.
+- **Spotify embed:** Spotify's own iframe. It brings its own surface, colors and rounded corners, and we give it no border, panel or shadow. It is not our palette, and the Swappable Theme Rule stops at its edge; nothing in the system borrows its colors.
+- **Task picker** ("Adicionar tarefas"): the standard Dialog, with the filter's search field, then "Todas" and the category chips, then a list that scrolls within min(22rem, 45dvh). The list is closed by 1px Rules above and below, and a 1px Rule divides each row. A row is a label, min 3.25rem, 8px radius, 0.55rem by 0.6rem padding: the checkbox, then the title (700, ellipsized) over the category dot, the name and the due date in Meta. Hovered and checked rows take Panel Two. The actions are "Cancelar" and the primary "Adicionar n", disabled at zero.
+- **Phase change:** iniciar from montar, and ending a session, morph through the View Transitions API. The Intervalos panel and the clock share `foco-palco`, so one becomes the other, and the tasks and music carry `foco-tarefas` and `foco-musica`. The groups run 0.45s on the shared ease-out. Under reduced motion, or without support, the swap is instant.
+- **Ending:** "Encerrar sessão" returns to montar and takes the finished tasks out of the session. It shows the undo toast "Sessão encerrada." (see Toast). Starting a new session closes that toast.
+
+**The Neutral Clock Rule.** Foco marks time and phase in neutrals only. The phase line, the time and the cycle pills are Ink, Muted and Rule Strong. They are never green, because time passing earns nothing, and never violet, because violet is for the actions (Iniciar foco, Retomar, Pausar, Adicionar). On this page green arrives only through task completion: the check, the green wash and the XP flight.
 
 ### Integrações
 A simple page (the Perfil column: max 44rem, centered). A title row: Page Title "Integrações" at the left and, once a calendar exists, the compact "+ Conectar calendário" at the right. The row wraps, so the button drops below the title when there is no room; the title never breaks mid-word. Two panels follow.
@@ -685,7 +804,7 @@ A fieldset with a Label legend and eight 36px circular swatches, 11px apart, dra
 
 ### Toast
 Fixed, centered 1.5rem above the bottom (above the FAB on mobile), Panel Two fill, 1px Rule Strong border, 10px radius, Panel lift, 0.875rem at 600. Enters with a 12px rise. One toast at a time. Announced politely (`role="status"`, or `alert` for errors). Four variants:
-- **Undo:** "Tarefa excluída" with a "Desfazer" link button and a 2px Rule Strong time bar along the bottom edge that shrinks to zero over 5s.
+- **Undo:** "Tarefa excluída" with a "Desfazer" link button and a 2px Rule Strong time bar along the bottom edge that shrinks to zero over 5s. The undo toast can carry its own text and action: ending a focus session shows "Sessão encerrada." with Desfazer. That Desfazer restores the session as it was, unless a new session has begun, and the toast closes after 5s.
 - **Info:** one plain sentence naming the XP rule that applied ("Concluída! Você já ganhou os 150 XP de hoje. O streak continua valendo."). No tag, no accent, neutral border; dismisses after 6s.
 - **Level:** leads with a green NÍVEL n badge, then "Você subiu de nível!"; the border swaps to Green Line. Dismisses after 5s.
 - **Error:** leads with the ERRO tag and dismisses after 6s.
@@ -738,6 +857,7 @@ A Panel Two circle with a 2px green ring and initials at 700: 48px in a profile 
 - **Do** animate XP by count-up plus a `translateX` fill on the shared ease-out `cubic-bezier(0.16, 1, 0.3, 1)`, and let reduced-motion collapse it.
 - **Do** keep primary buttons and inputs at least 48px tall, completion targets and navigation items at least 44px, and icon buttons 40px.
 - **Do** draw new icons on the 16px grid with a 2px round-capped stroke in `currentColor`.
+- **Do** mark the focus phase, the time and the cycles in neutrals (Ink, Muted, Rule Strong), and leave green on the Foco page to task completion.
 
 ### Don't:
 - **Don't** add a third accent, or use red for errors, overdue dates, deletion or a streak at risk.
@@ -753,3 +873,4 @@ A Panel Two circle with a 2px green ring and initials at 700: 48px in a profile 
 - **Don't** set body, rows or forms in the expanded width; that axis is for display, page title, wordmark and badges.
 - **Don't** hardcode hex or rgb literals in component CSS; add a token instead.
 - **Don't** show placeholder numbers while stats load; use the neutral skeleton.
+- **Don't** frame, recolor or borrow colors from the Spotify embed; it brings its own surface, and the system's palette stays ours.

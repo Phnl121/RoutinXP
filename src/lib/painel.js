@@ -26,6 +26,27 @@ export function rotuloDiaMes(dia) {
   return `${d}/${m}`
 }
 
+// Minutos de foco por dia (blocos completos da página Foco), no mesmo período do Painel.
+export function resumoFoco(focos, periodo = 7) {
+  const comDia = focos.map((f) => ({ ...f, dia: diaBrasilia(f.concluida_em) }))
+  const porDia = ultimosDias(periodo).map((dia) => {
+    const doDia = comDia.filter((f) => f.dia === dia)
+    return { dia, minutos: doDia.reduce((s, f) => s + f.minutos, 0), focos: doDia.length }
+  })
+  return {
+    porDia,
+    minutos: porDia.reduce((s, d) => s + d.minutos, 0),
+    focos: porDia.reduce((s, d) => s + d.focos, 0),
+  }
+}
+
+// Blocos de foco de hoje (Brasília): { focos, minutos }.
+export function focoDeHoje(focos) {
+  const hoje = hojeBrasilia()
+  const deHoje = focos.filter((f) => diaBrasilia(f.concluida_em) === hoje)
+  return { focos: deHoje.length, minutos: deHoje.reduce((s, f) => s + f.minutos, 0) }
+}
+
 export function resumoPainel(tarefas, categorias, periodo = 7) {
   const concluidas = tarefas.filter((t) => t.status === 'concluida' && t.completed_at)
   const comDia = concluidas.map((t) => ({ ...t, dia: diaBrasilia(t.completed_at) }))

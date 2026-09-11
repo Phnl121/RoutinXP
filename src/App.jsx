@@ -47,6 +47,9 @@ export default function App() {
           }
         >
           <Route path="/" element={<Tarefas />} />
+          {/* A página Foco fica montada na casca (Shell) para o cronômetro e a música
+              continuarem ao trocar de página; a rota só a mostra. */}
+          <Route path="/foco" element={null} />
           <Route path="/painel" element={<Painel />} />
           <Route path="/categorias" element={<Categorias />} />
           <Route path="/integracoes" element={<Integracoes />} />

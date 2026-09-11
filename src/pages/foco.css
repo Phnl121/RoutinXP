@@ -1,0 +1,508 @@
+/* Página Foco (pomodoro): montar a sessão e, ao iniciar, o relógio assume o palco. */
+
+.foco {
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+  width: min(100%, 78rem);
+  margin-inline: auto;
+  padding: clamp(1.25rem, 3vw, 2rem) clamp(1rem, 3vw, 2rem) 6rem;
+  container-type: inline-size;
+}
+
+/* A página fica montada na casca (o cronômetro e a música continuam em outras páginas). */
+.foco[hidden] {
+  display: none;
+}
+
+.foco__cabeca {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.foco__hoje {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.foco__grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: 1.25rem clamp(1.25rem, 2.5vw, 2rem);
+  align-items: start;
+}
+
+.foco__principal,
+.foco__lateral {
+  display: grid;
+  gap: 1.5rem;
+  align-content: start;
+  min-width: 0;
+}
+
+/* ---------- Seções sem painel (tarefas, música): Label no alto, conteúdo direto ---------- */
+
+.foco-secao {
+  display: grid;
+  min-width: 0;
+}
+
+.foco-secao__cabeca {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 2rem;
+  margin: 0 0 0.5rem;
+}
+
+.foco-secao__vazio {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  border: 1px dashed var(--rule-strong);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.foco-adicionar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+}
+
+.foco-adicionar svg {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+.foco-feitas {
+  margin-top: 1rem;
+}
+
+/* ---------- Intervalos ---------- */
+
+.foco-intervalos {
+  display: grid;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem 1.35rem;
+}
+
+.foco-intervalos .foco-secao__cabeca {
+  margin: 0;
+}
+
+.foco-intervalos .segmentos {
+  position: static;
+  justify-self: start;
+}
+
+.foco-campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  gap: 0.9rem 1rem;
+}
+
+.foco-campo {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.foco-campo__caixa {
+  position: relative;
+}
+
+.foco-campo__caixa .input {
+  padding-right: 3.75rem;
+  appearance: textfield;
+}
+
+/* Sem as setinhas do navegador ao lado do "min": o número se digita. */
+.foco-campo__caixa .input::-webkit-inner-spin-button,
+.foco-campo__caixa .input::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+.foco-campo__unidade {
+  position: absolute;
+  right: 0.95rem;
+  top: 50%;
+  font-size: 0.875rem;
+  color: var(--muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* ---------- Iniciar (fase montar) ---------- */
+
+.foco-partida {
+  display: grid;
+}
+
+.foco-partida__iniciar {
+  min-height: 3.75rem;
+  font-size: 1.0625rem;
+  letter-spacing: 0.02em;
+}
+
+.foco-partida__iniciar svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* ---------- Relógio (fase rodar) ---------- */
+
+.foco-relogio {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  padding: clamp(1.75rem, 4cqi, 2.75rem) 1.5rem 1.5rem;
+  text-align: center;
+}
+
+.foco-relogio__fase {
+  margin: 0;
+  color: var(--ink);
+}
+
+.foco-relogio[data-pausado='true'] .foco-relogio__fase {
+  color: var(--muted);
+}
+
+/* Focos da rodada: pílulas (feito em Ink, atual meio-tom, o resto em Rule Strong). */
+.foco-ciclos {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.foco-ciclos li {
+  width: 1.75rem;
+  height: 0.375rem;
+  border-radius: 999px;
+  background: var(--rule-strong);
+  transition: background-color 0.3s var(--ease-out);
+}
+
+.foco-ciclos li[data-estado='feito'] {
+  background: var(--ink);
+}
+
+.foco-ciclos li[data-estado='atual'] {
+  background: color-mix(in oklab, var(--ink) 45%, var(--rule-strong));
+}
+
+.foco-relogio__tempo {
+  margin: 0.25rem 0 0.5rem;
+  font-size: clamp(3.75rem, 11cqi, 6rem);
+  font-weight: 800;
+  font-stretch: 110%;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.3s var(--ease-out);
+}
+
+.foco-relogio[data-pausado='true'] .foco-relogio__tempo {
+  color: var(--muted);
+}
+
+.foco-relogio__controles {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.foco-relogio__principal {
+  min-width: 10rem;
+}
+
+.foco-relogio__encerrar {
+  margin-top: 0.25rem;
+}
+
+/* Botão secundário em contorno (Pular): mesmo desenho do "Filtrar". */
+.botao-contorno {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 3rem;
+  padding: 0 1.25rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background-color 0.2s var(--ease-out),
+    border-color 0.2s var(--ease-out);
+}
+
+.botao-contorno:hover {
+  border-color: var(--muted);
+  background: var(--panel-2);
+}
+
+.botao-contorno svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.foco-agora .foco-secao__cabeca {
+  min-height: 0;
+}
+
+/* ---------- Música ---------- */
+
+.foco-musica {
+  gap: 0.75rem;
+}
+
+.foco-musica .foco-secao__cabeca {
+  margin: 0;
+}
+
+.foco-musica__player[hidden] {
+  display: none;
+}
+
+/* O canto arredondado vem do próprio player do Spotify. */
+.foco-musica__player iframe {
+  display: block;
+  width: 100%;
+  border: 0;
+}
+
+.foco-musica__form {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.foco-musica__linha {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.foco-musica__linha .input {
+  flex: 1;
+  min-width: 0;
+  min-height: 2.75rem;
+}
+
+.foco-musica__cancelar {
+  justify-self: start;
+}
+
+.foco-musica__falha {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+}
+
+.foco-musica__opcao {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-height: 2.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.foco-musica > .hint {
+  margin-top: -0.35rem;
+}
+
+/* Caixa de marcar do app (seleção neutra: Ink, nunca roxo nem verde). */
+.foco-musica__opcao input,
+.seletor__caixa {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin: 0;
+  border: 2px solid var(--check-ring);
+  border-radius: 4px;
+  background: none;
+  appearance: none;
+  cursor: pointer;
+  transition:
+    background-color 0.15s var(--ease-out),
+    border-color 0.15s var(--ease-out);
+}
+
+.foco-musica__opcao input:checked,
+.seletor__caixa:checked {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+
+.foco-musica__opcao input:checked::after,
+.seletor__caixa:checked::after {
+  content: '';
+  width: 0.55rem;
+  height: 0.3rem;
+  border-left: 2px solid var(--ground);
+  border-bottom: 2px solid var(--ground);
+  transform: translateY(-1px) rotate(-45deg);
+}
+
+/* ---------- Janela "Adicionar tarefas" ---------- */
+
+.seletor {
+  display: grid;
+  gap: 1rem;
+}
+
+.seletor__lista {
+  display: grid;
+  max-height: min(22rem, 45dvh);
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.seletor__lista li + li {
+  border-top: 1px solid var(--rule);
+}
+
+.seletor__item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 3.25rem;
+  padding: 0.55rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.15s var(--ease-out);
+}
+
+.seletor__item:hover,
+.seletor__item:has(:checked) {
+  background: var(--panel-2);
+}
+
+.seletor__texto {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.seletor__titulo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.seletor__vazio {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* ---------- Troca montar → rodar (transição de vista) ---------- */
+
+/* O painel de intervalos e o relógio ocupam o mesmo lugar: um vira o outro. */
+.foco-intervalos,
+.foco-relogio {
+  view-transition-name: foco-palco;
+}
+
+.foco-tarefas {
+  view-transition-name: foco-tarefas;
+}
+
+.foco-musica {
+  view-transition-name: foco-musica;
+}
+
+::view-transition-group(foco-palco),
+::view-transition-group(foco-tarefas),
+::view-transition-group(foco-musica) {
+  animation-duration: 0.45s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---------- Toque: "Tirar" fica sempre à mão (sem hover para revelar) ---------- */
+
+@media (hover: none) {
+  .foco .linha {
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+  }
+
+  .foco .linha__excluir {
+    display: inline-flex;
+    align-items: center;
+    position: static;
+    min-height: 2.75rem;
+    opacity: 1;
+    transform: none;
+    background: none;
+  }
+}
+
+/* ---------- Celular: área de toque de 44px também nos links de ação ---------- */
+
+@media (max-width: 59.99rem) {
+  .foco .link-btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+  }
+}
+
+/* ---------- Uma coluna (espaço do conteúdo, não da janela) ---------- */
+
+@container (max-width: 52rem) {
+  .foco__grade {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Numa coluna só, a ordem é: palco, iniciar, tarefas, música. */
+  .foco__principal,
+  .foco__lateral {
+    display: contents;
+  }
+
+  .foco-intervalos,
+  .foco-relogio {
+    order: 1;
+  }
+
+  .foco-partida,
+  .foco-agora {
+    order: 2;
+  }
+
+  .foco-tarefas {
+    order: 3;
+  }
+
+  .foco-musica {
+    order: 4;
+  }
+
+  .foco__grade > * + * {
+    margin-top: 0.25rem;
+  }
+}

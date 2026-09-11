@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { NavLink } from 'react-router'
 import { Logo } from './Logo'
-import { IconeBaixar, IconeCalendario, IconeEtiqueta, IconeFechar, IconeGrafico, IconeLista, IconeMenuLateral, IconePessoa } from './icones'
+import { IconeBaixar, IconeCalendario, IconeEtiqueta, IconeFechar, IconeFoco, IconeGrafico, IconeLista, IconeMenuLateral, IconePessoa } from './icones'
 import { calcularNivel } from '../lib/nivel'
 import { iniciaisDoPerfil } from '../lib/datas'
 import { nomeCompleto } from '../lib/perfil'
@@ -10,6 +10,7 @@ import { t } from '../i18n/pt-BR'
 const m = t.menu
 const ITENS = [
   { para: '/', rotulo: m.tarefas, Icone: IconeLista },
+  { para: '/foco', rotulo: m.foco, Icone: IconeFoco },
   { para: '/painel', rotulo: m.painel, Icone: IconeGrafico },
   { para: '/categorias', rotulo: t.categoriasPagina.titulo, Icone: IconeEtiqueta },
   { para: '/integracoes', rotulo: t.integracoes.titulo, Icone: IconeCalendario },

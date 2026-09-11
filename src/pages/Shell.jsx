@@ -13,6 +13,8 @@ import { useConexao } from '../lib/useConexao'
 import { contarPrazos, streakEmRisco } from '../lib/lembrete'
 import { LembretePrazos } from '../components/LembretePrazos'
 import { hojeBrasilia } from '../lib/datas'
+import { FocoContexto, formatarTempo, restanteDe, useAgora, useFoco, useFocoApp } from '../lib/foco'
+import Foco from './Foco'
 import { t } from '../i18n/pt-BR'
 import './tarefas.css'
 import './shell.css'
@@ -39,6 +41,24 @@ function useDispensaDoDia(chave) {
   return [dispensado, dispensar]
 }
 
+// Com uma sessão de foco em andamento, a aba do navegador mostra o tempo que falta.
+function TituloAba() {
+  const { estado } = useFocoApp()
+  const ativo = estado.fase !== 'parado'
+  const agora = useAgora(ativo && estado.rodando, 1000)
+  const titulo = ativo ? t.foco.tituloAba(formatarTempo(restanteDe(estado, agora)), t.foco.fases[estado.fase]) : 'RoutinXP'
+  useEffect(() => {
+    document.title = titulo
+  }, [titulo])
+  useEffect(
+    () => () => {
+      document.title = 'RoutinXP'
+    },
+    [],
+  )
+  return null
+}
+
 function lerMenuRecolhido() {
   try {
     return localStorage.getItem(CHAVE_MENU) === 'recolhido'
@@ -51,10 +71,18 @@ function lerMenuRecolhido() {
 // Os dados do usuário ficam aqui e são compartilhados pelas páginas (DadosContexto).
 export default function Shell({ session }) {
   const d = useDados(session.user.id)
+  // Pomodoro da página Foco: vive na casca para continuar ao trocar de página.
+  const foco = useFoco(session.user.id, d.registrarFoco, t.foco.aviso)
   const [recolhido, setRecolhido] = useState(lerMenuRecolhido)
   const [gavetaAberta, setGavetaAberta] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
+
+  // A página Foco é montada na primeira visita e não desmonta mais: o player do Spotify
+  // (e a música) continua tocando nas outras páginas.
+  const noFoco = location.pathname === '/foco'
+  const [focoMontado, setFocoMontado] = useState(noFoco)
+  if (noFoco && !focoMontado) setFocoMontado(true)
 
   // Trocar de página fecha a gaveta do celular.
   const [rota, setRota] = useState(location.pathname)
@@ -103,6 +131,8 @@ export default function Shell({ session }) {
 
   return (
     <DadosContexto.Provider value={d}>
+      <FocoContexto.Provider value={foco}>
+      <TituloAba />
       <div className="shell" data-recolhido={recolhido}>
         <MenuLateral
           recolhido={recolhido}
@@ -138,6 +168,7 @@ export default function Shell({ session }) {
           )}
           {online && modoInstalacao && !streakVisivel && !prazosVisivel && <ConviteInstalar onInstalar={instalar} />}
           <Outlet context={{ session }} />
+          {focoMontado && <Foco visivel={noFoco} userId={session.user.id} />}
           {dlgIos && <DialogoInstalarIos onFechar={() => setDlgIos(false)} />}
           {/* No celular a barra não tem "Nova tarefa": o botão flutuante faz esse papel em
               todas as páginas (a de Tarefas tem o próprio, que abre o formulário ali mesmo). */}
@@ -148,6 +179,7 @@ export default function Shell({ session }) {
           )}
         </div>
       </div>
+      </FocoContexto.Provider>
     </DadosContexto.Provider>
   )
 }
