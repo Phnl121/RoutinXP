@@ -109,6 +109,35 @@ Atualizado em 2026-09-10 (Claude Code): passo 12 (PWA) construído; com ele, tod
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
 
+### 2026-09-11, Claude Code (Opus 5): v2, aba Integrações (calendários iCal / Blackboard)
+Decidido com o usuário:
+- A v2 começa pela integração com o calendário da faculdade (Blackboard Ultra da FAPCE).
+- É opcional, numa aba própria. O usuário conectou um link `.ics` **por disciplina**, pelo "Compartilhar calendário" com só aquela disciplina marcada. O arquivo não traz o nome da matéria, então é o link que define a tag.
+- Formato real dos eventos: `SUMMARY` (nome da atividade), `DTSTART` com `TZID=America/Fortaleza` (prazo, 23:59) e `UID` (`GradableItem`). Não há descrição nem link da atividade.
+- Regras da importação:
+  - atividade nova vira tarefa (título, dia do prazo, categoria e tag da fonte);
+  - prazo alterado atualiza a tarefa pendente;
+  - título só é atualizado se o usuário não o editou;
+  - tarefa concluída nunca é mexida; tarefa excluída não volta;
+  - vencidas só entram se a opção estiver ligada;
+  - a importação roda a cada 3 horas, e há um botão "Atualizar".
+- Serve para qualquer link iCal (Moodle, Canvas, Google Agenda).
+
+Feito:
+- Migration `20260911180000_integracoes_calendario`:
+  - tabelas `calendar_sources` (a url não volta ao navegador, só o domínio) e `calendar_items`, com RLS;
+  - `pg_cron` + `pg_net` chamando a função a cada 3 h, autenticados por um segredo gerado no próprio banco (Vault).
+- Edge Function `supabase/functions/sincronizar-calendarios`:
+  - modos `cron`, `sincronizar` e `previa`;
+  - proteção contra endereços internos, limite de 2 MB e 10 s;
+  - reserva de cada atividade antes de criar a tarefa, para não duplicar.
+- Tela `/integracoes`: lista de calendários com "Atualizar" e "Editar", passo a passo do Blackboard e janela de conectar com "Testar link" (prévia das próximas atividades), categoria, tag (cria a tag com o nome da disciplina) e opção de trazer as vencidas. Ao remover, escolhe manter ou apagar as tarefas pendentes.
+- Capturas em `.impeccable/review/integracoes/`.
+
+Próximo:
+- Aplicar a migration e publicar a função (`npx.cmd supabase functions deploy sincronizar-calendarios --no-verify-jwt --use-api`), depois o push.
+- Teste do usuário com os links reais das disciplinas.
+
 ### 2026-09-11, Claude Code (Opus 5): etiquetas estilo Trello e Perfil centralizado
 Feito:
 - O usuário não gostou dos anéis. As tags viraram **etiquetas como no Trello**, acima do título da tarefa:

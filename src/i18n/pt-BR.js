@@ -290,6 +290,82 @@ export const t = {
       `Esta tag está em ${n} ${n === 1 ? 'tarefa' : 'tarefas'} e vai sair ${n === 1 ? 'dela' : 'delas'}. Toque de novo para excluir.`,
   },
 
+  integracoes: {
+    titulo: 'Integrações',
+    conectar: 'Conectar calendário',
+    secao: 'Calendários da faculdade',
+    texto:
+      'Conecte o calendário de cada disciplina. As atividades novas viram tarefas sozinhas, com o prazo e a tag da matéria.',
+    automatico: 'Atualização automática a cada 3 horas.',
+    vazio: 'Nenhum calendário conectado ainda.',
+    atualizar: 'Atualizar',
+    atualizando: 'Atualizando…',
+    atualizarRotulo: (nome) => `Atualizar ${nome}`,
+    editar: 'Editar',
+    editarRotulo: (nome) => `Editar ${nome}`,
+    nunca: 'ainda não atualizado',
+    atualizado: (quando) => `atualizado ${quando}`,
+    agora: 'agora mesmo',
+    tarefas: (n) => `${n} ${n === 1 ? 'tarefa' : 'tarefas'}`,
+    resultado: (novas, atualizadas) => {
+      if (!novas && !atualizadas) return 'Nada novo.'
+      const partes = []
+      if (novas) partes.push(`${novas} ${novas === 1 ? 'tarefa nova' : 'tarefas novas'}`)
+      if (atualizadas) partes.push(`${atualizadas} ${atualizadas === 1 ? 'prazo atualizado' : 'prazos atualizados'}`)
+      return `${partes.join(' e ')}.`
+    },
+    pulada: 'Atualizado há menos de um minuto.',
+    comoTitulo: 'Como pegar o link no Blackboard',
+    como: [
+      'No Blackboard, abra o Calendário e toque em Configurações do calendário.',
+      'Toque em Limpar tudo e marque só a disciplina que você quer conectar.',
+      'No menu de três pontinhos, toque em Compartilhar calendário e copie o link.',
+      'Aqui, toque em Conectar calendário e cole o link. Repita para cada disciplina.',
+    ],
+    comoNota:
+      'Depois, marque de novo as outras disciplinas no Blackboard. Funciona também com qualquer link de calendário iCal (Moodle, Canvas, Google Agenda).',
+    form: {
+      novaTitulo: 'Conectar calendário',
+      editarTitulo: 'Editar calendário',
+      nome: 'Nome da disciplina',
+      nomeExemplo: 'Ex.: Desenvolvimento Web Front-end',
+      link: 'Link do calendário',
+      linkExemplo: 'https://… ou webcal://…',
+      linkDica: 'O link fica guardado só no servidor; esta tela mostra apenas o endereço do site.',
+      linkSalvo: (dominio) => `Link salvo (${dominio})`,
+      trocarLink: 'Trocar link',
+      categoria: 'Categoria das tarefas',
+      tag: 'Tag da matéria',
+      semTag: 'Nenhuma',
+      novaTag: (nome) => `Nova tag: ${nome}`,
+      passadas: 'Trazer também atividades com prazo já vencido',
+      testar: 'Testar link',
+      testando: 'Lendo o calendário…',
+      previa: (total, futuras) =>
+        `${total} ${total === 1 ? 'atividade' : 'atividades'} no calendário, ${futuras} com prazo de hoje em diante.`,
+      previaVazia: 'Nenhuma atividade com prazo de hoje em diante.',
+      conectar: 'Conectar',
+      salvar: 'Salvar',
+      salvando: 'Salvando…',
+      cancelar: 'Cancelar',
+      remover: 'Remover calendário',
+      removerTitulo: 'O que fazer com as tarefas pendentes que vieram deste calendário?',
+      manter: 'Manter as tarefas',
+      apagar: 'Apagar as tarefas pendentes',
+      confirmarRemover: 'Remover',
+      semCategoria: 'As tarefas precisam de uma categoria. Crie uma em Tarefas antes de conectar um calendário.',
+    },
+    erros: {
+      link_invalido: 'Esse link não parece um link de calendário. Ele precisa começar com https:// ou webcal://.',
+      link_inacessivel: 'Não foi possível abrir o link. Confira se ele está completo e se ainda vale no Blackboard.',
+      nao_e_calendario: 'O link abriu, mas não é um calendário.',
+      muito_grande: 'O calendário é grande demais para importar.',
+      sem_categoria: 'Este calendário está sem categoria. Edite e escolha uma.',
+      nao_autorizado: 'Sua sessão expirou. Entre de novo.',
+      falha: 'Não deu para ler o calendário agora. Tente de novo em instantes.',
+    },
+  },
+
   etiquetas: {
     mostrarNomes: 'mostrar os nomes das tags',
     soCores: 'mostrar só as cores das tags',

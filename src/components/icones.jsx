@@ -101,6 +101,15 @@ export function IconeSemConexao() {
   )
 }
 
+export function IconeCalendario() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="2" />
+      <path d="M2 7h12M5.5 1.75v2.5M10.5 1.75v2.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  )
+}
+
 export function IconeLapis() {
   return (
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">

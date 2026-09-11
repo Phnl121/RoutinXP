@@ -75,6 +75,34 @@ const DESCRICOES = {
 }
 tarefas = tarefas.map((x) => ({ ...x, descricao: DESCRICOES[x.id] ?? null, tag_ids: TAGS_EXEMPLO[x.id] ?? [] }))
 
+// Calendários conectados (Integrações): um em dia, um com o link quebrado.
+let fontes = [
+  {
+    id: 'f1',
+    nome: 'Desenvolvimento Web Front-end',
+    dominio: 'faponline.fapce.edu.br',
+    category_id: 'c1',
+    tag_id: 'g2',
+    importar_passadas: false,
+    ultima_sync: instante(95),
+    ultimo_erro: null,
+    total_importadas: 7,
+    created_at: instante(5000),
+  },
+  {
+    id: 'f2',
+    nome: 'Modelagem de Banco de Dados e SQL',
+    dominio: 'faponline.fapce.edu.br',
+    category_id: 'c1',
+    tag_id: 'g1',
+    importar_passadas: false,
+    ultima_sync: instante(190),
+    ultimo_erro: 'link_inacessivel',
+    total_importadas: 4,
+    created_at: instante(4900),
+  },
+]
+
 let perfil = { primeiro_nome: 'Ana', sobrenome: 'Souza', data_nascimento: '2003-05-14', ocupacao: 'estudante' }
 
 // 690 XP = nível 4 com 240/250: uma conclusão já mostra a subida de nível.
@@ -100,6 +128,47 @@ export const previaApi = {
     if (tarefas.some((x) => x.category_id === id)) return Promise.reject({ code: '23503' })
     categorias = categorias.filter((c) => c.id !== id)
     return espera(null)
+  },
+  listarFontes: () => espera(fontes),
+  criarFonte: ({ nome, url, categoriaId, tagId, importarPassadas }) => {
+    const f = {
+      id: novoId(),
+      nome: nome.trim(),
+      dominio: new URL(url.replace(/^webcal:/i, 'https:')).hostname,
+      category_id: categoriaId,
+      tag_id: tagId || null,
+      importar_passadas: importarPassadas,
+      ultima_sync: null,
+      ultimo_erro: null,
+      total_importadas: 0,
+      created_at: new Date().toISOString(),
+    }
+    fontes = [...fontes, f]
+    return espera(f)
+  },
+  atualizarFonte: (id, { nome, categoriaId, tagId, importarPassadas }) => {
+    fontes = fontes.map((f) =>
+      f.id === id ? { ...f, nome: nome.trim(), category_id: categoriaId, tag_id: tagId || null, importar_passadas: importarPassadas } : f,
+    )
+    return espera(fontes.find((f) => f.id === id))
+  },
+  excluirFonte: (id) => {
+    fontes = fontes.filter((f) => f.id !== id)
+    return espera(null)
+  },
+  previaFonte: () =>
+    espera({
+      total: 9,
+      futuras: 3,
+      proximas: [
+        { titulo: 'TDE 2', data: dia(4) },
+        { titulo: 'ATIVIDADE 4 - Leitura e escrita acadêmica', data: dia(9) },
+        { titulo: 'Entrega parcial do projeto', data: dia(16) },
+      ],
+    }),
+  sincronizarFontes: (fonteId) => {
+    fontes = fontes.map((f) => (!fonteId || f.id === fonteId ? { ...f, ultima_sync: new Date().toISOString(), ultimo_erro: null } : f))
+    return espera({ resultados: fontes.filter((f) => !fonteId || f.id === fonteId).map((f) => ({ id: f.id, novas: 0, atualizadas: 0 })) })
   },
   listarTags: () => espera([...tags].sort((a, b) => a.nome.localeCompare(b.nome))),
   criarTag: ({ nome, cor }) => {

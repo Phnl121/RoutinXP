@@ -44,7 +44,65 @@ export async function excluirTag(id) {
   ok(await supabase.from('tags').delete().eq('id', id))
 }
 
-const CAMPOS_TAREFA = 'id, titulo, descricao, status, data_prevista, xp_value, created_at, completed_at, category_id, task_tags(tag_id)'
+// ---------- Integrações: calendários iCal ----------
+// A url nunca volta do banco (privilégio por coluna); a tela mostra só o domínio.
+const CAMPOS_FONTE = 'id, nome, dominio, category_id, tag_id, importar_passadas, ultima_sync, ultimo_erro, total_importadas, created_at'
+
+// webcal:// é o mesmo link por https.
+export const normalizarLink = (url) => url.trim().replace(/^webcal:\/\//i, 'https://')
+
+export async function listarFontes() {
+  return ok(await supabase.from('calendar_sources').select(CAMPOS_FONTE).order('created_at'))
+}
+
+const camposFonte = ({ nome, url, categoriaId, tagId, importarPassadas }) => ({
+  nome: nome.trim(),
+  category_id: categoriaId,
+  tag_id: tagId || null,
+  importar_passadas: importarPassadas,
+  ...(url ? { url: normalizarLink(url) } : {}),
+})
+
+export async function criarFonte(campos) {
+  return ok(await supabase.from('calendar_sources').insert(camposFonte(campos)).select(CAMPOS_FONTE).single())
+}
+
+export async function atualizarFonte(id, campos) {
+  return ok(await supabase.from('calendar_sources').update(camposFonte(campos)).eq('id', id).select(CAMPOS_FONTE).single())
+}
+
+// apagarPendentes: também exclui as tarefas pendentes que vieram deste calendário.
+export async function excluirFonte(id, apagarPendentes) {
+  if (apagarPendentes) {
+    const itens = ok(await supabase.from('calendar_items').select('task_id').eq('source_id', id).not('task_id', 'is', null))
+    const ids = itens.map((x) => x.task_id)
+    if (ids.length) ok(await supabase.from('tasks').delete().in('id', ids).eq('status', 'pendente'))
+  }
+  ok(await supabase.from('calendar_sources').delete().eq('id', id))
+}
+
+// A leitura dos links roda no servidor (Edge Function), que devolve { erro: codigo } quando falha.
+async function chamarSincronizador(corpo) {
+  const { data, error } = await supabase.functions.invoke('sincronizar-calendarios', { body: corpo })
+  if (error) {
+    let detalhe = null
+    try {
+      detalhe = await error.context?.json()
+    } catch {
+      /* resposta sem corpo */
+    }
+    throw { message: detalhe?.erro ?? error.message, codigoIntegracao: detalhe?.erro ?? 'falha' }
+  }
+  return data
+}
+
+// { total, futuras, proximas: [{ titulo, data }] }
+export const previaFonte = (url) => chamarSincronizador({ modo: 'previa', url: normalizarLink(url) })
+
+// { resultados: [{ id, novas, atualizadas } | { id, erro } | { id, pulada }] }
+export const sincronizarFontes = (fonteId) => chamarSincronizador({ modo: 'sincronizar', fonteId })
+
+const CAMPOS_TAREFA ='id, titulo, descricao, status, data_prevista, xp_value, created_at, completed_at, category_id, task_tags(tag_id)'
 
 // O Supabase devolve as tags como [{ tag_id }]; a interface usa tag_ids: [id, ...].
 function comTags({ task_tags, ...tarefa }) {

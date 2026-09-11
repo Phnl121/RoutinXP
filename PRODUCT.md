@@ -72,6 +72,8 @@ One list for every area of life, with a reward loop that is deliberately simple:
 
 **Not in v1 (user did not select, 2026-09-10):** ranking between users and achievements/badges.
 
+**v2 · Integrações (user, 2026-09-11):** an optional "Integrações" tab connects external iCal calendars, starting with the university's Blackboard Ultra. Each link is one course (the Blackboard feed carries no course name, so the link decides the tag). New activities become tasks with the due day, a chosen category and the course tag; changed due dates update pending tasks; completed or deleted tasks are never touched or brought back. The server reads the links every 3 hours; the link itself is never shown back to the browser. Works with any iCal link (Moodle, Canvas, Google Calendar). This is the first external integration, deliberately outside the v1 scope.
+
 **Idea, not scheduled:** themes unlocked by leveling up. The user would customize the app's look with what they earn as their level rises. Not in v1 unless the user decides otherwise, but design tokens must stay theme-swappable so it can be added later.
 
 **Reward rules (v1, simple on purpose):**

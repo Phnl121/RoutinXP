@@ -22,13 +22,21 @@ function mensagemDoGanho(xp, motivo) {
 }
 
 const buscarTudo = () =>
-  Promise.all([api.listarCategorias(), api.listarTarefas(), api.lerEstatisticas(), api.lerPerfil(), api.listarTags()])
+  Promise.all([
+    api.listarCategorias(),
+    api.listarTarefas(),
+    api.lerEstatisticas(),
+    api.lerPerfil(),
+    api.listarTags(),
+    api.listarFontes(),
+  ])
 
 // Estado de categorias, tarefas, estatísticas e perfil do usuário, com atualizações otimistas.
 export function useDados(userId) {
   const [perfil, setPerfil] = useState(null)
   const [categorias, setCategorias] = useState([])
   const [tags, setTags] = useState([])
+  const [fontes, setFontes] = useState([]) // calendários conectados (Integrações)
   const [tarefas, setTarefas] = useState([])
   const [stats, setStats] = useState(null)
   const [estado, setEstado] = useState('carregando') // 'carregando' | 'pronto' | 'erro'
@@ -36,12 +44,13 @@ export function useDados(userId) {
   const [recem, setRecem] = useState(null) // id da tarefa concluída por último (para a animação)
   const exclusao = useRef(null) // { tarefa, timer }
 
-  const aplicar = useCallback(([c, tf, s, p, tg]) => {
+  const aplicar = useCallback(([c, tf, s, p, tg, fo]) => {
     setCategorias(c)
     setTarefas(tf)
     setStats(s)
     setPerfil(p)
     setTags(tg)
+    setFontes(fo)
     setEstado('pronto')
   }, [])
   const falhouCarregar = useCallback(() => setEstado('erro'), [])
@@ -51,6 +60,9 @@ export function useDados(userId) {
     setEstado('carregando')
     buscarTudo().then(aplicar, falhouCarregar)
   }, [aplicar, falhouCarregar])
+
+  // Busca de novo sem voltar ao estado "carregando" (depois de uma sincronização, por exemplo).
+  const recarregar = useCallback(() => buscarTudo().then(aplicar, () => {}), [aplicar])
 
   useEffect(() => {
     let ativo = true
@@ -172,6 +184,25 @@ export function useDados(userId) {
     setTarefas((ts) => ts.map((x) => (x.tag_ids?.includes(id) ? { ...x, tag_ids: x.tag_ids.filter((g) => g !== id) } : x)))
   }
 
+  async function salvarFonte({ id, ...campos }) {
+    const salva = id ? await api.atualizarFonte(id, campos) : await api.criarFonte(campos)
+    setFontes((fs) => (id ? fs.map((f) => (f.id === id ? salva : f)) : [...fs, salva]))
+    return salva
+  }
+
+  async function excluirFonte(id, apagarPendentes) {
+    await api.excluirFonte(id, apagarPendentes)
+    setFontes((fs) => fs.filter((f) => f.id !== id))
+    if (apagarPendentes) await recarregar()
+  }
+
+  // Lê os calendários no servidor e traz as tarefas novas para a tela.
+  async function sincronizarFontes(fonteId) {
+    const r = await api.sincronizarFontes(fonteId)
+    await recarregar()
+    return r
+  }
+
   async function salvarPerfil(campos) {
     const salvo = await api.salvarPerfil(campos, Boolean(perfil), userId)
     setPerfil(salvo)
@@ -190,6 +221,11 @@ export function useDados(userId) {
     tags,
     salvarTag,
     excluirTag,
+    fontes,
+    salvarFonte,
+    excluirFonte,
+    sincronizarFontes,
+    previaFonte: api.previaFonte,
     tarefas,
     stats,
     estado,
