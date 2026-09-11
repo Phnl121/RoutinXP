@@ -126,8 +126,8 @@ Feito:
   - Tocar no aviso abre o app na página Foco.
 - Convite "Ativar avisos" na página Foco. Se as notificações estiverem bloqueadas, explica como liberar. No iPhone fora do app instalado, explica que precisa instalar.
 
-Próximo (com autorização do usuário):
-- Aplicar a migration, cadastrar os segredos `VAPID_PUBLIC_KEY` e `VAPID_PRIVATE_KEY` no Supabase, publicar a função `avisos-foco` (`--no-verify-jwt`) e publicar o site.
+Próximo:
+- (Feito, com autorização do usuário) Migration `avisos_foco` aplicada, segredos VAPID cadastrados, função `avisos-foco` publicada (sem o segredo do agendamento responde 401) e site no ar. Anônimo recebe 401 nas tabelas e funções novas.
   - A chave privada foi gerada fora do repositório, no scratchpad da sessão, e nunca entra no git.
 - Testar no celular real, com o app instalado e a tela bloqueada.
 
