@@ -401,6 +401,11 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .lembrete__fechar {
+    min-height: 2.75rem;
+    width: 2.75rem;
+  }
+
   .menu-lateral {
     position: fixed;
     inset: 0 auto 0 0;
