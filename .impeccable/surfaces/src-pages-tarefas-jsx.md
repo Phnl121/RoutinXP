@@ -15,7 +15,7 @@ Main app surface `/`: category-grouped task list with Pendentes/Concluídas filt
 - Top bar (shell): the level meter (NÍVEL badge + XP bar + streak) in a pill, always centered; avatar with account menu at the right. The wordmark lives in the side menu.
 - Left rail: CATEGORIAS, "Todas" plus each category with its dot and pending count, the selected item marked with the neutral selection (Panel Two + Rule Strong inset, never purple), edit on hover, "+ Nova categoria" once at the bottom.
 - Main: a title row (category name or "Todas as tarefas" at the left, compact "+ Nova tarefa" at the right), LISTA | QUADRO underline tabs, a Pendentes/Concluídas segmented filter in Lista. A FAB opens the new-task dialog at every width.
-- Rows (user request 2026-09-11): a 2px top border in the category color on every task row (faded on completed rows); tags as rings on the meta line; description and tag names only inside the task dialog. Tags are managed in Perfil.
+- Rows (user request 2026-09-11): every task row is a card with a 1px outline in its category color on all four sides, 0.5rem apart (faded on completed rows); tags as Trello-style labels above the title (name or color-only, toggled by clicking a label); the description only inside the task dialog. Tags are managed in Perfil.
 - Quadro: two panels, Pendentes and Concluídas. Dragging a pending row into Concluídas completes it; no dragging back (v1 decision).
 - Mobile: the level meter wraps to a second top-bar row, the rail becomes scrollable chips, the Quadro columns scroll-snap horizontally, a purple FAB replaces "+ Nova tarefa".
 

@@ -439,20 +439,21 @@
   list-style: none;
 }
 
-/* Cada tarefa abre com uma borda fina na cor da categoria: marca onde uma termina
-   e a outra começa (pedido do usuário, 2026-09-11). */
+/* Cada tarefa é um card com contorno fino na cor da categoria, nos quatro lados:
+   marca onde uma termina e a outra começa (pedido do usuário, 2026-09-11). */
 .linhas > .linha {
-  border-top: 2px solid var(--cor-cat, var(--rule));
-  border-radius: 0 0 8px 8px;
+  padding-left: 0.25rem;
+  border: 1px solid var(--cor-cat, var(--rule));
+  border-radius: 8px;
 }
 
 .linhas > .linha + .linha {
-  margin-top: 0.35rem;
+  margin-top: 0.5rem;
 }
 
-/* Concluída: a borda recua junto com o resto da linha. */
+/* Concluída: o contorno recua junto com o resto do card. */
 .linhas > .linha[data-feita='true'] {
-  border-top-color: color-mix(in oklab, var(--cor-cat, var(--rule)) 40%, transparent);
+  border-color: color-mix(in oklab, var(--cor-cat, var(--rule)) 40%, transparent);
 }
 
 .linha {

@@ -117,6 +117,7 @@ Feito:
   - Clicar em qualquer etiqueta alterna todas entre os dois modos, e a escolha fica salva no navegador (`src/lib/tagsCompactas.js`). O clique não abre a tarefa.
 - No formulário e no Perfil, a tag é um quadradinho de cor (a categoria continua sendo ponto redondo).
 - Página de Perfil centralizada na área de conteúdo, com o menu aberto ou recolhido (desvio medido: 0 px).
+- A borda de cima virou **contorno completo**: cada tarefa é um card com 1px na cor da categoria nos quatro lados, cantos de 8px, 0,5rem entre os cards. Nas concluídas o contorno fica a 40%.
 - DESIGN.md atualizado. Capturas `etiquetas-*.png` em `.impeccable/review/tags/` e `perfil-centralizado.png` em `.impeccable/review/ajustes/`.
 
 ### 2026-09-11, Claude Code (Opus 5): descrição, tags e borda de categoria
