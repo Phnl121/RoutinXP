@@ -5,7 +5,7 @@ Este arquivo é o ponto de handoff entre ferramentas (Code, Antigravity, ou qual
 ## Estado atual
 (a ferramenta que estiver trabalhando atualiza esta seção a cada sessão: o que existe, o que está funcionando, o que está pela metade)
 
-Atualizado em 2026-09-11 (Claude Code): v1 completa (passos 1 a 12). v2 em andamento e no ar: Integrações (calendários iCal), Calendário, Categorias e tags, filtro, capas e selos de prazo, Kanban com colunas próprias, área de toque de 44px no celular. Página Foco (pomodoro + Spotify) pronta localmente, aguardando a migration `focus_sessions` e o deploy. O log de sessões abaixo tem o detalhe mais recente; algumas descrições antigas desta seção (trilho, Quadro) já foram substituídas.
+Atualizado em 2026-09-11 (Claude Code): v1 completa (passos 1 a 12). v2 em andamento e no ar: Integrações (calendários iCal), Calendário, Categorias e tags, filtro, capas e selos de prazo, Kanban com colunas próprias, área de toque de 44px no celular. Página Foco (pomodoro + Spotify) no ar, com a migration `focus_sessions` aplicada. O log de sessões abaixo tem o detalhe mais recente; algumas descrições antigas desta seção (trilho, Quadro) já foram substituídas.
 
 - Repositório git: **sim**, branch `main`, remoto **privado** https://github.com/Phnl121/RoutinXP (conta Phnl121). Identidade local `Pedro <pedrocybernet01@gmail.com>`.
 - Deploy: **Vercel**, projeto `phnl121/routinxp` (renomeado de `routin`), produção em **https://routinxp.vercel.app**.
@@ -141,7 +141,7 @@ Feito:
 - Revisão final do Impeccable: "fix" com 7 correções, todas aplicadas (área de toque dos links, Desfazer ao encerrar, estado no atalho da barra, rótulos, setinhas dos campos, contrato atualizado).
 
 Próximo:
-- **Aplicar a migration no Supabase** (`db push`) e publicar, quando o usuário autorizar. Sem a migration, os blocos de foco ficam só no navegador até ela existir.
+- (Feito) Migration `focus_sessions` aplicada e página publicada (anônimo recebe 401 na tabela).
 - Testar no celular real: o aviso de fim de fase com a tela bloqueada, e o Spotify logado.
 - Limitação conhecida: com a aba escondida há muito tempo, o navegador pode atrasar o aviso em até cerca de 1 minuto; no iPhone o aviso com o app fechado não é garantido.
 
