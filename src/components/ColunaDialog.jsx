@@ -10,14 +10,25 @@ const CORES = t.formCategoria.cores
 
 // Criar ou editar uma coluna do Kanban: nome, cor (ou sem cor), posição e exclusão.
 // Pendentes e Concluídas podem mudar de nome e cor, mas não saem do lugar nem são excluídas.
-export function ColunaDialog({ coluna, vizinhas, onFechar, onSalvar, onMover, onExcluir }) {
+export function ColunaDialog({ coluna, vizinhas, totalTarefas = 0, onFechar, onSalvar, onMover, onExcluir }) {
   const ref = useRef(null)
   const id = useId()
   const [nome, setNome] = useState(coluna?.nome ?? '')
   const [cor, setCor] = useState(coluna?.cor ?? '')
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState(null)
+  const [confirmando, setConfirmando] = useState(false)
   const doMeio = !coluna || coluna.tipo === 'custom'
+
+  // Com tarefas na coluna, excluir pede um segundo toque que diz para onde elas vão.
+  function excluir() {
+    if (totalTarefas > 0 && !confirmando) {
+      setConfirmando(true)
+      setErro(k.confirmarExcluir(totalTarefas))
+      return
+    }
+    executar(() => onExcluir(coluna.id))
+  }
   const fechar = () => ref.current?.close()
 
   async function executar(acao) {
@@ -114,8 +125,8 @@ export function ColunaDialog({ coluna, vizinhas, onFechar, onSalvar, onMover, on
 
         <div className="dialogo__acoes">
           {coluna && doMeio && (
-            <button type="button" className="dialogo__excluir" onClick={() => executar(() => onExcluir(coluna.id))}>
-              {k.excluir}
+            <button type="button" className="dialogo__excluir" onClick={excluir}>
+              {confirmando ? k.excluirConfirmar : k.excluir}
             </button>
           )}
           <button type="button" className="link-btn" onClick={fechar}>

@@ -78,10 +78,16 @@ export function LinhaTarefa({ tarefa, categoria, tags = [], mostrarCategoria = t
           type="button"
           className="linha__corpo"
           onClick={() => onEditar(tarefa)}
-          aria-label={nomesTags ? `${tt.editar(tarefa.titulo)}, ${t.formTarefa.tagsDaTarefa(nomesTags)}` : tt.editar(tarefa.titulo)}
+          aria-label={[
+            tt.editar(tarefa.titulo),
+            nomesTags ? t.formTarefa.tagsDaTarefa(nomesTags) : null,
+            prazo && prazo.estado !== 'sem' ? tt.prazoRotulo(prazo.texto) : null,
+          ]
+            .filter(Boolean)
+            .join(', ')}
         >
           <span className="linha__titulo">{tarefa.titulo}</span>
-          {(mostrarCat || prazo) && (
+          {(mostrarCat || prazo || feita) && (
             <span className="linha__meta" data-so-data={!mostrarCat}>
               {mostrarCat && (
                 <span className="linha__cat">
@@ -92,6 +98,12 @@ export function LinhaTarefa({ tarefa, categoria, tags = [], mostrarCategoria = t
               {prazo && (
                 <span className="linha__meta-data">
                   <Prazo prazo={prazo} />
+                </span>
+              )}
+              {/* No Kanban o XP das concluídas desce para cá (a coluna da direita some). */}
+              {feita && tarefa.xp_value != null && (
+                <span className="linha__meta-xp" data-zero={tarefa.xp_value === 0} aria-hidden="true">
+                  {tt.xp(tarefa.xp_value)}
                 </span>
               )}
             </span>

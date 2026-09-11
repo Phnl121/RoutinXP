@@ -5,16 +5,17 @@ import { t } from '../i18n/pt-BR'
 export function formatarPrazo(iso) {
   if (!iso) return { texto: t.tarefas.semData, estado: 'sem' }
   const [ano, mes, dia] = iso.split('-').map(Number)
-  const alvo = new Date(ano, mes - 1, dia)
-  const hoje = new Date()
-  hoje.setHours(0, 0, 0, 0)
-  const diferenca = Math.round((alvo - hoje) / 86400000)
+  // "Hoje" é o dia de Brasília, o mesmo do aviso de prazos, do filtro e do streak.
+  const [anoHoje, mesHoje, diaHoje] = hojeBrasilia().split('-').map(Number)
+  const diferenca = Math.round((Date.UTC(ano, mes - 1, dia) - Date.UTC(anoHoje, mesHoje - 1, diaHoje)) / 86400000)
   if (diferenca === 0) return { texto: t.tarefas.hoje, estado: 'hoje' }
   if (diferenca === 1) return { texto: t.tarefas.amanha, estado: 'amanha' }
-  const nomeMes = new Intl.DateTimeFormat('pt-BR', { month: 'short' }).format(alvo).replace('.', '')
-  // "breve": vence em até 3 dias; ganha destaque para não passar batido.
-  const estado = diferenca < 0 ? 'atrasada' : diferenca <= 3 ? 'breve' : 'futura'
-  return { texto: `${dia} ${nomeMes}`, estado }
+  const nomeMes = new Intl.DateTimeFormat('pt-BR', { month: 'short', timeZone: 'UTC' })
+    .format(new Date(Date.UTC(ano, mes - 1, dia)))
+    .replace('.', '')
+  // Atrasada diz em palavra, não só na cor; "breve" (até 3 dias) ganha destaque.
+  if (diferenca < 0) return { texto: t.tarefas.atrasadaEm(`${dia} ${nomeMes}`), estado: 'atrasada' }
+  return { texto: `${dia} ${nomeMes}`, estado: diferenca <= 3 ? 'breve' : 'futura' }
 }
 
 // Pendentes: data prevista mais próxima primeiro; sem data no fim.

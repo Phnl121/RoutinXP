@@ -307,7 +307,11 @@ export default function Tarefas() {
               onLimpar={() => setFiltroTarefas(FILTRO_VAZIO)}
               categorias={d.categorias}
               tags={d.tags}
-              total={visiveis.length}
+              resumo={
+                visao === 'lista'
+                  ? tt.filtros.resultadoLista(listaFiltrada.length, situacao === 'pendente')
+                  : tt.filtros.resultado(visiveis.length)
+              }
               ativos={filtrosAtivos}
             />
           )}
@@ -343,6 +347,9 @@ export default function Tarefas() {
         <ColunaDialog
           coluna={dlgColuna.coluna}
           vizinhas={vizinhasDaColuna(dlgColuna.coluna)}
+          totalTarefas={
+            dlgColuna.coluna ? d.tarefas.filter((x) => x.status === 'pendente' && x.column_id === dlgColuna.coluna.id).length : 0
+          }
           onFechar={() => setDlgColuna(null)}
           onSalvar={({ id, ...campos }) =>
             d.salvarColuna(id ? { id, ...campos } : { ...campos, posicao: proximaPosicao() })

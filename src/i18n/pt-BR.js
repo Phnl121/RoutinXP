@@ -231,6 +231,9 @@ export const t = {
       moverDireita: 'Mover para a direita',
       fixa: 'Esta coluna é fixa: você pode mudar o nome e a cor, mas ela não sai do lugar.',
       excluir: 'Excluir coluna',
+      excluirConfirmar: 'Excluir mesmo assim',
+      confirmarExcluir: (n) =>
+        `${n === 1 ? 'A tarefa desta coluna volta' : `As ${n} tarefas desta coluna voltam`} para Pendentes. Toque de novo para excluir.`,
       cancelar: 'Cancelar',
       salvar: 'Salvar',
       salvando: 'Salvando…',
@@ -248,6 +251,8 @@ export const t = {
       prazos: { qualquer: 'Qualquer', atrasadas: 'Atrasadas', hoje: 'Hoje', semana: 'Próximos 7 dias', 'sem-data': 'Sem data' },
       limpar: 'Limpar filtros',
       resultado: (n) => `${n} ${n === 1 ? 'tarefa' : 'tarefas'}`,
+      resultadoLista: (n, pendentes) =>
+        `${n} ${pendentes ? (n === 1 ? 'pendente' : 'pendentes') : n === 1 ? 'concluída' : 'concluídas'}`,
       nenhuma: 'Nenhuma tarefa com esses filtros.',
       tituloFiltrado: 'Tarefas filtradas',
     },
@@ -278,6 +283,8 @@ export const t = {
     semData: 'sem data',
     hoje: 'hoje',
     amanha: 'amanhã',
+    atrasadaEm: (data) => `atrasada · ${data}`,
+    prazoRotulo: (texto) => `prazo: ${texto}`,
     concluir: (titulo) => `Concluir: ${titulo}`,
     editar: (titulo) => `Editar: ${titulo}`,
     excluir: 'Excluir',

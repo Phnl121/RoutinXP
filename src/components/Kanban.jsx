@@ -38,9 +38,12 @@ function Coluna({ coluna, tarefas, categoriasPorId, tagsPorId, recem, acoes, onS
         <h2 className="label kanban__titulo">
           {coluna.nome} · {tarefas.length}
         </h2>
-        <button type="button" className="kanban__editar" onClick={() => onEditar(coluna)} aria-label={k.editarColuna(coluna.nome)}>
-          <IconeReticencias />
-        </button>
+        {/* Coluna provisória (ainda sem registro no banco) não abre a edição. */}
+        {!coluna.provisoria && (
+          <button type="button" className="kanban__editar" onClick={() => onEditar(coluna)} aria-label={k.editarColuna(coluna.nome)}>
+            <IconeReticencias />
+          </button>
+        )}
       </header>
       {alvo && <p className="coluna__soltar">{concluida ? t.tarefas.soltar : k.soltarAqui}</p>}
       {tarefas.length ? (
@@ -68,8 +71,8 @@ function Coluna({ coluna, tarefas, categoriasPorId, tagsPorId, recem, acoes, onS
 // soltar em Concluídas conclui a tarefa (XP), sem volta (decisão da v1).
 export function Kanban({ tarefas, colunas, categoriasPorId, tagsPorId, recem, acoes, onMover, onEditarColuna, onNovaColuna }) {
   const fixa = (tipo) => colunas.find((c) => c.tipo === tipo)
-  const pendente = fixa('pendente') ?? { id: 'pendente', tipo: 'pendente', nome: k.pendentes, cor: null }
-  const concluida = fixa('concluida') ?? { id: 'concluida', tipo: 'concluida', nome: k.concluidas, cor: null }
+  const pendente = fixa('pendente') ?? { id: 'pendente', tipo: 'pendente', nome: k.pendentes, cor: null, provisoria: true }
+  const concluida = fixa('concluida') ?? { id: 'concluida', tipo: 'concluida', nome: k.concluidas, cor: null, provisoria: true }
   const doMeio = colunas.filter((c) => c.tipo === 'custom')
   const idsDoMeio = new Set(doMeio.map((c) => c.id))
 

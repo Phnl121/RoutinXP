@@ -5,7 +5,7 @@ import { t } from '../i18n/pt-BR'
 const f = t.tarefas.filtros
 
 // Painel do filtro: busca pelo nome, categorias, tags e prazo. Vale para todas as visões.
-export function FiltroTarefas({ id, filtro, onMudar, onLimpar, categorias, tags, total, ativos }) {
+export function FiltroTarefas({ id, filtro, onMudar, onLimpar, categorias, tags, resumo, ativos }) {
   const mudar = (campo, valor) => onMudar({ ...filtro, [campo]: valor })
 
   return (
@@ -74,7 +74,7 @@ export function FiltroTarefas({ id, filtro, onMudar, onLimpar, categorias, tags,
 
       <div className="filtros__rodape">
         <span className="hint" role="status">
-          {f.resultado(total)}
+          {resumo}
         </span>
         {ativos > 0 && (
           <button type="button" className="link-btn" onClick={onLimpar}>

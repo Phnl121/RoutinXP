@@ -586,10 +586,32 @@
   overflow-x: auto;
 }
 
-/* Coluna estreita (em qualquer largura): o selo de prazo desce para a linha da categoria
-   e o título usa a largura toda do card. */
-.kanban .linha > .linha__data {
+/* Coluna estreita (em qualquer largura): o selo de prazo e o XP descem para a linha da
+   categoria, e o título usa a largura toda do card. */
+.kanban .linha > .linha__data,
+.kanban .linha > .linha__xp {
   display: none;
+}
+
+.linha__meta-xp {
+  display: none;
+  font-weight: 800;
+  color: var(--green);
+  white-space: nowrap;
+}
+
+.linha__meta-xp[data-zero='true'] {
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.kanban .linha__meta-xp {
+  display: inline;
+}
+
+/* O nome da categoria não quebra no meio; o selo vai inteiro para a linha de baixo. */
+.kanban .linha__cat {
+  white-space: nowrap;
 }
 
 .kanban .linha__meta[data-so-data='true'] {
@@ -609,7 +631,8 @@
 
 /* Coluna colorida: o tom cobre a coluna inteira; o card mantém a capa da categoria. */
 .kanban__coluna[data-cor='true'] {
-  background: color-mix(in oklab, var(--cor-col) 22%, var(--panel));
+  /* Tom leve: a coluna fica colorida, mas as capas das categorias continuam as mais vivas. */
+  background: color-mix(in oklab, var(--cor-col) 12%, var(--panel));
   border-color: color-mix(in oklab, var(--cor-col) 45%, var(--panel));
 }
 

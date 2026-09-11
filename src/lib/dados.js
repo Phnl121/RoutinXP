@@ -114,8 +114,9 @@ export async function listarColunas() {
     { tipo: 'concluida', nome: 'Concluídas', posicao: 1000 },
   ].filter((padrao) => !colunas.some((c) => c.tipo === padrao.tipo))
   if (faltam.length) {
-    // Duas abas ao mesmo tempo: o índice único recusa a duplicada, e basta ler de novo.
-    await supabase.from('board_columns').insert(faltam)
+    // Duas abas ao mesmo tempo: o índice único recusa a duplicada (23505), e basta ler de novo.
+    const { error } = await supabase.from('board_columns').insert(faltam)
+    if (error && error.code !== '23505') throw error
     colunas = ok(await supabase.from('board_columns').select(CAMPOS_COLUNA).order('posicao'))
   }
   return colunas

@@ -19,6 +19,26 @@ import './shell.css'
 
 const CHAVE_MENU = 'routinxp:menu'
 
+// Um aviso dispensado fica fora até o dia seguinte (a chave leva a data).
+function useDispensaDoDia(chave) {
+  const [dispensado, setDispensado] = useState(() => {
+    try {
+      return localStorage.getItem(chave) === '1'
+    } catch {
+      return false
+    }
+  })
+  function dispensar() {
+    setDispensado(true)
+    try {
+      localStorage.setItem(chave, '1')
+    } catch {
+      /* sem armazenamento: some só nesta sessão */
+    }
+  }
+  return [dispensado, dispensar]
+}
+
 function lerMenuRecolhido() {
   try {
     return localStorage.getItem(CHAVE_MENU) === 'recolhido'
@@ -65,26 +85,13 @@ export default function Shell({ session }) {
 
   const online = useConexao()
   const hoje = hojeBrasilia()
-  const chaveStreak = `routinxp:lembrete:${hoje}`
-  const [streakDispensado, setStreakDispensado] = useState(() => {
-    try {
-      return localStorage.getItem(chaveStreak) === '1'
-    } catch {
-      return false
-    }
-  })
-  function dispensarStreak() {
-    setStreakDispensado(true)
-    try {
-      localStorage.setItem(chaveStreak, '1')
-    } catch {
-      /* sem armazenamento: some só nesta sessão */
-    }
-  }
   // Fila de avisos (um por vez): streak em risco, depois prazos, depois o convite para instalar.
+  // Dispensar um aviso vale até amanhã e libera o próximo da fila.
+  const [streakDispensado, dispensarStreak] = useDispensaDoDia(`routinxp:lembrete:${hoje}`)
+  const [prazosDispensado, dispensarPrazos] = useDispensaDoDia(`routinxp:prazos:${hoje}`)
   const streakVisivel = streakEmRisco(d.stats, hoje) && !streakDispensado
   const prazos = contarPrazos(d.tarefas, hoje)
-  const temPrazos = prazos.paraHoje + prazos.atrasadas > 0
+  const prazosVisivel = !streakVisivel && prazos.paraHoje + prazos.atrasadas > 0 && !prazosDispensado
   const { estado, carregar } = d
   // A internet voltou depois de uma falha de carregamento: busca os dados de novo.
   useEffect(() => {
@@ -126,8 +133,10 @@ export default function Shell({ session }) {
           </div>
           {/* Offline, o lembrete de streak espera: concluir agora não salvaria. */}
           {online && streakVisivel && <LembreteStreak stats={d.stats} onDispensar={dispensarStreak} />}
-          {online && !streakVisivel && <LembretePrazos tarefas={d.tarefas} />}
-          {online && modoInstalacao && !streakVisivel && !temPrazos && <ConviteInstalar onInstalar={instalar} />}
+          {online && prazosVisivel && (
+            <LembretePrazos paraHoje={prazos.paraHoje} atrasadas={prazos.atrasadas} onDispensar={dispensarPrazos} />
+          )}
+          {online && modoInstalacao && !streakVisivel && !prazosVisivel && <ConviteInstalar onInstalar={instalar} />}
           <Outlet context={{ session }} />
           {dlgIos && <DialogoInstalarIos onFechar={() => setDlgIos(false)} />}
           {/* No celular a barra não tem "Nova tarefa": o botão flutuante faz esse papel em
