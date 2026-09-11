@@ -239,6 +239,12 @@
   color: var(--muted);
 }
 
+/* A fase acabou e a próxima espera o usuário: contorno mais forte, para ser visto. */
+.topo__foco[data-aguardando='true'] {
+  border-color: var(--rule-strong);
+  background: var(--panel-2);
+}
+
 /* ---------- Lembrete de streak ---------- */
 
 .lembrete {

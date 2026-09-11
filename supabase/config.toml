@@ -388,6 +388,10 @@ deno_version = 2
 [functions.sincronizar-calendarios]
 verify_jwt = false
 
+# Chamada só pelo agendamento do banco, que se autentica com o segredo do Vault (sem JWT).
+[functions.avisos-foco]
+verify_jwt = false
+
 [analytics]
 enabled = true
 port = 54327

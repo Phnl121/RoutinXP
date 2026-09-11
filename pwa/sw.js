@@ -25,6 +25,48 @@ self.addEventListener('activate', (evento) => {
   )
 })
 
+// ---------- Avisos da página Foco (Web Push) ----------
+// O servidor (Edge Function avisos-foco) manda { titulo, corpo, url } quando uma fase acaba.
+// Mesma etiqueta do aviso local: se os dois chegarem, um substitui o outro.
+self.addEventListener('push', (evento) => {
+  let dados = {}
+  try {
+    dados = evento.data ? evento.data.json() : {}
+  } catch {
+    dados = { corpo: evento.data ? evento.data.text() : '' }
+  }
+  // O app aberto pode ter avisado há pouco: substitui sem tocar de novo (o push precisa sempre
+  // mostrar uma notificação, então ela é mostrada mesmo assim).
+  evento.waitUntil(
+    self.registration.getNotifications({ tag: 'routinxp-foco' }).then((abertas) =>
+      self.registration.showNotification(dados.titulo || 'RoutinXP', {
+        body: dados.corpo || '',
+        icon: '/marca/routinxp-icone-192.png',
+        tag: 'routinxp-foco',
+        renotify: !abertas.some((n) => Date.now() - n.timestamp < 120000),
+        requireInteraction: true,
+        data: { url: dados.url || '/foco' },
+      }),
+    ),
+  )
+})
+
+// Tocar no aviso: traz a janela aberta para a frente (e pede a página Foco) ou abre o app nela.
+self.addEventListener('notificationclick', (evento) => {
+  evento.notification.close()
+  const caminho = (evento.notification.data && evento.notification.data.url) || '/foco'
+  evento.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((janelas) => {
+      const janela = janelas.find((j) => new URL(j.url).origin === self.location.origin)
+      if (janela) {
+        janela.postMessage({ tipo: 'abrir', url: caminho })
+        return janela.focus()
+      }
+      return self.clients.openWindow(caminho)
+    }),
+  )
+})
+
 self.addEventListener('fetch', (evento) => {
   const pedido = evento.request
   if (pedido.method !== 'GET') return

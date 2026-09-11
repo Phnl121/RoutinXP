@@ -327,6 +327,10 @@ export function useDados(userId) {
     tarefas,
     focos,
     registrarFoco,
+    // Avisos do Foco por push (sem estado na tela: só vão ao servidor).
+    registrarPush: api.registrarPush,
+    agendarAvisoFoco: api.agendarAvisoFoco,
+    cancelarAvisoFoco: api.cancelarAvisoFoco,
     stats,
     estado,
     aviso,

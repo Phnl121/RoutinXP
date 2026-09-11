@@ -170,6 +170,15 @@ export const t = {
     encerrar: 'Encerrar sessão',
     encerrada: 'Sessão encerrada.',
     fases: { foco: 'Foco', pausa: 'Pausa', pausaLonga: 'Pausa longa' },
+    // Fim do foco: o relógio para e espera o usuário começar a pausa.
+    horaDa: { pausa: 'Hora da pausa', pausaLonga: 'Hora da pausa longa' },
+    iniciarPausa: { pausa: 'Iniciar pausa', pausaLonga: 'Iniciar pausa longa' },
+    avisos: {
+      ativar: 'Ativar avisos',
+      convite: 'Ative os avisos para saber quando o tempo acabar, mesmo com a tela bloqueada ou em outra aba.',
+      bloqueados: 'Os avisos estão bloqueados neste navegador. Libere as notificações nas configurações do site para ser avisado quando o tempo acabar.',
+      iphone: 'No iPhone, os avisos com a tela bloqueada só chegam com o app instalado na tela inicial.',
+    },
     ciclo: (n, total) => `${n} de ${total}`,
     pausado: 'pausado',
     proximo: 'Próximo foco',
@@ -181,10 +190,10 @@ export const t = {
     chipRotulo: (fase, tempo) => `${fase}, ${tempo} restantes. Abrir a página Foco`,
     tituloAba: (tempo, fase) => `${tempo} · ${fase} · RoutinXP`,
     aviso: {
-      fimFoco: 'Foco concluído',
-      corpoFoco: 'Hora da pausa: levante, beba água, descanse os olhos.',
+      fimFoco: 'Tempo de foco acabou',
+      corpoFoco: 'Hora da pausa. Abra o RoutinXP para iniciar a pausa.',
       fimPausa: 'Pausa encerrada',
-      corpoPausa: 'Quando quiser, inicie o próximo foco.',
+      corpoPausa: 'Hora de voltar. Abra o RoutinXP e inicie o próximo foco.',
     },
     seletor: {
       titulo: 'Adicionar tarefas',

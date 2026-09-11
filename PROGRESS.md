@@ -106,6 +106,31 @@ Atualizado em 2026-09-11 (Claude Code): v1 completa (passos 1 a 12). v2 em andam
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
 
+### 2026-09-11, Claude Code (Opus 5): Foco avisa de verdade no fim de cada fase
+O problema, relatado pelo usuário:
+- o aviso era um toque só, abafado pela música;
+- a pausa começava sozinha, então quem estava distraído nem via que tinha parado;
+- o foco seguinte ficava esperando um clique que ninguém dava.
+
+Feito:
+- **Nada começa sozinho.** No fim do foco, o relógio para em "Hora da pausa" com "Iniciar pausa". No fim da pausa, para em "Próximo foco". Enquanto espera, o botão pulsa e o atalho da barra mostra "Hora da pausa 05:00".
+- **Aviso mais forte.**
+  - Três pares de toques e vibração mais longa.
+  - Notificação do sistema sempre, mesmo com a página à vista. Ela fica na tela até ser tocada.
+  - Um lembrete sonoro por minuto (até 3 vezes) enquanto ninguém responde.
+  - A música pausa no fim do foco.
+- **Web Push pelo servidor**, para avisar com a tela bloqueada, em outra aba ou com o app fechado.
+  - O navegador agenda o aviso ao iniciar cada fase e cancela ao pausar, pular ou encerrar.
+  - O banco confere a cada 15 s e chama a Edge Function `avisos-foco`, que envia o push (VAPID).
+  - Arquivos: `src/lib/push.js`, `pwa/sw.js` (push e clique no aviso) e a migration `20260911230000_avisos_foco.sql`, com as tabelas `push_subscriptions` e `focus_alerts` acessíveis só por funções.
+  - Tocar no aviso abre o app na página Foco.
+- Convite "Ativar avisos" na página Foco. Se as notificações estiverem bloqueadas, explica como liberar. No iPhone fora do app instalado, explica que precisa instalar.
+
+Próximo (com autorização do usuário):
+- Aplicar a migration, cadastrar os segredos `VAPID_PUBLIC_KEY` e `VAPID_PRIVATE_KEY` no Supabase, publicar a função `avisos-foco` (`--no-verify-jwt`) e publicar o site.
+  - A chave privada foi gerada fora do repositório, no scratchpad da sessão, e nunca entra no git.
+- Testar no celular real, com o app instalado e a tela bloqueada.
+
 ### 2026-09-11, Claude Code (Opus 5): página Foco (pomodoro + Spotify)
 Pedido do usuário: uma aba de pomodoro com intervalos configuráveis, cronômetro na tela, várias tarefas de categorias diferentes na sessão e música do Spotify tocando no app.
 

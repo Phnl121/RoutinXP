@@ -229,6 +229,47 @@
   min-width: 10rem;
 }
 
+/* A fase acabou e a próxima espera: o botão de começar chama a atenção com um halo que se
+   abre devagar (o relógio não avança sozinho). */
+.foco-relogio[data-aguardando='true'] .foco-relogio__principal {
+  animation: foco-chamado 2.2s var(--ease-out) infinite;
+}
+
+@keyframes foco-chamado {
+  0% {
+    box-shadow:
+      0 0 0 0 var(--purple-halo),
+      0 8px 20px -10px var(--purple-glow);
+  }
+  70%,
+  100% {
+    box-shadow:
+      0 0 0 0.9rem transparent,
+      0 8px 20px -10px var(--purple-glow);
+  }
+}
+
+/* Movimento reduzido: o halo fica parado em vez de pulsar. */
+@media (prefers-reduced-motion: reduce) {
+  .foco-relogio[data-aguardando='true'] .foco-relogio__principal {
+    animation: none;
+    box-shadow:
+      0 0 0 3px var(--purple-halo),
+      0 8px 20px -10px var(--purple-glow);
+  }
+}
+
+.foco-avisos {
+  display: grid;
+  gap: 0.25rem;
+  justify-items: start;
+  margin: 0.75rem 0 0;
+}
+
+.foco-avisos .hint {
+  margin: 0;
+}
+
 .foco-relogio__encerrar {
   margin-top: 0.25rem;
 }

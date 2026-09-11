@@ -304,6 +304,10 @@ export const previaApi = {
       estatisticas: { ...stats, xp_hoje: xpHoje + xp, teto_diario: 150 },
     })
   },
+  // Avisos por push não existem na pré-visualização (sem service worker nem servidor).
+  registrarPush: () => espera(null),
+  agendarAvisoFoco: () => espera(null),
+  cancelarAvisoFoco: () => espera(null),
   listarFocos: () => espera(focos),
   registrarFoco: ({ id, minutos }) => {
     if (!focos.some((f) => f.id === id)) focos = [...focos, { id, minutos, concluida_em: new Date().toISOString() }]

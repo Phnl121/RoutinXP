@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router'
 import { useDados } from '../lib/useDados'
 import { DadosContexto } from '../lib/dadosContexto'
@@ -14,6 +14,7 @@ import { contarPrazos, streakEmRisco } from '../lib/lembrete'
 import { LembretePrazos } from '../components/LembretePrazos'
 import { hojeBrasilia } from '../lib/datas'
 import { FocoContexto, formatarTempo, restanteDe, useAgora, useFoco, useFocoApp } from '../lib/foco'
+import { garantirInscricao } from '../lib/push'
 import Foco from './Foco'
 import { t } from '../i18n/pt-BR'
 import './tarefas.css'
@@ -46,7 +47,9 @@ function TituloAba() {
   const { estado } = useFocoApp()
   const ativo = estado.fase !== 'parado'
   const agora = useAgora(ativo && estado.rodando, 1000)
-  const titulo = ativo ? t.foco.tituloAba(formatarTempo(restanteDe(estado, agora)), t.foco.fases[estado.fase]) : 'RoutinXP'
+  const aguardando = estado.aguardando && !estado.rodando
+  const fase = aguardando ? (estado.fase === 'foco' ? t.foco.proximo : t.foco.horaDa[estado.fase]) : t.foco.fases[estado.fase]
+  const titulo = ativo ? t.foco.tituloAba(formatarTempo(restanteDe(estado, agora)), fase) : 'RoutinXP'
   useEffect(() => {
     document.title = titulo
   }, [titulo])
@@ -72,11 +75,52 @@ function lerMenuRecolhido() {
 export default function Shell({ session }) {
   const d = useDados(session.user.id)
   // Pomodoro da página Foco: vive na casca para continuar ao trocar de página.
-  const foco = useFoco(session.user.id, d.registrarFoco, t.foco.aviso)
+  const foco = useFoco(session.user.id, d.registrarFoco, t.foco.aviso, () => garantirInscricao(d.registrarPush).catch(() => {}))
   const [recolhido, setRecolhido] = useState(lerMenuRecolhido)
   const [gavetaAberta, setGavetaAberta] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
+
+  // Aviso por push do fim da fase (tela bloqueada, outra aba, app fechado, outro aparelho):
+  // agendado no servidor quando a fase começa a correr. Só é cancelado quando a fase para antes
+  // da hora (pausar, pular, encerrar); no fim natural ele segue, para o celular no bolso tocar
+  // também. As chamadas vão em fila, na ordem em que aconteceram.
+  const agendadoAte = useRef(null) // fimEm do aviso agendado
+  const fila = useRef(Promise.resolve())
+  const { rodando: focoRodando, fimEm: focoFimEm, fase: focoFase } = foco.estado
+  const { registrarPush, agendarAvisoFoco, cancelarAvisoFoco } = d
+  useEffect(() => {
+    const enfileirar = (tarefa) => {
+      fila.current = fila.current.then(tarefa).catch(() => {})
+    }
+    if (focoRodando && focoFimEm) {
+      const tipo = focoFase === 'foco' ? 'fim_foco' : 'fim_pausa'
+      // Marcado já aqui: um Pausar logo depois de iniciar precisa enfileirar o cancelamento,
+      // que roda depois do agendamento (cancelar sem nada agendado não apaga nada).
+      agendadoAte.current = focoFimEm
+      enfileirar(async () => {
+        // Sem push neste navegador, não há o que agendar (e o agendamento do banco nem acorda).
+        if (!(await garantirInscricao(registrarPush))) return
+        await agendarAvisoFoco(new Date(focoFimEm).toISOString(), tipo)
+      })
+    } else if (agendadoAte.current) {
+      const fim = agendadoAte.current
+      agendadoAte.current = null
+      if (Date.now() < fim - 2000) enfileirar(() => cancelarAvisoFoco())
+    }
+  }, [focoRodando, focoFimEm, focoFase, registrarPush, agendarAvisoFoco, cancelarAvisoFoco])
+
+  // Tocar num aviso com o app aberto: o service worker pede para abrir a página Foco.
+  useEffect(() => {
+    const sw = navigator.serviceWorker
+    if (!sw) return undefined
+    const aoReceber = (evento) => {
+      const url = evento.data?.tipo === 'abrir' ? evento.data.url : null
+      if (typeof url === 'string' && url.startsWith('/')) navigate(url)
+    }
+    sw.addEventListener('message', aoReceber)
+    return () => sw.removeEventListener('message', aoReceber)
+  }, [navigate])
 
   // A página Foco é montada na primeira visita e não desmonta mais: o player do Spotify
   // (e a música) continua tocando nas outras páginas.

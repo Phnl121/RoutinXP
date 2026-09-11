@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { useNavigate } from 'react-router'
 import { useDadosApp } from '../lib/dadosContexto'
-import { ATALHOS, LIMITES, atalhoDe, duracao, formatarTempo, restanteDe, useAgora, useFocoApp } from '../lib/foco'
+import { ATALHOS, LIMITES, atalhoDe, formatarTempo, pedirPermissao, restanteDe, useAgora, useFocoApp } from '../lib/foco'
+import { garantirInscricao, iosSemInstalar, permissaoAtual } from '../lib/push'
 import { focoDeHoje } from '../lib/painel'
 import { useConcluirComVoo } from '../lib/useVooXp'
 import { LinhaTarefa } from '../components/LinhaTarefa'
@@ -23,7 +24,10 @@ const ff = t.foco
 function comTransicao(mudar) {
   const reduzir = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
   if (!document.startViewTransition || reduzir) return mudar()
-  document.startViewTransition(() => flushSync(mudar))
+  const transicao = document.startViewTransition(() => flushSync(mudar))
+  // Aba escondida ou outra transição no meio: o navegador aborta a animação, a troca vale igual.
+  transicao.ready.catch(() => {})
+  transicao.finished.catch(() => {})
 }
 
 // Tela acesa enquanto o cronômetro corre com a página Foco à vista (celular sobre a mesa).
@@ -128,17 +132,19 @@ function Relogio({ estado, visivel, onIniciar, onPausar, onPular, onEncerrar }) 
   const agora = useAgora(estado.rodando && visivel)
   const restante = restanteDe(estado, agora)
   const fase = ff.fases[estado.fase]
-  // Foco ainda não começado (depois de uma pausa) × foco pausado no meio.
-  const aguardando = !estado.rodando && estado.fase === 'foco' && restante >= duracao(estado.config, 'foco')
+  // A fase acabou e a próxima espera o Iniciar ("Hora da pausa", "Próximo foco") × pausado no meio.
+  const aguardando = Boolean(estado.aguardando) && !estado.rodando
   const pausado = !estado.rodando && !aguardando
+  const rotulo = aguardando ? (estado.fase === 'foco' ? ff.proximo : ff.horaDa[estado.fase]) : fase
+  const acaoIniciar = estado.fase === 'foco' ? ff.iniciar : ff.iniciarPausa[estado.fase]
   // Focos já feitos nesta rodada (a pausa longa fecha a rodada).
   const feitos = estado.fase === 'foco' ? estado.ciclo - 1 : estado.ciclo
   const total = estado.config.ciclos
 
   return (
-    <section className="panel foco-relogio" data-pausado={pausado} aria-labelledby="foco-fase">
-      <p id="foco-fase" className="label foco-relogio__fase">
-        {aguardando ? ff.proximo : fase} · {ff.ciclo(Math.min(estado.ciclo, total), total)}
+    <section className="panel foco-relogio" data-pausado={pausado} data-aguardando={aguardando} aria-labelledby="foco-fase">
+      <p id="foco-fase" className="label foco-relogio__fase" aria-live="polite">
+        {rotulo} · {ff.ciclo(Math.min(estado.ciclo, total), total)}
         {pausado && ` · ${ff.pausado}`}
       </p>
       <ol className="foco-ciclos" aria-hidden="true">
@@ -158,7 +164,7 @@ function Relogio({ estado, visivel, onIniciar, onPausar, onPular, onEncerrar }) 
         ) : (
           <button type="button" className="btn foco-relogio__principal" onClick={onIniciar}>
             <IconePlay />
-            {aguardando ? ff.iniciar : ff.retomar}
+            {aguardando ? acaoIniciar : ff.retomar}
           </button>
         )}
         <button type="button" className="botao-contorno" onClick={onPular} aria-label={ff.pularRotulo(fase)}>
@@ -170,6 +176,31 @@ function Relogio({ estado, visivel, onIniciar, onPausar, onPular, onEncerrar }) 
         {ff.encerrar}
       </button>
     </section>
+  )
+}
+
+// Convite para liberar as notificações: sem elas, o fim da fase só avisa com o som.
+function AvisosFoco({ onPermitido }) {
+  const [permissao, setPermissao] = useState(permissaoAtual)
+  if (permissao === 'granted') return null
+  if (iosSemInstalar()) return <p className="hint foco-avisos">{ff.avisos.iphone}</p>
+  if (permissao === 'indisponivel') return null
+  if (permissao === 'denied') return <p className="hint foco-avisos">{ff.avisos.bloqueados}</p>
+  return (
+    <div className="foco-avisos">
+      <p className="hint">{ff.avisos.convite}</p>
+      <button
+        type="button"
+        className="link-btn"
+        onClick={async () => {
+          const nova = await pedirPermissao()
+          setPermissao(nova)
+          if (nova === 'granted') onPermitido()
+        }}
+      >
+        {ff.avisos.ativar}
+      </button>
+    </div>
   )
 }
 
@@ -202,7 +233,9 @@ export default function Foco({ visivel, userId }) {
   const [dlgTarefa, setDlgTarefa] = useState(null) // { tarefa }
   const { concluirComVoo, voos } = useConcluirComVoo(d)
   const parado = estado.fase === 'parado'
-  const emPausa = estado.rodando && (estado.fase === 'pausa' || estado.fase === 'pausaLonga')
+  // A música para no fim do foco (já é hora da pausa, mesmo antes de iniciá-la) e volta
+  // quando o foco recomeça; também para se o foco for pausado.
+  const musicaParada = !parado && !(estado.fase === 'foco' && estado.rodando)
   useTelaAcesa(visivel && estado.rodando)
 
   const categoriasPorId = Object.fromEntries(d.categorias.map((c) => [c.id, c]))
@@ -290,6 +323,7 @@ export default function Foco({ visivel, userId }) {
           <IconePlay />
           {ff.iniciar}
         </button>
+        <AvisosFoco onPermitido={() => garantirInscricao(d.registrarPush).catch(() => {})} />
       </div>
     )
   } else {
@@ -357,7 +391,7 @@ export default function Foco({ visivel, userId }) {
           <div className="foco__lateral">
             {lateral}
             {/* Mesma posição nas duas fases: o player (e a música) nunca recomeça. */}
-            <PlayerSpotify key="musica" userId={userId} emPausa={emPausa} />
+            <PlayerSpotify key="musica" userId={userId} emPausa={musicaParada} />
           </div>
         </div>
       </main>

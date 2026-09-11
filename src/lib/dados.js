@@ -243,3 +243,18 @@ export async function registrarFoco({ id, minutos }) {
   const { error } = await supabase.from('focus_sessions').insert({ id, minutos })
   if (error && error.code !== '23505') throw error
 }
+
+// ---------- Avisos do Foco por Web Push ----------
+
+export async function registrarPush({ endpoint, p256dh, auth }) {
+  ok(await supabase.rpc('registrar_push', { p_endpoint: endpoint, p_p256dh: p256dh, p_auth: auth }))
+}
+
+// tipo: 'fim_foco' | 'fim_pausa'; enviarEm: instante ISO do fim da fase.
+export async function agendarAvisoFoco(enviarEm, tipo) {
+  ok(await supabase.rpc('agendar_aviso_foco', { p_enviar_em: enviarEm, p_tipo: tipo }))
+}
+
+export async function cancelarAvisoFoco() {
+  ok(await supabase.rpc('cancelar_aviso_foco'))
+}

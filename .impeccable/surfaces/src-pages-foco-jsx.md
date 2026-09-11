@@ -2,7 +2,7 @@
 version: 1
 slug: "src-pages-foco-jsx"
 primary_target: "src/pages/Foco.jsx"
-related_targets: ["src/lib/foco.js","src/lib/spotify.js"]
+related_targets: ["src/lib/foco.js","src/lib/spotify.js","src/lib/push.js"]
 ---
 
 ## Scope
@@ -23,7 +23,7 @@ THESIS: A focus session is something you assemble, then run. The page has two ph
 
 OWN-WORLD: RoutinXP's own dark chrome: Ground, Panel cards, 1px Rules, Archivo. The clock is Archivo 800 at monumental size with tabular figures. Purple only on the actions (Iniciar, Adicionar); the phase is marked in neutrals, never green (green stays for XP and completion). Session tasks are the same task cards as Lista (category cover, labels, deadline badge, green check with the XP flight).
 
-STORY: The user picks a preset or sets their own intervals, adds the tasks they will attack (any category), pastes a playlist once, and presses Iniciar. During focus they see only the time left, the current task and the queue; completing a task there gives XP as anywhere. Breaks start on their own; the next focus waits for them. Each finished focus block is recorded and shows up in the Painel.
+STORY: The user picks a preset or sets their own intervals, adds the tasks they will attack (any category), pastes a playlist once, and presses Iniciar. During focus they see only the time left, the current task and the queue; completing a task there gives XP as anywhere. Nothing starts on its own (user decision, 2026-09-11, after a distracted user missed a break that had started silently): when focus ends the clock stops at "Hora da pausa", the music pauses, three chime pairs play, the phone vibrates and a system notification appears (also as Web Push from the server, so it arrives with the screen locked or the app closed); the primary button pulses until they press "Iniciar pausa". When the break ends, the same alert asks for "Iniciar foco". Each finished focus block is recorded and shows up in the Painel.
 
 FIRST VIEWPORT: Stopped: page title "Foco", then a two-column grid. Left, wide: the Intervalos panel (segmented presets 25/5, 50/10, Personalizado; four number fields when custom) and below it "Tarefas da sessão" as task cards with "+ Adicionar tarefas". Right, narrow: a large Iniciar foco button at the top and the Música section under it. Today's focus total ("Hoje · 3 focos · 75 min") sits at the right of the page title, not in the right column: there it shows in both phases and stays above the fold on phones (adaptation after the finish review). Running: the left column becomes the clock (phase and cycle as a Label, "Foco · 2 de 4", a row of cycle pills, then mm:ss at display scale, then Pausar, Pular and Encerrar), with the current task card under it; the right column keeps the queue and the player. The cycle pills (done in Ink, current half-tone, remaining in Rule Strong) show where the round stands and how close the long break is at a glance from across the desk, without reading the label; they are the "session track" idea at label scale. The player never remounts between phases.
 
@@ -37,3 +37,5 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 
 - Background tabs: browsers may delay the end-of-phase alert by up to about a minute when the tab has been hidden for a while; iPhone does not guarantee alerts with the app closed.
 - Interval settings and the playlist link are saved per browser (localStorage, per user id), not in the database.
+- One pending server alert per user (`focus_alerts` keyed by user): two devices running separate sessions at the same time overwrite each other's scheduled push. The session itself is per browser, so this only matters when someone runs two timers at once.
+- Web Push on iPhone/iPad needs the installed app (iOS 16.4+); desktop browsers must be running to show it.

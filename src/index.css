@@ -370,6 +370,8 @@ select {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    /* Uma vez só: uma animação infinita com duração quase zero piscaria sem parar. */
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     transition-delay: 0ms !important;
   }

@@ -2,10 +2,10 @@ import { Link, useLocation } from 'react-router'
 import { supabase } from '../lib/supabase'
 import { iniciaisDoPerfil } from '../lib/datas'
 import { nomeCompleto } from '../lib/perfil'
-import { duracao, formatarTempo, restanteDe, useAgora, useFocoApp } from '../lib/foco'
+import { formatarTempo, restanteDe, useAgora, useFocoApp } from '../lib/foco'
 import { BadgeNivel, BarraXp } from './Progresso'
 import { useMedidorNivel } from '../lib/useMedidorNivel'
-import { IconeFoco, IconeMenu, IconePausa } from './icones'
+import { IconeFoco, IconeMenu, IconePausa, IconePlay } from './icones'
 import { Logo } from './Logo'
 import { t } from '../i18n/pt-BR'
 
@@ -16,14 +16,28 @@ import { t } from '../i18n/pt-BR'
 function ChipFoco({ estado }) {
   const agora = useAgora(estado.rodando, 1000)
   const restante = restanteDe(estado, agora)
-  // Parado, o chip diz por quê: esperando o próximo foco ou pausado no meio.
-  const aguardando = !estado.rodando && estado.fase === 'foco' && restante >= duracao(estado.config, 'foco')
-  const fase = aguardando ? t.foco.proximo : t.foco.fases[estado.fase]
-  const rotulo = estado.rodando || aguardando ? fase : `${fase} ${t.foco.pausado}`
+  // Parado, o chip diz por quê: a fase acabou e a próxima espera ("Hora da pausa",
+  // "Próximo foco") ou pausado no meio.
+  const aguardando = Boolean(estado.aguardando) && !estado.rodando
+  const fase = t.foco.fases[estado.fase]
+  const rotulo = aguardando
+    ? estado.fase === 'foco'
+      ? t.foco.proximo
+      : t.foco.horaDa[estado.fase]
+    : estado.rodando
+      ? fase
+      : `${fase} ${t.foco.pausado}`
   const tempo = formatarTempo(restante)
   return (
-    <Link to="/foco" className="topo__foco" data-pausado={!estado.rodando} aria-label={t.foco.chipRotulo(rotulo, tempo)}>
-      {estado.rodando ? <IconeFoco /> : <IconePausa />}
+    <Link
+      to="/foco"
+      className="topo__foco"
+      data-pausado={!estado.rodando && !aguardando}
+      data-aguardando={aguardando}
+      aria-label={t.foco.chipRotulo(rotulo, tempo)}
+    >
+      {/* Correndo: cronômetro; esperando o usuário começar: play; pausado: pausa. */}
+      {estado.rodando ? <IconeFoco /> : aguardando ? <IconePlay /> : <IconePausa />}
       <span>{t.foco.chip(rotulo, tempo)}</span>
     </Link>
   )
