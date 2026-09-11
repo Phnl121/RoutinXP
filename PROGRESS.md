@@ -144,9 +144,19 @@ Feito:
   - categoria e tag da fonte presas ao mesmo usuário (FK composta);
   - remover calendário confirma com a ação de texto, sem botão roxo.
 
+- **Deploy (autorizado pelo usuário):**
+  - migrations `20260911180000_integracoes_calendario` e `20260911190000_revogar_execucao_gatilho` aplicadas;
+  - função publicada com `npx.cmd supabase functions deploy sincronizar-calendarios --no-verify-jwt --use-api`;
+  - push para a `main`.
+  - Testado de fora: a função recusa sem login, sem segredo e com segredo errado (401); as tabelas novas recusam o anônimo (401); as funções internas nem aparecem para o anônimo (PGRST202).
+- **Avisos do linter de segurança do Supabase:**
+  - `handle_new_user` não é mais executável pela API;
+  - `concluir_tarefa` fica só para usuários logados, de propósito.
+  - A proteção contra senhas vazadas é opção do painel (Authentication → Email) e parece exigir plano Pro. Fica com o usuário.
+
 Próximo:
-- Aplicar a migration e publicar a função (`npx.cmd supabase functions deploy sincronizar-calendarios --no-verify-jwt --use-api`), depois o push.
 - Teste do usuário com os links reais das disciplinas.
+- Conferir se o agendamento está rodando: no painel, Integrations → Cron → `routinxp-sincronizar-calendarios` → histórico de execuções.
 
 ### 2026-09-11, Claude Code (Opus 5): etiquetas estilo Trello e Perfil centralizado
 Feito:
