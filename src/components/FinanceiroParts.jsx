@@ -3,7 +3,7 @@ import { Dialogo } from './Dialogo'
 import { Aviso } from './AuthParts'
 import { IconeMais } from './icones'
 import { mensagemErroDados } from '../lib/dadosErros'
-import { formatarReais, lerCentavos } from '../lib/dinheiro'
+import { formatarReais, lerCentavos, rotuloDia as rotuloDiaCurto } from '../lib/dinheiro'
 import { hojeBrasilia } from '../lib/datas'
 import { t } from '../i18n/pt-BR'
 
@@ -54,7 +54,7 @@ export function Segmentos({ rotulo, opcoes, valor, onMudar }) {
 const ativas = (lista, atualId) => lista.filter((x) => !x.arquivada || x.id === atualId)
 
 // Novo lançamento ou edição: saída, entrada ou transferência entre contas próprias.
-export function LancamentoDialog({ transacao, contas, categorias, onSalvar, onExcluir, onFechar }) {
+export function LancamentoDialog({ transacao, contas, categorias, manualParecido, onSalvar, onExcluir, onResolverDuplicata, onFechar }) {
   const f = fin.formLancamento
   const id = useId()
   const ref = useRef(null)
@@ -69,6 +69,20 @@ export function LancamentoDialog({ transacao, contas, categorias, onSalvar, onEx
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState(null)
   const fechar = () => ref.current?.close()
+  const doBanco = transacao?.origem === 'banco'
+  const [resolvendo, setResolvendo] = useState(false)
+
+  async function resolver(juntar) {
+    setResolvendo(true)
+    setErro(null)
+    try {
+      await onResolverDuplicata(transacao, manualParecido, juntar)
+      fechar()
+    } catch (e) {
+      setErro(mensagemErroDados(e))
+      setResolvendo(false)
+    }
+  }
 
   const tipoCategoria = tipo === 'entrada' ? 'receita' : 'despesa'
   const opcoesCategoria = ativas(categorias, transacao?.categoria_id).filter((c) => c.tipo === tipoCategoria)
@@ -107,23 +121,43 @@ export function LancamentoDialog({ transacao, contas, categorias, onSalvar, onEx
       <h2 id={`${id}-titulo`} className="dialogo__titulo">
         {transacao ? f.editarTitulo : f.novoTitulo}
       </h2>
-      <form className="form" onSubmit={enviar}>
-        <Segmentos
-          rotulo={f.tipo}
-          valor={tipo}
-          onMudar={setTipo}
-          opcoes={['saida', 'entrada', 'transferencia'].map((v) => ({ valor: v, rotulo: f.tipos[v] }))}
-        />
-
-        <div className="dialogo__campos">
-          <CampoValor id={`${id}-v`} rotulo={f.valor} centavos={valor} onMudar={setValor} autoFocus={!transacao} />
-          <div className="field">
-            <label className="label" htmlFor={`${id}-d`}>
-              {f.data}
-            </label>
-            <input id={`${id}-d`} className="input" type="date" required value={data} onChange={(e) => setData(e.target.value)} />
+      {transacao?.duplicata_de && manualParecido && (
+        <div className="fin-duplicata" role="note">
+          <p className="fin-duplicata__titulo">{f.duplicataTitulo}</p>
+          <p className="hint">{f.duplicataTexto(manualParecido.descricao, formatarReais(manualParecido.valor_centavos), rotuloDiaCurto(manualParecido.data))}</p>
+          <div className="fin-duplicata__acoes">
+            <button type="button" className="botao-contorno" onClick={() => resolver(true)} disabled={resolvendo}>
+              {f.juntar}
+            </button>
+            <button type="button" className="link-btn" onClick={() => resolver(false)} disabled={resolvendo}>
+              {f.diferentes}
+            </button>
           </div>
         </div>
+      )}
+      <form className="form" onSubmit={enviar}>
+        {doBanco ? (
+          <p className="hint fin-do-banco">{f.doBanco}</p>
+        ) : (
+          <Segmentos
+            rotulo={f.tipo}
+            valor={tipo}
+            onMudar={setTipo}
+            opcoes={['saida', 'entrada', 'transferencia'].map((v) => ({ valor: v, rotulo: f.tipos[v] }))}
+          />
+        )}
+
+        {!doBanco && (
+          <div className="dialogo__campos">
+            <CampoValor id={`${id}-v`} rotulo={f.valor} centavos={valor} onMudar={setValor} autoFocus={!transacao} />
+            <div className="field">
+              <label className="label" htmlFor={`${id}-d`}>
+                {f.data}
+              </label>
+              <input id={`${id}-d`} className="input" type="date" required value={data} onChange={(e) => setData(e.target.value)} />
+            </div>
+          </div>
+        )}
 
         <div className="field">
           <label className="label" htmlFor={`${id}-desc`}>
@@ -160,7 +194,7 @@ export function LancamentoDialog({ transacao, contas, categorias, onSalvar, onEx
           </div>
         )}
 
-        <div className="dialogo__campos">
+        <div className="dialogo__campos" hidden={doBanco}>
           <div className="field">
             <label className="label" htmlFor={`${id}-co`}>
               {f.conta[tipo]}
@@ -230,7 +264,7 @@ const DIAS = Array.from({ length: 31 }, (_, i) => i + 1)
 
 // Conta ou cartão. No cartão, o saldo inicial é a fatura em aberto (guardada como negativa).
 // Na edição, o campo mostra o saldo de hoje; o saldo inicial é recalculado a partir dele.
-export function ContaFinDialog({ conta, saldoAtual, onSalvar, onExcluir, onFechar }) {
+export function ContaFinDialog({ conta, saldoAtual, contas = [], onSalvar, onExcluir, onJuntar, onFechar }) {
   const f = fin.formConta
   const id = useId()
   const ref = useRef(null)
@@ -247,6 +281,21 @@ export function ContaFinDialog({ conta, saldoAtual, onSalvar, onExcluir, onFecha
   const [erro, setErro] = useState(null)
   const fechar = () => ref.current?.close()
   const cartao = tipo === 'cartao'
+  const doBanco = conta?.origem === 'banco'
+  const manuaisParecidas = doBanco ? contas.filter((c) => c.origem !== 'banco' && c.tipo === conta.tipo && !c.arquivada) : []
+  const [juntarCom, setJuntarCom] = useState(manuaisParecidas[0]?.id ?? '')
+
+  async function juntar() {
+    setSalvando(true)
+    setErro(null)
+    try {
+      await onJuntar(conta.id, juntarCom)
+      fechar()
+    } catch (e) {
+      setErro(mensagemErroDados(e))
+      setSalvando(false)
+    }
+  }
 
   async function enviar(evento) {
     evento.preventDefault()
@@ -258,7 +307,9 @@ export function ContaFinDialog({ conta, saldoAtual, onSalvar, onExcluir, onFecha
         nome,
         tipo,
         // O movimento desde o saldo inicial fica igual; muda só o ponto de partida.
-        saldo_inicial_centavos: (cartao || negativo ? -saldo : saldo) - (atual - (conta?.saldo_inicial_centavos ?? 0)),
+        saldo_inicial_centavos: doBanco
+          ? conta.saldo_inicial_centavos
+          : (cartao || negativo ? -saldo : saldo) - (atual - (conta?.saldo_inicial_centavos ?? 0)),
         dia_fechamento: Number(fechamento) || null,
         dia_vencimento: Number(vencimento) || null,
         arquivada,
@@ -324,7 +375,7 @@ export function ContaFinDialog({ conta, saldoAtual, onSalvar, onExcluir, onFecha
               {f.tipo}
             </label>
             <span className="select">
-              <select id={`${id}-t`} className="input" value={tipo} onChange={(e) => setTipo(e.target.value)}>
+              <select id={`${id}-t`} className="input" value={tipo} disabled={doBanco} onChange={(e) => setTipo(e.target.value)}>
                 {TIPOS_CONTA.map((v) => (
                   <option key={v} value={v}>
                     {fin.contas.tipos[v]}
@@ -335,15 +386,40 @@ export function ContaFinDialog({ conta, saldoAtual, onSalvar, onExcluir, onFecha
           </div>
         </div>
 
-        <CampoValor
-          id={`${id}-s`}
-          rotulo={cartao ? f.fatura : f.saldo}
-          dica={cartao ? f.faturaDica : f.saldoDica}
-          centavos={saldo}
-          onMudar={setSaldo}
-        />
+        {doBanco ? (
+          <p className="hint fin-do-banco">{f.doBanco}</p>
+        ) : (
+          <CampoValor
+            id={`${id}-s`}
+            rotulo={cartao ? f.fatura : f.saldo}
+            dica={cartao ? f.faturaDica : f.saldoDica}
+            centavos={saldo}
+            onMudar={setSaldo}
+          />
+        )}
 
-        {!cartao && (
+        {doBanco && manuaisParecidas.length > 0 && (
+          <div className="fin-juntar">
+            <p className="fin-duplicata__titulo">{f.juntarTitulo}</p>
+            <p className="hint">{f.juntarTexto}</p>
+            <div className="fin-juntar__linha">
+              <span className="select">
+                <select className="input" aria-label={f.juntarCom} value={juntarCom} onChange={(e) => setJuntarCom(e.target.value)}>
+                  {manuaisParecidas.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.nome}
+                    </option>
+                  ))}
+                </select>
+              </span>
+              <button type="button" className="botao-contorno" onClick={juntar} disabled={salvando || !juntarCom}>
+                {f.juntar}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!cartao && !doBanco && (
           <label className="fin-marcar">
             <input type="checkbox" className="seletor__caixa" checked={negativo} onChange={(e) => setNegativo(e.target.checked)} />
             <span>{f.negativo}</span>

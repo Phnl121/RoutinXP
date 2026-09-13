@@ -1204,3 +1204,109 @@ button.fin-dre__botao:hover {
 .fin-linha[data-agendado='true'] .fin-linha__valor {
   color: var(--muted);
 }
+
+/* ---------- Open Finance (fase 4) ---------- */
+
+.fin-bancos__lista {
+  margin: 0 -0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.fin-bancos__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.25rem;
+  padding: 0.35rem 0.75rem;
+}
+
+.fin-bancos__item + .fin-bancos__item {
+  border-top: 1px solid var(--rule);
+}
+
+.fin-bancos__quem {
+  display: grid;
+  gap: 0.05rem;
+  min-width: 0;
+}
+
+.fin-bancos__nome {
+  font-weight: 700;
+}
+
+.fin-bancos__quem .hint[data-erro='true'],
+.fin-bancos__mensagem[data-erro='true'] {
+  color: var(--ink);
+}
+
+.fin-bancos__convite {
+  margin: 0;
+}
+
+.fin-bancos__pe {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+}
+
+.fin-bancos__botao {
+  min-height: 2.75rem;
+}
+
+.fin-bancos__mensagem {
+  margin: 0;
+}
+
+.fin-bancos__mensagem:empty {
+  display: none;
+}
+
+/* Sugestão de duplicata e de juntar contas: caixa neutra dentro da janela, sem cor de alarme. */
+.fin-duplicata,
+.fin-juntar {
+  display: grid;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: var(--ground);
+}
+
+.fin-juntar {
+  margin: 0;
+}
+
+.fin-duplicata__titulo {
+  margin: 0;
+  font-weight: 700;
+}
+
+.fin-duplicata .hint,
+.fin-juntar .hint {
+  margin: 0;
+}
+
+.fin-duplicata__acoes,
+.fin-juntar__linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 0.35rem;
+}
+
+.fin-juntar__linha .select {
+  flex: 1 1 10rem;
+}
+
+.fin-do-banco {
+  margin: 0;
+}
+
+/* O atributo hidden vence o display do grid (campos travados de lançamento do banco). */
+.dialogo__campos[hidden] {
+  display: none;
+}

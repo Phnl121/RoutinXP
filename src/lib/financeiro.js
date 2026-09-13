@@ -9,10 +9,10 @@ function ok({ data, error }) {
   return data
 }
 
-const CAMPOS_CONTA = 'id, nome, tipo, cor, saldo_inicial_centavos, saldo_inicial_em, dia_fechamento, dia_vencimento, arquivada, posicao, created_at'
+const CAMPOS_CONTA = 'id, nome, tipo, cor, origem, item_id, saldo_inicial_centavos, saldo_inicial_em, dia_fechamento, dia_vencimento, arquivada, posicao, created_at'
 const CAMPOS_CATEGORIA = 'id, nome, cor, tipo, grupo, arquivada, posicao, created_at'
 const CAMPOS_TRANSACAO =
-  'id, tipo, valor_centavos, data, descricao, conta_id, conta_destino_id, categoria_id, origem, recorrencia_id, referencia, parcela, created_at'
+  'id, tipo, valor_centavos, data, descricao, conta_id, conta_destino_id, categoria_id, origem, pendente, duplicata_de, recorrencia_id, referencia, parcela, created_at'
 const CAMPOS_RECORRENCIA =
   'id, nome, tipo, valor_centavos, valor_variavel, frequencia, inicio, fim, parcelas, conta_id, categoria_id, ativa, created_at'
 
@@ -188,4 +188,65 @@ export async function pagarCobranca({ rec, referencia, valor_centavos, data, con
       .select(CAMPOS_TRANSACAO)
       .single(),
   )
+}
+
+// ---------- Open Finance (fase 4) ----------
+
+export async function listarConexoes() {
+  return ok(
+    await supabase
+      .from('fin_conexoes')
+      .select('id, item_id, banco, imagem_url, status, ultimo_erro, ultima_sync, ultima_tentativa, consentimento_expira')
+      .order('created_at'),
+  )
+}
+
+// modo 'conectar' liga os bancos do MeuPluggy à conta; 'sincronizar' só lê de novo.
+// Devolve { contas, importados, atualizados, transferencias, duplicatas, erros }.
+export async function lerBancos(modo) {
+  const { data, error } = await supabase.functions.invoke('sincronizar-banco', { body: { modo } })
+  if (error) {
+    let detalhe = null
+    try {
+      detalhe = await error.context?.json()
+    } catch {
+      /* resposta sem corpo */
+    }
+    throw { message: detalhe?.erro ?? error.message, codigoBanco: detalhe?.erro ?? 'falha' }
+  }
+  return data
+}
+
+// Desconectar: para de ler o banco. Com apagar, os lançamentos e contas importados saem também
+// (contas com lançamentos manuais ficam).
+export async function desconectarBanco(conexao, apagar) {
+  if (apagar) {
+    const contas = ok(await supabase.from('fin_contas').select('id').eq('item_id', conexao.item_id).eq('origem', 'banco'))
+    const ids = contas.map((c) => c.id)
+    if (ids.length) {
+      ok(await supabase.from('fin_transacoes').delete().eq('origem', 'banco').in('conta_id', ids))
+      for (const id of ids) {
+        const { error } = await supabase.from('fin_contas').delete().eq('id', id)
+        if (error && error.code !== '23503') throw error
+      }
+    }
+  }
+  ok(await supabase.from('fin_conexoes').delete().eq('id', conexao.id))
+}
+
+// Conta importada + conta manual que já existia viram uma só.
+export async function juntarContas(importadaId, manualId) {
+  ok(await supabase.rpc('fin_juntar_contas', { p_importada: importadaId, p_manual: manualId }))
+}
+
+// Possível duplicata: juntar apaga o manual (a categoria dele passa para o do banco, se faltar);
+// "são diferentes" só tira a marca.
+export async function resolverDuplicata(transacao, manual, juntar) {
+  if (juntar && manual) {
+    const campos = { duplicata_de: null, ...(transacao.categoria_id ? {} : { categoria_id: manual.categoria_id }) }
+    ok(await supabase.from('fin_transacoes').update(campos).eq('id', transacao.id))
+    ok(await supabase.from('fin_transacoes').delete().eq('id', manual.id))
+    return
+  }
+  ok(await supabase.from('fin_transacoes').update({ duplicata_de: null }).eq('id', transacao.id))
 }

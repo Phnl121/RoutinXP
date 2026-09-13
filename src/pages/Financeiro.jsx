@@ -16,6 +16,8 @@ import {
   variacaoPct,
 } from '../lib/dinheiro'
 import { DrePessoal, EvolucaoMeses, GastosPorCategoria } from '../components/FinanceiroResumo'
+import { BancosConectados } from '../components/FinanceiroBancos'
+import { ehAdmin, useConta } from '../lib/conta'
 import { Link } from 'react-router'
 import { cobrancasEntre, custoMensal, somarDias } from '../lib/gastosFixos'
 import { CategoriasFinDialog, ContaFinDialog, LancamentoDialog, Segmentos } from '../components/FinanceiroParts'
@@ -35,6 +37,7 @@ const l = fin.lancamentos
 export default function Financeiro() {
   const [mes, setMes] = useState(mesAtual)
   const d = useFinanceiro(mes)
+  const conta = useConta()
   const [dlg, setDlg] = useState(null) // { tipo: 'lancamento' | 'conta' | 'categorias', item? }
   const [aviso, setAviso] = useState(null)
   const [busca, setBusca] = useState('')
@@ -305,7 +308,7 @@ export default function Financeiro() {
                           {g.dia > hojeDia && ` · ${l.agendado}`}
                         </span>
                         {/* Dia só com transferências não mexe no resultado: sem total. */}
-                        {g.total !== 0 && (
+                        {g.total !== 0 && g.dia <= hojeDia && (
                           <span className="fin-dia__total" aria-label={l.totalDia(formatarReais(g.total, { sinal: true }))}>
                           {formatarReais(g.total, { sinal: true })}
                         </span>
@@ -344,6 +347,7 @@ export default function Financeiro() {
                               <span className="fin-conta__nome">{c.nome}</span>
                               <span className="hint">
                                 {fin.contas.tipos[c.tipo]}
+                                {c.origem === 'banco' ? ` · ${l.doBanco}` : ''}
                                 {c.tipo === 'cartao' && c.dia_vencimento ? ` · ${fin.contas.vence(c.dia_vencimento)}` : ''}
                               </span>
                             </span>
@@ -368,6 +372,8 @@ export default function Financeiro() {
                     {arquivadas > 0 && <span className="hint">{fin.contas.arquivadas(arquivadas)}</span>}
                   </div>
                 </section>
+
+                {ehAdmin(conta) && <BancosConectados conexoes={d.conexoes} onLer={d.lerBancos} onDesconectar={d.desconectarBanco} />}
 
                 {d.recorrencias.length > 0 && (
                   <section className="panel fin-resumo gf-cartao" aria-labelledby="gf-cartao">
@@ -408,13 +414,15 @@ export default function Financeiro() {
           transacao={dlg.item}
           contas={d.contas}
           categorias={d.categorias}
+          manualParecido={dlg.item?.duplicata_de ? d.historico.find((x) => x.id === dlg.item.duplicata_de) : null}
+          onResolverDuplicata={d.resolverDuplicata}
           onSalvar={d.salvarTransacao}
           onExcluir={excluir}
           onFechar={() => setDlg(null)}
         />
       )}
       {dlg?.tipo === 'conta' && (
-        <ContaFinDialog conta={dlg.item} saldoAtual={dlg.item ? d.saldos[dlg.item.id] : undefined} onSalvar={d.salvarConta} onExcluir={d.excluirConta} onFechar={() => setDlg(null)} />
+        <ContaFinDialog conta={dlg.item} saldoAtual={dlg.item ? d.saldos[dlg.item.id] : undefined} contas={d.contas} onJuntar={d.juntarContas} onSalvar={d.salvarConta} onExcluir={d.excluirConta} onFechar={() => setDlg(null)} />
       )}
       {dlg?.tipo === 'categorias' && (
         <CategoriasFinDialog
@@ -437,6 +445,7 @@ function LinhaLancamento({ transacao: x, conta, destino, categoria, onAbrir }) {
   const detalhe = transferencia
     ? l.transferencia(conta?.nome ?? '—', destino?.nome ?? '—')
     : `${categoria?.nome ?? l.semCategoria} · ${conta?.nome ?? '—'}`
+  const marcas = [x.pendente ? l.pendente : null, x.duplicata_de ? l.duplicata : null].filter(Boolean).join(' · ')
   const valor = x.tipo === 'entrada' ? x.valor_centavos : x.tipo === 'saida' ? -x.valor_centavos : x.valor_centavos
   return (
     <button type="button" className="fin-linha" onClick={onAbrir} data-tipo={x.tipo} data-agendado={x.data > hojeBrasilia()}>
@@ -448,8 +457,9 @@ function LinhaLancamento({ transacao: x, conta, destino, categoria, onAbrir }) {
       />
       <span className="fin-linha__texto">
         <span className="fin-linha__descricao">{x.descricao}</span>
-        <span className="fin-linha__detalhe" data-revisar={revisar}>
+        <span className="fin-linha__detalhe" data-revisar={revisar || Boolean(x.duplicata_de)}>
           {detalhe}
+          {marcas && ` · ${marcas}`}
         </span>
       </span>
       <span className="fin-linha__valor">{formatarReais(valor, { sinal: x.tipo === 'entrada' })}</span>

@@ -279,7 +279,7 @@ export default function GastosFixos() {
                         <h2 id={`gf-${tipo}`} className="label">
                           {g.tipos[tipo]}
                         </h2>
-                        <span className="gf-grupo__subtotal">{g.subtotal(formatarReais(subtotal))}</span>
+                        {subtotal > 0 && <span className="gf-grupo__subtotal">{g.subtotal(formatarReais(subtotal))}</span>}
                       </div>
                       <ul className="gf-lista">
                         {itens.map((rec) => (

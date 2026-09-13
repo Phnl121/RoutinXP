@@ -18,10 +18,10 @@ const noMes = (d) => `${mes}-${String(Math.min(d, diaHoje)).padStart(2, '0')}`
 const noAnterior = (d) => `${anterior}-${String(d).padStart(2, '0')}`
 
 let contas = [
-  { id: 'fc1', nome: 'Nubank', tipo: 'corrente', cor: null, saldo_inicial_em: `${andarMes(mes, -5)}-01`, saldo_inicial_centavos: 320000, dia_fechamento: null, dia_vencimento: null, arquivada: false, posicao: 0, created_at: agora() },
-  { id: 'fc2', nome: 'Poupança', tipo: 'poupanca', cor: null, saldo_inicial_em: `${andarMes(mes, -5)}-01`, saldo_inicial_centavos: 850000, dia_fechamento: null, dia_vencimento: null, arquivada: false, posicao: 1, created_at: agora() },
-  { id: 'fc3', nome: 'Cartão Nubank', tipo: 'cartao', cor: null, saldo_inicial_em: `${andarMes(mes, -5)}-01`, saldo_inicial_centavos: -64230, dia_fechamento: 3, dia_vencimento: 10, arquivada: false, posicao: 2, created_at: agora() },
-  { id: 'fc4', nome: 'Carteira', tipo: 'dinheiro', cor: null, saldo_inicial_em: `${andarMes(mes, -5)}-01`, saldo_inicial_centavos: 12000, dia_fechamento: null, dia_vencimento: null, arquivada: false, posicao: 3, created_at: agora() },
+  { id: 'fc1', nome: 'Nubank', tipo: 'corrente', cor: null, origem: 'banco', item_id: 'item-previa', saldo_inicial_em: `${andarMes(mes, -5)}-01`, saldo_inicial_centavos: 320000, dia_fechamento: null, dia_vencimento: null, arquivada: false, posicao: 0, created_at: agora() },
+  { id: 'fc2', nome: 'Poupança', tipo: 'poupanca', cor: null, origem: 'manual', item_id: null, saldo_inicial_em: `${andarMes(mes, -5)}-01`, saldo_inicial_centavos: 850000, dia_fechamento: null, dia_vencimento: null, arquivada: false, posicao: 1, created_at: agora() },
+  { id: 'fc3', nome: 'Cartão Nubank', tipo: 'cartao', cor: null, origem: 'banco', item_id: 'item-previa', saldo_inicial_em: `${andarMes(mes, -5)}-01`, saldo_inicial_centavos: -64230, dia_fechamento: 3, dia_vencimento: 10, arquivada: false, posicao: 2, created_at: agora() },
+  { id: 'fc4', nome: 'Carteira', tipo: 'dinheiro', cor: null, origem: 'manual', item_id: null, saldo_inicial_em: `${andarMes(mes, -5)}-01`, saldo_inicial_centavos: 12000, dia_fechamento: null, dia_vencimento: null, arquivada: false, posicao: 3, created_at: agora() },
 ]
 
 const cat = (id, nome, cor, tipo, grupo, posicao) => ({ id, nome, cor, tipo, grupo, arquivada: false, posicao, created_at: agora() })
@@ -132,6 +132,14 @@ function gerarParcelas(r) {
   }
 }
 recorrencias.filter((r) => r.tipo === 'parcelada').forEach(gerarParcelas)
+// Open Finance: compras que vieram do banco (uma parece o almoço lançado à mão).
+{
+  const almoco = transacoes.find((x) => x.descricao === 'Almoço')
+  transacoes.push(
+    { ...tx('saida', 4500, noMes(12), 'RESTAURANTE SABOR CASEIRO', 'fc3'), origem: 'banco', pendente: false, duplicata_de: almoco?.id ?? null },
+    { ...tx('saida', 6790, noMes(13), 'IFOOD *PEDIDO', 'fc3'), origem: 'banco', pendente: true, duplicata_de: null },
+  )
+}
 // Cobranças já pagas: aluguel e internet deste mês.
 // O aluguel deste mês já estava nos lançamentos: só ganha o vínculo.
 transacoes = transacoes.map((x) => (x.descricao === 'Aluguel' && x.data === noMes(5) ? { ...x, recorrencia_id: 'fr-5', referencia: noMes(5) } : x))
@@ -275,4 +283,61 @@ export async function pagarCobranca({ rec: r, referencia, valor_centavos, data, 
   const nova = { ...tx('saida', valor_centavos, data, r.nome, conta_id, r.categoria_id), recorrencia_id: r.id, referencia }
   transacoes = [nova, ...transacoes]
   return copia(nova)
+}
+
+// ---------- Open Finance na prévia ----------
+let conexoes = [
+  {
+    id: 'fx-1',
+    item_id: 'item-previa',
+    banco: 'Nubank',
+    imagem_url: null,
+    status: 'UPDATED',
+    ultimo_erro: null,
+    ultima_sync: new Date(Date.now() - 3 * 3600000).toISOString(),
+    ultima_tentativa: new Date(Date.now() - 3 * 3600000).toISOString(),
+    consentimento_expira: new Date(Date.now() + 200 * 86400000).toISOString(),
+  },
+]
+
+export async function listarConexoes() {
+  await espera()
+  return copia(conexoes)
+}
+
+export async function lerBancos() {
+  await new Promise((r) => setTimeout(r, 900))
+  conexoes = conexoes.map((c) => ({ ...c, ultima_sync: agora(), ultima_tentativa: agora() }))
+  return { contas: 0, importados: 3, atualizados: 12, transferencias: 1, duplicatas: 0, erros: [] }
+}
+
+export async function desconectarBanco(conexao, apagar) {
+  await espera()
+  if (apagar) {
+    const ids = contas.filter((c) => c.item_id === conexao.item_id && c.origem === 'banco').map((c) => c.id)
+    transacoes = transacoes.filter((x) => !(x.origem === 'banco' && ids.includes(x.conta_id)))
+  }
+  conexoes = conexoes.filter((c) => c.id !== conexao.id)
+}
+
+export async function juntarContas(importadaId, manualId) {
+  await espera()
+  transacoes = transacoes.map((x) => ({
+    ...x,
+    conta_id: x.conta_id === importadaId ? manualId : x.conta_id,
+    conta_destino_id: x.conta_destino_id === importadaId ? manualId : x.conta_destino_id,
+  }))
+  const imp = contas.find((c) => c.id === importadaId)
+  contas = contas.filter((c) => c.id !== importadaId).map((c) => (c.id === manualId ? { ...c, origem: 'banco', item_id: imp?.item_id } : c))
+}
+
+export async function resolverDuplicata(transacao, manual, juntar) {
+  await espera()
+  if (juntar && manual) {
+    transacoes = transacoes
+      .filter((x) => x.id !== manual.id)
+      .map((x) => (x.id === transacao.id ? { ...x, duplicata_de: null, categoria_id: x.categoria_id ?? manual.categoria_id } : x))
+    return
+  }
+  transacoes = transacoes.map((x) => (x.id === transacao.id ? { ...x, duplicata_de: null } : x))
 }

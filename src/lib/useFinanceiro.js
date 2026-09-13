@@ -17,13 +17,24 @@ const lerJanela = (mes) => api.listarTransacoesDosMeses(andarMes(mes, -(MESES_DO
 // Dados do Financeiro para um mês: contas, saldos, categorias e os lançamentos do mês.
 // Carrega só quando a página abre (não fica na casca, como os dados das tarefas).
 export function useFinanceiro(mes) {
-  const [base, setBase] = useState({ estado: 'carregando', contas: [], categorias: [], saldos: {}, recorrencias: [] })
+  const [base, setBase] = useState({ estado: 'carregando', contas: [], categorias: [], saldos: {}, recorrencias: [], conexoes: [] })
   const [doMes, setDoMes] = useState({ mes: null, transacoes: [] })
   const [ocultas, setOcultas] = useState([]) // ids com exclusão aguardando o Desfazer
   const [tentativa, setTentativa] = useState(0)
   const exclusoes = useRef(new Map()) // id → timer
 
   const lerSaldos = async () => Object.fromEntries((await api.listarSaldosFin()).map((s) => [s.conta_id, s.saldo_centavos]))
+  // Gastos fixos e conexões só alimentam partes da página: se falharem, o resto carrega.
+  const lerBase = async () => {
+    const [contas, categorias, saldos, recorrencias, conexoes] = await Promise.all([
+      api.listarContasFin(),
+      api.listarCategoriasFin(),
+      lerSaldos(),
+      api.listarRecorrencias().catch(() => []),
+      api.listarConexoes().catch(() => []),
+    ])
+    return { contas, categorias, saldos, recorrencias, conexoes }
+  }
 
   // Primeira carga: categorias iniciais, depois contas, categorias e saldos.
   useEffect(() => {
@@ -31,9 +42,9 @@ export function useFinanceiro(mes) {
     api
       .prepararFinanceiro()
       // Os gastos fixos só alimentam o cartão resumo: se falharem, o resto carrega.
-      .then(() => Promise.all([api.listarContasFin(), api.listarCategoriasFin(), lerSaldos(), api.listarRecorrencias().catch(() => [])]))
+      .then(lerBase)
       .then(
-        ([contas, categorias, saldos, recorrencias]) => ativo && setBase({ estado: 'pronto', contas, categorias, saldos, recorrencias }),
+        (dados) => ativo && setBase({ estado: 'pronto', ...dados }),
         (erro) => ativo && setBase((b) => ({ ...b, estado: 'erro', erro })),
       )
     return () => {
@@ -144,6 +155,44 @@ export function useFinanceiro(mes) {
     [atualizar],
   )
 
+  // Tudo de novo, sem voltar para "carregando" (depois de ler o banco ou juntar contas).
+  const recarregar = useCallback(async () => {
+    const [dados, transacoes] = await Promise.all([lerBase(), lerJanela(mes)])
+    setBase((b) => ({ ...b, ...dados }))
+    setDoMes({ mes, transacoes })
+  }, [mes])
+
+  // Open Finance (fase 4).
+  const lerBancos = useCallback(
+    async (modo) => {
+      const resumo = await api.lerBancos(modo)
+      await recarregar()
+      return resumo
+    },
+    [recarregar],
+  )
+  const desconectarBanco = useCallback(
+    async (conexao, apagar) => {
+      await api.desconectarBanco(conexao, apagar)
+      await recarregar()
+    },
+    [recarregar],
+  )
+  const juntarContas = useCallback(
+    async (importadaId, manualId) => {
+      await api.juntarContas(importadaId, manualId)
+      await recarregar()
+    },
+    [recarregar],
+  )
+  const resolverDuplicata = useCallback(
+    async (transacao, manual, juntar) => {
+      await api.resolverDuplicata(transacao, manual, juntar)
+      await recarregar()
+    },
+    [recarregar],
+  )
+
   const carregandoMes = doMes.mes !== mes
   const janela = carregandoMes ? [] : doMes.transacoes.filter((x) => !ocultas.includes(x.id))
   return {
@@ -152,6 +201,11 @@ export function useFinanceiro(mes) {
     categorias: base.categorias,
     saldos: base.saldos,
     recorrencias: base.recorrencias,
+    conexoes: base.conexoes,
+    lerBancos,
+    desconectarBanco,
+    juntarContas,
+    resolverDuplicata,
     // Lançamentos do mês na tela; `historico` traz também os meses anteriores do resumo.
     transacoes: janela.filter((x) => x.data.startsWith(mes)),
     historico: janela,
