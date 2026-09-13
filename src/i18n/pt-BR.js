@@ -268,6 +268,7 @@ export const t = {
 
   menu: {
     rotulo: 'Navegação',
+    secoes: { rotina: 'Rotina', organizacao: 'Organização', conta: 'Conta' },
     tarefas: 'Tarefas',
     admin: 'Administração',
     foco: 'Foco',

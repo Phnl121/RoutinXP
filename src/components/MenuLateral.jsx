@@ -9,14 +9,34 @@ import { nomeCompleto } from '../lib/perfil'
 import { t } from '../i18n/pt-BR'
 
 const m = t.menu
-const ITENS = [
-  { para: '/', rotulo: m.tarefas, Icone: IconeLista },
-  { para: '/foco', rotulo: m.foco, Icone: IconeFoco },
-  { para: '/painel', rotulo: m.painel, Icone: IconeGrafico },
-  { para: '/categorias', rotulo: t.categoriasPagina.titulo, Icone: IconeEtiqueta },
-  { para: '/integracoes', rotulo: t.integracoes.titulo, Icone: IconeCalendario },
-  { para: '/admin', rotulo: m.admin, Icone: IconeEscudo },
-  { para: '/perfil', rotulo: m.perfil, Icone: IconePessoa },
+// Páginas em seções: o dia a dia no alto, o que se configura de vez em quando embaixo.
+// O Financeiro entra como seção própria entre Rotina e Organização.
+const SECOES = [
+  {
+    id: 'rotina',
+    titulo: m.secoes.rotina,
+    itens: [
+      { para: '/', rotulo: m.tarefas, Icone: IconeLista },
+      { para: '/foco', rotulo: m.foco, Icone: IconeFoco },
+      { para: '/painel', rotulo: m.painel, Icone: IconeGrafico },
+    ],
+  },
+  {
+    id: 'organizacao',
+    titulo: m.secoes.organizacao,
+    itens: [
+      { para: '/categorias', rotulo: t.categoriasPagina.titulo, Icone: IconeEtiqueta },
+      { para: '/integracoes', rotulo: t.integracoes.titulo, Icone: IconeCalendario },
+    ],
+  },
+  {
+    id: 'conta',
+    titulo: m.secoes.conta,
+    itens: [
+      { para: '/perfil', rotulo: m.perfil, Icone: IconePessoa },
+      { para: '/admin', rotulo: m.admin, Icone: IconeEscudo },
+    ],
+  },
 ]
 
 // Menu lateral fixo e retrátil (como o do app do Claude). Desktop: expandido ou em trilho
@@ -59,7 +79,9 @@ export function MenuLateral({ recolhido, onAlternar, gavetaAberta, onFecharGavet
   const nivel = calcularNivel(stats?.xp_total ?? 0).nivel
   // Só as páginas que a conta tem (funções liberadas; Administração só para administradores).
   const conta = useConta()
-  const itens = ITENS.filter((item) => rotaPermitida(conta, item.para))
+  const secoes = SECOES.map((secao) => ({ ...secao, itens: secao.itens.filter((item) => rotaPermitida(conta, item.para)) })).filter(
+    (secao) => secao.itens.length,
+  )
 
   return (
     <>
@@ -84,11 +106,19 @@ export function MenuLateral({ recolhido, onAlternar, gavetaAberta, onFecharGavet
         </div>
 
         <nav className="menu-lateral__nav">
-          {itens.map(({ para, rotulo, Icone }) => (
-            <NavLink key={para} to={para} end={para === '/'} className="menu-lateral__item" title={recolhido ? rotulo : undefined}>
-              <Icone />
-              <span className="menu-lateral__texto">{rotulo}</span>
-            </NavLink>
+          {secoes.map(({ id, titulo, itens }) => (
+            <div key={id} className="menu-lateral__secao" role="group" aria-labelledby={`menu-secao-${id}`}>
+              {/* Recolhido, o título some e um fio separa as seções. */}
+              <span id={`menu-secao-${id}`} className="menu-lateral__titulo">
+                {titulo}
+              </span>
+              {itens.map(({ para, rotulo, Icone }) => (
+                <NavLink key={para} to={para} end={para === '/'} className="menu-lateral__item" title={recolhido ? rotulo : undefined}>
+                  <Icone />
+                  <span className="menu-lateral__texto">{rotulo}</span>
+                </NavLink>
+              ))}
+            </div>
           ))}
         </nav>
 

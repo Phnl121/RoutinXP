@@ -83,9 +83,62 @@
   display: none;
 }
 
+/* Seções com título; se não couber na altura, só a navegação rola (topo e pé ficam). */
 .menu-lateral__nav {
   display: grid;
+  align-content: start;
+  gap: 1.125rem;
+  position: relative;
+  min-height: 0;
+  /* Folga para o anel de foco não ser cortado pela rolagem. */
+  margin: -0.25rem;
+  padding: 0.25rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule-strong) transparent;
+}
+
+/* Enquanto houver itens abaixo, o pé da navegação esmaece (some ao chegar no fim). */
+@property --menu-esmaecer {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@supports (animation-timeline: scroll()) {
+  .menu-lateral__nav {
+    mask-image: linear-gradient(to bottom, var(--ink) calc(100% - var(--menu-esmaecer)), transparent);
+    animation: menu-esmaecer linear both;
+    animation-timeline: scroll(self);
+  }
+}
+
+@keyframes menu-esmaecer {
+  0%,
+  90% {
+    --menu-esmaecer: 3.5rem;
+  }
+
+  100% {
+    --menu-esmaecer: 0px;
+  }
+}
+
+.menu-lateral__secao {
+  display: grid;
   gap: 2px;
+}
+
+.menu-lateral__titulo {
+  padding: 0 0.8rem 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  color: var(--muted);
+  white-space: nowrap;
 }
 
 .menu-lateral__item {
@@ -191,6 +244,30 @@
 
   .menu-lateral[data-recolhido='true'] .menu-lateral__texto {
     display: none;
+  }
+
+  /* Trilho: o título vira um fio curto entre as seções (o nome segue para leitores de tela). */
+  .menu-lateral[data-recolhido='true'] .menu-lateral__nav {
+    gap: 0.625rem;
+  }
+
+  .menu-lateral[data-recolhido='true'] .menu-lateral__titulo {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .menu-lateral[data-recolhido='true'] .menu-lateral__secao + .menu-lateral__secao::before {
+    content: '';
+    justify-self: center;
+    width: 1.5rem;
+    height: 1px;
+    margin-bottom: 0.625rem;
+    background: var(--rule);
   }
 
   .menu-lateral[data-recolhido='true'] .menu-lateral__usuario {
