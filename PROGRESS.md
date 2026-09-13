@@ -112,6 +112,27 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
 
+### 2026-09-13, Claude Code (Opus 5): correções da auditoria de segurança
+Pedido do usuário: auditoria de segurança e correção do que desse para corrigir no código.
+
+Feito (commits locais, sem push; nada aplicado no Supabase):
+- **Teto de XP** (`20260913154343_teto_xp_por_dia`): o XP do dia fica em `user_stats.xp_dia`/`xp_dia_total`. Antes, excluir tarefas concluídas zerava a soma do dia e liberava XP sem limite. `minhas_estatisticas.xp_hoje` usa o mesmo valor.
+- **Push** (`20260913154344_push_sem_sequestro`): `registrar_push` só passa a inscrição para outra conta quando a chave `auth` é a mesma (mesmo navegador). Antes bastava saber o endpoint.
+- **Limites por usuário** (`20260913154346_limites_por_usuario`): 20 calendários, 100 categorias, 200 tags, 30 colunas, 10 mil tarefas e até 24 h de foco somadas em 24 h. Erro `limite_atingido` com texto em `pt-BR.js`.
+- **Edge Functions:** recusam sem `x-cron-secret` antes de consultar o banco; o filtro contra SSRF agora bloqueia se `Deno.resolveDns` não existir (antes deixava passar) e cobre IPv4 dentro de IPv6 em hexadecimal, 6to4, Teredo e multicast.
+- **Vercel:** CSP, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy` e `Permissions-Policy`. A CSP precisa de `'unsafe-eval'` e de `embed-cdn.spotifycdn.com` porque o player do Spotify usa `eval` (testado: sem isso o player não aparece). Testada no dev (`/foco?previa`, player carregou sem violação) e no build (`/entrar` com Turnstile).
+- **Senha nova:** mínimo de 8 caracteres com letras e números no formulário.
+
+Travou:
+- Sem Docker, as migrations não foram testadas num banco local; foram revisadas à mão.
+- DNS rebinding no leitor de calendários continua possível em tese: o runtime não deixa fixar o IP conferido na conexão.
+
+Próximo (usuário):
+- `npx.cmd supabase db push` (as três migrations) e `npx.cmd supabase functions deploy sincronizar-calendarios --no-verify-jwt --use-api` e `avisos-foco`.
+- Depois do deploy, testar "Testar link" em Integrações: se todo link der "link inválido", o runtime não tem `Deno.resolveDns` (aparece no log da função).
+- Painel do Supabase: fechar o cadastro; senha mínima 8 com letras e números; "Secure password change"; conferir CAPTCHA ligado.
+- Push na `main` para os cabeçalhos da Vercel irem ao ar; conferir o player do Spotify e o login em produção.
+
 ### 2026-09-13, Claude Code (Opus 5): app por convite
 Pedido do usuário: ninguém cria conta sozinho; o dono cria as contas (senha provisória) no painel do Supabase. Isso também protege a futura área financeira.
 
