@@ -217,9 +217,9 @@ returns void
 language sql
 security definer
 set search_path = ''
-as $
+as $$
   delete from auth.sessions where user_id = p_user;
-$;
+$$;
 
 revoke execute on function public.encerrar_sessoes(uuid) from public, anon, authenticated;
 grant execute on function public.encerrar_sessoes(uuid) to service_role;
