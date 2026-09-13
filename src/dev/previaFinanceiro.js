@@ -243,6 +243,7 @@ export async function listarRecorrencias() {
 }
 
 export async function salvarRecorrencia(r) {
+  // (a prévia não falha ao gerar parcelas: não precisa do plano anterior)
   await espera()
   if (r.id) {
     recorrencias = recorrencias.map((x) => (x.id === r.id ? { ...x, ...r } : x))

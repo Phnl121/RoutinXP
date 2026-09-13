@@ -1198,3 +1198,9 @@ button.fin-dre__botao:hover {
     align-items: flex-start;
   }
 }
+
+/* Lançamento com data futura (parcela agendada): na lista, mas fora dos totais. */
+.fin-linha[data-agendado='true'] .fin-linha__descricao,
+.fin-linha[data-agendado='true'] .fin-linha__valor {
+  color: var(--muted);
+}

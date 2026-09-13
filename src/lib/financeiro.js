@@ -133,7 +133,7 @@ const camposRecorrencia = (x) => ({
 })
 
 // Salva o gasto fixo; numa compra parcelada, cria ou refaz as parcelas logo em seguida.
-export async function salvarRecorrencia(rec) {
+export async function salvarRecorrencia(rec, anterior) {
   const consulta = rec.id
     ? supabase.from('fin_recorrencias').update(camposRecorrencia(rec)).eq('id', rec.id)
     : supabase.from('fin_recorrencias').insert(camposRecorrencia(rec))
@@ -143,6 +143,8 @@ export async function salvarRecorrencia(rec) {
     // Compra nova sem parcelas não fica pela metade.
     if (error) {
       if (!rec.id) await supabase.from('fin_recorrencias').delete().eq('id', salva.id)
+      // Edição: o plano volta ao anterior, para bater com as parcelas que continuam lá.
+      else if (anterior) await supabase.from('fin_recorrencias').update(camposRecorrencia(anterior)).eq('id', rec.id)
       throw error
     }
   }

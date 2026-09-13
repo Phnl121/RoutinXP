@@ -54,17 +54,21 @@ export default function Financeiro() {
       (!contaId || x.conta_id === contaId || x.conta_destino_id === contaId) &&
       (!termo || x.descricao.toLocaleLowerCase('pt-BR').includes(termo)),
   )
-  const placar = somar(d.transacoes)
+  // Parcelas com data futura aparecem na lista como agendadas, mas ainda não contam nos totais.
+  const hojeDia = hojeBrasilia()
+  const efetivas = d.transacoes.filter((x) => x.data <= hojeDia)
+  const placar = somar(efetivas)
   // Com uma conta escolhida, transferências contam: entram ou saem daquela conta.
   const somaFiltro = contaId
     ? filtradas.reduce(
         (soma, x) => {
+          if (x.data > hojeDia) return soma
           const entra = x.tipo === 'entrada' || (x.tipo === 'transferencia' && x.conta_destino_id === contaId)
           return entra ? { ...soma, entradas: soma.entradas + x.valor_centavos } : { ...soma, saidas: soma.saidas + x.valor_centavos }
         },
         { entradas: 0, saidas: 0 },
       )
-    : somar(filtradas)
+    : somar(filtradas.filter((x) => x.data <= hojeDia))
   const grupos = agruparPorDia(filtradas)
 
   const excluir = useCallback(
@@ -121,7 +125,10 @@ export default function Financeiro() {
   const poupado = placar.entradas > 0 ? Math.round((placar.resultado / placar.entradas) * 100) : null
 
   // Resumo (fase 2): comparação com o mês anterior, gastos por categoria, DRE e evolução.
-  const evolucao = somarPorMes(d.historico, mesesAte(mes, MESES_DO_RESUMO))
+  const evolucao = somarPorMes(
+    d.historico.filter((x) => x.data <= hojeDia),
+    mesesAte(mes, MESES_DO_RESUMO),
+  )
   const mesAnterior = evolucao[evolucao.length - 2].mes
   const temAntes = d.historico.some((x) => x.data.startsWith(mesAnterior))
   // No mês em andamento, a comparação é com o mês anterior até o mesmo dia (13 dias contra 13).
@@ -140,8 +147,8 @@ export default function Financeiro() {
         poupado: poupado !== null && poupadoAntes !== null ? poupado - poupadoAntes : null,
       }
     : null
-  const gastos = gastosPorCategoria(d.transacoes, categoriaPorId)
-  const dre = montarDre(d.transacoes, categoriaPorId)
+  const gastos = gastosPorCategoria(efetivas, categoriaPorId)
+  const dre = montarDre(efetivas, categoriaPorId)
   const verCategoria = (id) => {
     setCategoriaId(id)
     setTipo('todos')
@@ -293,7 +300,10 @@ export default function Financeiro() {
                   grupos.map((g) => (
                     <section key={g.dia} className="fin-dia" aria-labelledby={`fin-dia-${g.dia}`}>
                       <h3 className="fin-dia__cabeca" id={`fin-dia-${g.dia}`}>
-                        <span className="label">{rotuloDia(g.dia)}</span>
+                        <span className="label">
+                          {rotuloDia(g.dia)}
+                          {g.dia > hojeDia && ` · ${l.agendado}`}
+                        </span>
                         {/* Dia só com transferências não mexe no resultado: sem total. */}
                         {g.total !== 0 && (
                           <span className="fin-dia__total" aria-label={l.totalDia(formatarReais(g.total, { sinal: true }))}>
@@ -429,7 +439,7 @@ function LinhaLancamento({ transacao: x, conta, destino, categoria, onAbrir }) {
     : `${categoria?.nome ?? l.semCategoria} · ${conta?.nome ?? '—'}`
   const valor = x.tipo === 'entrada' ? x.valor_centavos : x.tipo === 'saida' ? -x.valor_centavos : x.valor_centavos
   return (
-    <button type="button" className="fin-linha" onClick={onAbrir} data-tipo={x.tipo}>
+    <button type="button" className="fin-linha" onClick={onAbrir} data-tipo={x.tipo} data-agendado={x.data > hojeBrasilia()}>
       <span
         className="fin-linha__ponto"
         data-vazio={transferencia || revisar}

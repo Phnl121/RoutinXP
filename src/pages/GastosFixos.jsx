@@ -77,6 +77,16 @@ export default function GastosFixos() {
   )
   const vencidas = cobrancas.filter((c) => c.rec.tipo !== 'parcelada' && c.dia < hoje && !c.pagamento).sort((a, b) => a.dia.localeCompare(b.dia))
   const proximas = cobrancas.filter((c) => c.dia >= hoje).sort((a, b) => a.dia.localeCompare(b.dia) || a.rec.nome.localeCompare(b.rec.nome))
+  // Pagas neste mês com o dia já passado: continuam à vista, com o check e o Desfazer.
+  const inicioMes = `${mesDe(hoje)}-01`
+  // (desde o começo do mês, mesmo antes do cadastro: o que foi pago aparece)
+  const pagasNoMes = recs
+    .filter((rec) => rec.tipo !== 'parcelada')
+    .flatMap((rec) =>
+      cobrancasEntre(rec, inicioMes, somarDias(hoje, -1)).map((c) => ({ rec, ...c, pagamento: pagoPor.get(chaveCobranca(rec.id, c.dia)) ?? null })),
+    )
+    .filter((c) => c.pagamento)
+    .sort((a, b) => a.dia.localeCompare(b.dia))
   const porDia = proximas.reduce((mapa, c) => mapa.set(c.dia, [...(mapa.get(c.dia) ?? []), c]), new Map())
 
   // Placar.
@@ -87,9 +97,16 @@ export default function GastosFixos() {
   const parceladasAbertas = recs.filter((rec) => rec.tipo === 'parcelada').map((rec) => progressoParcelas(rec, hoje)).filter((p) => p.restantes > 0)
   const parcelasFalta = parceladasAbertas.reduce((soma, p) => soma + p.falta, 0)
   const mes = mesDe(hoje)
+  // Pagas contam sempre; em aberto, só as que a lista também mostra (desde o cadastro).
   const doMes = recs
     .filter((rec) => rec.tipo !== 'parcelada')
-    .flatMap((rec) => cobrancasEntre(rec, `${mes}-01`, `${mes}-31`).map((c) => pagoPor.has(chaveCobranca(rec.id, c.dia))))
+    .flatMap((rec) => {
+      const piso = desdeCadastro(rec)
+      return cobrancasEntre(rec, `${mes}-01`, `${mes}-31`)
+        .map((c) => ({ paga: pagoPor.has(chaveCobranca(rec.id, c.dia)), visivel: c.dia >= piso }))
+        .filter((c) => c.paga || c.visivel)
+        .map((c) => c.paga)
+    })
   const pagosNoMes = doMes.filter(Boolean).length
 
   async function pagar(c) {
@@ -102,7 +119,8 @@ export default function GastosFixos() {
         rec: c.rec,
         referencia: c.dia,
         valor_centavos: c.rec.valor_centavos,
-        data: c.dia < hoje ? c.dia : hoje,
+        // Pagamento é registrado no dia em que foi feito (hoje), não no vencimento.
+        data: hoje,
         conta_id: c.rec.conta_id,
       })
       avisarPago(c.rec.nome, pagamento.id)
@@ -232,7 +250,7 @@ export default function GastosFixos() {
                     <ul className="gf-cobrancas">{vencidas.map(linhaCobranca)}</ul>
                   </div>
                 )}
-                {porDia.size === 0 && vencidas.length === 0 ? (
+                {porDia.size === 0 && vencidas.length === 0 && pagasNoMes.length === 0 ? (
                   <p className="hint">{g.proximas.vazio}</p>
                 ) : (
                   [...porDia.entries()].map(([dia, itens]) => (
@@ -241,6 +259,12 @@ export default function GastosFixos() {
                       <ul className="gf-cobrancas">{itens.map(linhaCobranca)}</ul>
                     </div>
                   ))
+                )}
+                {pagasNoMes.length > 0 && (
+                  <div className="gf-dia">
+                    <h3 className="gf-dia__cabeca label">{g.proximas.pagasNoMes}</h3>
+                    <ul className="gf-cobrancas">{pagasNoMes.map(linhaCobranca)}</ul>
+                  </div>
                 )}
               </section>
 
@@ -314,7 +338,7 @@ function LinhaGasto({ rec, conta, hoje, onAbrir }) {
   const proxima = !parcelada && rec.ativa ? proximaCobranca(rec, hoje) : null
   const detalhe = parcelada
     ? g.progresso(progresso.pagas, progresso.total, formatarReais(progresso.falta))
-    : [repeticao(rec), conta?.nome].filter(Boolean).join(' · ')
+    : [repeticao(rec), rec.valor_variavel ? g.proximas.aproximado : null, conta?.nome].filter(Boolean).join(' · ')
   const lateral = !rec.ativa
     ? g.pausada
     : parcelada
@@ -335,7 +359,6 @@ function LinhaGasto({ rec, conta, hoje, onAbrir }) {
       <span className="gf-gasto__lado">
         <span className="gf-gasto__valor">
           {formatarReais(rec.valor_centavos)}
-          {rec.valor_variavel && <span className="hint"> ~</span>}
         </span>
         {lateral && <span className="gf-gasto__extra">{lateral}</span>}
       </span>

@@ -51,14 +51,15 @@ export function useGastosFixos() {
 
   const salvar = useCallback(
     async (rec) => {
-      const salva = await api.salvarRecorrencia(rec)
+      const anterior = rec.id ? dados.recorrencias.find((x) => x.id === rec.id) : null
+      const salva = await api.salvarRecorrencia(rec, anterior)
       setDados((d) => ({
         ...d,
         recorrencias: rec.id ? d.recorrencias.map((x) => (x.id === salva.id ? salva : x)) : [...d.recorrencias, salva],
       }))
       if (salva.tipo === 'parcelada') await recarregarPagamentos()
     },
-    [recarregarPagamentos],
+    [recarregarPagamentos, dados.recorrencias],
   )
 
   const excluir = useCallback(

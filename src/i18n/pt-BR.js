@@ -814,6 +814,7 @@ export const t = {
       editar: (descricao) => `Editar ${descricao}`,
       transferencia: (de, para) => `${de} → ${para}`,
       excluido: 'Lançamento excluído.',
+      agendado: 'agendado',
     },
     contas: {
       titulo: 'Contas e cartões',
@@ -922,6 +923,7 @@ export const t = {
     proximas: {
       titulo: 'Próximos 30 dias',
       vencidas: 'Vencidas',
+      pagasNoMes: 'Pagas este mês',
       vazio: 'Nada vence nos próximos 30 dias.',
       pagar: 'Pagar',
       pagarRotulo: (nome, dia) => `Marcar ${nome} de ${dia} como paga`,

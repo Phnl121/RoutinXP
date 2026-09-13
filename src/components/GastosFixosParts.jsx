@@ -262,7 +262,7 @@ export function PagarDialog({ recorrencia, referencia, rotuloDia, contas, onPaga
   const p = g.pagar
   const [valor, setValor] = useState(recorrencia.valor_centavos)
   const hoje = hojeBrasilia()
-  const [data, setData] = useState(referencia < hoje ? referencia : hoje)
+  const [data, setData] = useState(hoje)
   const [contaId, setContaId] = useState(recorrencia.conta_id)
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState(null)
