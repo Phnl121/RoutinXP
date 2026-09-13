@@ -27,7 +27,10 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
     - `20260911190000_revogar_execucao_gatilho`;
     - `20260911200000_kanban_colunas`;
     - `20260911220000_sessoes_foco`;
-    - `20260911230000_avisos_foco`.
+    - `20260911230000_avisos_foco`;
+    - `20260913154343_teto_xp_por_dia`;
+    - `20260913154344_push_sem_sequestro`;
+    - `20260913154346_limites_por_usuario`.
   - **Mudança no banco:**
     - Criar a migration com `npx.cmd supabase migration new <nome>`.
     - Escrever o SQL no arquivo gerado.
@@ -115,7 +118,7 @@ Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer
 ### 2026-09-13, Claude Code (Opus 5): correções da auditoria de segurança
 Pedido do usuário: auditoria de segurança e correção do que desse para corrigir no código.
 
-Feito (commits locais, sem push; nada aplicado no Supabase):
+Feito (migrations aplicadas e Edge Functions publicadas pelo usuário; push feito com autorização):
 - **Teto de XP** (`20260913154343_teto_xp_por_dia`): o XP do dia fica em `user_stats.xp_dia`/`xp_dia_total`. Antes, excluir tarefas concluídas zerava a soma do dia e liberava XP sem limite. `minhas_estatisticas.xp_hoje` usa o mesmo valor.
 - **Push** (`20260913154344_push_sem_sequestro`): `registrar_push` só passa a inscrição para outra conta quando a chave `auth` é a mesma (mesmo navegador). Antes bastava saber o endpoint.
 - **Limites por usuário** (`20260913154346_limites_por_usuario`): 20 calendários, 100 categorias, 200 tags, 30 colunas, 10 mil tarefas e até 24 h de foco somadas em 24 h. Erro `limite_atingido` com texto em `pt-BR.js`.
@@ -128,10 +131,9 @@ Travou:
 - DNS rebinding no leitor de calendários continua possível em tese: o runtime não deixa fixar o IP conferido na conexão.
 
 Próximo (usuário):
-- `npx.cmd supabase db push` (as três migrations) e `npx.cmd supabase functions deploy sincronizar-calendarios --no-verify-jwt --use-api` e `avisos-foco`.
-- Depois do deploy, testar "Testar link" em Integrações: se todo link der "link inválido", o runtime não tem `Deno.resolveDns` (aparece no log da função).
-- Painel do Supabase: fechar o cadastro; senha mínima 8 com letras e números; "Secure password change"; conferir CAPTCHA ligado.
-- Push na `main` para os cabeçalhos da Vercel irem ao ar; conferir o player do Spotify e o login em produção.
+- Testar "Testar link" em Integrações: se todo link der "link inválido", o runtime não tem `Deno.resolveDns` (aparece no log da função).
+- Painel do Supabase: senha mínima 8 com letras e números e "Secure password change" (Authentication → Sign In / Providers → Email). Cadastro fechado, CAPTCHA e lista de usuários já conferidos (2026-09-13).
+- Conferir em produção o login, o player do Spotify (CSP) e os avisos do Foco.
 
 ### 2026-09-13, Claude Code (Opus 5): app por convite
 Pedido do usuário: ninguém cria conta sozinho; o dono cria as contas (senha provisória) no painel do Supabase. Isso também protege a futura área financeira.
