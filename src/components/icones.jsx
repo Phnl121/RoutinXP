@@ -101,7 +101,7 @@ export function IconePular() {
   )
 }
 
-// Escudo (Administração).
+// Carteira (Financeiro).
 export function IconeCarteira() {
   return (
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -111,6 +111,7 @@ export function IconeCarteira() {
   )
 }
 
+// Escudo (Administração).
 export function IconeEscudo() {
   return (
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
