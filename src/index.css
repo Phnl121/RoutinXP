@@ -378,3 +378,33 @@ select {
     transition-delay: 0ms !important;
   }
 }
+
+/* Botão de contorno (ação secundária forte): Foco e Administração. */
+.botao-contorno {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 3rem;
+  padding: 0 1.25rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background-color 0.2s var(--ease-out),
+    border-color 0.2s var(--ease-out);
+}
+
+.botao-contorno:hover {
+  border-color: var(--muted);
+  background: var(--panel-2);
+}
+
+.botao-contorno svg {
+  width: 1rem;
+  height: 1rem;
+}

@@ -143,13 +143,21 @@ export function ConfirmarAcaoDialogo({ acao, conta, onConfirmar, onFechar }) {
             {erro}
           </p>
         )}
+        {/* Destruição nunca é um botão roxo: excluir confirma pela ação de texto, como nas outras janelas. */}
         <div className="dialogo__acoes">
+          {excluir && (
+            <button type="submit" className="dialogo__excluir" disabled={!liberado || enviando}>
+              {textos.acao}
+            </button>
+          )}
           <button type="button" className="link-btn" onClick={() => ref.current?.close()}>
             {ad.confirmar.cancelar}
           </button>
-          <button type="submit" className="btn" disabled={!liberado || enviando}>
-            {textos.acao}
-          </button>
+          {!excluir && (
+            <button type="submit" className="btn" disabled={enviando}>
+              {textos.acao}
+            </button>
+          )}
         </div>
       </form>
     </Dialogo>
