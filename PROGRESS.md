@@ -131,10 +131,9 @@ Travou:
 - Sem Docker, as migrations não foram testadas num banco local; foram revisadas à mão.
 - DNS rebinding no leitor de calendários continua possível em tese: o runtime não deixa fixar o IP conferido na conexão.
 
-Conferido pelo usuário (2026-09-13): cadastro fechado, CAPTCHA ligado, lista de usuários revisada, "Secure password change" ligado, "Testar link" das Integrações funcionando (o runtime tem `Deno.resolveDns`) e player do Spotify aparecendo com a CSP em produção.
+Conferido pelo usuário (2026-09-13): cadastro fechado, CAPTCHA ligado, lista de usuários revisada, "Secure password change" ligado, senha mínima de 8 caracteres com letras e números, "Testar link" das Integrações funcionando (o runtime tem `Deno.resolveDns`) e player do Spotify aparecendo com a CSP em produção.
 
 Próximo:
-- Confirmar no painel a senha mínima de 8 caracteres com letras e números (Authentication → Sign In / Providers → Email).
 - Risco aceito: DNS rebinding teórico no leitor de calendários.
 
 ### 2026-09-13, Claude Code (Opus 5): app por convite
