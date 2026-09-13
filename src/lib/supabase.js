@@ -9,4 +9,8 @@ if (!supabaseUrl || !supabaseKey) {
   )
 }
 
+// Link do e-mail de convite do Supabase (…#access_token=…&type=invite): lido antes de o
+// cliente abrir a sessão e limpar o endereço, para o app pedir que a pessoa crie a senha.
+export const chegouPorConvite = typeof window !== 'undefined' && /[#&]type=invite(&|$)/.test(window.location.hash)
+
 export const supabase = createClient(supabaseUrl, supabaseKey)

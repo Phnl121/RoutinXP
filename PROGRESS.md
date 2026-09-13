@@ -56,8 +56,8 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 
 ### O que existe (no ar e validado pelo usuário)
 - **Conta:**
-  - login e cadastro com perfil (nome, sobrenome, nascimento com 13 anos ou mais, ocupação);
-  - confirmação por e-mail e "Esqueci minha senha";
+  - **por convite** (desde 2026-09-13): sem cadastro na tela de entrada; o dono cria a conta no painel do Supabase com senha provisória;
+  - entrar, "Esqueci minha senha" e link de convite (cai em "Crie sua senha");
   - página Perfil.
 - **Tarefas (`/`):**
   - **Visões:** Lista agrupada por categoria (Pendentes/Concluídas); Kanban com colunas próprias e coloridas (soltar em Concluídas conclui); Calendário (Mês, Semana, Dia, Linha do tempo).
@@ -111,6 +111,23 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
+
+### 2026-09-13, Claude Code (Opus 5): app por convite
+Pedido do usuário: ninguém cria conta sozinho; o dono cria as contas (senha provisória) no painel do Supabase. Isso também protege a futura área financeira.
+
+Feito:
+- **Tela de entrada:** saíram a aba "Criar conta" e o formulário de cadastro. Entraram o título "Entrar" e a frase "O RoutinXP é por convite. Entre com o e-mail e a senha que você recebeu.". Ficam "Entrar" e "Esqueci minha senha".
+- **Link de convite:** `src/lib/supabase.js` lê `type=invite` no endereço antes de o cliente limpá-lo, e `useSession` manda a pessoa para a tela de senha, que diz "Crie sua senha" / "Criar senha".
+- **Textos:** saíram os textos e erros de cadastro (`pt-BR.js`, `authErrors.js`).
+- **Documentação:** DESIGN.md, design.json e o brief da casca atualizados.
+
+Ação do usuário (painel do Supabase):
+- **Fechar o cadastro no servidor:** Authentication → Sign In / Providers → desligar "Allow new users to sign up". Sem isso, alguém ainda consegue criar conta chamando a API direto.
+- **Criar uma conta:** Authentication → Users → Add user → Create new user, com e-mail, senha provisória e "Auto Confirm User".
+- **Revisar a lista de usuários** e excluir contas desconhecidas.
+
+Próximo:
+- Trava da área financeira no servidor (acesso por usuário, liberado só pelo dono), junto com a nova funcionalidade.
 
 ### 2026-09-13, Claude Code (Opus 5): fechamento da v1 e da v2, documentação atualizada
 - O usuário testou em produção e validou:

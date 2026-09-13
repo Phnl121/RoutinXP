@@ -706,7 +706,7 @@
       "name": "Underline Tabs",
       "kind": "nav",
       "refersTo": "tab",
-      "description": "View/mode switch (Entrar / Criar conta, Lista / Kanban / Calendário) with a rounded violet bar that scales in under the active tab.",
+      "description": "View switch (Lista / Kanban / Calendário) with a rounded violet bar that scales in under the active tab.",
       "html": "<div class=\"ds-tabs\" role=\"group\"><button aria-pressed=\"true\">Lista</button><button aria-pressed=\"false\">Kanban</button></div>",
       "css": ".ds-tabs { display: flex; gap: 1.75rem; border-bottom: 1px solid var(--rule, #2e3039); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; } .ds-tabs button { position: relative; padding: 0.25rem 0 0.9rem; border: 0; background: none; font: inherit; font-size: 0.875rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted, #a3a7b3); cursor: pointer; transition: color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-tabs button:hover, .ds-tabs button[aria-pressed='true'] { color: var(--ink, #f3f4f7); } .ds-tabs button::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 3px; border-radius: 999px; background: var(--purple, #7c3aed); transform: scaleX(0); transition: transform 0.3s cubic-bezier(0.16,1,0.3,1); } .ds-tabs button[aria-pressed='true']::after { transform: scaleX(1); } .ds-tabs button:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 2px; }"
     },

@@ -194,7 +194,7 @@ select {
   text-decoration-color: var(--purple-soft);
 }
 
-/* Abas sublinhadas: Entrar / Criar conta, Lista / Kanban / Calendário. */
+/* Abas sublinhadas: Lista / Kanban / Calendário. */
 .tabs {
   display: flex;
   gap: 1.75rem;

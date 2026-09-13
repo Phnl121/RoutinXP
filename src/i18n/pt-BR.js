@@ -34,7 +34,9 @@ export const t = {
   },
 
   auth: {
-    abas: { rotulo: 'Entrar ou criar conta', entrar: 'Entrar', cadastrar: 'Criar conta' },
+    entrarTitulo: 'Entrar',
+    // O cadastro está fechado: as contas são criadas pelo dono do app.
+    convite: 'O RoutinXP é por convite. Entre com o e-mail e a senha que você recebeu.',
     campos: {
       email: 'E-mail',
       emailExemplo: 'voce@email.com',
@@ -48,11 +50,10 @@ export const t = {
     botoes: {
       entrar: 'Entrar',
       entrando: 'Entrando…',
-      cadastrar: 'Criar conta',
-      cadastrando: 'Criando conta…',
       enviarLink: 'Enviar link',
       enviando: 'Enviando…',
       salvarSenha: 'Salvar nova senha',
+      criarSenha: 'Criar senha',
       salvando: 'Salvando…',
     },
     links: {
@@ -65,8 +66,6 @@ export const t = {
     },
     confira: {
       titulo: 'Confira seu e-mail',
-      cadastro: (email) =>
-        `Enviamos um link de confirmação para ${email}. Abra o link para ativar a conta e depois entre por aqui.`,
       reset: (email) =>
         `Se existir uma conta com ${email}, o link para criar uma senha nova já está a caminho. Ele vale por uma hora.`,
       semEmail: 'Não chegou? Olhe a caixa de spam ou tente de novo em alguns minutos.',
@@ -74,6 +73,8 @@ export const t = {
     redefinir: {
       titulo: 'Nova senha',
       texto: 'Escolha uma senha nova para a sua conta.',
+      tituloConvite: 'Crie sua senha',
+      textoConvite: 'Seu convite para o RoutinXP chegou. Escolha a senha que você vai usar para entrar.',
       expiradoTitulo: 'Link expirado',
       expirado: 'Este link expirou ou já foi usado. Peça um novo na tela de login.',
       naoConfere: 'As duas senhas não são iguais.',
@@ -85,8 +86,7 @@ export const t = {
     },
     erros: {
       credenciais: 'E-mail ou senha incorretos.',
-      naoConfirmado: 'Confirme seu e-mail antes de entrar. O link foi enviado quando você criou a conta.',
-      jaExiste: 'Já existe uma conta com esse e-mail. Entre ou use "Esqueci minha senha".',
+      naoConfirmado: 'Este e-mail ainda não foi confirmado. Procure o link de confirmação na sua caixa de entrada ou fale com quem te convidou.',
       limite: 'Muitas tentativas seguidas. Espere alguns minutos e tente de novo.',
       senhaFraca: 'A senha precisa ter pelo menos 6 caracteres.',
       mesmaSenha: 'A senha nova precisa ser diferente da atual.',
@@ -94,7 +94,6 @@ export const t = {
       rede: 'Sem conexão com o servidor. Confira sua internet e tente de novo.',
       generico: 'Algo deu errado. Tente de novo em instantes.',
       captcha: 'A verificação de segurança não foi aceita. Tente de novo.',
-      cadastroDados: 'Não foi possível criar a conta com esses dados. Confira os campos e a data de nascimento (13 anos ou mais).',
     },
   },
 

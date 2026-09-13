@@ -6,21 +6,20 @@ import { DemoXp } from '../components/DemoXp'
 import { Logo } from '../components/Logo'
 import { Captcha } from '../components/Captcha'
 import { captchaAtivo } from '../lib/captcha'
-import { CamposPerfil } from '../components/CamposPerfil'
-import { PERFIL_VAZIO, validarPerfil } from '../lib/perfil'
 import { t } from '../i18n/pt-BR'
 import './auth.css'
 
 const a = t.auth
 
-// modo: 'entrar' | 'cadastrar' | 'esqueci' | 'confira-cadastro' | 'confira-reset'
+// O RoutinXP é por convite (decisão do usuário, 2026-09-13): o cadastro está desligado no
+// Supabase e as contas são criadas pelo dono no painel. Aqui só se entra ou recupera a senha.
+// modo: 'entrar' | 'esqueci' | 'confira-reset'
 export default function Entrar() {
   const [modo, setModo] = useState('entrar')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [enviando, setEnviando] = useState(false)
   const [erro, setErro] = useState(null)
-  const [perfilCampos, setPerfilCampos] = useState(PERFIL_VAZIO)
   const [captchaToken, setCaptchaToken] = useState(null)
   const [reinicioCaptcha, setReinicioCaptcha] = useState(0)
 
@@ -32,13 +31,6 @@ export default function Entrar() {
 
   async function enviar(evento) {
     evento.preventDefault()
-    if (modo === 'cadastrar') {
-      const problema = validarPerfil(perfilCampos)
-      if (problema) {
-        setErro(problema)
-        return
-      }
-    }
     if (captchaAtivo && !captchaToken) {
       setErro(a.captcha.aguarde)
       return
@@ -61,25 +53,6 @@ export default function Entrar() {
       })
       if (error) setErro(mensagemDeErro(error))
       // Com sucesso, a sessão muda e o App leva para o início.
-    } else if (modo === 'cadastrar') {
-      const { data, error } = await supabase.auth.signUp({
-        email: emailLimpo,
-        password: senha,
-        options: {
-          emailRedirectTo: window.location.origin,
-          captchaToken: token,
-          // O trigger de cadastro cria o perfil com estes dados (e confere a idade mínima).
-          data: {
-            ...perfilCampos,
-            primeiro_nome: perfilCampos.primeiro_nome.trim(),
-            sobrenome: perfilCampos.sobrenome.trim(),
-          },
-        },
-      })
-      if (error) setErro(mensagemDeErro(error))
-      // O Supabase não revela que o e-mail já existe: devolve um usuário sem identidades.
-      else if (data.user && data.user.identities?.length === 0) setErro(a.erros.jaExiste)
-      else if (!data.session) trocarModo('confira-cadastro')
     } else if (modo === 'esqueci') {
       const { error } = await supabase.auth.resetPasswordForEmail(emailLimpo, {
         redirectTo: `${window.location.origin}/redefinir-senha`,
@@ -92,7 +65,6 @@ export default function Entrar() {
     setEnviando(false)
   }
 
-  const conferindo = modo === 'confira-cadastro' || modo === 'confira-reset'
   const [frase1, frase2, frase3] = t.entrar.titulo
 
   return (
@@ -107,12 +79,10 @@ export default function Entrar() {
         </div>
 
         <div className="entrar__form panel">
-          {conferindo ? (
+          {modo === 'confira-reset' ? (
             <div role="status">
               <h2 className="auth__title">{a.confira.titulo}</h2>
-              <p className="auth__text">
-                {modo === 'confira-cadastro' ? a.confira.cadastro(email.trim()) : a.confira.reset(email.trim())}
-              </p>
+              <p className="auth__text">{a.confira.reset(email.trim())}</p>
               <p className="hint">{a.confira.semEmail}</p>
               <div className="form__foot">
                 <button type="button" className="link-btn" onClick={() => trocarModo('entrar')}>
@@ -122,30 +92,12 @@ export default function Entrar() {
             </div>
           ) : (
             <>
-              {modo === 'esqueci' ? (
-                <div>
-                  <h2 className="auth__title">{a.esqueci.titulo}</h2>
-                  <p className="auth__text">{a.esqueci.texto}</p>
-                </div>
-              ) : (
-                <div className="tabs" role="group" aria-label={a.abas.rotulo}>
-                  <button type="button" aria-pressed={modo === 'entrar'} onClick={() => trocarModo('entrar')}>
-                    {a.abas.entrar}
-                  </button>
-                  <button type="button" aria-pressed={modo === 'cadastrar'} onClick={() => trocarModo('cadastrar')}>
-                    {a.abas.cadastrar}
-                  </button>
-                </div>
-              )}
+              <div>
+                <h2 className="auth__title">{modo === 'esqueci' ? a.esqueci.titulo : a.entrarTitulo}</h2>
+                <p className="auth__text">{modo === 'esqueci' ? a.esqueci.texto : a.convite}</p>
+              </div>
 
               <form className="form" onSubmit={enviar}>
-                {modo === 'cadastrar' && (
-                  <CamposPerfil
-                    id="cadastro"
-                    valores={perfilCampos}
-                    aoMudar={(campo, valor) => setPerfilCampos((atual) => ({ ...atual, [campo]: valor }))}
-                  />
-                )}
                 <div className="field">
                   <span className="field__top">
                     <label className="label" htmlFor="entrar-email">
@@ -166,15 +118,7 @@ export default function Entrar() {
                   />
                 </div>
 
-                {modo !== 'esqueci' && (
-                  <CampoSenha
-                    rotulo={a.campos.senha}
-                    valor={senha}
-                    aoMudar={setSenha}
-                    novaSenha={modo === 'cadastrar'}
-                    dica={modo === 'cadastrar' ? a.dicaSenha : null}
-                  />
-                )}
+                {modo === 'entrar' && <CampoSenha rotulo={a.campos.senha} valor={senha} aoMudar={setSenha} />}
 
                 <Captcha onToken={setCaptchaToken} reinicio={reinicioCaptcha} />
 
@@ -183,15 +127,13 @@ export default function Entrar() {
                 <div className="form__foot">
                   <button className="btn" type="submit" disabled={enviando}>
                     {modo === 'entrar' && (enviando ? a.botoes.entrando : a.botoes.entrar)}
-                    {modo === 'cadastrar' && (enviando ? a.botoes.cadastrando : a.botoes.cadastrar)}
                     {modo === 'esqueci' && (enviando ? a.botoes.enviando : a.botoes.enviarLink)}
                   </button>
-                  {modo === 'entrar' && (
+                  {modo === 'entrar' ? (
                     <button type="button" className="link-btn" onClick={() => trocarModo('esqueci')}>
                       {a.links.esqueci}
                     </button>
-                  )}
-                  {modo === 'esqueci' && (
+                  ) : (
                     <button type="button" className="link-btn" onClick={() => trocarModo('entrar')}>
                       {a.links.voltar}
                     </button>

@@ -7,7 +7,7 @@ related_targets: ["src/pages","src/components"]
 
 ## Scope
 
-The whole App - Rotina web app: sign-in/sign-up + password reset (step 8, first surface), task list and Quadro (step 9), categories screen, dashboard and profile card (step 11). Mode: **Operate**, except the login's intro column, which has to sell the loop in one glance.
+The whole App - Rotina web app: sign-in + password reset (step 8, first surface; sign-up closed on 2026-09-13, the app is invite-only), task list and Quadro (step 9), categories screen, dashboard and profile card (step 11). Mode: **Operate**, except the login's intro column, which has to sell the loop in one glance.
 
 ## Audience and task
 
@@ -30,7 +30,7 @@ OWN-WORLD: Ground #121318, panels #1C1D24 with 1px #2E3039 rules and 16px radius
 
 STORY: The visitor gets the loop in one glance: finish a task, earn XP, level up. They try it in the demo on the login screen, then sign in. Inside, every completion adds its XP to a bar they can always see.
 
-FIRST VIEWPORT: Login on desktop, two columns in a 70rem frame. Left: "RoutinXP" wordmark, headline "Conclua tarefas. Ganhe XP. Suba de nível." (last sentence green, ~3.75rem), one line of copy, then an interactive demo panel: a level meter (NÍVEL 2 badge + XP 120/150 bar, no avatar or name, since the profile card lives only inside the app) and three sample task rows you can tick; each "+XP" flies to the counter, the counter counts up, and the third fills the bar, holds, then resets to NÍVEL 3 0/200. Right, top-aligned with the headline: the form panel with ENTRAR / CRIAR CONTA tabs, fields, full-width purple button, "Esqueci minha senha". Mobile: headline, form, demo.
+FIRST VIEWPORT: Login on desktop, two columns in a 70rem frame. Left: "RoutinXP" wordmark, headline "Conclua tarefas. Ganhe XP. Suba de nível." (last sentence green, ~3.75rem), one line of copy, then an interactive demo panel: a level meter (NÍVEL 2 badge + XP 120/150 bar, no avatar or name, since the profile card lives only inside the app) and three sample task rows you can tick; each "+XP" flies to the counter, the counter counts up, and the third fills the bar, holds, then resets to NÍVEL 3 0/200. Right, top-aligned with the headline: the form panel (since 2026-09-13 no tabs: title "Entrar" and the invite-only sentence), fields, full-width purple button, "Esqueci minha senha". Mobile: headline, form, demo.
 
 FORM: Canon (the category standard: gamified learning platforms), taken by the user after rejecting two dealt hands. Seed key 3bc9e880. Signature interaction: the "+XP" float plus a bar that fills and a badge that pulses on level-up, the same in the login demo and in the app.
 

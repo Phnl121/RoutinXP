@@ -13,7 +13,7 @@ import { emPrevia, sessaoPrevia } from './dev/previa'
 
 export default function App() {
   const real = useSession()
-  const { recovery, clearRecovery } = real
+  const { recovery, convite, clearRecovery } = real
   const session = emPrevia ? sessaoPrevia : real.session
 
   if (session === undefined) {
@@ -32,7 +32,7 @@ export default function App() {
         <Route path="/entrar" element={session ? <Navigate to={destinoLogado} replace /> : <Entrar />} />
         <Route
           path="/redefinir-senha"
-          element={<RedefinirSenha session={session} aoConcluir={clearRecovery} />}
+          element={<RedefinirSenha session={session} convite={convite} aoConcluir={clearRecovery} />}
         />
         {/* Páginas do app logado, dentro da casca com menu lateral. */}
         <Route

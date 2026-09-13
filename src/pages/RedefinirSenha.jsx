@@ -9,8 +9,9 @@ import './auth.css'
 
 const a = t.auth
 
-// Chega aqui pelo link do e-mail de "esqueci minha senha"; o Supabase já abriu uma sessão de recuperação.
-export default function RedefinirSenha({ session, aoConcluir }) {
+// Chega aqui pelo link do e-mail de "esqueci minha senha" ou pelo link de convite; o Supabase já
+// abriu a sessão. No convite a pessoa ainda não tem senha, então a tela diz "Crie sua senha".
+export default function RedefinirSenha({ session, convite = false, aoConcluir }) {
   const navigate = useNavigate()
   const [senha, setSenha] = useState('')
   const [repetida, setRepetida] = useState('')
@@ -52,8 +53,8 @@ export default function RedefinirSenha({ session, aoConcluir }) {
             </div>
           ) : (
             <>
-              <h1 className="auth__title">{a.redefinir.titulo}</h1>
-              <p className="auth__text">{a.redefinir.texto}</p>
+              <h1 className="auth__title">{convite ? a.redefinir.tituloConvite : a.redefinir.titulo}</h1>
+              <p className="auth__text">{convite ? a.redefinir.textoConvite : a.redefinir.texto}</p>
               <form className="form" onSubmit={enviar}>
                 <CampoSenha rotulo={a.campos.novaSenha} valor={senha} aoMudar={setSenha} novaSenha dica={a.dicaSenha} />
                 <CampoSenha
@@ -66,7 +67,7 @@ export default function RedefinirSenha({ session, aoConcluir }) {
                 {erro && <Aviso>{erro}</Aviso>}
                 <div className="form__foot">
                   <button className="btn" type="submit" disabled={enviando}>
-                    {enviando ? a.botoes.salvando : a.botoes.salvarSenha}
+                    {enviando ? a.botoes.salvando : convite ? a.botoes.criarSenha : a.botoes.salvarSenha}
                   </button>
                 </div>
               </form>

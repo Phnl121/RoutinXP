@@ -61,8 +61,9 @@
   padding: 2rem;
 }
 
-.entrar__form .tabs {
-  margin-bottom: 1.75rem;
+/* Sem abas (o cadastro é por convite): o título "Entrar" e a frase do convite abrem o painel. */
+.entrar__form .auth__text {
+  margin-bottom: 1.5rem;
 }
 
 /* CAPTCHA: continua renderizado (o Turnstile precisa rodar), mas fora do fluxo
