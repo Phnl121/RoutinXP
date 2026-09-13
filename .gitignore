@@ -29,3 +29,6 @@ Thumbs.db
 
 # Vercel CLI (ID do projeto; não é segredo, mas não se versiona)
 .vercel/
+
+# Permissões locais do Claude Code (só desta máquina)
+.claude/settings.local.json
