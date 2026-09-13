@@ -7,7 +7,9 @@ Este arquivo é o ponto de handoff entre ferramentas (Code, Antigravity, ou qual
 
 Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo está no ar e foi testado pelo usuário em produção: PWA no celular, Integrações com os links reais das disciplinas, Kanban, Calendário, tarefas e Foco com os avisos. O log de sessões abaixo guarda o histórico e o detalhe de cada entrega.
 
-**Painel de administração e verificação em duas etapas publicados (2026-09-13):** migration aplicada, Edge Functions publicadas, primeiro administrador marcado e push feito pelo usuário. Falta o teste do usuário em produção.
+**Painel de administração e verificação em duas etapas publicados e testados pelo usuário (2026-09-13).**
+
+**Pronto no código, ainda não publicado (2026-09-13):** menu lateral em seções e Financeiro (fases 0.3, 0.4 e 1: página do mês, lançamentos manuais, contas e categorias). Faltam as migrations `20260913205000_tarefas_fk_no_action` e `20260913210000_financeiro_modelo`, liberar a função Financeiro para a conta no painel e o push.
 
 ### Infraestrutura
 - **Pasta local:** `C:\Users\pedro\Desktop\RoutinXP` (renomeada de `App - Rotina` pelo usuário em 2026-09-13). O git e o link da Supabase CLI continuaram funcionando.
@@ -33,7 +35,9 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
     - `20260913154343_teto_xp_por_dia`;
     - `20260913154344_push_sem_sequestro`;
     - `20260913154346_limites_por_usuario`;
-    - `20260913200000_painel_admin`.
+    - `20260913200000_painel_admin`;
+    - `20260913205000_tarefas_fk_no_action` (**ainda não aplicada**);
+    - `20260913210000_financeiro_modelo` (**ainda não aplicada**).
   - **Mudança no banco:**
     - Criar a migration com `npx.cmd supabase migration new <nome>`.
     - Escrever o SQL no arquivo gerado.
@@ -96,7 +100,8 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 - **Dados de teste:** as 8 tarefas de exemplo foram apagadas pelo usuário (2026-09-13).
 
 ### Pendências
-- **Testar o painel em produção (usuário):** cadastrar o autenticador no próximo acesso, criar uma conta de teste, fazer o primeiro acesso dela, ligar e desligar funções, suspender e reativar.
+- **Publicar o Financeiro** (autorização do usuário): `db push` (as duas migrations acima), push na `main` e, no painel de administração, ligar a função Financeiro na própria conta. Depois testar: primeira conta, lançamentos de saída, entrada e transferência, editar saldo, categorias.
+- **Financeiro, próximas fases:** 2 (resumo do mês e DRE pessoal), 3 (contas a pagar e assinaturas), 4 (MeuPluggy), 5 (categorização por regras), 6 (orçamento e metas; gamificação ainda sem decisão).
 - **Técnicas:**
   - O pacote JS passa de 500 kB; dá para carregar cada página só quando for aberta (lazy loading).
   - O SMTP padrão do Supabase envia só ~2 e-mails por hora. O SMTP próprio depende de um domínio.
@@ -109,7 +114,6 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 - **Risco:** o projeto grátis do Supabase pausa após 1 semana sem uso e precisa ser reativado no painel.
 
 ### Ideias (não agendadas)
-- **Controle financeiro** (próxima frente, pedida em 2026-09-13; em pesquisa, nada construído): categorização automática dos gastos, DRE pessoal, categoria que mais gastou, assinaturas e contas com dia de vencimento. Referência: Pierre (pierre.finance). A fonte dos dados ainda está em aberto: lançamento manual, importar extrato (OFX/CSV) ou Open Finance pelo MeuPluggy (grátis para uso pessoal).
 - **Agenda** (pedida em 2026-09-13, para depois do financeiro): uma área de agenda, que precisa conversar com o Calendário das tarefas, as Integrações e o Foco.
 - **Conquistas e badges:** estavam previstas para depois de validar XP e streak.
 - **Temas desbloqueados por nível:** todas as cores já estão em variáveis CSS.
@@ -120,6 +124,29 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
+
+### 2026-09-13, Claude Code (Opus 5): menu em seções e Financeiro (fases 0.3, 0.4 e 1)
+Pedidos do usuário: o menu lateral dividido por categorias (prioridade) e seguir com o financeiro, lançamento manual primeiro, na ordem de fases do plano.
+
+Feito (commitado localmente, **nada publicado**):
+- **Menu lateral:** seções Rotina (Tarefas, Foco, Painel), Finanças (Financeiro), Organização (Categorias e tags, Integrações) e Conta (Perfil, Administração). Seção sem página liberada some. Recolhido, um fio curto separa as seções. Só a navegação rola em tela baixa, com o pé esmaecido.
+- **Banco** (`20260913210000_financeiro_modelo`):
+  - `fin_contas` (corrente, poupança, cartão com dias de fechamento e vencimento, dinheiro; saldo inicial com data; arquivar), `fin_categorias` (receita ou despesa; despesa com grupo fixa, variável ou assinatura) e `fin_transacoes` (entrada, saída ou transferência; valor em centavos; sem categoria = a revisar).
+  - RLS do dono + política restritiva `tem_funcao('financeiro')`. Gatilho confere que a categoria combina com o tipo; o tipo da categoria não muda. Limites: 50 contas, 200 categorias, 100 mil lançamentos.
+  - `fin_preparar()` cria as categorias iniciais na primeira visita; `fin_saldos()` soma o saldo de cada conta até hoje (desde a data do saldo inicial).
+- **`20260913205000_tarefas_fk_no_action`:** a FK de tarefas para categorias era RESTRICT, o que podia fazer falhar a exclusão de um usuário com tarefas (inclusive pelo painel). Virou NO ACTION; as FKs do financeiro já nascem assim.
+- **Página `/financeiro`** (estrutura "O mês numa página só", escolhida na página de decisão do Impeccable): seletor de mês, placar (Entradas, Saídas, Resultado, Poupado), lançamentos por dia com filtros (busca, tipo, categoria, conta), Contas e cartões com saldos e total, primeira conta quando não há nenhuma, botão flutuante no celular.
+- **Janelas:** lançamento (valor digitado como maquininha, dica de que pagar fatura é transferência), conta (edita o saldo atual; cheque especial; arquivar) e categorias (lista e edição na mesma janela). Excluir lançamento tem Desfazer.
+- **Pré-visualização:** `/financeiro?previa` com dados fictícios (`src/dev/previaFinanceiro.js`).
+- **Impeccable:** brief em `.impeccable/surfaces/src-pages-financeiro-jsx.md`, capturas em `.impeccable/review/financeiro/` e `.impeccable/review/menu/`; revisões finais do menu (4 correções) e do Financeiro (8 correções) aplicadas.
+
+Travou:
+- Sem Docker, as migrations não foram testadas num banco local; revisadas à mão.
+- Excluir todas as categorias financeiras faz as iniciais voltarem na visita seguinte (o preparo só confere se existe alguma).
+
+Próximo:
+- Publicar (ver Pendências) e testar.
+- Fase 2: resumo do mês e DRE pessoal.
 
 ### 2026-09-13, Claude Code (Opus 5): painel de administração e verificação em duas etapas
 Pedido do usuário: um painel para ver as contas do sistema e liberar funções por conta, antes do financeiro. Escolhas: todas as funções controláveis; conta criada com senha provisória gerada; verificação em duas etapas para todo mundo; último acesso só com a data; estrutura "lista e página da conta" (página de decisão do Impeccable).
