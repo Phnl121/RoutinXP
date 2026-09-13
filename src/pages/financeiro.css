@@ -107,6 +107,11 @@
   padding: 0;
 }
 
+/* Atalho para o resumo: só quando a página vira uma coluna. */
+.fin-placar__atalho {
+  display: none;
+}
+
 .fin-placar__itens {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -456,6 +461,360 @@
   border: 0;
 }
 
+/* ---------- Resumo do mês (fase 2) ---------- */
+
+.fin-placar__itens > div {
+  align-content: start;
+}
+
+.fin-placar__var {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.fin-resumo {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1.5rem;
+}
+
+.fin-resumo__cabeca {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+}
+
+.fin-resumo__destaque {
+  margin: -0.25rem 0 0.1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* Gastos por categoria: nome e valor numa linha, barra e fatia embaixo. */
+.fin-gastos {
+  display: grid;
+  margin: 0 -0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.fin-gastos__linha {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-areas:
+    'nome fatia valor'
+    'trilho trilho trilho';
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font: inherit;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease-out);
+}
+
+.fin-gastos__linha:hover {
+  background: var(--panel-2);
+}
+
+.fin-gastos__nome {
+  grid-area: nome;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  font-weight: 600;
+}
+
+.fin-gastos__texto {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.fin-gastos__valor {
+  grid-area: valor;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.fin-gastos__trilho {
+  grid-area: trilho;
+  height: 0.5rem;
+  border-radius: 0 4px 4px 0;
+  background: var(--panel-2);
+  overflow: hidden;
+}
+
+.fin-gastos__linha:hover .fin-gastos__trilho {
+  background: var(--rule);
+}
+
+/* Magnitude sem cor: barras em Muted, a maior em Ink. */
+.fin-gastos__barra {
+  display: block;
+  height: 100%;
+  border-radius: 0 4px 4px 0;
+  background: var(--muted);
+}
+
+.fin-gastos__linha[data-maior='true'] .fin-gastos__barra {
+  background: var(--ink);
+}
+
+.fin-gastos__fatia {
+  grid-area: fatia;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* DRE pessoal */
+.fin-dre {
+  display: grid;
+  margin: 0 -0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.fin-dre__linha + .fin-dre__linha {
+  border-top: 1px solid var(--rule);
+}
+
+.fin-dre__botao {
+  display: grid;
+  /* Colunas de largura fixa: fatia e valor alinham de linha em linha, como numa DRE. */
+  grid-template-columns: minmax(0, 1fr) 2.75rem 7.25rem;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.35rem 0.75rem;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font: inherit;
+  color: var(--ink);
+  text-align: left;
+}
+
+button.fin-dre__botao {
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease-out);
+}
+
+button.fin-dre__botao:hover {
+  background: var(--panel-2);
+}
+
+.fin-dre__nome {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Linhas sem seta alinham o texto com as que têm. */
+.fin-dre__linha > div.fin-dre__botao .fin-dre__nome {
+  padding-left: 1rem;
+}
+
+.fin-dre__seta {
+  flex: none;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin: 0 0.15rem 0 0.1rem;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  transform: rotate(-45deg);
+  transition: transform 0.2s var(--ease-out);
+}
+
+.fin-dre__seta[data-aberta='true'] {
+  transform: rotate(45deg);
+}
+
+.fin-dre__fatia {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.fin-dre__valor {
+  font-weight: 800;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.fin-dre__itens {
+  display: grid;
+  gap: 0.1rem;
+  margin: 0 0 0.5rem;
+  padding: 0 0.75rem 0 2rem;
+  list-style: none;
+}
+
+.fin-dre__itens li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 2rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.fin-dre__item-nome {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.fin-dre__item-nome .fin-linha__ponto {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+.fin-dre__item-valor {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.fin-dre__resultado {
+  border-top-color: var(--rule-strong) !important;
+}
+
+.fin-dre__resultado .fin-dre__nome {
+  font-weight: 800;
+}
+
+.fin-dre__resultado .fin-dre__valor {
+  font-size: 1.125rem;
+}
+
+/* Evolução: pares de barras por mês (entradas cheias, saídas vazadas). */
+.fin-evol {
+  margin: 0;
+}
+
+.fin-evol__legenda {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.fin-evol__chave {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 2px;
+}
+
+.fin-evol__chave + .fin-evol__chave,
+.fin-evol__legenda > .fin-evol__chave[data-serie='saidas'] {
+  margin-left: 0.5rem;
+}
+
+.fin-evol__chave[data-serie='entradas'],
+.fin-evol__barra[data-serie='entradas'] {
+  background: var(--ink);
+}
+
+.fin-evol__chave[data-serie='saidas'],
+.fin-evol__barra[data-serie='saidas'] {
+  background: var(--panel-2);
+  box-shadow: inset 0 0 0 1.5px var(--muted);
+}
+
+.fin-evol__area {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.35rem;
+  height: 9rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.fin-evol__coluna {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  padding: 0 0.2rem;
+  border: 0;
+  border-radius: 8px 8px 0 0;
+  background: none;
+  cursor: pointer;
+}
+
+.fin-evol__coluna:hover,
+.fin-evol__coluna[aria-pressed='true'] {
+  background: var(--panel-2);
+}
+
+.fin-evol__barra {
+  width: min(1rem, 40%);
+  border-radius: 4px 4px 0 0;
+}
+
+.fin-evol__detalhe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1rem;
+  margin-top: 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.fin-evol__detalhe strong {
+  flex-basis: 100%;
+  font-size: 0.875rem;
+  color: var(--ink);
+}
+
+.fin-evol__eixo {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+
+.fin-evol__eixo span {
+  flex: 1;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.fin-evol__eixo span[data-atual='true'] {
+  font-weight: 700;
+  color: var(--ink);
+}
+
 /* ---------- Janelas ---------- */
 
 /* Valor digitado como numa maquininha: grande e tabular. */
@@ -491,8 +850,12 @@
 
 /* Celular estreito: os dois seletores do filtro, um por linha. */
 @container (max-width: 30rem) {
-  .fin-filtros__select {
+  .fin-filtros .fin-filtros__select {
     flex-basis: 100%;
+  }
+
+  .fin-dre__botao {
+    grid-template-columns: minmax(0, 1fr) 2.5rem 6.5rem;
   }
 }
 
@@ -508,9 +871,18 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  /* Contas antes dos lançamentos: o saldo é a primeira pergunta. */
+  /* Contas antes dos lançamentos (o saldo é a primeira pergunta); o resumo vem depois. */
   .fin__lado {
+    display: contents;
+  }
+
+  .fin-contas {
     order: -1;
+  }
+
+  .fin-placar__atalho {
+    display: inline-block;
+    margin: 0 1.5rem 0.9rem;
   }
 }
 
@@ -593,4 +965,21 @@
   .fin-contas {
     padding: 1.25rem;
   }
+}
+
+/* A lista recolhida do DRE: o display do grid não pode vencer o atributo hidden. */
+.fin-dre__itens[hidden] {
+  display: none;
+}
+
+/* Itens da grade (inclusive os painéis da coluna lateral soltos no estreito) podem encolher. */
+.fin__grade > *,
+.fin__lado > * {
+  min-width: 0;
+}
+
+.fin-dre__rotulo {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

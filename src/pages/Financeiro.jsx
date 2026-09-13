@@ -1,9 +1,25 @@
 import { useCallback, useMemo, useState } from 'react'
-import { useFinanceiro } from '../lib/useFinanceiro'
-import { agruparPorDia, andarMes, formatarReais, mesAtual, nomeDoMes, rotuloDia, rotuloMes, somar } from '../lib/dinheiro'
+import { MESES_DO_RESUMO, useFinanceiro } from '../lib/useFinanceiro'
+import {
+  agruparPorDia,
+  andarMes,
+  formatarReais,
+  gastosPorCategoria,
+  mesAtual,
+  mesesAte,
+  montarDre,
+  nomeDoMes,
+  rotuloDia,
+  rotuloMes,
+  somar,
+  somarPorMes,
+  variacaoPct,
+} from '../lib/dinheiro'
+import { DrePessoal, EvolucaoMeses, GastosPorCategoria } from '../components/FinanceiroResumo'
 import { CategoriasFinDialog, ContaFinDialog, LancamentoDialog, Segmentos } from '../components/FinanceiroParts'
 import { Toast } from '../components/Toast'
 import { Aviso } from '../components/AuthParts'
+import { hojeBrasilia } from '../lib/datas'
 import { mensagemErroDados } from '../lib/dadosErros'
 import { IconeLupa, IconeMais, IconeSetaDireita, IconeSetaEsquerda } from '../components/icones'
 import { t } from '../i18n/pt-BR'
@@ -102,6 +118,35 @@ export default function Financeiro() {
   const porCategoria = d.transacoes.reduce((mapa, x) => (x.categoria_id ? { ...mapa, [x.categoria_id]: (mapa[x.categoria_id] ?? 0) + 1 } : mapa), {})
   const poupado = placar.entradas > 0 ? Math.round((placar.resultado / placar.entradas) * 100) : null
 
+  // Resumo (fase 2): comparação com o mês anterior, gastos por categoria, DRE e evolução.
+  const evolucao = somarPorMes(d.historico, mesesAte(mes, MESES_DO_RESUMO))
+  const mesAnterior = evolucao[evolucao.length - 2].mes
+  const temAntes = d.historico.some((x) => x.data.startsWith(mesAnterior))
+  // No mês em andamento, a comparação é com o mês anterior até o mesmo dia (13 dias contra 13).
+  const emAndamento = mes === mesAtual()
+  const diaHoje = Number(hojeBrasilia().slice(8, 10))
+  const antes = somar(
+    d.historico.filter((x) => x.data.startsWith(mesAnterior) && (!emAndamento || Number(x.data.slice(8, 10)) <= diaHoje)),
+  )
+  const nomeAntes = emAndamento ? fin.placar.ateDia(nomeDoMes(mesAnterior), diaHoje) : nomeDoMes(mesAnterior)
+  const poupadoAntes = antes.entradas > 0 ? Math.round((antes.resultado / antes.entradas) * 100) : null
+  const comparacao = temAntes
+    ? {
+        entradas: variacaoPct(placar.entradas, antes.entradas),
+        saidas: variacaoPct(placar.saidas, antes.saidas),
+        resultado: placar.resultado - antes.resultado,
+        poupado: poupado !== null && poupadoAntes !== null ? poupado - poupadoAntes : null,
+      }
+    : null
+  const gastos = gastosPorCategoria(d.transacoes, categoriaPorId)
+  const dre = montarDre(d.transacoes, categoriaPorId)
+  const verCategoria = (id) => {
+    setCategoriaId(id)
+    setTipo('todos')
+    document.getElementById('fin-lanc')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+  const variacao = (texto) => texto !== null && <dd className="fin-placar__var">{texto}</dd>
+
   return (
     <>
       <main className="fin">
@@ -149,22 +194,32 @@ export default function Financeiro() {
                 <div>
                   <dt className="label">{fin.placar.entradas}</dt>
                   <dd className="fin-placar__valor">{formatarReais(placar.entradas)}</dd>
+                  {comparacao && comparacao.entradas !== null && variacao(fin.placar.pct(comparacao.entradas, nomeAntes))}
                 </div>
                 <div>
                   <dt className="label">{fin.placar.saidas}</dt>
                   <dd className="fin-placar__valor">{formatarReais(placar.saidas)}</dd>
+                  {comparacao && comparacao.saidas !== null && variacao(fin.placar.pct(comparacao.saidas, nomeAntes))}
                 </div>
                 <div>
                   <dt className="label">{fin.placar.resultado}</dt>
                   <dd className="fin-placar__valor">{formatarReais(placar.resultado, { sinal: true })}</dd>
+                  {comparacao &&
+                    comparacao.resultado !== 0 &&
+                    variacao(fin.placar.diferenca(formatarReais(Math.abs(comparacao.resultado)), comparacao.resultado > 0, nomeAntes))}
                 </div>
                 <div>
                   <dt className="label">{fin.placar.poupado}</dt>
                   <dd className="fin-placar__valor">
                     {poupado === null ? <span className="fin-placar__nada">{fin.placar.semEntradas}</span> : `${poupado}%`}
                   </dd>
+                  {comparacao && comparacao.poupado !== null && variacao(fin.placar.pontos(comparacao.poupado, nomeAntes))}
                 </div>
               </dl>
+              {/* Uma coluna só: o resumo fica depois dos lançamentos; o atalho leva até ele. */}
+              <a className="link-btn fin-placar__atalho" href="#fin-gastos">
+                {fin.placar.verResumo}
+              </a>
             </section>
 
             <div className="fin__grade">
@@ -301,6 +356,10 @@ export default function Financeiro() {
                     {arquivadas > 0 && <span className="hint">{fin.contas.arquivadas(arquivadas)}</span>}
                   </div>
                 </section>
+
+                <GastosPorCategoria linhas={gastos} onEscolher={verCategoria} />
+                <DrePessoal dre={dre} />
+                <EvolucaoMeses meses={evolucao} mesAtual={mes} />
               </aside>
             </div>
           </>

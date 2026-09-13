@@ -2,12 +2,17 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import * as apiReal from './financeiro'
 import * as apiPrevia from '../dev/previaFinanceiro'
 import { emPrevia } from '../dev/previa'
+import { andarMes } from './dinheiro'
 
 // Em /financeiro?previa (só em desenvolvimento) os dados vêm de uma fixture em memória.
 const api = emPrevia ? apiPrevia : apiReal
 
 // Tempo para desfazer a exclusão de um lançamento antes de ela ir para o banco.
 const PRAZO_DESFAZER = 5000
+
+// Meses buscados de uma vez: o da tela e os anteriores, para o resumo e a evolução.
+export const MESES_DO_RESUMO = 6
+const lerJanela = (mes) => api.listarTransacoesDosMeses(andarMes(mes, -(MESES_DO_RESUMO - 1)), mes)
 
 // Dados do Financeiro para um mês: contas, saldos, categorias e os lançamentos do mês.
 // Carrega só quando a página abre (não fica na casca, como os dados das tarefas).
@@ -35,10 +40,10 @@ export function useFinanceiro(mes) {
     }
   }, [tentativa])
 
-  // Lançamentos do mês escolhido.
+  // Lançamentos do mês escolhido e dos anteriores do resumo.
   useEffect(() => {
     let ativo = true
-    api.listarTransacoesDoMes(mes).then(
+    lerJanela(mes).then(
       (transacoes) => ativo && setDoMes({ mes, transacoes }),
       (erro) => ativo && setDoMes({ mes, transacoes: [], erro }),
     )
@@ -65,7 +70,7 @@ export function useFinanceiro(mes) {
 
   // Depois de gravar: saldos e lançamentos do mês voltam do banco (fonte da verdade).
   const atualizar = useCallback(async () => {
-    const [saldos, transacoes] = await Promise.all([lerSaldos(), api.listarTransacoesDoMes(mes)])
+    const [saldos, transacoes] = await Promise.all([lerSaldos(), lerJanela(mes)])
     setBase((b) => ({ ...b, saldos }))
     setDoMes({ mes, transacoes })
   }, [mes])
@@ -139,12 +144,15 @@ export function useFinanceiro(mes) {
   )
 
   const carregandoMes = doMes.mes !== mes
+  const janela = carregandoMes ? [] : doMes.transacoes.filter((x) => !ocultas.includes(x.id))
   return {
     estado: base.estado,
     contas: base.contas,
     categorias: base.categorias,
     saldos: base.saldos,
-    transacoes: carregandoMes ? [] : doMes.transacoes.filter((x) => !ocultas.includes(x.id)),
+    // Lançamentos do mês na tela; `historico` traz também os meses anteriores do resumo.
+    transacoes: janela.filter((x) => x.data.startsWith(mes)),
+    historico: janela,
     carregandoMes,
     erroMes: carregandoMes ? null : doMes.erro,
     tentarDeNovo,

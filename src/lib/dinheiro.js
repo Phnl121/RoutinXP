@@ -82,3 +82,57 @@ export function agruparPorDia(transacoes) {
     .sort(([a], [b]) => b.localeCompare(a))
     .map(([dia, itens]) => ({ dia, itens, total: itens.reduce((soma, x) => soma + efeito(x), 0) }))
 }
+
+// ---------- Resumo do mês (fase 2) ----------
+
+// Os n meses que terminam em `mes`, do mais antigo para o mais recente.
+export const mesesAte = (mes, n) => Array.from({ length: n }, (_, i) => andarMes(mes, i - (n - 1)))
+
+// "set"
+export function mesCurto(mes) {
+  const [ano, m] = mes.split('-').map(Number)
+  return new Intl.DateTimeFormat('pt-BR', { month: 'short', timeZone: 'UTC' }).format(new Date(Date.UTC(ano, m - 1, 1))).replace('.', '')
+}
+
+// Entradas, saídas e resultado de cada mês da lista.
+export function somarPorMes(transacoes, meses) {
+  return meses.map((mes) => ({ mes, ...somar(transacoes.filter((x) => x.data.startsWith(mes))) }))
+}
+
+// Saídas do mês por categoria, da maior para a menor, com a fatia do total.
+// Lançamentos sem categoria entram juntos como "a revisar" (categoria null).
+export function gastosPorCategoria(transacoes, categoriaPorId) {
+  const totais = new Map()
+  for (const x of transacoes) {
+    if (x.tipo !== 'saida') continue
+    const chave = categoriaPorId[x.categoria_id] ? x.categoria_id : null
+    totais.set(chave, (totais.get(chave) ?? 0) + x.valor_centavos)
+  }
+  const geral = [...totais.values()].reduce((a, b) => a + b, 0)
+  return [...totais.entries()]
+    .map(([id, total]) => ({ categoria: id ? categoriaPorId[id] : null, total, fatia: geral ? total / geral : 0 }))
+    .sort((a, b) => b.total - a.total)
+}
+
+// DRE pessoal: receitas menos despesas fixas, variáveis, assinaturas e o que ainda está sem
+// categoria. Cada linha traz as categorias que a compõem.
+export function montarDre(transacoes, categoriaPorId) {
+  const linha = () => ({ total: 0, itens: new Map() })
+  const linhas = { receitas: linha(), fixa: linha(), variavel: linha(), assinatura: linha(), revisar: linha() }
+  for (const x of transacoes) {
+    if (x.tipo === 'transferencia') continue
+    const categoria = categoriaPorId[x.categoria_id]
+    const chave = x.tipo === 'entrada' ? 'receitas' : categoria ? categoria.grupo : 'revisar'
+    const alvo = linhas[chave] ?? linhas.variavel
+    alvo.total += x.valor_centavos
+    if (categoria) alvo.itens.set(categoria.id, { categoria, total: (alvo.itens.get(categoria.id)?.total ?? 0) + x.valor_centavos })
+  }
+  const pronto = Object.fromEntries(
+    Object.entries(linhas).map(([chave, l]) => [chave, { total: l.total, itens: [...l.itens.values()].sort((a, b) => b.total - a.total) }]),
+  )
+  const despesas = pronto.fixa.total + pronto.variavel.total + pronto.assinatura.total + pronto.revisar.total
+  return { ...pronto, resultado: pronto.receitas.total - despesas }
+}
+
+// Variação percentual inteira entre dois valores; null quando não há base de comparação.
+export const variacaoPct = (atual, anterior) => (anterior > 0 ? Math.round(((atual - anterior) / anterior) * 100) : null)

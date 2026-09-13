@@ -762,6 +762,40 @@ export const t = {
       resultado: 'Resultado',
       poupado: 'Poupado',
       semEntradas: 'sem entradas',
+      // Comparação com o mês anterior, embaixo de cada número.
+      pct: (n, mes) => (n === 0 ? `igual a ${mes}` : `${n > 0 ? '+' : '−'}${Math.abs(n)}% sobre ${mes}`),
+      diferenca: (valor, mais, mes) => `${valor} ${mais ? 'a mais' : 'a menos'} que em ${mes}`,
+      pontos: (n, mes) => (n === 0 ? `igual a ${mes}` : `${n > 0 ? '+' : '−'}${Math.abs(n)} p.p. sobre ${mes}`),
+      // Mês em andamento: compara com o mês anterior até o mesmo dia.
+      ateDia: (mes, dia) => `${mes} até o dia ${dia}`,
+      verResumo: 'Ver resumo do mês',
+    },
+    resumo: {
+      gastos: {
+        titulo: 'Para onde foi',
+        vazio: 'Nenhuma saída neste mês.',
+        maisGastou: (nome, pct) => `Onde mais gastou: ${nome}, ${pct}% das saídas.`,
+        rotulo: (nome, valor, pct) => `${nome}: ${valor}, ${pct}% das saídas. Ver lançamentos`,
+      },
+      dre: {
+        titulo: 'Resultado do mês',
+        linhas: {
+          receitas: 'Receitas',
+          fixa: 'Despesas fixas',
+          variavel: 'Despesas variáveis',
+          assinatura: 'Assinaturas',
+          revisar: 'A revisar',
+          resultado: 'Resultado',
+        },
+      },
+      evolucao: {
+        titulo: (n) => `Últimos ${n} meses`,
+        coluna: (mes, entradas, saidas) => `${mes}: entradas ${entradas}, saídas ${saidas}`,
+        entradas: 'Entradas',
+        saidas: 'Saídas',
+        resultado: 'Resultado',
+        mes: 'Mês',
+      },
     },
     lancamentos: {
       titulo: 'Lançamentos',

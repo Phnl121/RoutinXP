@@ -17,10 +17,10 @@ const noMes = (d) => `${mes}-${String(Math.min(d, diaHoje)).padStart(2, '0')}`
 const noAnterior = (d) => `${anterior}-${String(d).padStart(2, '0')}`
 
 let contas = [
-  { id: 'fc1', nome: 'Nubank', tipo: 'corrente', cor: null, saldo_inicial_em: `${anterior}-01`, saldo_inicial_centavos: 320000, dia_fechamento: null, dia_vencimento: null, arquivada: false, posicao: 0, created_at: agora() },
-  { id: 'fc2', nome: 'Poupança', tipo: 'poupanca', cor: null, saldo_inicial_em: `${anterior}-01`, saldo_inicial_centavos: 850000, dia_fechamento: null, dia_vencimento: null, arquivada: false, posicao: 1, created_at: agora() },
-  { id: 'fc3', nome: 'Cartão Nubank', tipo: 'cartao', cor: null, saldo_inicial_em: `${anterior}-01`, saldo_inicial_centavos: -64230, dia_fechamento: 3, dia_vencimento: 10, arquivada: false, posicao: 2, created_at: agora() },
-  { id: 'fc4', nome: 'Carteira', tipo: 'dinheiro', cor: null, saldo_inicial_em: `${anterior}-01`, saldo_inicial_centavos: 12000, dia_fechamento: null, dia_vencimento: null, arquivada: false, posicao: 3, created_at: agora() },
+  { id: 'fc1', nome: 'Nubank', tipo: 'corrente', cor: null, saldo_inicial_em: `${andarMes(mes, -5)}-01`, saldo_inicial_centavos: 320000, dia_fechamento: null, dia_vencimento: null, arquivada: false, posicao: 0, created_at: agora() },
+  { id: 'fc2', nome: 'Poupança', tipo: 'poupanca', cor: null, saldo_inicial_em: `${andarMes(mes, -5)}-01`, saldo_inicial_centavos: 850000, dia_fechamento: null, dia_vencimento: null, arquivada: false, posicao: 1, created_at: agora() },
+  { id: 'fc3', nome: 'Cartão Nubank', tipo: 'cartao', cor: null, saldo_inicial_em: `${andarMes(mes, -5)}-01`, saldo_inicial_centavos: -64230, dia_fechamento: 3, dia_vencimento: 10, arquivada: false, posicao: 2, created_at: agora() },
+  { id: 'fc4', nome: 'Carteira', tipo: 'dinheiro', cor: null, saldo_inicial_em: `${andarMes(mes, -5)}-01`, saldo_inicial_centavos: 12000, dia_fechamento: null, dia_vencimento: null, arquivada: false, posicao: 3, created_at: agora() },
 ]
 
 const cat = (id, nome, cor, tipo, grupo, posicao) => ({ id, nome, cor, tipo, grupo, arquivada: false, posicao, created_at: agora() })
@@ -69,6 +69,23 @@ let transacoes = [
   tx('entrada', 480000, noAnterior(5), 'Salário', 'fc1', 'fr1'),
   tx('saida', 180000, noAnterior(5), 'Aluguel', 'fc1', 'fk1'),
   tx('saida', 31200, noAnterior(14), 'Mercado', 'fc3', 'fk2'),
+  tx('saida', 5590, noAnterior(6), 'Spotify e Netflix', 'fc3', 'fk8'),
+  tx('saida', 42000, noAnterior(20), 'Curso de inglês', 'fc1', 'fk5'),
+  tx('entrada', 60000, noAnterior(22), 'Freela de design', 'fc1', 'fr2'),
+  // Meses anteriores, para a evolução de 6 meses.
+  ...[2, 3, 4, 5].flatMap((n) => {
+    const m = andarMes(mes, -n)
+    const dia = (d) => `${m}-${String(d).padStart(2, '0')}`
+    return [
+      tx('entrada', 480000, dia(5), 'Salário', 'fc1', 'fr1'),
+      tx('saida', 180000, dia(5), 'Aluguel', 'fc1', 'fk1'),
+      tx('saida', 26000 + n * 3100, dia(12), 'Mercado', 'fc3', 'fk2'),
+      tx('saida', 5590, dia(6), 'Spotify e Netflix', 'fc3', 'fk8'),
+      tx('saida', 9000 * n, dia(18), 'Lazer', 'fc3', 'fk6'),
+      ...(n === 3 ? [tx('entrada', 120000, dia(15), 'Projeto freelance', 'fc1', 'fr2')] : []),
+      ...(n === 4 ? [tx('saida', 95000, dia(21), 'Conserto do notebook', 'fc1', 'fk7')] : []),
+    ]
+  }),
 ]
 
 const copia = (x) => structuredClone(x)
@@ -104,9 +121,10 @@ export async function listarSaldosFin() {
   }))
 }
 
-export async function listarTransacoesDoMes(m) {
+export async function listarTransacoesDosMeses(primeiro, ultimo) {
   await espera()
-  const { inicio, fim } = limitesDoMes(m)
+  const inicio = limitesDoMes(primeiro).inicio
+  const fim = limitesDoMes(ultimo).fim
   return copia(
     transacoes
       .filter((x) => x.data >= inicio && x.data <= fim)

@@ -31,8 +31,10 @@ export async function listarSaldosFin() {
   return ok(await supabase.rpc('fin_saldos'))
 }
 
-export async function listarTransacoesDoMes(mes) {
-  const { inicio, fim } = limitesDoMes(mes)
+// Lançamentos de vários meses seguidos: o mês na tela e os anteriores do resumo.
+export async function listarTransacoesDosMeses(primeiroMes, ultimoMes) {
+  const inicio = limitesDoMes(primeiroMes).inicio
+  const fim = limitesDoMes(ultimoMes).fim
   return ok(
     await supabase
       .from('fin_transacoes')
