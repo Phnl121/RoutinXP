@@ -9,7 +9,7 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 
 **Painel de administração e verificação em duas etapas publicados e testados pelo usuário (2026-09-13).**
 
-**Financeiro no ar e testado pelo usuário (2026-09-13):** menu em seções, fases 0 a 3 (página do mês, lançamentos manuais, contas, categorias, resumo com DRE e evolução, Gastos fixos). Falta aplicar `20260913230000_gastos_fixos_tipo_fixo` (correção da revisão) e publicar os ajustes finais.
+**Financeiro no ar (2026-09-13):** menu em seções, fases 0 a 3 testadas pelo usuário; fase 4 (Open Finance pelo MeuPluggy) publicada: migration `20260914100000_financeiro_open_finance`, Edge Function `sincronizar-banco` (sem verificação de JWT; confere o admin verificado) e leitura diária às 6h. Falta o primeiro teste real (Conectar bancos).
 
 ### Infraestrutura
 - **Pasta local:** `C:\Users\pedro\Desktop\RoutinXP` (renomeada de `App - Rotina` pelo usuário em 2026-09-13). O git e o link da Supabase CLI continuaram funcionando.
@@ -39,7 +39,8 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
     - `20260913205000_tarefas_fk_no_action`;
     - `20260913210000_financeiro_modelo`;
     - `20260913220000_financeiro_gastos_fixos`;
-    - `20260913230000_gastos_fixos_tipo_fixo` (**ainda não aplicada**).
+    - `20260913230000_gastos_fixos_tipo_fixo`;
+    - `20260914100000_financeiro_open_finance`.
   - **Permissão local:** `.claude/settings.local.json` (fora do git) libera para o Claude Code `npx.cmd supabase db push`, `migration list`, `functions deploy` e `git push`. Continua valendo: só com pedido do usuário no chat.
   - **Mudança no banco:**
     - Criar a migration com `npx.cmd supabase migration new <nome>`.
@@ -103,7 +104,7 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 - **Dados de teste:** as 8 tarefas de exemplo foram apagadas pelo usuário (2026-09-13).
 
 ### Pendências
-- **Aplicar `20260913230000_gastos_fixos_tipo_fixo` e publicar** os ajustes da revisão de Gastos fixos (autorização do usuário).
+- **Testar o Open Finance (usuário):** Financeiro > Bancos conectados > Conectar bancos. Conferir contas criadas, saldos, transferências (pagamento de fatura) e possíveis duplicatas. Se a Pluggy devolver formato diferente do documentado, ajustar `sincronizar-banco`.
 - **Financeiro, próximas fases:** 3.6 (avisos de vencimento: faixa no topo e push um dia antes), 4 (Open Finance pelo MeuPluggy; depende do usuário criar a conta, a aplicação na Pluggy e guardar as chaves nos segredos do Supabase), 5 (categorização por regras), 6 (orçamento e metas; gamificação sem decisão).
 - **Técnicas:**
   - O pacote JS passa de 500 kB; dá para carregar cada página só quando for aberta (lazy loading).
