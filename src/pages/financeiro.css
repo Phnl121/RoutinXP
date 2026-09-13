@@ -1310,3 +1310,22 @@ button.fin-dre__botao:hover {
 .dialogo__campos[hidden] {
   display: none;
 }
+
+.fin-linha__detalhes {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.4rem;
+  min-width: 0;
+}
+
+.fin-linha__detalhes .fin-linha__detalhe {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.fin-linha__marcas {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}

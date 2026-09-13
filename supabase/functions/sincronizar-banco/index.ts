@@ -27,7 +27,10 @@ const CORS = {
 const PLUGGY = 'https://api.pluggy.ai'
 const FUSO = 'America/Sao_Paulo'
 const DIAS_PRIMEIRA_LEITURA = 90
-const DIAS_RELEITURA = 10
+// Releitura larga: um lançamento pendente pode compensar com data mais antiga.
+const DIAS_RELEITURA = 30
+// Itens nessa situação não foram lidos de verdade: a tela mostra o erro, não "lido hoje".
+const STATUS_COM_ERRO = new Set(['LOGIN_ERROR', 'OUTDATED', 'WAITING_USER_INPUT'])
 const ESPERA_BOTAO_MS = 5 * 60_000
 
 const URL_SUPABASE = Deno.env.get('SUPABASE_URL')!
@@ -58,6 +61,8 @@ function resposta(corpo: unknown, status = 200) {
 }
 
 const diaBrasilia = (iso: string | Date) => new Intl.DateTimeFormat('en-CA', { timeZone: FUSO }).format(new Date(iso))
+// Datas só com o dia chegam como meia-noite UTC: convertê-las para Brasília voltaria um dia.
+const diaDaPluggy = (iso: string) => (/T00:00:00(\.0+)?Z$/.test(iso) ? iso.slice(0, 10) : diaBrasilia(iso))
 const hoje = () => diaBrasilia(new Date())
 function somarDias(dia: string, n: number) {
   const [a, m, d] = dia.split('-').map(Number)
@@ -116,13 +121,14 @@ async function sincronizar(userId: string, itens: string[]) {
     const agora = new Date().toISOString()
     try {
       const item = await pluggy(chave, `/items/${encodeURIComponent(itemId)}`)
+      const itemComErro = STATUS_COM_ERRO.has(item.status)
       await admin
         .from('fin_conexoes')
         .update({
           banco: item.connector?.name ?? null,
           imagem_url: item.connector?.imageUrl ?? null,
           status: item.status ?? null,
-          ultimo_erro: item.error?.message ?? null,
+          ultimo_erro: itemComErro ? (item.error?.message ?? item.status) : null,
           consentimento_expira: item.consentExpiresAt ?? null,
           ultima_tentativa: agora,
         })
@@ -141,12 +147,12 @@ async function sincronizar(userId: string, itens: string[]) {
         let conta = existente
         const desde = existente ? somarDias(dia, -DIAS_RELEITURA) : somarDias(dia, -DIAS_PRIMEIRA_LEITURA)
         if (!conta) {
-          const diaDe = (iso?: string | null) => (iso ? Number(diaBrasilia(iso).slice(8, 10)) : null)
+          const diaDe = (iso?: string | null) => (iso ? Number(diaDaPluggy(iso).slice(8, 10)) : null)
           const { data: nova, error } = await admin
             .from('fin_contas')
             .insert({
               user_id: userId,
-              nome: (c.marketingName || c.name || 'Conta do banco').slice(0, 60),
+              nome: (c.marketingName?.trim() || c.name?.trim() || 'Conta do banco').slice(0, 60),
               tipo,
               origem: 'banco',
               externo_id: c.id,
@@ -161,11 +167,13 @@ async function sincronizar(userId: string, itens: string[]) {
           conta = nova
           resumo.contas++
         }
-        // No cartão, o saldo do banco é o que se deve: no Financeiro fica negativo.
-        const saldoBanco = conta.tipo === 'cartao' ? -centavos(c.balance) : Math.round(c.balance * 100)
+        // No cartão, o saldo do banco é o que se deve: no Financeiro fica negativo (crédito, positivo).
+        const saldoBanco = conta.tipo === 'cartao' ? -Math.round(c.balance * 100) : Math.round(c.balance * 100)
+        const lidos = await lancamentosDaConta(chave, c.id, desde)
+        // Só entra na lista depois de ler: se a leitura falhar, nada desta conta é apagado.
         contasLidas.push({ id: conta.id, tipo: conta.tipo, saldoBanco, saldoInicialEm: conta.saldo_inicial_em, desde })
 
-        for (const x of await lancamentosDaConta(chave, c.id, desde)) {
+        for (const x of lidos) {
           const valor = centavos(x.amount)
           if (!valor) continue
           importadas.push({
@@ -173,13 +181,14 @@ async function sincronizar(userId: string, itens: string[]) {
             conta_id: conta.id,
             tipo: x.type === 'CREDIT' ? 'entrada' : 'saida',
             valor,
-            data: diaBrasilia(x.date),
-            descricao: (x.description || 'Lançamento do banco').trim().slice(0, 200),
+            data: diaDaPluggy(x.date),
+            descricao: (x.description?.trim() || 'Lançamento do banco').slice(0, 200),
             pendente: x.status === 'PENDING',
           })
         }
       }
-      await admin.from('fin_conexoes').update({ ultima_sync: agora, ultimo_erro: null }).eq('user_id', userId).eq('item_id', itemId)
+      if (itemComErro) resumo.erros.push(item.status)
+      else await admin.from('fin_conexoes').update({ ultima_sync: agora, ultimo_erro: null }).eq('user_id', userId).eq('item_id', itemId)
     } catch (erro) {
       const codigo = erro instanceof Error ? erro.message : 'falha'
       resumo.erros.push(codigo)
@@ -187,8 +196,15 @@ async function sincronizar(userId: string, itens: string[]) {
     }
   }
 
-  if (importadas.length) await gravarLancamentos(userId, importadas, contasLidas, resumo)
-  await ajustarSaldos(userId, contasLidas)
+  try {
+    if (importadas.length) await gravarLancamentos(userId, importadas, contasLidas, resumo)
+    await ajustarSaldos(userId, contasLidas)
+  } catch (erro) {
+    // Falha ao gravar fica registrada nas conexões, para a tela mostrar.
+    const codigo = erro instanceof Error ? erro.message : ((erro as { message?: string })?.message ?? 'falha_gravar')
+    resumo.erros.push(codigo)
+    await admin.from('fin_conexoes').update({ ultimo_erro: codigo }).eq('user_id', userId).in('item_id', itens)
+  }
   return resumo
 }
 
@@ -199,10 +215,11 @@ async function emLotes<T>(lista: T[], tamanho: number, fn: (lote: T[]) => Promis
 async function gravarLancamentos(
   userId: string,
   importadas: Importada[],
-  contasLidas: { id: string; desde: string }[],
+  contasLidas: { id: string; tipo: string; desde: string }[],
   resumo: { importados: number; atualizados: number; transferencias: number; duplicatas: number },
 ) {
   const ids = importadas.map((x) => x.externo)
+  const tipoDaConta = new Map(contasLidas.map((c) => [c.id, c.tipo]))
   const conhecidos = new Map<string, { id: string; tipo: string }>()
   const destinos = new Set<string>()
   await emLotes(ids, 200, async (lote) => {
@@ -226,11 +243,14 @@ async function gravarLancamentos(
   // Transferências entre contas conectadas: saída de um lado, entrada do mesmo valor do outro.
   const usadas = new Set<string>()
   const linhas: Record<string, unknown>[] = []
-  for (const saida of novas.filter((x) => x.tipo === 'saida')) {
-    const par = novas.find(
-      (e) => e.tipo === 'entrada' && !usadas.has(e.externo) && e.conta_id !== saida.conta_id && e.valor === saida.valor && distanciaDias(e.data, saida.data) <= 2,
-    )
-    if (!par) continue
+  for (const saida of novas.filter((x) => x.tipo === 'saida' && tipoDaConta.get(x.conta_id) !== 'cartao')) {
+    const candidatos = novas
+      .filter((e) => e.tipo === 'entrada' && !usadas.has(e.externo) && e.conta_id !== saida.conta_id && e.valor === saida.valor && distanciaDias(e.data, saida.data) <= 2)
+      .sort((a, b) => distanciaDias(a.data, saida.data) - distanciaDias(b.data, saida.data))
+    if (!candidatos.length) continue
+    // Dois candidatos igualmente próximos: ambíguo, ficam como lançamentos comuns.
+    if (candidatos.length > 1 && distanciaDias(candidatos[0].data, saida.data) === distanciaDias(candidatos[1].data, saida.data)) continue
+    const par = candidatos[0]
     usadas.add(par.externo)
     usadas.add(saida.externo)
     linhas.push({
@@ -307,29 +327,16 @@ async function gravarLancamentos(
 }
 
 // O saldo inicial é recalculado para que o saldo do Financeiro bata com o do banco hoje.
-async function ajustarSaldos(userId: string, contas: { id: string; saldoBanco: number; saldoInicialEm: string }[]) {
-  const dia = hoje()
+// A soma do movimento é feita no banco (fin_movimento_conta), sem limite de linhas.
+async function ajustarSaldos(_userId: string, contas: { id: string; saldoBanco: number; saldoInicialEm: string }[]) {
   for (const conta of contas) {
-    const [{ data: saidas }, { data: chegadas }] = await Promise.all([
-      admin
-        .from('fin_transacoes')
-        .select('tipo, valor_centavos')
-        .eq('user_id', userId)
-        .eq('conta_id', conta.id)
-        .gte('data', conta.saldoInicialEm)
-        .lte('data', dia),
-      admin
-        .from('fin_transacoes')
-        .select('valor_centavos')
-        .eq('user_id', userId)
-        .eq('conta_destino_id', conta.id)
-        .gte('data', conta.saldoInicialEm)
-        .lte('data', dia),
-    ])
-    const movimento =
-      (saidas ?? []).reduce((soma, t) => soma + (t.tipo === 'entrada' ? t.valor_centavos : -t.valor_centavos), 0) +
-      (chegadas ?? []).reduce((soma, t) => soma + t.valor_centavos, 0)
-    await admin.from('fin_contas').update({ saldo_inicial_centavos: conta.saldoBanco - movimento }).eq('id', conta.id)
+    const { data: movimento, error } = await admin.rpc('fin_movimento_conta', { p_conta: conta.id, p_desde: conta.saldoInicialEm })
+    if (error) throw error
+    const { error: erroConta } = await admin
+      .from('fin_contas')
+      .update({ saldo_inicial_centavos: conta.saldoBanco - Number(movimento ?? 0) })
+      .eq('id', conta.id)
+    if (erroConta) throw erroConta
   }
 }
 
@@ -351,7 +358,10 @@ Deno.serve(async (req) => {
     if (!valido) return resposta({ erro: 'nao_autorizado' }, 401)
     const { data: conexoes } = await admin.from('fin_conexoes').select('user_id, item_id')
     const porUsuario = new Map<string, string[]>()
-    for (const c of conexoes ?? []) porUsuario.set(c.user_id, [...(porUsuario.get(c.user_id) ?? []), c.item_id])
+    const configurados = itensConfigurados()
+    for (const c of (conexoes ?? []).filter((x) => configurados.includes(x.item_id))) {
+      porUsuario.set(c.user_id, [...(porUsuario.get(c.user_id) ?? []), c.item_id])
+    }
     const resultados = []
     for (const [userId, itens] of porUsuario) {
       try {
@@ -388,9 +398,10 @@ Deno.serve(async (req) => {
   if (recentes?.length) return resposta({ erro: 'muitas_tentativas' }, 429)
 
   if (corpo.modo === 'conectar') {
+    // Item já ligado a outra conta continua com ela (unique item_id): nada é copiado para cá.
     await admin.from('fin_conexoes').upsert(
       configurados.map((item_id) => ({ user_id: adminId, item_id })),
-      { onConflict: 'user_id,item_id', ignoreDuplicates: true },
+      { onConflict: 'item_id', ignoreDuplicates: true },
     )
   }
   // Só as conexões ativas que continuam nos segredos.

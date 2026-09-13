@@ -23,7 +23,9 @@ create table public.fin_conexoes (
   ultima_tentativa       timestamptz,
   consentimento_expira   timestamptz,
   created_at             timestamptz not null default now(),
-  unique (user_id, item_id)
+  unique (user_id, item_id),
+  -- Um banco conectado pertence a uma conta só: outro administrador não recebe os mesmos dados.
+  unique (item_id)
 );
 
 alter table public.fin_conexoes enable row level security;
@@ -59,7 +61,13 @@ alter table public.fin_transacoes
   add column pendente           boolean not null default false,
   -- Lançamento importado que parece o mesmo de um manual (mesmo valor, data ±2 dias):
   -- a tela sugere juntar ou manter os dois.
-  add column duplicata_de       uuid references public.fin_transacoes (id) on delete set null;
+  add column duplicata_de       uuid;
+
+-- Referência ao lançamento manual sempre da mesma pessoa (FK composta, como no resto do modelo).
+alter table public.fin_transacoes
+  add constraint fin_transacoes_id_user_unico unique (id, user_id),
+  add constraint fin_transacoes_duplicata_fk foreign key (duplicata_de, user_id)
+    references public.fin_transacoes (id, user_id) on delete set null (duplicata_de);
 
 create unique index fin_transacoes_externo_unico on public.fin_transacoes (user_id, externo_id) where externo_id is not null;
 create unique index fin_transacoes_externo_destino_unico on public.fin_transacoes (user_id, externo_id_destino)
@@ -67,11 +75,38 @@ create unique index fin_transacoes_externo_destino_unico on public.fin_transacoe
 create index fin_transacoes_duplicata_idx on public.fin_transacoes (duplicata_de) where duplicata_de is not null;
 
 -- ---------------------------------------------------------------------------
+-- Movimento de uma conta (entradas − saídas ± transferências) de um dia até hoje
+-- ---------------------------------------------------------------------------
+-- Mesma conta de fin_saldos, para uma conta só. Usada pela leitura do banco (chave de serviço)
+-- e ao juntar contas. Roda com as permissões de quem chama.
+create function public.fin_movimento_conta(p_conta uuid, p_desde date)
+returns bigint
+language sql
+stable
+security invoker
+set search_path = ''
+as $$
+  with hoje as (select (now() at time zone 'America/Sao_Paulo')::date as dia)
+  select coalesce((
+           select sum(case when t.tipo = 'entrada' then t.valor_centavos else -t.valor_centavos end)
+             from public.fin_transacoes t, hoje
+            where t.conta_id = p_conta and t.data between p_desde and hoje.dia
+         ), 0)
+       + coalesce((
+           select sum(t.valor_centavos)
+             from public.fin_transacoes t, hoje
+            where t.conta_destino_id = p_conta and t.data between p_desde and hoje.dia
+         ), 0);
+$$;
+
+revoke execute on function public.fin_movimento_conta(uuid, date) from public, anon;
+grant execute on function public.fin_movimento_conta(uuid, date) to authenticated, service_role;
+
+-- ---------------------------------------------------------------------------
 -- Juntar uma conta importada com uma conta manual que já existia
 -- ---------------------------------------------------------------------------
 -- Os lançamentos da conta importada passam para a manual, que herda o vínculo com o banco; a
--- importada sai. O saldo inicial é recalculado na próxima leitura. Roda com as permissões de
--- quem chama (RLS vale).
+-- importada sai. O saldo da conta juntada fica igual ao saldo de hoje da importada (o do banco).
 create function public.fin_juntar_contas(p_importada uuid, p_manual uuid)
 returns void
 language plpgsql
@@ -81,6 +116,8 @@ as $$
 declare
   imp public.fin_contas;
   man public.fin_contas;
+  v_saldo_banco bigint;
+  v_desde date;
 begin
   select * into imp from public.fin_contas where id = p_importada;
   select * into man from public.fin_contas where id = p_manual;
@@ -88,28 +125,111 @@ begin
     raise exception 'contas_incompativeis' using errcode = '22023';
   end if;
 
+  v_saldo_banco := imp.saldo_inicial_centavos + public.fin_movimento_conta(imp.id, imp.saldo_inicial_em);
+  v_desde := least(man.saldo_inicial_em, imp.saldo_inicial_em);
+
+  -- Transferências entre as duas viraram movimento dentro da mesma conta: saem antes da troca.
+  delete from public.fin_transacoes
+   where tipo = 'transferencia'
+     and ((conta_id = imp.id and conta_destino_id = man.id) or (conta_id = man.id and conta_destino_id = imp.id));
+
   update public.fin_transacoes set conta_id = man.id where conta_id = imp.id;
   update public.fin_transacoes set conta_destino_id = man.id where conta_destino_id = imp.id;
   update public.fin_recorrencias set conta_id = man.id where conta_id = imp.id;
-  -- A troca de conta pode deixar uma transferência com as duas pontas na mesma conta.
-  delete from public.fin_transacoes where tipo = 'transferencia' and conta_id = conta_destino_id;
+
+  update public.fin_contas set externo_id = null, item_id = null where id = imp.id;
+  delete from public.fin_contas where id = imp.id;
 
   update public.fin_contas
-     set externo_id = null, item_id = null
-   where id = imp.id;
-  update public.fin_contas
      set origem = 'banco', externo_id = imp.externo_id, item_id = imp.item_id,
-         saldo_inicial_centavos = imp.saldo_inicial_centavos,
-         saldo_inicial_em = least(man.saldo_inicial_em, imp.saldo_inicial_em),
+         saldo_inicial_em = v_desde,
+         saldo_inicial_centavos = v_saldo_banco - public.fin_movimento_conta(man.id, v_desde),
          dia_fechamento = coalesce(man.dia_fechamento, imp.dia_fechamento),
          dia_vencimento = coalesce(man.dia_vencimento, imp.dia_vencimento)
    where id = man.id;
-  delete from public.fin_contas where id = imp.id;
 end;
 $$;
 
 revoke execute on function public.fin_juntar_contas(uuid, uuid) from public, anon;
 grant execute on function public.fin_juntar_contas(uuid, uuid) to authenticated;
+
+-- ---------------------------------------------------------------------------
+-- Resolver uma possível duplicata
+-- ---------------------------------------------------------------------------
+-- Juntar: fica o lançamento do banco, que herda do manual a categoria (se não tiver) e o vínculo
+-- com o gasto fixo (pagamento, parcela); o manual sai. Senão, só tira a marca. Uma operação só.
+create function public.fin_resolver_duplicata(p_banco uuid, p_juntar boolean)
+returns void
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  b public.fin_transacoes;
+  m public.fin_transacoes;
+begin
+  select * into b from public.fin_transacoes where id = p_banco;
+  if b.id is null or b.origem <> 'banco' then
+    raise exception 'lancamento_invalido' using errcode = '22023';
+  end if;
+  if p_juntar and b.duplicata_de is not null then
+    select * into m from public.fin_transacoes where id = b.duplicata_de;
+  end if;
+  if m.id is not null then
+    -- O manual sai antes: a cobrança do gasto fixo é única e passa para o do banco.
+    delete from public.fin_transacoes where id = m.id;
+    update public.fin_transacoes
+       set duplicata_de = null,
+           categoria_id = coalesce(b.categoria_id, m.categoria_id),
+           recorrencia_id = coalesce(b.recorrencia_id, m.recorrencia_id),
+           referencia = coalesce(b.referencia, m.referencia),
+           parcela = coalesce(b.parcela, m.parcela)
+     where id = b.id;
+  else
+    update public.fin_transacoes set duplicata_de = null where id = b.id;
+  end if;
+end;
+$$;
+
+revoke execute on function public.fin_resolver_duplicata(uuid, boolean) from public, anon;
+grant execute on function public.fin_resolver_duplicata(uuid, boolean) to authenticated;
+
+-- ---------------------------------------------------------------------------
+-- Desconectar um banco
+-- ---------------------------------------------------------------------------
+-- Apagar: os lançamentos importados saem, e as contas do banco sem outros lançamentos também.
+-- Manter: as contas deixam de ser do banco (voltam a ser manuais, com o saldo editável).
+create function public.fin_desconectar_banco(p_conexao uuid, p_apagar boolean)
+returns void
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  c public.fin_conexoes;
+begin
+  select * into c from public.fin_conexoes where id = p_conexao;
+  if c.id is null then
+    raise exception 'conexao_invalida' using errcode = '22023';
+  end if;
+  if p_apagar then
+    delete from public.fin_transacoes t
+     using public.fin_contas a
+     where a.item_id = c.item_id and a.origem = 'banco' and t.conta_id = a.id and t.origem = 'banco';
+    delete from public.fin_contas a
+     where a.item_id = c.item_id and a.origem = 'banco'
+       and not exists (select 1 from public.fin_transacoes t where t.conta_id = a.id or t.conta_destino_id = a.id)
+       and not exists (select 1 from public.fin_recorrencias r where r.conta_id = a.id);
+  end if;
+  update public.fin_contas
+     set origem = 'manual', externo_id = null, item_id = null
+   where item_id = c.item_id and origem = 'banco';
+  delete from public.fin_conexoes where id = c.id;
+end;
+$$;
+
+revoke execute on function public.fin_desconectar_banco(uuid, boolean) from public, anon;
+grant execute on function public.fin_desconectar_banco(uuid, boolean) to authenticated;
 
 -- ---------------------------------------------------------------------------
 -- Leitura diária (6h de Brasília = 9h UTC)

@@ -457,9 +457,12 @@ function LinhaLancamento({ transacao: x, conta, destino, categoria, onAbrir }) {
       />
       <span className="fin-linha__texto">
         <span className="fin-linha__descricao">{x.descricao}</span>
-        <span className="fin-linha__detalhe" data-revisar={revisar || Boolean(x.duplicata_de)}>
-          {detalhe}
-          {marcas && ` · ${marcas}`}
+        {/* As marcas ficam fora das reticências: no celular, "possível duplicata" não some. */}
+        <span className="fin-linha__detalhes">
+          <span className="fin-linha__detalhe" data-revisar={revisar}>
+            {detalhe}
+          </span>
+          {marcas && <span className="fin-linha__marcas">{marcas}</span>}
         </span>
       </span>
       <span className="fin-linha__valor">{formatarReais(valor, { sinal: x.tipo === 'entrada' })}</span>

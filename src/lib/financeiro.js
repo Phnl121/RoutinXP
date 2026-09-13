@@ -217,21 +217,10 @@ export async function lerBancos(modo) {
   return data
 }
 
-// Desconectar: para de ler o banco. Com apagar, os lançamentos e contas importados saem também
-// (contas com lançamentos manuais ficam).
+// Desconectar: para de ler o banco. Com apagar, os lançamentos e contas importados saem também;
+// sem apagar, as contas voltam a ser manuais. Uma operação só no banco.
 export async function desconectarBanco(conexao, apagar) {
-  if (apagar) {
-    const contas = ok(await supabase.from('fin_contas').select('id').eq('item_id', conexao.item_id).eq('origem', 'banco'))
-    const ids = contas.map((c) => c.id)
-    if (ids.length) {
-      ok(await supabase.from('fin_transacoes').delete().eq('origem', 'banco').in('conta_id', ids))
-      for (const id of ids) {
-        const { error } = await supabase.from('fin_contas').delete().eq('id', id)
-        if (error && error.code !== '23503') throw error
-      }
-    }
-  }
-  ok(await supabase.from('fin_conexoes').delete().eq('id', conexao.id))
+  ok(await supabase.rpc('fin_desconectar_banco', { p_conexao: conexao.id, p_apagar: apagar }))
 }
 
 // Conta importada + conta manual que já existia viram uma só.
@@ -239,14 +228,8 @@ export async function juntarContas(importadaId, manualId) {
   ok(await supabase.rpc('fin_juntar_contas', { p_importada: importadaId, p_manual: manualId }))
 }
 
-// Possível duplicata: juntar apaga o manual (a categoria dele passa para o do banco, se faltar);
-// "são diferentes" só tira a marca.
-export async function resolverDuplicata(transacao, manual, juntar) {
-  if (juntar && manual) {
-    const campos = { duplicata_de: null, ...(transacao.categoria_id ? {} : { categoria_id: manual.categoria_id }) }
-    ok(await supabase.from('fin_transacoes').update(campos).eq('id', transacao.id))
-    ok(await supabase.from('fin_transacoes').delete().eq('id', manual.id))
-    return
-  }
-  ok(await supabase.from('fin_transacoes').update({ duplicata_de: null }).eq('id', transacao.id))
+// Possível duplicata: juntar apaga o manual (categoria e vínculo com o gasto fixo passam para o do
+// banco); "são diferentes" só tira a marca. Uma operação só no banco.
+export async function resolverDuplicata(transacao, _manual, juntar) {
+  ok(await supabase.rpc('fin_resolver_duplicata', { p_banco: transacao.id, p_juntar: juntar }))
 }

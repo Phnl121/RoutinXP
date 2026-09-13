@@ -235,7 +235,8 @@ export function LancamentoDialog({ transacao, contas, categorias, manualParecido
         {erro && <Aviso>{erro}</Aviso>}
 
         <div className="dialogo__acoes">
-          {transacao && (
+          {/* Do banco não se exclui: voltaria na próxima leitura. */}
+          {transacao && !doBanco && (
             <button
               type="button"
               className="dialogo__excluir"

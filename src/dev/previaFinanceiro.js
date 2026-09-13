@@ -317,6 +317,7 @@ export async function desconectarBanco(conexao, apagar) {
     const ids = contas.filter((c) => c.item_id === conexao.item_id && c.origem === 'banco').map((c) => c.id)
     transacoes = transacoes.filter((x) => !(x.origem === 'banco' && ids.includes(x.conta_id)))
   }
+  contas = contas.map((c) => (c.item_id === conexao.item_id ? { ...c, origem: 'manual', item_id: null } : c))
   conexoes = conexoes.filter((c) => c.id !== conexao.id)
 }
 
