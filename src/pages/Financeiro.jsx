@@ -93,10 +93,10 @@ export default function Financeiro() {
   )
   const fecharAviso = useCallback(() => setAviso(null), [])
   const regrasAtuais = d.regras
-  // A sugestão de regra some sozinha depois de alguns segundos.
+  // A sugestão de regra some sozinha junto com a barra de tempo do aviso (5 s).
   useEffect(() => {
     if (!aviso?.chave?.startsWith('regra-')) return undefined
-    const timer = setTimeout(() => setAviso((a) => (a?.chave === aviso.chave ? null : a)), 8000)
+    const timer = setTimeout(() => setAviso((a) => (a?.chave === aviso.chave ? null : a)), 5000)
     return () => clearTimeout(timer)
   }, [aviso])
 
