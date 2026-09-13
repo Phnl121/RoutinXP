@@ -31,7 +31,10 @@ function resposta(corpo: unknown, status = 200) {
 Deno.serve(async (req) => {
   if (req.method !== 'POST') return resposta({ erro: 'metodo' }, 405)
 
-  const { data: valido } = await admin.rpc('segredo_cron_valido', { p_segredo: req.headers.get('x-cron-secret') ?? '' })
+  // Sem o cabeçalho, recusa antes de consultar o banco.
+  const segredo = req.headers.get('x-cron-secret') ?? ''
+  if (!segredo) return resposta({ erro: 'nao_autorizado' }, 401)
+  const { data: valido } = await admin.rpc('segredo_cron_valido', { p_segredo: segredo })
   if (!valido) return resposta({ erro: 'nao_autorizado' }, 401)
 
   const { data: avisos, error } = await admin.rpc('retirar_avisos_foco_vencidos')

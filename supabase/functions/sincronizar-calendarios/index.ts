@@ -74,11 +74,27 @@ function ipv4Privado(ip: string) {
 }
 
 function ipv6Privado(ip: string) {
-  const x = ip.toLowerCase()
+  const x = ip.toLowerCase().replace(/^\[|\]$/g, '').split('%')[0]
   if (x === '::' || x === '::1') return true
-  if (/^f[cd]/.test(x) || /^fe[89ab]/.test(x) || x.startsWith('64:ff9b:')) return true
-  const mapeado = x.match(/::ffff:(\d+\.\d+\.\d+\.\d+)$/)
-  return mapeado ? ipv4Privado(mapeado[1]) : false
+  // IPv4 dentro do IPv6, com pontos (::ffff:127.0.0.1) ou em hexadecimal (::ffff:7f00:1).
+  const comPontos = x.match(/^::(?:ffff:)?(\d+\.\d+\.\d+\.\d+)$/)
+  if (comPontos) return ipv4Privado(comPontos[1])
+  const hexa = x.match(/^::(?:ffff:)?([0-9a-f]{1,4}):([0-9a-f]{1,4})$/)
+  if (hexa) {
+    const alto = parseInt(hexa[1], 16)
+    const baixo = parseInt(hexa[2], 16)
+    return ipv4Privado([alto >> 8, alto & 255, baixo >> 8, baixo & 255].join('.'))
+  }
+  // fc00::/7 (rede local), fe80::/10 (link-local), ff00::/8 (multicast), 64:ff9b::/96 (NAT64),
+  // 2002::/16 (6to4) e 2001::/32 (Teredo) levam a um IPv4 qualquer; 2001:db8::/32 é de documentação.
+  return (
+    /^f[cd]/.test(x) ||
+    /^fe[89ab]/.test(x) ||
+    x.startsWith('ff') ||
+    x.startsWith('64:ff9b:') ||
+    x.startsWith('2002:') ||
+    /^2001:(0{0,4}|db8):/.test(x)
+  )
 }
 
 // Só https para nomes públicos, e o nome precisa apontar só para endereços públicos.
@@ -98,7 +114,11 @@ function urlPermitida(texto: string) {
 }
 
 async function hostPublico(host: string) {
-  if (typeof Deno.resolveDns !== 'function') return true
+  // Sem como conferir o endereço, o link não é lido (antes deixava passar).
+  if (typeof Deno.resolveDns !== 'function') {
+    console.error('hostPublico: Deno.resolveDns indisponível, leitura de links bloqueada')
+    return false
+  }
   const enderecos: string[] = []
   for (const tipo of ['A', 'AAAA'] as const) {
     try {
@@ -323,7 +343,10 @@ Deno.serve(async (req) => {
   }
 
   if (corpo.modo === 'cron') {
-    const { data: valido } = await admin.rpc('segredo_cron_valido', { p_segredo: req.headers.get('x-cron-secret') ?? '' })
+    // Sem o cabeçalho, recusa antes de consultar o banco.
+    const segredo = req.headers.get('x-cron-secret') ?? ''
+    if (!segredo) return resposta({ erro: 'nao_autorizado' }, 401)
+    const { data: valido } = await admin.rpc('segredo_cron_valido', { p_segredo: segredo })
     if (!valido) return resposta({ erro: 'nao_autorizado' }, 401)
     const limite = new Date(Date.now() - INTERVALO_CRON_MS).toISOString()
     const { data: fontes, error } = await admin
