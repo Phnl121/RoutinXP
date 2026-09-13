@@ -5,106 +5,130 @@ Este arquivo é o ponto de handoff entre ferramentas (Code, Antigravity, ou qual
 ## Estado atual
 (a ferramenta que estiver trabalhando atualiza esta seção a cada sessão: o que existe, o que está funcionando, o que está pela metade)
 
-Atualizado em 2026-09-11 (Claude Code): v1 completa (passos 1 a 12). v2 em andamento e no ar: Integrações (calendários iCal), Calendário, Categorias e tags, filtro, capas e selos de prazo, Kanban com colunas próprias, área de toque de 44px no celular. Página Foco (pomodoro + Spotify) no ar, com a migration `focus_sessions` aplicada. O log de sessões abaixo tem o detalhe mais recente; algumas descrições antigas desta seção (trilho, Quadro) já foram substituídas.
+Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo está no ar e foi testado pelo usuário em produção: PWA no celular, Integrações com os links reais das disciplinas, Kanban, Calendário, tarefas e Foco com os avisos. Não há funcionalidade pela metade. O log de sessões abaixo guarda o histórico e o detalhe de cada entrega.
 
-- Repositório git: **sim**, branch `main`, remoto **privado** https://github.com/Phnl121/RoutinXP (conta Phnl121). Identidade local `Pedro <pedrocybernet01@gmail.com>`.
-- Deploy: **Vercel**, projeto `phnl121/routinxp` (renomeado de `routin`), produção em **https://routinxp.vercel.app**.
-  - O endereço antigo https://routin-six.vercel.app continua respondendo.
-  - Deploy automático a cada push na `main`.
-  - Variáveis `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` e `VITE_TURNSTILE_SITE_KEY` cadastradas no painel (Production e Preview). `vercel.json` faz o rewrite de SPA; `.vercelignore` impede `.env` de subir por deploy via CLI. Supabase Auth com Site URL de produção (configurado pelo usuário).
-- Projeto Vite: **sim**. React 19 + Vite 8 (JS), `react-router`, fonte Archivo auto-hospedada. Node 24 LTS em `C:\Program Files\nodejs` (pode não estar no PATH do shell; `.claude/launch.json` chama `node.exe` direto).
-- Supabase: client em `src/lib/supabase.js`.
-  - **Migrations versionadas com a Supabase CLI** (dependência de desenvolvimento, versão 2.117.0).
-    - A pasta está ligada ao projeto `cowlksvjueoacwthytmg`.
-    - A migration inicial `supabase/migrations/20260910203320_schema_inicial.sql` (igual ao `schema.sql`) está marcada como aplicada; local e remoto batem.
-  - **Mudanças no banco daqui pra frente:**
+### Infraestrutura
+- **Pasta local:** `C:\Users\pedro\Desktop\RoutinXP` (renomeada de `App - Rotina` pelo usuário em 2026-09-13). O git e o link da Supabase CLI continuaram funcionando.
+- **Repositório:** https://github.com/Phnl121/RoutinXP, **público** desde 2026-09-13 (etapa F do roteiro de segurança, feita pelo usuário). Branch `main`, identidade local `Pedro <pedrocybernet01@gmail.com>`.
+  - O histórico não tem segredos (conferido na etapa A).
+  - Chaves privadas (VAPID, service role, segredo do agendamento) ficam só nos segredos do Supabase e no Vault, nunca no git.
+- **Deploy:** Vercel, projeto `phnl121/routinxp`, produção em **https://routinxp.vercel.app**.
+  - Deploy automático a cada push na `main`. O endereço antigo https://routin-six.vercel.app continua respondendo.
+  - Variáveis `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY` e `VITE_TURNSTILE_SITE_KEY` no painel (Production e Preview).
+  - `vercel.json` faz o rewrite de SPA e manda `no-cache` no `/sw.js`; `.vercelignore` impede o `.env` de subir por deploy via CLI.
+- **Projeto:** React 19 + Vite 8 (JS), `react-router`, fonte Archivo auto-hospedada. Node 24 LTS em `C:\Program Files\nodejs` (pode não estar no PATH; `.claude/launch.json` chama `node.exe` direto).
+- **Supabase** (projeto `cowlksvjueoacwthytmg`, client em `src/lib/supabase.js`):
+  - **Migrations com a Supabase CLI**, todas aplicadas (local e remoto batem):
+    - `20260910203320_schema_inicial`;
+    - `20260910220000_xp_e_streak`;
+    - `20260910230000_perfis`;
+    - `20260911120000_descricao_e_tags`;
+    - `20260911180000_integracoes_calendario`;
+    - `20260911190000_revogar_execucao_gatilho`;
+    - `20260911200000_kanban_colunas`;
+    - `20260911220000_sessoes_foco`;
+    - `20260911230000_avisos_foco`.
+  - **Mudança no banco:**
     - Criar a migration com `npx.cmd supabase migration new <nome>`.
     - Escrever o SQL no arquivo gerado.
     - Aplicar com `npx.cmd supabase db push`.
     - Conferir com `npx.cmd supabase migration list`.
-  - No PowerShell, use `npx.cmd` (a política de execução bloqueia o `npx.ps1`) e rode sempre dentro da pasta do projeto. O `link` grava o estado em `supabase/.temp/`, que fica fora do git.
-  - As URLs de Auth foram configuradas pelo usuário.
-- Impeccable: `PRODUCT.md`, `DESIGN.md` + `.impeccable/design.json` (atualizados após o passo 9), briefs em `.impeccable/surfaces/`.
-- Auth (passo 8): **pronto**, aprovado na revisão final do Impeccable ("ship").
-- Tela de tarefas (passo 9): **pronta**, aprovada na revisão final do Impeccable ("fix", correções aplicadas, depois "ship").
-  - Estrutura "Trilho de categorias", escolhida pelo usuário: barra superior com medidor de nível (NÍVEL, barra de XP, streak), trilho de categorias com contagem de pendentes, abas LISTA | QUADRO e filtro Pendentes/Concluídas.
-  - Lista agrupada por categoria.
-  - Quadro com Pendentes/Concluídas: arrastar para Concluídas conclui a tarefa, e não há volta.
-  - Criar/editar tarefa em diálogo, com título, categoria e data prevista; não há campo de XP.
-  - Excluir tarefa com "Desfazer" por 5 s.
-  - Categorias: criar, editar e excluir no trilho, com 8 cores. Uma categoria com tarefas não pode ser excluída, e a interface explica o motivo.
-  - Datas relativas ("hoje", "amanhã"); prazos de hoje e atrasados aparecem em tinta forte, sem vermelho.
-  - Estados vazio, carregando e erro. No celular, chips roláveis, Quadro deslizante e botão flutuante "+".
-  - Camada de dados em `src/lib/dados.js` + `src/lib/useDados.js` (atualizações otimistas).
-- **Pré-visualização de desenvolvimento:** `npm run dev` e abrir `/?previa` (opcional `&visao=quadro`). Mostra dados fictícios em memória, sem login, útil para capturas e revisão. Fica fora do build de produção (verificado).
-- Lógica de XP/streak (passo 10): **pronta e validada pelo usuário em produção.**
-  - A migration `20260910220000_xp_e_streak` criou `concluir_tarefa(id)` e `minhas_estatisticas()`, calculadas no servidor no horário de Brasília.
-  - Regra de XP:
-    - 10 de base, +5 se concluída no prazo;
-    - 0 se a tarefa foi criada há menos de 5 min, e nesse caso também não conta pro streak;
-    - teto de 150 por dia.
-  - O navegador não altera mais `status`, `completed_at` nem `xp_value` (privilégio por coluna).
-  - Tarefas concluídas antes do passo 10 ficaram com XP 0.
-  - No app: o "+XP" voa até a barra superior, o nível sobe em dois tempos com aviso, e há um aviso com o motivo quando a tarefa rende 0 XP ou o teto é atingido.
-- Painel, perfil e menu lateral (passo 11): **pronto e validado pelo usuário em produção.** A revisão final do Impeccable deu "fix". As 8 correções foram aplicadas (celular, acessibilidade do gráfico e da gaveta, botão flutuante em todas as páginas).
-  - Menu lateral fixo e retrátil (estilo app do Claude) com Tarefas, Painel e Perfil. O estado recolhido fica salvo no navegador. No celular vira gaveta.
-  - Painel (`/painel`) na estrutura "Linha do tempo do dia", escolhida pelo usuário:
-    - nível, barra de XP e XP total;
-    - XP por dia em barras, com o teto de 150 e opção de 7 ou 30 dias;
-    - conclusões por categoria, com a mais concluída em destaque;
-    - linha do tempo das conclusões recentes, com streak atual e recorde.
-    - Tudo é calculado no navegador a partir das tarefas do usuário (`src/lib/painel.js`), no horário de Brasília.
-  - Perfil (`/perfil`): primeiro nome, sobrenome, data de nascimento (13 anos ou mais) e ocupação (estudante, trabalho ou ambos), editáveis. O nome aparece no menu e no avatar.
-  - O cadastro pede esses campos. O gatilho `handle_new_user` cria o perfil a partir deles.
-  - Lembrete de streak: aparece quando há streak e nenhuma conclusão hoje. Pode ser dispensado, e volta no dia seguinte.
-  - A migration `20260910230000_perfis` (tabela `profiles` com RLS e validação de idade) **foi aplicada em produção**. Acesso anônimo à tabela testado e recusado.
-  - Contas antigas não têm perfil. O app mostra "Complete seu perfil" e a página Perfil cria o perfil ao salvar.
-- PWA (passo 12): **no ar em produção, aguardando o teste do usuário no celular.** A revisão final do Impeccable deu "fix". As correções foram aplicadas: convite com botão de link, texto do aviso offline, passo a passo para iPhone e iPad, versão do service worker incluindo os ícones, splash e ícone recentrado.
-  - `public/manifest.webmanifest` e ícones em `public/marca/`:
-    - 192 e 512 comuns;
-    - 512 "maskable", sem a moldura, para o Android recortar;
-    - 180 para o iPhone (`apple-touch`).
-  - Service worker:
-    - O modelo fica em `pwa/sw.js`. O build gera `dist/sw.js` com um plugin no `vite.config.js`, que injeta a lista de arquivos e uma versão calculada do conteúdo.
-    - Guarda a casca do app, então ele abre sem internet. A navegação vai primeiro à rede e usa o `index.html` guardado quando está offline.
-    - Supabase e Turnstile nunca passam pelo cache.
-    - Cada deploy vira uma versão nova, que assume sozinha.
-    - Só é registrado em produção (`src/main.jsx`). O `vercel.json` manda `no-cache` no `/sw.js`.
-    - Testado num build local de produção: ativa, guarda 13 arquivos e abre offline.
-  - Instalação (`src/lib/instalacao.js`):
-    - Android, Chrome e Edge usam o botão do navegador.
-    - iPhone mostra o passo a passo do Safari (`DialogoInstalarIos`).
-    - O convite aparece numa faixa no celular (`ConviteInstalar`), que some para sempre se dispensada e espera o lembrete de streak sair. Também há o item "Instalar app" no menu lateral.
-  - Sem internet: aviso neutro no topo (`useConexao`). Quando a internet volta, os dados são buscados de novo.
-  - Tarefas não funcionam offline; isso exigiria sincronização, que está fora da v1.
-- **Configuração de segurança e deploy** (roteiro em `seguranca-e-criacao-repositorio.txt`):
-  - Etapas A a D feitas: histórico do git sem segredos, RLS confirmado no painel e por ataque anônimo à API, repositório privado criado, Vercel ligada ao projeto.
-  - Etapa E: a Site URL do Supabase foi corrigida pelo usuário para routin-six. Falta:
-    - trocar as URLs para routinxp.vercel.app;
-    - testar cadastro, confirmação, login e redefinição de senha em produção.
-  - **CAPTCHA (Cloudflare Turnstile) ativo.** O widget é invisível e só aparece quando a Cloudflare pede interação. Protege entrar, criar conta e esqueci minha senha. O Supabase recusa pedidos sem token ou com token falso (verificado pela API).
-  - Etapa F (tornar o repositório público): opcional, não feita.
-  - CLIs `gh` e `vercel` instaladas. O terminal do painel do usuário não as enxerga; quem roda os comandos é o Claude Code.
+    - No PowerShell, use `npx.cmd` (a política de execução bloqueia o `npx.ps1`), sempre dentro da pasta do projeto.
+  - **Edge Functions:** publicar com `npx.cmd supabase functions deploy <nome> --no-verify-jwt --use-api`.
+    - `sincronizar-calendarios` lê os calendários iCal. O pg_cron chama a cada 30 min; cada calendário é lido a cada ~3 h.
+    - `avisos-foco` envia o Web Push do fim de fase. O pg_cron confere a cada 15 s e só chama quando há aviso vencido.
+    - As duas se autenticam com o segredo `routinxp_cron_sync` do Vault.
+  - **Segredos:** `VAPID_PUBLIC_KEY` e `VAPID_PRIVATE_KEY`.
+  - **Segurança:**
+    - RLS em todas as tabelas.
+    - XP, streak e conclusão são gravados só pelo servidor (privilégio por coluna).
+    - Tabelas de push e avisos acessíveis só por funções.
+    - Acesso anônimo testado e recusado (401) em cada tabela nova.
+    - CAPTCHA (Cloudflare Turnstile) em entrar, criar conta e esqueci minha senha.
+    - URLs de Auth e hostname do Turnstile em `routinxp.vercel.app`.
+- **Impeccable:**
+  - `PRODUCT.md`, `DESIGN.md` e `.impeccable/design.json` (sincronizados com o código em 2026-09-13);
+  - briefs das telas em `.impeccable/surfaces/` (casca, Tarefas, Painel, Integrações, Foco);
+  - capturas de revisão em `.impeccable/review/`.
+- **Pré-visualização de desenvolvimento:** `npm run dev` e abrir `/?previa`.
+  - Aceita `&visao=lista|quadro|calendario&modo=mes|semana|dia|linha`, ou `/foco?previa`.
+  - Usa dados fictícios em memória, sem login, e fica fora do build de produção.
 
-**Dados de teste na conta real do usuário:** categorias Faculdade, Trabalho, Vida Pessoal e 8 tarefas de exemplo, algumas concluídas, criadas no teste do passo 9. Ainda não foi confirmado se devem ser apagadas.
+### O que existe (no ar e validado pelo usuário)
+- **Conta:**
+  - login e cadastro com perfil (nome, sobrenome, nascimento com 13 anos ou mais, ocupação);
+  - confirmação por e-mail e "Esqueci minha senha";
+  - página Perfil.
+- **Tarefas (`/`):**
+  - **Visões:** Lista agrupada por categoria (Pendentes/Concluídas); Kanban com colunas próprias e coloridas (soltar em Concluídas conclui); Calendário (Mês, Semana, Dia, Linha do tempo).
+  - **Filtro:** busca, categorias, tags e prazo.
+  - **Tarefa:** título, descrição, categoria, data e tags; card com capa na cor da categoria, etiquetas estilo Trello e selo de prazo (âmbar perto, rosa atrasada).
+  - **Excluir** com "Desfazer". Não há desfazer conclusão (decisão da v1).
+- **XP e streak** calculados no servidor, no horário de Brasília:
+  - 10 de base, +5 no prazo;
+  - 0 para tarefa criada há menos de 5 min;
+  - teto de 150 por dia.
+  - Níveis (100 XP para o 2, +50 a cada nível), voo do "+XP" até a barra e aviso de subida de nível.
+- **Painel (`/painel`):** nível e XP, XP por dia (7 ou 30 dias), conclusões por categoria, minutos de foco, linha do tempo e streaks.
+- **Foco (`/foco`):**
+  - pomodoro em duas fases (montar e rodar), com as tarefas da sessão e o player do Spotify por link colado;
+  - no fim de cada fase o relógio para e espera o usuário ("Hora da pausa", "Próximo foco");
+  - avisos com som, vibração, notificação do sistema e Web Push, que chega com a tela bloqueada;
+  - atalho na barra superior e tempo na aba do navegador;
+  - histórico dos blocos de foco no Painel.
+- **Categorias e tags (`/categorias`)** e **Integrações (`/integracoes`)**: calendários iCal (Blackboard e outros), um link por disciplina, com categoria e tag.
+- **Casca:**
+  - menu lateral retrátil, que vira gaveta no celular (Tarefas, Foco, Painel, Categorias e tags, Integrações, Perfil);
+  - avisos no topo, um por vez: sem conexão, streak em risco, prazos, instalar;
+  - botão flutuante "Nova tarefa" em todas as páginas.
+- **PWA:**
+  - manifest e ícones em `public/marca/`;
+  - service worker (modelo em `pwa/sw.js`, gerado no build): casca offline, push e clique no aviso;
+  - instalação no Android pelo navegador e no iPhone pelo passo a passo do Safari.
+- **Dados de teste:** as 8 tarefas de exemplo foram apagadas pelo usuário (2026-09-13).
 
-**Pendências técnicas conhecidas:**
-- (Resolvido em 2026-09-11) Alvos de toque de 44px no celular: filtro segmentado, chips, "Filtrar", botão compacto, "⋯" das colunas e o × dos avisos. Os chips de categoria saíram junto com o trilho.
-- (Resolvido em 2026-09-11) Contraste do anel do check, animação do check igual no app e na demo, e brief de Tarefas sem o trilho.
+### Pendências
+- **Técnicas:**
+  - O pacote JS passa de 500 kB; dá para carregar cada página só quando for aberta (lazy loading).
+  - O SMTP padrão do Supabase envia só ~2 e-mails por hora. O SMTP próprio depende de um domínio.
+  - A proteção contra senhas vazadas é opção do painel do Supabase e parece exigir o plano Pro.
+  - Foco: um aviso agendado por usuário (dois cronômetros em aparelhos diferentes se sobrepõem). Intervalos e link do Spotify ficam salvos por navegador.
+  - Tarefas não funcionam sem internet (exigiria sincronização).
+- **Adiado pelo usuário (2026-09-13):** domínio próprio e os testes de conta ligados a ele (cadastro, confirmação e redefinição de senha).
+- **Decisão em aberto:** limitar a largura da Lista em telas muito largas (ficou de fora porque o usuário pediu tarefas em largura total).
+- **Opcional do usuário:** renomear o projeto no painel do Supabase e o widget no Turnstile.
+- **Risco:** o projeto grátis do Supabase pausa após 1 semana sem uso e precisa ser reativado no painel.
 
-**Pendências apontadas no DESIGN.md do passo 11 (bons ajustes para o Antigravity ou para o usuário):**
-- (Resolvido em 2026-09-11) "Perfil salvo." sem verde e Tab preso na gaveta do celular.
-- O build avisa que o pacote JS passa de 500 kB; dá para dividir por página (lazy loading).
-
-**Ações pendentes do usuário:**
-- (Feito) URLs do Supabase Auth e hostname do Turnstile trocados para `routinxp.vercel.app`.
-- **Pasta local:** renomear `App - Rotina` para `RoutinXP` com o Claude fechado. Depois reabrir a pasta nova no Claude Code; o git e o link da Supabase CLI continuam funcionando, porque ficam dentro da pasta.
-- **Opcional:**
-  - renomear o projeto no painel do Supabase e o widget no Turnstile;
-  - apagar os dados de teste.
+### Ideias (não agendadas)
+- **Controle financeiro** (próxima frente, pedida em 2026-09-13; em pesquisa, nada construído): categorização automática dos gastos, DRE pessoal, categoria que mais gastou, assinaturas e contas com dia de vencimento. Referência: Pierre (pierre.finance). A fonte dos dados ainda está em aberto: lançamento manual, importar extrato (OFX/CSV) ou Open Finance pelo MeuPluggy (grátis para uso pessoal).
+- **Agenda** (pedida em 2026-09-13, para depois do financeiro): uma área de agenda, que precisa conversar com o Calendário das tarefas, as Integrações e o Foco.
+- **Conquistas e badges:** estavam previstas para depois de validar XP e streak.
+- **Temas desbloqueados por nível:** todas as cores já estão em variáveis CSS.
+- **XP variável por categoria ou prioridade:** esperar dados reais de uso.
+- **Notificação de prazos por push:** reaproveita a infraestrutura dos avisos do Foco.
+- **Spotify com a conta conectada (Web Playback SDK):** exige Premium, não toca no navegador do celular e tem limite de 25 usuários no modo de desenvolvimento.
+- **Ranking entre usuários:** não escolhido na v1.
 
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
+
+### 2026-09-13, Claude Code (Opus 5): fechamento da v1 e da v2, documentação atualizada
+- O usuário testou em produção e validou:
+  - PWA no celular;
+  - Integrações com os links reais;
+  - Kanban, Calendário e demais recursos de tarefas;
+  - Foco com os avisos.
+- Ações do usuário:
+  - pasta renomeada para `RoutinXP`;
+  - 8 tarefas de teste apagadas;
+  - repositório tornado público.
+  - O domínio próprio e os testes de conta ligados a ele ficaram para depois.
+- A cópia temporária da chave privada VAPID (`vapid.json`, fora do repositório) foi apagada. A chave vive só nos segredos do Supabase.
+- "Estado atual" reescrito para o app de hoje: sem trilho nem Quadro; infraestrutura, recursos, pendências e ideias.
+- `DESIGN.md` e `.impeccable/design.json` sincronizados com o código pelo documentador do Impeccable.
+
+Próximo:
+- Escolher a próxima frente. Sugestões: carregar cada página só quando for aberta (pacote de 500 kB), notificação de prazos por push, conquistas.
 
 ### 2026-09-11, Claude Code (Opus 5): Foco avisa de verdade no fim de cada fase
 O problema, relatado pelo usuário:
@@ -512,12 +536,12 @@ Travou:
 ## Decisões tomadas fora do escopo.md
 (qualquer decisão de implementação que não estava prevista no escopo original, pra não se perder entre ferramentas)
 
-Todas em 2026-09-10. Detalhes em `PRODUCT.md`.
+Até 2026-09-10, salvo indicação. Detalhes em `PRODUCT.md`.
 
 - **Nome do produto: RoutinXP** (usuário).
 - **Tela de categorias:** criar, editar e excluir, sem categorias pré-criadas. Categoria com tarefas não pode ser excluída.
 - **Confirmação de e-mail ligada;** "Esqueci minha senha" incluído.
-- **Visão Quadro (Kanban)** por status (Pendentes/Concluídas), convivendo com a Lista. Arrastar para Concluídas conclui a tarefa.
+- **Visão Kanban** (chamada de Quadro no início) convivendo com a Lista. Arrastar para Concluídas conclui a tarefa. Em 2026-09-11 ganhou colunas próprias e coloridas entre Pendentes e Concluídas.
 - **Desfazer conclusão:** não entra na v1 (usuário). Uma tarefa concluída não volta para Pendentes.
 - **Excluir tarefa:** permitido, com "Tarefa excluída · Desfazer" por 5 s em vez de confirmação (usuário).
 - **Níveis** calculados a partir do `xp_total`: 100 XP para o nível 2, e cada nível seguinte pede +50 (`src/lib/nivel.js`).
@@ -529,8 +553,10 @@ Todas em 2026-09-10. Detalhes em `PRODUCT.md`.
   - Tudo calculado no banco (passo 10).
   - O formulário de tarefa não tem campo de XP.
 - **XP e streak gravados só pelo servidor:** `user_stats` não tem policy de insert/update pro cliente (mais restrito que "CRUD completo", de propósito).
-- **Em aberto para o passo 10:** qual fuso define o "dia" do streak (sugestão: `America/Sao_Paulo`).
+- **Dia do streak, do teto e do bônus:** horário de Brasília (`America/Sao_Paulo`) para todos, decidido no passo 10.
 - **Visual:** tema escuro com verde para XP e nível e roxo para ações, na convenção DIO/Duolingo/Habitica, com a fonte Archivo. Roxo nunca marca seleção; seleção é neutra.
-- **Estrutura da tela de tarefas:** "Trilho de categorias" (usuário).
-- **Deploy contínuo desde cedo** (usuário, passo 5.1 nos documentos). Ainda não executado: depende de login do usuário no GitHub e na Vercel.
-- **Ideia não agendada:** temas desbloqueados por nível. As cores já estão em variáveis CSS.
+- **Estrutura da tela de tarefas:** começou como "Trilho de categorias" (usuário). Em 2026-09-11 o trilho saiu: as tarefas ocupam a largura toda, com filtro, e as categorias e tags ganharam página própria.
+- **Deploy contínuo desde cedo** (usuário, passo 5.1 nos documentos): Vercel publica a cada push na `main`.
+- **Integrações externas e push** (fora da v1 no escopo) foram liberados pelo usuário na v2: calendários iCal (2026-09-11) e Web Push dos avisos do Foco (2026-09-11).
+- **Foco:** o XP vem só das tarefas; o Spotify entra pelo player embutido (sem conectar conta); no fim de cada fase nada começa sozinho (usuário, 2026-09-11).
+- **Ideias não agendadas:** ver "Ideias" em Estado atual.

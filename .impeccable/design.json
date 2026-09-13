@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-11T13:11:53.526Z",
+  "generatedAt": "2026-09-13T14:33:42.245Z",
   "title": "Design System: RoutinXP",
   "extensions": {
     "colorMeta": {
@@ -92,6 +92,51 @@
           "#3a9060",
           "#6bb58a",
           "#c3e3cf"
+        ]
+      },
+      "prazo-perto": {
+        "role": "tertiary",
+        "displayName": "Deadline Amber",
+        "canonical": "#e0a050",
+        "tonalRamp": [
+          "#2a1a07",
+          "#4a2f0d",
+          "#6f4714",
+          "#96611c",
+          "#c08234",
+          "#e0a050",
+          "#ecc08a",
+          "#f8e6cc"
+        ]
+      },
+      "prazo-atrasado": {
+        "role": "tertiary",
+        "displayName": "Deadline Rose",
+        "canonical": "#e27d8f",
+        "tonalRamp": [
+          "#2b0f15",
+          "#4d1b27",
+          "#72293b",
+          "#9a3a51",
+          "#c45a6f",
+          "#e27d8f",
+          "#eeabb7",
+          "#f9dfe4"
+        ]
+      },
+      "on-prazo": {
+        "role": "tertiary",
+        "displayName": "On Deadline",
+        "canonical": "#1d1407",
+        "tonalRamp": [
+          "#0e0a03",
+          "#1d1407",
+          "#35250f",
+          "#4f3918",
+          "#6b4f24",
+          "#8c6a36",
+          "#b8986a",
+          "#e6d7c0"
         ]
       },
       "purple": {
@@ -376,11 +421,11 @@
       },
       "page-title": {
         "displayName": "Page Title",
-        "purpose": "The one heading of an app screen (category name or \"Todas as tarefas\", \"Painel\", \"Perfil\"); 110% width."
+        "purpose": "The one heading of an app screen (\"Tarefas\", \"Painel\", \"Foco\", \"Perfil\", \"Integrações\"); 1.625rem, 110% width, wraps anywhere."
       },
       "page-title-compact": {
         "displayName": "Page Title Compact",
-        "purpose": "Page title at 60rem and below."
+        "purpose": "Page title at 60rem and below (1.375rem)."
       },
       "wordmark": {
         "displayName": "Wordmark",
@@ -404,11 +449,11 @@
       },
       "row-title": {
         "displayName": "Row Title",
-        "purpose": "Task and timeline titles (clamped to two lines) and side-menu items."
+        "purpose": "Task and timeline titles (clamped to two lines) and side-menu items; task card titles run 0.9375rem at 600."
       },
       "meta": {
         "displayName": "Meta",
-        "purpose": "Category line, due dates, counts, hints, timeline times; 0.75rem for chart axis/cap labels and secondary figures."
+        "purpose": "Counts, hints, timeline times; 0.75rem for the task card meta line, chart axis/cap labels and secondary figures."
       },
       "segment": {
         "displayName": "Segment",
@@ -454,7 +499,7 @@
       {
         "name": "fab-glow",
         "value": "0 10px 24px -8px var(--purple-glow), var(--shadow)",
-        "purpose": "Floating action button over content (60rem and below)."
+        "purpose": "Floating action button over content, at every width."
       },
       {
         "name": "focus-halo",
@@ -470,6 +515,11 @@
         "name": "swatch-ring",
         "value": "0 0 0 3px var(--panel), 0 0 0 5px var(--ink)",
         "purpose": "Checked color swatch in the category dialog."
+      },
+      {
+        "name": "waiting-halo",
+        "value": "0 0 0 0 var(--purple-halo) to 0 0 0 0.9rem transparent, over 0 8px 20px -10px var(--purple-glow)",
+        "purpose": "Foco clock primary button while a phase waits for the user; repeats every 2.2s. Reduced motion: a still 0 0 0 3px var(--purple-halo)."
       },
       {
         "name": "level-up-pulse",
@@ -584,6 +634,11 @@
         "purpose": "Clock time and phase line dim to Muted on pause; cycle pills change state."
       },
       {
+        "name": "foco-call",
+        "value": "2.2s ease-out infinite, halo 0 to 0.9rem, fading by 70%",
+        "purpose": "Waiting state on the Foco clock: the primary button (Iniciar pausa, Iniciar pausa longa, Iniciar foco) pulses until pressed; nothing starts on its own."
+      },
+      {
         "name": "checkbox",
         "value": "background-color, border-color 0.15s ease-out",
         "purpose": "Neutral checkbox fill on check."
@@ -593,7 +648,7 @@
       {
         "name": "single-column",
         "value": "59.99rem",
-        "purpose": "At or below: login becomes one 30rem column; the side menu becomes an off-canvas drawer; the top bar shows menu button + logo and wraps the level pill to a second row; FAB replaces + Nova tarefa on every page; page title 1.375rem; dialog fields stack; the install invite strip shows only here."
+        "purpose": "At or below: login becomes one 30rem column; the side menu becomes an off-canvas drawer; the top bar shows menu button + logo (or the focus chip) and wraps the level pill to a second row; \"+ Nova tarefa\" leaves the Tarefas title row (the FAB, present at every width, remains); page title 1.375rem; dialog fields stack; the Calendário mode control drops under the tabs; touch targets reach 44px; the install invite strip shows only here."
       },
       {
         "name": "painel-single",
@@ -627,7 +682,7 @@
       "name": "Primary Button",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "The one solid action per form; full width in a login footer, right-aligned in dialogs. Compact 40px variant only in the top bar.",
+      "description": "The one solid action per form; full width in a login footer, right-aligned in dialogs. Compact 40px variant for title-row actions (\"+ Nova tarefa\" on Tarefas desktop, \"+ Conectar calendário\" on Integrações).",
       "html": "<button class=\"ds-btn\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M8 3v10M3 8h10\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg>Nova tarefa</button> <button class=\"ds-btn ds-btn--compacto\">Nova tarefa</button>",
       "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; min-height: 3rem; padding: 0 1.5rem; border: 0; border-radius: 10px; background: var(--purple, #7c3aed); color: var(--on-purple, #fff); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: 0.01em; cursor: pointer; box-shadow: 0 8px 20px -10px var(--purple-glow, rgb(124 58 237 / 0.75)); transition: transform 0.12s cubic-bezier(0.16,1,0.3,1), background-color 0.2s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-btn svg { width: 1rem; height: 1rem; } .ds-btn--compacto { min-height: 2.5rem; padding: 0 1rem; } .ds-btn:hover { background: var(--purple-hover, #8b5cf6); } .ds-btn:active { transform: translateY(1px); box-shadow: 0 4px 10px -6px var(--purple-glow, rgb(124 58 237 / 0.75)); } .ds-btn:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 2px; }"
     },
@@ -691,7 +746,7 @@
       "name": "Top Bar Level Pill",
       "kind": "nav",
       "refersTo": "level-pill",
-      "description": "App chrome on desktop: the centered level pill (badge, compact XP bar, streak), compact action and avatar button; the logo lives in the side menu (mobile adds menu button + logo at the left). Skeleton variant while stats load.",
+      "description": "App chrome on desktop: the centered level pill (badge, compact XP bar, streak) and the avatar button at the right; the logo lives in the side menu and the left holds the focus chip during a session (mobile adds menu button + logo). Skeleton variant while stats load.",
       "html": "<header class=\"ds-topo\"><span></span><div class=\"ds-pill\"><span class=\"ds-badge\">Nível 4</span><div class=\"ds-xp\"><div class=\"ds-xp-top\"><span class=\"ds-xp-val\">XP 90 / 250</span><span class=\"ds-xp-left\">faltam 160 XP</span></div><div class=\"ds-xp-track\" role=\"progressbar\" aria-valuemin=\"0\" aria-valuemax=\"250\" aria-valuenow=\"90\"><div class=\"ds-xp-fill\" style=\"--p:0.36\"></div></div></div><div class=\"ds-streak\"><span class=\"ds-streak-n\">6 dias</span><span class=\"ds-streak-l\">Streak</span></div></div><span class=\"ds-avatar\">AN</span></header><div class=\"ds-pill ds-pill--skel\" aria-busy=\"true\"><span class=\"ds-skel\"></span></div>",
       "css": ".ds-topo { display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 1.5rem; padding: 0.875rem 2rem; background: var(--topbar, #0d0e12); border-bottom: 1px solid var(--rule, #2e3039); color: var(--ink, #f3f4f7); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-variant-numeric: tabular-nums; } .ds-pill { justify-self: center; display: flex; align-items: center; gap: 1rem; padding: 0.45rem 1rem 0.45rem 0.5rem; background: var(--panel, #1c1d24); border: 1px solid var(--rule, #2e3039); border-radius: 999px; } .ds-pill--skel { width: 20rem; min-height: 3.1rem; padding-inline: 1rem; } .ds-skel { flex: 1; height: 0.5rem; border-radius: 999px; background: var(--panel-2, #25262f); } .ds-badge { display: inline-flex; padding: 0.3rem 0.65rem; border-radius: 999px; background: var(--green, #22c55e); color: var(--on-green, #0a2616); font-size: 0.6875rem; font-weight: 800; font-stretch: 112.5%; letter-spacing: 0.06em; text-transform: uppercase; line-height: 1; white-space: nowrap; } .ds-xp { width: 14rem; display: grid; gap: 0.3rem; } .ds-xp-top { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; font-size: 0.75rem; } .ds-xp-val { font-weight: 800; letter-spacing: 0.02em; } .ds-xp-left { color: var(--muted, #a3a7b3); } .ds-xp-track { height: 0.5rem; border-radius: 999px; background: var(--panel-2, #25262f); overflow: hidden; } .ds-xp-fill { width: 100%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--green, #22c55e) calc(100% - 0.9rem), var(--green-tip, #86efac)); transform: translateX(calc((max(var(--p), 0.04) - 1) * 100%)); transition: transform 0.7s cubic-bezier(0.16,1,0.3,1); } .ds-streak { display: grid; line-height: 1.15; padding-left: 1rem; border-left: 1px solid var(--rule, #2e3039); } .ds-streak-n { font-weight: 800; white-space: nowrap; } .ds-streak-l { font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted, #a3a7b3); } .ds-avatar { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; border: 2px solid var(--green, #22c55e); background: var(--panel-2, #25262f); font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-avatar:hover { background: var(--rule, #2e3039); }"
     },
@@ -699,17 +754,17 @@
       "name": "Streak Reminder",
       "kind": "custom",
       "refersTo": "streak-reminder",
-      "description": "Quiet Panel strip under the top bar when the streak is at risk: Muted clock, one plain sentence, \"Ver tarefas\" link off Tarefas, dismiss until tomorrow. No tag, no alarm color; distinct from the error notice. The same strip form carries the offline notice (Muted no-connection icon, no dismiss) and, on mobile, the install invite (download icon, \"Instalar\" link, dismiss forever); one strip at a time.",
+      "description": "Quiet Panel strip under the top bar when the streak is at risk: Muted clock, one plain sentence, \"Ver tarefas\" link off Tarefas, dismiss until tomorrow. No tag, no alarm color; distinct from the error notice. The same strip form carries the offline notice (Muted no-connection icon, no dismiss), the deadline reminder (amber clock, dismiss until tomorrow) and, on mobile, the install invite (download icon, \"Instalar\" link, dismiss forever). Queue: offline, streak, deadlines, install; one strip at a time.",
       "html": "<div class=\"ds-lembrete\" role=\"status\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"6\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M8 4.75V8l2.25 1.5\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg><p>Você ainda não concluiu nenhuma tarefa hoje. Conclua uma para manter sua sequência de 6 dias.</p><a href=\"#\" class=\"ds-lembrete-link\">Ver tarefas</a><button class=\"ds-lembrete-x\" aria-label=\"Dispensar lembrete\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M4 4l8 8M12 4l-8 8\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg></button></div>",
-      "css": ".ds-lembrete { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 0.75rem 0.7rem 1rem; background: var(--panel, #1c1d24); border: 1px solid var(--rule, #2e3039); border-radius: 10px; color: var(--ink, #f3f4f7); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-size: 0.875rem; } .ds-lembrete > svg { flex: none; width: 1.125rem; height: 1.125rem; color: var(--muted, #a3a7b3); } .ds-lembrete p { flex: 1; margin: 0; } .ds-lembrete-link { padding: 0.25rem 0; font-weight: 600; color: var(--purple-soft, #c4b5fd); text-decoration: underline; text-decoration-color: var(--purple-link-line, rgb(196 181 253 / 0.4)); text-underline-offset: 4px; white-space: nowrap; transition: text-decoration-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-lembrete-link:hover { text-decoration-color: var(--purple-soft, #c4b5fd); } .ds-lembrete-x { display: grid; place-items: center; flex: none; width: 2.25rem; height: 2.25rem; border: 0; border-radius: 8px; background: none; color: var(--muted, #a3a7b3); cursor: pointer; } .ds-lembrete-x:hover { background: var(--panel-2, #25262f); color: var(--ink, #f3f4f7); } .ds-lembrete-x svg { width: 0.875rem; height: 0.875rem; } .ds-lembrete a:focus-visible, .ds-lembrete button:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 2px; }"
+      "css": ".ds-lembrete { display: flex; align-items: center; gap: 0.75rem; padding: 0.35rem 0.5rem 0.35rem 0.9rem; background: var(--panel, #1c1d24); border: 1px solid var(--rule, #2e3039); border-radius: 10px; color: var(--ink, #f3f4f7); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-size: 0.8125rem; } .ds-lembrete > svg { flex: none; width: 1.125rem; height: 1.125rem; color: var(--muted, #a3a7b3); } .ds-lembrete p { flex: 1; margin: 0; } .ds-lembrete-link { padding: 0.25rem 0; font-weight: 600; color: var(--purple-soft, #c4b5fd); text-decoration: underline; text-decoration-color: var(--purple-link-line, rgb(196 181 253 / 0.4)); text-underline-offset: 4px; white-space: nowrap; transition: text-decoration-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-lembrete-link:hover { text-decoration-color: var(--purple-soft, #c4b5fd); } .ds-lembrete-x { display: grid; place-items: center; flex: none; width: 2.25rem; height: 2.25rem; border: 0; border-radius: 8px; background: none; color: var(--muted, #a3a7b3); cursor: pointer; } .ds-lembrete-x:hover { background: var(--panel-2, #25262f); color: var(--ink, #f3f4f7); } .ds-lembrete-x svg { width: 0.875rem; height: 0.875rem; } .ds-lembrete a:focus-visible, .ds-lembrete button:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 2px; }"
     },
     {
       "name": "Task Row",
       "kind": "custom",
       "refersTo": "task-row",
-      "description": "Three columns: check target, title + category line, relative due date (pending) or the XP label (completed: \"…\" muted while the server computes, \"+0 XP\" muted, earned \"+n XP\" full green). Excluir overlay on hover/focus.",
-      "html": "<ul class=\"ds-list\"><li class=\"ds-row\"><button class=\"ds-check\" aria-label=\"Concluir\"><span class=\"ds-circ\"><svg viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M3.5 8.5 6.5 11.5 12.5 4.5\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span></button><button class=\"ds-body\"><span class=\"ds-title\">Responder e-mail do orientador</span><span class=\"ds-meta\"><span class=\"ds-dot\" style=\"background:#6c9be8\"></span>Faculdade</span></button><span class=\"ds-date\" data-prazo=\"hoje\">hoje</span><button class=\"ds-del\">Excluir</button></li><li class=\"ds-row\" data-feita=\"true\"><button class=\"ds-check\" disabled><span class=\"ds-circ\"><svg viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M3.5 8.5 6.5 11.5 12.5 4.5\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span></button><button class=\"ds-body\"><span class=\"ds-title\">Pagar conta de luz</span><span class=\"ds-meta\"><span class=\"ds-dot\" style=\"background:#e27d8f\"></span>Vida Pessoal</span></button><span class=\"ds-xp\">+10 XP</span></li><li class=\"ds-row\" data-feita=\"true\"><button class=\"ds-check\" disabled><span class=\"ds-circ\"><svg viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M3.5 8.5 6.5 11.5 12.5 4.5\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span></button><button class=\"ds-body\"><span class=\"ds-title\">Beber água</span></button><span class=\"ds-xp\" data-zero=\"true\">+0 XP</span></li></ul>",
-      "css": ".ds-list { margin: 0; padding: 0; list-style: none; font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; color: var(--ink, #f3f4f7); } .ds-row + .ds-row { border-top: 1px solid var(--rule, #2e3039); } .ds-row { position: relative; display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; column-gap: 0.75rem; padding: 0.2rem 0.75rem 0.2rem 0; border-radius: 8px; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-row:hover { background: var(--panel-2, #25262f); } .ds-check { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; padding: 0; border: 0; background: none; cursor: pointer; } .ds-check:disabled { cursor: default; } .ds-circ { display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border: 2px solid var(--check-ring, #7a7e8c); border-radius: 50%; color: transparent; transition: background-color 0.25s, border-color 0.25s, color 0.25s; } .ds-circ svg { width: 0.9rem; height: 0.9rem; } .ds-check:hover:not(:disabled) .ds-circ { border-color: var(--green, #22c55e); color: var(--green, #22c55e); } .ds-row[data-feita='true'] .ds-circ { background: var(--green, #22c55e); border-color: var(--green, #22c55e); color: var(--on-green, #0a2616); } .ds-body { display: grid; gap: 0.2rem; min-width: 0; padding: 0.6rem 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; } .ds-title { font-weight: 600; line-height: 1.3; } .ds-row[data-feita='true'] .ds-title { color: var(--muted, #a3a7b3); text-decoration: line-through; text-decoration-color: var(--rule-strong, #454856); } .ds-meta { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8125rem; color: var(--muted, #a3a7b3); } .ds-dot { flex: none; width: 0.5rem; height: 0.5rem; border-radius: 50%; } .ds-date { font-size: 0.8125rem; color: var(--muted, #a3a7b3); white-space: nowrap; } .ds-date[data-prazo='hoje'] { color: var(--ink, #f3f4f7); font-weight: 600; } .ds-date[data-prazo='atrasada'] { color: var(--ink, #f3f4f7); font-weight: 700; } .ds-xp { font-size: 0.8125rem; font-weight: 800; color: var(--green, #22c55e); white-space: nowrap; } .ds-xp[data-zero='true'], .ds-xp[data-pendente='true'] { color: var(--muted, #a3a7b3); font-weight: 600; } .ds-del { position: absolute; right: 0.5rem; top: 50%; padding: 0.4rem 0.6rem; border: 0; border-radius: 8px; background: var(--panel-2, #25262f); transform: translateY(-50%); font: inherit; font-size: 0.8125rem; font-weight: 600; color: var(--muted, #a3a7b3); opacity: 0; cursor: pointer; transition: opacity 0.15s, color 0.15s, background-color 0.15s; } .ds-row:hover .ds-del, .ds-row:focus-within .ds-del { opacity: 1; } .ds-del:hover { color: var(--ink, #f3f4f7); background: var(--rule, #2e3039); } .ds-row button:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 2px; } @media (hover: none) { .ds-del { display: none; } }"
+      "description": "The task card, used in Lista, Calendário Dia, Linha do tempo and Foco: a solid category-color cover band on top (0.375rem; 0.875rem in Kanban, faded to 40% when completed), a flat Panel body (Panel Two in Kanban) with 8px radius and no shadow, cards 0.375rem apart with no wrapping panel. Three columns: a 44px check target with a 1.3rem Check Ring circle; Trello-style tag labels (4px radius, tag color 48% into Panel, Ink text; or 2.5rem color bars) over the title and category line; the Deadline Badge (neutral, amber within 3 days or today, rose overdue) for pending or the XP label for completed (\"…\" muted while the server computes, \"+0 XP\" muted, earned \"+n XP\" full green). Excluir overlay on hover/focus.",
+      "html": "<ul class=\"ds-list\"><li class=\"ds-row\" style=\"--cor-cat:#6c9be8\"><button class=\"ds-check\" aria-label=\"Concluir\"><span class=\"ds-circ\"><svg viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M3.5 8.5 6.5 11.5 12.5 4.5\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span></button><div class=\"ds-main\"><div class=\"ds-tags\"><button class=\"ds-tag\" style=\"--c:#e0a050\">Prova</button><button class=\"ds-tag\" style=\"--c:#8fb8a8\">Leitura</button></div><button class=\"ds-body\"><span class=\"ds-title\">Responder e-mail do orientador</span><span class=\"ds-meta\"><span class=\"ds-dot\" style=\"background:#6c9be8\"></span>Faculdade</span></button></div><span class=\"ds-prazo\" data-prazo=\"hoje\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"6\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M8 4.75V8l2.25 1.5\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>hoje</span><button class=\"ds-del\">Excluir</button></li><li class=\"ds-row\" style=\"--cor-cat:#e27d8f\"><button class=\"ds-check\" aria-label=\"Concluir\"><span class=\"ds-circ\"><svg viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M3.5 8.5 6.5 11.5 12.5 4.5\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span></button><div class=\"ds-main\"><button class=\"ds-body\"><span class=\"ds-title\">Pagar conta de luz</span><span class=\"ds-meta\"><span class=\"ds-dot\" style=\"background:#e27d8f\"></span>Vida Pessoal</span></button></div><span class=\"ds-prazo\" data-prazo=\"atrasada\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"6\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M8 4.75V8l2.25 1.5\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>atrasada · 9 set</span><button class=\"ds-del\">Excluir</button></li><li class=\"ds-row\" style=\"--cor-cat:#6c9be8\"><button class=\"ds-check\" aria-label=\"Concluir\"><span class=\"ds-circ\"><svg viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M3.5 8.5 6.5 11.5 12.5 4.5\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span></button><div class=\"ds-main\"><div class=\"ds-tags\"><button class=\"ds-tag\" data-compacta=\"true\" style=\"--c:#e0a050\" aria-label=\"Prova\"></button></div><button class=\"ds-body\"><span class=\"ds-title\">Ler capítulo 3</span></button></div><span class=\"ds-prazo\" data-prazo=\"breve\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"8\" r=\"6\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M8 4.75V8l2.25 1.5\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>12 set</span></li><li class=\"ds-row\" data-feita=\"true\" style=\"--cor-cat:#6c9be8\"><button class=\"ds-check\" disabled><span class=\"ds-circ\"><svg viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M3.5 8.5 6.5 11.5 12.5 4.5\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span></button><div class=\"ds-main\"><button class=\"ds-body\"><span class=\"ds-title\">Entregar relatório</span></button></div><span class=\"ds-xp\">+10 XP</span></li><li class=\"ds-row\" data-feita=\"true\"><button class=\"ds-check\" disabled><span class=\"ds-circ\"><svg viewBox=\"0 0 16 16\" fill=\"none\"><path d=\"M3.5 8.5 6.5 11.5 12.5 4.5\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></span></button><div class=\"ds-main\"><button class=\"ds-body\"><span class=\"ds-title\">Beber água</span></button></div><span class=\"ds-xp\" data-zero=\"true\">+0 XP</span></li></ul>",
+      "css": ".ds-list { display: grid; gap: 0.375rem; margin: 0; padding: 0; list-style: none; font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; color: var(--ink, #f3f4f7); } .ds-row { position: relative; display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; column-gap: 0.75rem; padding: 0.2rem 0.75rem 0.2rem 0.125rem; border-top: 0.375rem solid var(--cor-cat, var(--rule-strong, #454856)); border-radius: 8px; background: var(--panel, #1c1d24); transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-row:hover { background: var(--panel-2, #25262f); } .ds-row[data-feita='true'] { border-top-color: color-mix(in oklab, var(--cor-cat, var(--rule-strong, #454856)) 40%, var(--panel-2, #25262f)); } .ds-check { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; padding: 0; border: 0; background: none; cursor: pointer; } .ds-check:disabled { cursor: default; } .ds-circ { display: grid; place-items: center; width: 1.3rem; height: 1.3rem; border: 2px solid var(--check-ring, #7a7e8c); border-radius: 50%; color: transparent; transition: background-color 0.25s, border-color 0.25s, color 0.25s; } .ds-circ svg { width: 0.8rem; height: 0.8rem; } .ds-check:hover:not(:disabled) .ds-circ { border-color: var(--green, #22c55e); color: var(--green, #22c55e); } .ds-row[data-feita='true'] .ds-circ { background: var(--green, #22c55e); border-color: var(--green, #22c55e); color: var(--on-green, #0a2616); } .ds-main { display: grid; min-width: 0; } .ds-tags { display: flex; flex-wrap: wrap; gap: 0.25rem; padding-top: 0.45rem; } .ds-tags + .ds-body { padding-top: 0.25rem; } .ds-tag { display: inline-flex; align-items: center; max-width: 12rem; min-height: 1.25rem; padding: 0 0.4rem; border: 0; border-radius: 4px; background: color-mix(in oklab, var(--c) 48%, var(--panel, #1c1d24)); font: inherit; font-size: 0.75rem; font-weight: 700; line-height: 1; color: var(--ink, #f3f4f7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-tag:hover { background: color-mix(in oklab, var(--c) 55%, var(--panel, #1c1d24)); } .ds-tag[data-compacta='true'] { min-width: 2.5rem; height: 0.5rem; min-height: 0.5rem; padding: 0; background: var(--c); } .ds-row[data-feita='true'] .ds-tag { opacity: 0.55; } .ds-body { display: grid; gap: 0.2rem; min-width: 0; padding: 0.45rem 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; } .ds-title { font-size: 0.9375rem; font-weight: 600; line-height: 1.3; } .ds-row[data-feita='true'] .ds-title { color: var(--muted, #a3a7b3); text-decoration: line-through; text-decoration-color: var(--rule-strong, #454856); } .ds-meta { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: var(--muted, #a3a7b3); } .ds-dot { flex: none; width: 0.5rem; height: 0.5rem; border-radius: 50%; } .ds-prazo { display: inline-flex; align-items: center; gap: 0.25rem; min-height: 1.25rem; padding: 0 0.4rem; border-radius: 5px; background: color-mix(in oklab, var(--ink, #f3f4f7) 7%, transparent); font-size: 0.75rem; font-weight: 700; color: var(--muted, #a3a7b3); white-space: nowrap; } .ds-prazo svg { width: 0.75rem; height: 0.75rem; } .ds-prazo[data-prazo='breve'] { background: color-mix(in oklab, var(--prazo-perto, #e0a050) 18%, transparent); color: var(--prazo-perto, #e0a050); } .ds-prazo[data-prazo='hoje'] { background: var(--prazo-perto, #e0a050); color: var(--on-prazo, #1d1407); } .ds-prazo[data-prazo='atrasada'] { background: var(--prazo-atrasado, #e27d8f); color: var(--on-prazo, #1d1407); } .ds-xp { font-size: 0.8125rem; font-weight: 800; color: var(--green, #22c55e); white-space: nowrap; } .ds-xp[data-zero='true'], .ds-xp[data-pendente='true'] { color: var(--muted, #a3a7b3); font-weight: 600; } .ds-del { position: absolute; right: 0.5rem; top: 50%; padding: 0.4rem 0.6rem; border: 0; border-radius: 8px; background: var(--panel-2, #25262f); transform: translateY(-50%); font: inherit; font-size: 0.8125rem; font-weight: 600; color: var(--muted, #a3a7b3); opacity: 0; cursor: pointer; transition: opacity 0.15s, color 0.15s, background-color 0.15s; } .ds-row:hover .ds-del { background: var(--rule, #2e3039); } .ds-row:hover .ds-del, .ds-row:focus-within .ds-del { opacity: 1; } .ds-del:hover { color: var(--ink, #f3f4f7); background: var(--rule, #2e3039); } .ds-row button:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 2px; } @media (hover: none) { .ds-del { display: none; } }"
     },
     {
       "name": "Dialog with Color Picker",
@@ -755,9 +810,9 @@
       "name": "Focus Chip",
       "kind": "chip",
       "refersTo": "focus-chip",
-      "description": "Top-bar link back to Foco during a session, off the Foco page. Running: stopwatch + \"Foco 18:42\" in Ink. Paused: pause icon + \"Foco pausado 18:42\" in Muted. Waiting: pause icon + \"Próximo foco 25:00\" in Muted. Desktop left of the bar; phones centered in place of the logo.",
-      "html": "<a href=\"#\" class=\"ds-chip-foco\" aria-label=\"Foco, 18:42 restantes. Abrir a página Foco\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"9\" r=\"5.25\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M8 6.5V9l1.5 1M6.25 1.75h3.5\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg><span>Foco 18:42</span></a> <a href=\"#\" class=\"ds-chip-foco\" data-pausado=\"true\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M5.5 3.5v9M10.5 3.5v9\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\"/></svg><span>Foco pausado 18:42</span></a> <a href=\"#\" class=\"ds-chip-foco\" data-pausado=\"true\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M5.5 3.5v9M10.5 3.5v9\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\"/></svg><span>Próximo foco 25:00</span></a>",
-      "css": ".ds-chip-foco { display: inline-flex; align-items: center; gap: 0.45rem; min-height: 2.5rem; padding: 0 0.95rem 0 0.8rem; border: 1px solid var(--rule, #2e3039); border-radius: 999px; background: var(--panel, #1c1d24); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-size: 0.875rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink, #f3f4f7); text-decoration: none; white-space: nowrap; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1), border-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-chip-foco:hover { border-color: var(--rule-strong, #454856); background: var(--panel-2, #25262f); } .ds-chip-foco svg { width: 1rem; height: 1rem; color: var(--muted, #a3a7b3); } .ds-chip-foco[data-pausado='true'] { color: var(--muted, #a3a7b3); } .ds-chip-foco:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 2px; }"
+      "description": "Top-bar link back to Foco during a session, off the Foco page. Running: stopwatch + \"Foco 18:42\" in Ink. Paused: pause icon + \"Foco pausado 18:42\" in Muted. Waiting (a phase ended, nothing starts on its own): play icon + \"Hora da pausa 05:00\" or \"Próximo foco 25:00\" in Ink, with a Rule Strong border and Panel Two fill. The icon is Muted in every state. Desktop left of the bar; phones centered in place of the logo (2.75rem tall).",
+      "html": "<a href=\"#\" class=\"ds-chip-foco\" aria-label=\"Foco, 18:42 restantes. Abrir a página Foco\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><circle cx=\"8\" cy=\"9\" r=\"5.25\" stroke=\"currentColor\" stroke-width=\"2\"/><path d=\"M8 6.5V9l1.5 1M6.25 1.75h3.5\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg><span>Foco 18:42</span></a> <a href=\"#\" class=\"ds-chip-foco\" data-pausado=\"true\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M5.5 3.5v9M10.5 3.5v9\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg><span>Foco pausado 18:42</span></a> <a href=\"#\" class=\"ds-chip-foco\" data-aguardando=\"true\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M5 3.5v9l7.5-4.5L5 3.5Z\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linejoin=\"round\"/></svg><span>Hora da pausa 05:00</span></a>",
+      "css": ".ds-chip-foco { display: inline-flex; align-items: center; gap: 0.45rem; min-height: 2.5rem; padding: 0 0.95rem 0 0.8rem; border: 1px solid var(--rule, #2e3039); border-radius: 999px; background: var(--panel, #1c1d24); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-size: 0.875rem; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink, #f3f4f7); text-decoration: none; white-space: nowrap; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1), border-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-chip-foco:hover { border-color: var(--rule-strong, #454856); background: var(--panel-2, #25262f); } .ds-chip-foco svg { width: 1rem; height: 1rem; color: var(--muted, #a3a7b3); } .ds-chip-foco[data-pausado='true'] { color: var(--muted, #a3a7b3); } .ds-chip-foco[data-aguardando='true'] { border-color: var(--rule-strong, #454856); background: var(--panel-2, #25262f); } .ds-chip-foco:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 2px; }"
     },
     {
       "name": "Checkbox",
@@ -771,7 +826,7 @@
       "name": "Focus Clock",
       "kind": "card",
       "refersTo": "focus-clock-panel",
-      "description": "Foco rodar phase: Panel with the phase Label, cycle pills (done Ink, current Ink 45% into Rule Strong, rest Rule Strong), the Focus Clock time, primary + outline controls and the Encerrar link. Neutral only: no green, violet only on the action.",
+      "description": "Foco rodar phase: Panel with the phase Label, cycle pills (done Ink, current Ink 45% into Rule Strong, rest Rule Strong), the Focus Clock time, primary + outline controls and the Encerrar link. Neutral only: no green, violet only on the action. Waiting for the user (\"HORA DA PAUSA\"), the primary button (Iniciar pausa / Iniciar foco) pulses a Violet Halo ring every 2.2s until pressed.",
       "html": "<section class=\"ds-relogio\"><p class=\"ds-relogio-fase\">Foco · 2 de 4</p><ol class=\"ds-ciclos\" aria-hidden=\"true\"><li data-estado=\"feito\"></li><li data-estado=\"atual\"></li><li></li><li></li></ol><p class=\"ds-relogio-tempo\" role=\"timer\">18:42</p><div class=\"ds-relogio-ctl\"><button class=\"ds-relogio-btn\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M5.5 3.5v9M10.5 3.5v9\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\"/></svg>Pausar</button><button class=\"ds-relogio-out\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M3.5 3.5 9 8l-5.5 4.5V3.5ZM12.5 3.5v9\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>Pular</button></div><button class=\"ds-relogio-fim\">Encerrar sessão</button></section>",
       "css": ".ds-relogio { container-type: inline-size; display: grid; justify-items: center; gap: 1rem; padding: 2.25rem 1.5rem 1.5rem; background: var(--panel, #1c1d24); border: 1px solid var(--rule, #2e3039); border-radius: 16px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 16px 40px -12px rgb(0 0 0 / 0.55); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; color: var(--ink, #f3f4f7); text-align: center; } .ds-relogio-fase { margin: 0; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; } .ds-ciclos { display: flex; gap: 0.4rem; margin: 0; padding: 0; list-style: none; } .ds-ciclos li { width: 1.75rem; height: 0.375rem; border-radius: 999px; background: var(--rule-strong, #454856); transition: background-color 0.3s cubic-bezier(0.16,1,0.3,1); } .ds-ciclos li[data-estado='feito'] { background: var(--ink, #f3f4f7); } .ds-ciclos li[data-estado='atual'] { background: color-mix(in oklab, var(--ink, #f3f4f7) 45%, var(--rule-strong, #454856)); } .ds-relogio-tempo { margin: 0.25rem 0 0.5rem; font-size: clamp(3.75rem, 11cqi, 6rem); font-weight: 800; font-stretch: 110%; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; } .ds-relogio-ctl { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; } .ds-relogio-btn, .ds-relogio-out { display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; min-height: 3rem; border-radius: 10px; font: inherit; font-weight: 700; cursor: pointer; } .ds-relogio-btn svg, .ds-relogio-out svg { width: 1rem; height: 1rem; } .ds-relogio-btn { min-width: 10rem; padding: 0 1.5rem; border: 0; background: var(--purple, #7c3aed); color: var(--on-purple, #fff); box-shadow: 0 8px 20px -10px var(--purple-glow, rgb(124 58 237 / 0.75)); } .ds-relogio-btn:hover { background: var(--purple-hover, #8b5cf6); } .ds-relogio-out { padding: 0 1.25rem; border: 1px solid var(--rule-strong, #454856); background: none; color: var(--ink, #f3f4f7); } .ds-relogio-out:hover { border-color: var(--muted, #a3a7b3); background: var(--panel-2, #25262f); } .ds-relogio-fim { margin-top: 0.25rem; padding: 0.25rem 0; border: 0; background: none; font: inherit; font-size: 0.875rem; font-weight: 600; color: var(--purple-soft, #c4b5fd); text-decoration: underline; text-decoration-color: var(--purple-link-line, rgb(196 181 253 / 0.4)); text-underline-offset: 4px; cursor: pointer; } .ds-relogio button:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 2px; }"
     }
@@ -784,24 +839,25 @@
       "Exactly two accents with fixed jobs: green = XP, level and completion; purple = actions. Selection is neutral.",
       "Archivo variable, extra-bold and 110-112.5% width for display, page title, wordmark and badges.",
       "Tabular figures everywhere; XP numbers animate by counting, never by swapping.",
-      "Category color is data, shown as an 8px dot beside the category name (the color picker swatch is the only fill).",
+      "Category color is data: an 8px dot beside the category name, plus the solid cover band on top of every task card (the color picker swatch is the only other fill). Tags are rectangular (labels, bars, swatches), never dots.",
+      "Tasks are flat cards (Panel body, Panel Two in Kanban) set 0.375rem apart, never wrapped in another panel. Due dates are the Deadline Badge: neutral, amber when close, rose once overdue.",
       "Charts are single-hue green magnitude, directly labeled once, with a table for screen readers.",
       "Motion is one ease-out curve; reduced-motion collapses it to near zero."
     ],
     "rules": [
       {
         "name": "The Two Jobs Rule",
-        "body": "Green means progress and purple means action; neither ever stands in for the other. No green buttons, no purple XP, no third accent. Purple never marks selection: a current side-menu page, a selected chip, segment or swatch is shown with neutrals (Panel Two, Rule Strong, Ink). The single violet indicator is the active underline-tab bar, which marks the current mode. Green is also never spent on something that earned nothing: a \"+0 XP\" is Muted, and no flight launches for it.",
+        "body": "Green means progress and purple means action; neither ever stands in for the other. No green buttons, no purple XP, no third accent. Purple never marks selection: a current side-menu page, a selected chip, segment or swatch is shown with neutrals (Panel Two, Rule Strong, Ink). The single violet indicator is the active underline-tab bar, which marks the current mode. Green is also never spent on something that earned nothing: a \"+0 XP\" is Muted, and no flight launches for it. The deadline tints (Tertiary) are status, not a third accent: they stay inside the Deadline Badge and the deadline reminder's clock.",
         "section": "colors"
       },
       {
         "name": "The Neutral Error Rule",
-        "body": "Errors are not red. An error is a notice on `panel-2` with a small pill tag in inverted neutrals (ink fill, ground text) reading \"ERRO\", followed by a plain-language sentence. This keeps the palette to two accents and keeps failure unalarming. The same holds for due dates: today and overdue get Ink and weight, never red. It holds for reduced rewards: when a completion earns less than usual (task created under 5 minutes ago, the daily XP cap reached or partly reached), an info toast names the reason in a plain sentence, in neutrals, with no tag and no red. And it holds for a streak at risk: the reminder is a Panel strip with a Muted clock, never an alarm. Losing the connection is the same: the offline strip is a Panel strip with a Muted no-connection icon and a plain sentence, no tag, no red.",
+        "body": "Errors are not red. An error is a notice on `panel-2` with a small pill tag in inverted neutrals (ink fill, ground text) reading \"ERRO\", followed by a plain-language sentence. This keeps the palette to two accents and keeps failure unalarming. Due dates are the one status that takes a tint, and it is not red: the Deadline Badge goes amber when close or today and a soft rose once overdue, always with the clock and the date in words. It holds for reduced rewards: when a completion earns less than usual (task created under 5 minutes ago, the daily XP cap reached or partly reached), an info toast names the reason in a plain sentence, in neutrals, with no tag and no red. And it holds for a streak at risk: the reminder is a Panel strip with a Muted clock, never an alarm. Losing the connection is the same: the offline strip is a Panel strip with a Muted no-connection icon and a plain sentence, no tag, no red.",
         "section": "colors"
       },
       {
         "name": "The Dot-Only Category Rule",
-        "body": "User-chosen category colors are data. They appear as an 8px round dot beside the category name (filter chips, the Categorias e tags list, row category line, Lista group headings, the Painel's category bars and timeline items), never as fills, borders, text color, bars or backgrounds, and never without the name. The one exception is the color picker, where the swatch itself is the choice and fills a 36px circle.",
+        "body": "User-chosen category colors are data. They appear as an 8px round dot beside the category name (filter chips, the Categorias e tags list, row category line, Lista group headings, the Painel's category bars and timeline items), never as fills, text color, bars or backgrounds, and never without the name nearby. Two exceptions: the color picker, where the swatch itself is the choice and fills a 36px circle; and the task card's **cover** in its category color (user request, 2026-09-11, after a Trello reference): a solid band across the top of every task card, 0.375rem tall in Lista, Calendário Dia and Linha do tempo, and 0.875rem in Kanban (density pass, 2026-09-11). The card body is Panel in Lista, Dia and Linha do tempo (Panel Two on hover) and Panel Two inside the Kanban columns (Rule on hover), so the card always sits one step above what holds it. Cards are separated by a 0.375rem gap, never wrapped in another panel. On completed cards the cover fades to 40% of the category color, receding with the rest of the card. The narrow-width Calendário month is the other exception: it shows category dots with no names, because the day opens to the full list with names. **Tags** have their own shape, always rectangular, so a tag is never read as a category (categories are always round dots). On a task row tags are **labels, Trello-style** (user request, 2026-09-11): a row of 4px-radius labels above the title. Named mode: a 1.25rem label, 0 0.4rem padding, 0.75rem at 700 in Ink on the tag color mixed 48% into Panel (55% on hover, the most that keeps Ink above 4.5:1 on all eight colors), ellipsized at 12rem. Color-only mode: a 2.5rem by 0.5rem bar in the full tag color. Clicking any label switches every label between the two modes (saved per browser); it never opens the task. On touch screens the label is too short to tap reliably, so it ignores taps and the tap opens the task; the switch is a mouse affordance. Completed rows show labels at 55% opacity. In the task dialog and the Perfil list a tag is a 0.75rem swatch with 3px corners beside its name.",
         "section": "colors"
       },
       {
@@ -821,7 +877,7 @@
       },
       {
         "name": "The One Lift Rule",
-        "body": "A panel has exactly one elevation. Content inside a panel is never another shadowed card; it is divided by rules. The level pill inside the top bar is a bordered Panel fill with no shadow, and the shell strips (streak reminder, offline strip, install invite) are bordered Panel strips with no shadow. The chart tooltip is the one floating element inside a card; it lifts because it hovers over the data, not because it is a card.",
+        "body": "A panel has exactly one elevation. Content inside a panel is never another shadowed card; it is divided by rules. The level pill inside the top bar is a bordered Panel fill with no shadow, and the shell strips (offline strip, streak and deadline reminders, install invite) are bordered Panel strips with no shadow. Task cards carry no shadow either: they are flat bodies one tonal step above what holds them. The chart tooltip is the one floating element inside a card; it lifts because it hovers over the data, not because it is a card.",
         "section": "elevation"
       },
       {
@@ -831,7 +887,7 @@
       },
       {
         "name": "The Neutral Clock Rule",
-        "body": "Foco marks time and phase in neutrals only. The phase line, the time and the cycle pills are Ink, Muted and Rule Strong. They are never green, because time passing earns nothing, and never violet, because violet is for the actions (Iniciar foco, Retomar, Pausar, Adicionar). On this page green arrives only through task completion: the check, the green wash and the XP flight.",
+        "body": "Foco marks time and phase in neutrals only. The phase line, the time and the cycle pills are Ink, Muted and Rule Strong. They are never green, because time passing earns nothing, and never violet, because violet is for the actions (Iniciar foco, Iniciar pausa, Retomar, Pausar, Adicionar). The waiting pulse is a violet halo on the action itself, not on the clock. On this page green arrives only through task completion: the check, the green wash and the XP flight.",
         "section": "components"
       }
     ],
@@ -840,28 +896,30 @@
       "Do keep green for XP, level and completion, and purple for actions and focus; use Soft Violet when violet must be read as text.",
       "Do mark selection and the current page with neutrals: Panel Two fill plus a Rule Strong outline or border.",
       "Do put Deep Moss text on green fills and white text on violet fills.",
-      "Do separate content inside a panel with 1px Rules; list items are rows, not cards.",
-      "Do show category color as an 8px dot next to the category name; only the color picker fills a shape with it.",
+      "Do separate content inside a panel with 1px Rules; tasks are flat cards set 0.375rem apart, never wrapped in a panel.",
+      "Do show category color as an 8px dot next to the category name; the task card's cover band and the color picker are the only fills.",
       "Do use underline tabs to switch views and the segmented pill to filter rows or ranges within a view.",
-      "Do show due dates relatively (\"hoje\", \"amanhã\", \"12 set\"), with today and overdue in Ink and weight.",
+      "Do show due dates relatively (\"hoje\", \"amanhã\", \"12 set\") in the Deadline Badge: neutral when far, amber within 3 days or today, rose once overdue, always with the clock.",
       "Do keep an earned \"+n XP\" full-strength green in real lists and the timeline; it is the earned record. Show \"+0 XP\" and the pending \"…\" in Muted.",
       "Do name the reason in a neutral info toast when a completion earns less than usual.",
       "Do apply XP only when the flight lands, with a fallback timer so a stalled animation never withholds it.",
       "Do draw charts in single-hue green with 4px rounded data ends, a neutral scale reference, one direct label on the extreme value, a hover tooltip, and a visually hidden table with the same data.",
       "Do size responsive grids that sit beside the side menu by container query, not by window width.",
       "Do use the horizontal logo as the wordmark (2.75rem login, 2rem side menu, 1.875rem mobile top bar) and the icon as favicon and collapsed-menu mark.",
-      "Do report errors with the neutral notice and its ERRO pill tag; keep the streak reminder, the offline strip and the install invite as tagless Panel strips, one at a time.",
+      "Do report errors with the neutral notice and its ERRO pill tag; keep the offline strip, the streak and deadline reminders and the install invite as tagless Panel strips, one at a time.",
       "Do animate XP by count-up plus a `translateX` fill on the shared ease-out `cubic-bezier(0.16, 1, 0.3, 1)`, and let reduced-motion collapse it.",
       "Do keep primary buttons and inputs at least 48px tall, completion targets and navigation items at least 44px, and icon buttons 40px.",
       "Do draw new icons on the 16px grid with a 2px round-capped stroke in `currentColor`.",
       "Do mark the focus phase, the time and the cycles in neutrals (Ink, Muted, Rule Strong), and leave green on the Foco page to task completion."
     ],
     "donts": [
-      "Don't add a third accent, or use red for errors, overdue dates, deletion or a streak at risk.",
+      "Don't add a third accent, or use red for errors, deletion or a streak at risk. The amber and rose deadline tints stay inside the Deadline Badge and the deadline reminder.",
       "Don't use purple, a colored side stripe, or the category color to mark a selected item or the current page.",
-      "Don't fill, border or tint surfaces or chart bars with category colors.",
+      "Don't fill, border or tint surfaces or chart bars with category colors. The one fill exception is the task card's category-colored cover band (user override, 2026-09-11), faded to 40% on completed cards; the card itself is a flat Panel body (Panel Two in Kanban), never a shadowed nested card.",
+      "Don't paint a deadline red as an alarm. Deadlines use the Deadline Badge: amber when close or today, rose only once overdue, always with the clock and the date as text.",
+      "Don't draw a tag as a round dot: round dots are categories, tags are rectangular (labels, bars, swatches).",
       "Don't nest a shadowed card inside a panel.",
-      "Don't use hard or offset shadows; the only shadows are the soft lift, the violet glows, the focus halo, the selected inset, the swatch ring and the transient level-up pulse.",
+      "Don't use hard or offset shadows; the only shadows are the soft lift, the violet glows, the focus halo, the selected inset, the swatch ring, the Foco waiting halo and the transient level-up pulse.",
       "Don't add mascots, confetti, or streak-loss warnings in alarm colors; the reward is the XP flight, the fill and the badge pulse.",
       "Don't fly or color green an XP gain of zero, or show a reduced reward in red.",
       "Don't label every bar, add gridlines, or use more than one hue for magnitude.",
