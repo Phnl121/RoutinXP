@@ -348,10 +348,19 @@ Deno.serve(async (req) => {
     if (!segredo) return resposta({ erro: 'nao_autorizado' }, 401)
     const { data: valido } = await admin.rpc('segredo_cron_valido', { p_segredo: segredo })
     if (!valido) return resposta({ erro: 'nao_autorizado' }, 401)
+    // Só contas com Integrações liberadas (o painel pode ter desligado a função).
+    const { data: contas, error: erroContas } = await admin
+      .from('contas_app')
+      .select('user_id')
+      .contains('funcoes', ['integracoes'])
+    if (erroContas) return resposta({ erro: 'falha' }, 500)
+    const donos = (contas ?? []).map((c) => c.user_id)
+    if (!donos.length) return resposta({ resultados: [] })
     const limite = new Date(Date.now() - INTERVALO_CRON_MS).toISOString()
     const { data: fontes, error } = await admin
       .from('calendar_sources')
       .select(CAMPOS_FONTE)
+      .in('user_id', donos)
       .or(`ultima_tentativa.is.null,ultima_tentativa.lt.${limite}`)
       .order('ultima_tentativa', { ascending: true, nullsFirst: true })
       .limit(LOTE_CRON)
@@ -364,6 +373,15 @@ Deno.serve(async (req) => {
   const { data: auth, error: erroAuth } = await admin.auth.getUser(token)
   const usuario = auth?.user
   if (erroAuth || !usuario) return resposta({ erro: 'nao_autorizado' }, 401)
+
+  // A função Integrações precisa estar liberada para a conta (e a sessão verificada pelo
+  // autenticador): a checagem é a mesma do banco, feita com o token de quem pediu.
+  const doUsuario = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
+    global: { headers: { Authorization: `Bearer ${token}` } },
+    auth: { persistSession: false },
+  })
+  const { data: liberado } = await doUsuario.rpc('tem_funcao', { p_funcao: 'integracoes' })
+  if (!liberado) return resposta({ erro: 'sem_acesso' }, 403)
 
   if (corpo.modo === 'previa') {
     const url = normalizar(corpo.url)

@@ -41,7 +41,15 @@ Deno.serve(async (req) => {
   if (error) return resposta({ erro: 'falha' }, 500)
   if (!avisos?.length) return resposta({ enviados: 0 })
 
-  const tipoPorUsuario = new Map((avisos as Aviso[]).map((a) => [a.user_id, a.tipo]))
+  // Só contas com Foco liberado (o painel pode ter desligado a função depois do agendamento).
+  const { data: contas } = await admin
+    .from('contas_app')
+    .select('user_id')
+    .contains('funcoes', ['foco'])
+    .in('user_id', (avisos as Aviso[]).map((a) => a.user_id))
+  const comFoco = new Set((contas ?? []).map((c) => c.user_id))
+  const tipoPorUsuario = new Map((avisos as Aviso[]).filter((a) => comFoco.has(a.user_id)).map((a) => [a.user_id, a.tipo]))
+  if (!tipoPorUsuario.size) return resposta({ enviados: 0 })
   const { data: inscricoes } = await admin
     .from('push_subscriptions')
     .select('id, user_id, endpoint, p256dh, auth')
