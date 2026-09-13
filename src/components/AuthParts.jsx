@@ -29,7 +29,10 @@ export function CampoSenha({ rotulo, valor, aoMudar, novaSenha = false, dica = n
         type={visivel ? 'text' : 'password'}
         name={nome}
         autoComplete={novaSenha ? 'new-password' : 'current-password'}
-        minLength={novaSenha ? 6 : undefined}
+        minLength={novaSenha ? 8 : undefined}
+        // Senha nova: pelo menos uma letra e um número (a mesma regra configurada no Supabase Auth).
+        pattern={novaSenha ? '(?=.*[A-Za-z])(?=.*\\d).{8,}' : undefined}
+        title={novaSenha ? a.dicaSenha : undefined}
         required
         value={valor}
         aria-describedby={dica ? dicaId : undefined}

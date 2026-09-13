@@ -46,7 +46,7 @@ export const t = {
       mostrar: 'Mostrar',
       ocultar: 'Ocultar',
     },
-    dicaSenha: 'Pelo menos 6 caracteres.',
+    dicaSenha: 'Pelo menos 8 caracteres, com letras e números.',
     botoes: {
       entrar: 'Entrar',
       entrando: 'Entrando…',
@@ -88,7 +88,7 @@ export const t = {
       credenciais: 'E-mail ou senha incorretos.',
       naoConfirmado: 'Este e-mail ainda não foi confirmado. Procure o link de confirmação na sua caixa de entrada ou fale com quem te convidou.',
       limite: 'Muitas tentativas seguidas. Espere alguns minutos e tente de novo.',
-      senhaFraca: 'A senha precisa ter pelo menos 6 caracteres.',
+      senhaFraca: 'A senha precisa ter pelo menos 8 caracteres, com letras e números.',
       mesmaSenha: 'A senha nova precisa ser diferente da atual.',
       emailInvalido: 'Esse e-mail não parece válido. Confira se digitou certo.',
       rede: 'Sem conexão com o servidor. Confira sua internet e tente de novo.',
