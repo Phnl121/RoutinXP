@@ -24,7 +24,7 @@ const LOTE_CRON = 40
 const SIMULTANEAS = 4
 const PRAZO_CRON_MS = 45_000 // o agendamento desiste da chamada em 60 s
 const ESPERA_BOTAO_MS = 60_000
-const ERROS = new Set(['link_invalido', 'link_inacessivel', 'nao_e_calendario', 'muito_grande', 'sem_categoria', 'muitas_tentativas'])
+const ERROS = new Set(['link_invalido', 'link_inacessivel', 'nao_e_calendario', 'muito_grande', 'sem_categoria', 'muitas_tentativas', 'limite_atingido'])
 
 const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, {
   auth: { persistSession: false },

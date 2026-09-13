@@ -505,6 +505,7 @@ export const t = {
       muito_grande: 'O calendário é grande demais para importar.',
       sem_categoria: 'Este calendário está sem categoria. Edite e escolha uma.',
       muitas_tentativas: 'Muitos testes seguidos. Espere alguns minutos e tente de novo.',
+      limite_atingido: 'Sua conta chegou ao limite de 10 mil tarefas. Exclua tarefas antigas para importar as novas.',
       nao_autorizado: 'Sua sessão expirou. Entre de novo.',
       falha: 'Não deu para ler o calendário agora. Tente de novo em instantes.',
     },
@@ -582,6 +583,8 @@ export const t = {
     validacao:
       'Confira os campos: o título vai até 200 caracteres, a descrição até 1000, o nome da categoria até 60 e o da tag até 40.',
     tagDuplicada: 'Você já tem uma tag com esse nome.',
+    limite:
+      'Você chegou ao limite da conta: 20 calendários, 100 categorias, 200 tags, 30 colunas ou 10 mil tarefas. Exclua algum item para criar outro.',
     generico: 'Não deu para salvar agora. Tente de novo em instantes.',
   },
 }
