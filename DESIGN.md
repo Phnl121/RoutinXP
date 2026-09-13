@@ -12,6 +12,7 @@ colors:
   ink: "#f3f4f7"
   muted: "#a3a7b3"
   backdrop: "rgb(6 7 10 / 0.72)"
+  qr-fundo: "#ffffff"
   green: "#22c55e"
   green-tip: "#86efac"
   green-wash: "rgb(34 197 94 / 0.1)"
@@ -76,6 +77,18 @@ typography:
     fontSize: "1.5rem"
     fontWeight: 800
     lineHeight: 1.1
+    fontFeature: "'tnum'"
+  secret-figure:
+    fontFamily: "'Archivo Variable', 'Archivo', system-ui, sans-serif"
+    fontSize: "1.5rem"
+    fontWeight: 800
+    letterSpacing: "0.06em"
+    fontFeature: "'tnum'"
+  code-entry:
+    fontFamily: "'Archivo Variable', 'Archivo', system-ui, sans-serif"
+    fontSize: "1.375rem"
+    fontWeight: 800
+    letterSpacing: "0.3em"
     fontFeature: "'tnum'"
   body-lead:
     fontFamily: "'Archivo Variable', 'Archivo', system-ui, sans-serif"
@@ -475,6 +488,53 @@ components:
     backgroundColor: "{colors.green}"
     rounded: "{rounded.data}"
     width: "min(2.75rem, 72%)"
+  admin-page:
+    width: "56rem"
+  account-row:
+    backgroundColor: "transparent"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.row}"
+    padding: "0.6rem 0.75rem"
+    height: "3.75rem"
+  account-row-hover:
+    backgroundColor: "{colors.panel-2}"
+  state-pill:
+    backgroundColor: "{colors.panel-2}"
+    textColor: "{colors.muted}"
+    rounded: "{rounded.pill}"
+    padding: "0 0.55rem"
+    height: "1.375rem"
+  state-pill-strong:
+    textColor: "{colors.ink}"
+  switch:
+    backgroundColor: "{colors.panel-2}"
+    rounded: "{rounded.pill}"
+    width: "2.75rem"
+    height: "1.5rem"
+  switch-on:
+    backgroundColor: "{colors.ink}"
+  admin-panel:
+    backgroundColor: "{colors.panel}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.md}"
+    padding: "24px"
+  temp-password:
+    backgroundColor: "{colors.ground}"
+    textColor: "{colors.ink}"
+    typography: "{typography.secret-figure}"
+    rounded: "{rounded.sm}"
+    padding: "1.25rem 1rem"
+  qr-tile:
+    backgroundColor: "{colors.qr-fundo}"
+    rounded: "{rounded.sm}"
+    padding: "0.5rem"
+    size: "9rem"
+  code-field:
+    backgroundColor: "{colors.ground}"
+    textColor: "{colors.ink}"
+    typography: "{typography.code-entry}"
+    rounded: "{rounded.sm}"
+    height: "48px"
 ---
 
 # Design System: RoutinXP
@@ -523,18 +583,19 @@ Deadline status tints (user request, 2026-09-11). They are not accents: they nev
 
 ### Neutral
 - **Top Bar** (`topbar`): the app chrome tier, one step darker than Ground: the sticky top bar and the full-height side menu (and its mobile drawer), so both read as frame rather than as panels. It is also the `theme-color` (index.html and the web manifest), because the top bar is what meets the phone's status bar.
-- **Ground** (`ground`): page background, input wells, the segmented-filter well.
+- **Ground** (`ground`): page background, input wells, the segmented-filter well, the temporary-password well, the knob of a switch that is on.
 - **Panel** (`panel`): raised containers (form panel, demo panel, Kanban columns, task cards in Lista, Calendário Dia and Linha do tempo, the filter panel, Painel cards, Perfil panels, dialog, account menu, the level pill, the shell strips (offline strip, streak and deadline reminders, install invite)).
-- **Panel Two** (`panel-2`): third tier. XP track and skeleton, task card hover (and the card body inside Kanban columns), side-menu item hover and current page, user-card hover, a selected filter chip, the active segment, notice and toast backgrounds, the row's Excluir overlay, avatar fill, the chart column hover, the chart tooltip, the category-bar track.
-- **Rule** (`rule`): 1px panel borders, row dividers, tab baseline, input border at rest, unselected chip border, the streak divider, the side menu's right edge, the shell strips' border, the chart baseline, the 2px timeline connector.
-- **Rule Strong** (`rule-strong`): input hover border, notice and toast border, the current side-menu item's inset outline, a selected filter chip's border, the dashed "+ Nova coluna" Kanban slot, the dashed daily-cap line on the XP chart, the chart tooltip border, the share-glyph chip in the iOS install steps, strike-through on completed titles, the destructive text action's underline, the toast time bar, scrollbar thumb.
+- **Panel Two** (`panel-2`): third tier. XP track and skeleton, task card hover (and the card body inside Kanban columns), side-menu item hover and current page, user-card hover, a selected filter chip, the active segment, notice and toast backgrounds, the row's Excluir overlay, avatar fill, the chart column hover, the chart tooltip, the category-bar track, a state pill's fill, a switch track that is off, an account row on hover.
+- **Rule** (`rule`): 1px panel borders, row dividers, tab baseline, input border at rest, unselected chip border, the streak divider, the side menu's right edge, the shell strips' border, the chart baseline, the 2px timeline connector, the hairlines between account rows, Registro items and switch rows.
+- **Rule Strong** (`rule-strong`): input hover border, notice and toast border, the current side-menu item's inset outline, a selected filter chip's border, the dashed "+ Nova coluna" Kanban slot, the dashed daily-cap line on the XP chart, the chart tooltip border, the share-glyph chip in the iOS install steps, strike-through on completed titles, the destructive text action's underline, the toast time bar, scrollbar thumb, the state pill outline, the border of a switch that is off, the temporary-password well's border.
 - **Check Ring** (`check-ring`): the 2px ring of an unchecked completion circle. It exists because Rule Strong fell below 3:1 on Panel. Check Ring holds at least 3:1 (WCAG 1.4.11 non-text contrast) on every surface a card can have: 4.2:1 on Panel, 3.7:1 on Panel Two (hovered row, Kanban card) and 3.3:1 on Rule (hovered Kanban card).
 - **Backdrop** (`backdrop`): the scrim behind a modal dialog and behind the open mobile drawer.
-- **Ink** (`ink`): primary text; today and overdue due dates; the fill of the neutral ERRO tag; the selected swatch ring; the chart's one direct value label; the "Mais concluída" line.
-- **Muted** (`muted`): secondary text, labels, inactive tabs and segments, side-menu items at rest, icon buttons at rest, the shell strips' leading icons (clock, no connection, download), the iOS install step numbers, hints, "faltam n XP", category names, counts, future due dates, chart axis and cap labels, timeline times, the Excluir label, and a completed row's or timeline item's "+0 XP" and "…" (XP pending).
+- **QR Ground** (`qr-fundo`): the white tile behind the authenticator QR code, and nothing else. It stays light in any theme, because the phone's camera needs dark modules on a light field; a theme may not darken it.
+- **Ink** (`ink`): primary text; today and overdue due dates; the fill of the neutral ERRO tag; the selected swatch ring; the chart's one direct value label; the "Mais concluída" line; the track and border of a switch that is on; the "Suspensa" state pill's text.
+- **Muted** (`muted`): secondary text, labels, inactive tabs and segments, side-menu items at rest, icon buttons at rest, the shell strips' leading icons (clock, no connection, download), the iOS install step numbers, hints, "faltam n XP", category names, counts, future due dates, chart axis and cap labels, timeline times, the Excluir label, and a completed row's or timeline item's "+0 XP" and "…" (XP pending); state pill text, the knob of a switch that is off, "você" and "último acesso" in the account list.
 
 ### Named Rules
-**The Two Jobs Rule.** Green means progress and purple means action; neither ever stands in for the other. No green buttons, no purple XP, no third accent. Purple never marks selection: a current side-menu page, a selected chip, segment or swatch is shown with neutrals (Panel Two, Rule Strong, Ink). The single violet indicator is the active underline-tab bar, which marks the current mode. Green is also never spent on something that earned nothing: a "+0 XP" is Muted, and no flight launches for it. The deadline tints (Tertiary) are status, not a third accent: they stay inside the Deadline Badge and the deadline reminder's clock.
+**The Two Jobs Rule.** Green means progress and purple means action; neither ever stands in for the other. No green buttons, no purple XP, no third accent. Purple never marks selection: a current side-menu page, a selected chip, segment or swatch is shown with neutrals (Panel Two, Rule Strong, Ink). The single violet indicator is the active underline-tab bar, which marks the current mode. Green is also never spent on something that earned nothing: a "+0 XP" is Muted, and no flight launches for it. The deadline tints (Tertiary) are status, not a third accent: they stay inside the Deadline Badge and the deadline reminder's clock. Administration takes no accent for state: an account's state pills and its feature switches are neutrals (nothing there is progress, nothing is an alarm), and violet stays on the actions.
 
 **The Neutral Error Rule.** Errors are not red. An error is a notice on `panel-2` with a small pill tag in inverted neutrals (ink fill, ground text) reading "ERRO", followed by a plain-language sentence. This keeps the palette to two accents and keeps failure unalarming. Due dates are the one status that takes a tint, and it is not red: the Deadline Badge goes amber when close or today and a soft rose once overdue, always with the clock and the date in words. It holds for reduced rewards: when a completion earns less than usual (task created under 5 minutes ago, the daily XP cap reached or partly reached), an info toast names the reason in a plain sentence, in neutrals, with no tag and no red. And it holds for a streak at risk: the reminder is a Panel strip with a Muted clock, never an alarm. Losing the connection is the same: the offline strip is a Panel strip with a Muted no-connection icon and a plain sentence, no tag, no red.
 
@@ -564,6 +625,8 @@ Deadline status tints (user request, 2026-09-11). They are not accents: they nev
 - **Label** (700, 0.75rem, 0.07em, uppercase, muted): field labels, field toggles, the filter's group titles, Lista group headings and Kanban column titles (both carry " · n"), Painel card titles and the timeline's day headings (HOJE, ONTEM). The streak caption runs 0.6875rem.
 - **Badge** (800, 0.6875rem, width 112.5%, 0.06em, uppercase): NÍVEL pill; 0.8125rem inside the login level meter.
 - **XP Figure** (800, tabular): "XP 120 / 150", "+n XP", the top bar's streak figure ("6 dias") and the Painel's "n XP no total".
+- **Secret Figure** (800, 1.5rem, 0.06em, tabular, normal width): the temporary password shown once, centered, in groups of four that never wrap inside a group.
+- **Code Entry** (800, 1.375rem, 0.3em, tabular, centered): the typed 6-digit verification code. The authenticator key it pairs with runs 0.875rem at 700 with 0.06em, in groups of four that never break inside a group.
 - **Focus Clock** (800, clamp(3.75rem, 11cqi, 6rem), sized by its container, width 110%, line-height 1, -0.03em, tabular): the time left on the Foco page's clock and nowhere else. It is the largest type in the app. Ink while running, Muted while paused.
 
 ### Named Rules
@@ -574,6 +637,8 @@ Deadline status tints (user request, 2026-09-11). They are not accents: they nev
 ## Layout
 
 **Login.** A 70rem frame, centered, with page padding clamp(1.5rem, 5vw, 3.5rem) vertical by clamp(1rem, 4vw, 2.5rem) horizontal. Two columns: a flexible story column and a fixed 25rem form column, column gap clamp(2.5rem, 7vw, 6rem), row gap 2.25rem. Below 60rem it becomes one 30rem column in the order wordmark, headline, form, demo, and the form panel padding drops from 2rem to 1.5rem. Single-task pages (password reset) use a 26rem centered column with 1.5rem gaps. RoutinXP is invite-only (user decision, 2026-09-13): the form panel has no Entrar / Criar conta tabs. It opens with the Headline "Entrar" and one Muted sentence ("O RoutinXP é por convite…", 1.5rem below), then e-mail, password, the full-width Entrar button and "Esqueci minha senha". Accounts are created by the owner in Supabase. An invite link lands on the password page, which then reads "Crie sua senha" with a "Criar senha" button.
+
+**Account gate.** Between sign-in and the app, every account passes the gate screens, all in the single-task column (26rem, the logo above one Panel padded 2rem, 1.5rem at 44.99rem and below): register the authenticator (first access), type the 6-digit code (every access), then, for an account holding a temporary password, "Crie sua senha". The app shell opens only after them. A failure shows the Headline, the ERRO notice, the primary "Tentar de novo" and the "Sair" link button. While the gate checks, a single Label line shows, as elsewhere.
 
 **App shell.** Two columns at full height: the side menu (16.25rem, or 4.25rem when collapsed; the column width animates over 0.25s) and the content column. The content column stacks the sticky top bar (Top Bar fill, 1px Rule beneath, padding 0.625rem by clamp(1rem, 3vw, 2rem)), the shell strip when one applies (0.75rem below the bar, matching the page's side padding, max 86rem), then the current page. At most one strip shows at a time: offline, the offline strip alone; online, the streak reminder when the streak is at risk, otherwise the deadline reminder when tasks are due today or overdue, otherwise the install invite (mobile only) while the app is installable and not dismissed. On desktop the top bar holds only the level pill and, at the right, the avatar button; the logo lives in the side menu. During a focus session, on any page other than Foco, the focus chip takes the otherwise empty left side (see App Top Bar). The bar is a three-column grid with equal flexible sides (1fr | auto | 1fr), so the level pill is always centered in the bar, whatever sits at either side.
 
@@ -610,6 +675,8 @@ Música keeps the same slot in both phases, so the player never restarts. The gr
 
 **Simple pages (Perfil).** One column of panels, max 44rem wide and centered in the content column (it follows the side menu open or collapsed), 1.25rem apart, same page padding. Panels pad 1.75rem (1.25rem at 60rem and below). Field pairs sit in an auto-fit two-column grid (columns at least 9.5rem, 1rem gap) that stacks on its own when narrow.
 
+**Administração.** One column capped at 56rem and centered, with the Tarefas page padding (6rem at the bottom), 1.25rem between blocks. The list page: a title row (Page Title "Administração", the compact "+ Nova conta" at the right), the underline tabs CONTAS | REGISTRO, then the search field (max 24rem) and the account list. The account page: a back link, the header (Page Title name, the e-mail in Muted, the state pills, 0.5rem apart), then the FUNÇÕES and CONTA panels padded 1.5rem (1.25rem at 47.99rem and below). At 47.99rem and below an account row stacks name, pills and last access in one column with the chevron at the right, the search field takes the full width, and each account action takes a full-width row.
+
 **At 60rem and below (single column).** The side menu leaves the grid and becomes an off-canvas drawer; the top bar gains a menu button at the left and the logo centered (equal 1fr sides), keeps the avatar at the right, and wraps the level pill to a full-width second row. "+ Nova tarefa" leaves the Tarefas title row; the FAB (present at every width) remains the create action. On Tarefas the "Filtrar" button stays in the title row (the filter panel stacks its chip groups), and the segmented filter returns to flow under the tabs. The page title drops to 1.375rem; dialog field pairs stack; the toast lifts to clear the FAB; the Painel level panel wraps its XP bar to a full-width second line.
 
 **At 48rem and below.** Kanban columns sit side by side at 86% width and scroll-snap horizontally. In Lista, Dia and Linha do tempo the deadline badge and XP leave the right column and drop to the meta line under the title, as in Kanban, so titles get the card's full width.
@@ -637,9 +704,9 @@ Depth is tonal first: chrome (top bar and side menu, darker), ground, panel, pan
 
 ## Shapes
 
-Soft, friendly geometry without going bubbly. Containers (panels, dialog) round at 16px; controls (buttons, inputs, notices, toast, shell strips, account menu, user card, icon buttons, level-up banner) at 10px; interactive rows and task cards, side-menu items, menu items, chart columns on hover, the chart tooltip, the iOS step chip and small overlays at 8px. Data ends round at 4px: an XP bar rounds only its top corners and a category bar only its right end, so the baseline stays square. Anything that represents a count, a state token or a filter is a full pill: the NÍVEL badge, the XP track and fill, the level pill, the ERRO tag, the segmented well and its segments, the filter chips, and the 3px active-tab bar. Circles are reserved for identity, completion, color and the floating action: the avatar, the task check, the timeline check, the category dot, the color swatch, the FAB. Borders are always 1px, solid except the dashed "+ Nova coluna" Kanban slot and the dashed daily-cap line; rings on the avatar and task check are 2px, and so is the timeline connector. Checkboxes are squares at the 4px data radius with a 2px ring, so a selection box never reads as the round completion check. The Foco cycle pills are full pills, because they count.
+Soft, friendly geometry without going bubbly. Containers (panels, dialog) round at 16px; controls (buttons, inputs, notices, toast, shell strips, account menu, user card, icon buttons, level-up banner) at 10px; interactive rows and task cards, side-menu items, menu items, chart columns on hover, the chart tooltip, the iOS step chip and small overlays at 8px. Data ends round at 4px: an XP bar rounds only its top corners and a category bar only its right end, so the baseline stays square. Anything that represents a count, a state token or a filter is a full pill: the NÍVEL badge, the XP track and fill, the level pill, the ERRO tag, the segmented well and its segments, the filter chips, the account state pills, the switch track, and the 3px active-tab bar. Circles are reserved for identity, completion, color and the floating action: the avatar, the task check, the timeline check, the category dot, the color swatch, the FAB. Borders are always 1px, solid except the dashed "+ Nova coluna" Kanban slot and the dashed daily-cap line; rings on the avatar and task check are 2px, and so is the timeline connector. Checkboxes are squares at the 4px data radius with a 2px ring, so a selection box never reads as the round completion check. The Foco cycle pills are full pills, because they count.
 
-The icon family is drawn in-house on a 16px grid: 2px strokes (2.2px for the check), round caps and joins, no fills, color through `currentColor`. Twenty-four glyphs exist: plus, check, pencil, list, chart, person, side-menu panel, menu, clock, stopwatch, play, pause, skip, close, download, share, no connection, calendar, ellipsis, funnel, magnifier, tag, chevron left and chevron right. Single-point marks (the ellipsis dots and the tag's hole) use a 2.5px stroke so they read as dots. New icons follow the same stroke. Icons sit at 1rem in buttons and the iOS step chip, and 1.125rem in the side menu and the shell strips.
+The icon family is drawn in-house on a 16px grid: 2px strokes (2.2px for the check), round caps and joins, no fills, color through `currentColor`. Twenty-five glyphs exist: plus, check, pencil, list, chart, person, side-menu panel, menu, clock, stopwatch, play, pause, skip, close, download, share, no connection, calendar, ellipsis, funnel, magnifier, tag, shield, chevron left and chevron right. Single-point marks (the ellipsis dots and the tag's hole) use a 2.5px stroke so they read as dots. New icons follow the same stroke. Icons sit at 1rem in buttons and the iOS step chip, and 1.125rem in the side menu and the shell strips.
 
 ## Components
 
@@ -652,7 +719,7 @@ Solid, confident, one per form.
 - **Link button:** Soft Violet text, 600 weight, 0.875rem, underline in Link Line with 4px offset that goes solid on hover. Used for secondary routes, dismissals and the one action inside a strip ("Esqueci minha senha", "Cancelar", "Desfazer", "Ver tarefas", "Instalar", "Sair da conta").
 - **Destructive text action:** Muted text, 600 weight, 0.875rem, underline in Rule Strong; hover turns Ink. Pinned to the left of a dialog's action row ("Excluir"). Destruction is never a violet fill and never red.
 - **Icon button:** a 40px square, 10px radius, no fill, Muted icon; hover gives Panel Two and Ink. The top bar's menu button and the side menu's collapse and close buttons. Always carries an `aria-label`.
-- **Outline:** the secondary beside a primary ("Pular" beside Pausar on the Foco clock). 48px tall, 10px radius, 1.25rem side padding, a 1px Rule Strong border, no fill, Ink label at 700, and a 1rem icon 0.45rem from the label. On hover the border rises to Muted and the fill becomes Panel Two. It is drawn like the Filtrar button, at full button height. Never violet.
+- **Outline:** the secondary beside a primary ("Pular" beside Pausar on the Foco clock). 48px tall, 10px radius, 1.25rem side padding, a 1px Rule Strong border, no fill, Ink label at 700, and a 1rem icon 0.45rem from the label. On hover the border rises to Muted and the fill becomes Panel Two. It is drawn like the Filtrar button, at full button height. Never violet. The account page's actions (Gerar senha provisória, Remover autenticador, Suspender or Reativar conta) are outline buttons in a wrapping row 0.75rem apart, each full width at 47.99rem and below.
 - **Start focus:** the primary button at full column width and 3.75rem tall, with a 1.0625rem label at 0.02em and a 1.125rem play icon. Used only for "Iniciar foco" while a Foco session is being set up; it is the page's one violet action in that phase.
 - **FAB:** at every width, a 56px Action Violet circle with a plus icon, fixed at the bottom-right (2rem on desktop, 1.25rem at 60rem and below; safe-area aware), carrying the FAB glow; hover brightens it, press scales it to 0.94. One tap opens the new-task dialog. At 60rem and below it replaces the Tarefas title row's "+ Nova tarefa". It appears on every page: the shell renders it everywhere except Tarefas, which renders its own that opens the dialog in place.
 
@@ -663,6 +730,7 @@ Solid, confident, one per form.
 - **Focus:** border turns Soft Violet with the 3px violet halo; no outline. Hover raises the border to Rule Strong. Autofill is forced back to Ground and Ink.
 - **Error:** reported through the notice below the fields, not by recoloring inputs.
 - **Number with unit:** the same well with its unit ("min", "focos") set inside at the right (0.95rem in, 0.875rem Muted, 3.75rem reserved). Browser spinners are removed (`appearance: textfield`) because the number is typed, and out-of-range values are clamped to their limits on blur. Used for the Foco intervals.
+- **Code field:** the same well with the Code Entry type and a numeric keyboard (`inputMode="numeric"`, `autocomplete="one-time-code"`), six digits at most; anything else typed is dropped.
 - **Checkbox:** a neutral 1.125rem square, 4px radius, 2px Check Ring border, no fill. Checked, it takes an Ink fill and border with a 2px Ground tick. Border and fill change over 0.15s. Selection is neutral, so a checkbox is never violet, and never green (green is the completion circle). Used in the task picker and the Foco music option.
 
 ### Notice (error)
@@ -680,7 +748,7 @@ The same strip form, on mobile only (hidden at 60rem and up, where the side menu
 ### Navigation: Side Menu
 The app's primary navigation, full height at the left, in the Top Bar tier with a 1px Rule right edge; sticky, no shadow.
 - **Top:** the horizontal logo (2rem tall) and, at the right, the collapse icon button.
-- **Items**, in this order: Tarefas (list icon), Foco (stopwatch), Painel (chart), Categorias e tags (tag), Integrações (calendar), Perfil (person). 44px rows, 8px radius, a 1.125rem icon 0.75rem from the label, 600 weight, Muted at rest. Hover gives Panel Two and Ink. The **current page** is neutral: Panel Two fill, the Selected inset in Rule Strong, Ink text. Never violet, never a side stripe.
+- **Items**, in this order: Tarefas (list icon), Foco (stopwatch), Painel (chart), Categorias e tags (tag), Integrações (calendar), Administração (shield), Perfil (person). An account sees only the items for the features it has; Administração appears only for the admin role. 44px rows, 8px radius, a 1.125rem icon 0.75rem from the label, 600 weight, Muted at rest. Hover gives Panel Two and Ink. The **current page** is neutral: Panel Two fill, the Selected inset in Rule Strong, Ink text. Never violet, never a side stripe.
 - **Install item:** "Instalar app" with the download icon, the same recipe as the nav items (44px, 8px radius, 600, Muted at rest, Panel Two and Ink on hover, a native tooltip when collapsed). It sits at the bottom directly above the user card and appears only when the app can be installed.
 - **User card:** pinned to the bottom; a 36px avatar, the user's name (0.875rem, 700, ellipsized; "Complete seu perfil" when empty) over "Nível n" (0.75rem, Muted). 10px radius, 8px padding. It links to Perfil and has a hover state only (Panel Two); it never shows the current-page state, because the Perfil item already carries it.
 - **Collapsed (desktop):** a 4.25rem icon rail. The logo swaps for the 32px icon, the collapse button stacks under it, labels and the user card's text hide, items center their icons and show their name as a native tooltip. The choice persists in `localStorage`.
@@ -824,11 +892,32 @@ A simple page (the Perfil column: max 44rem, centered). A title row: Page Title 
   - Editing replaces the link field with a dashed Rule Strong box, "Link salvo (domain)" plus "Trocar link". The link is never shown back.
   - "Remover calendário" is the pinned-left destructive action. It opens a second step titled "Remover {course}", with two radios (keep, or delete the pending imported tasks) and the destructive text action to confirm, never a violet fill.
 
+### Administração
+Accounts, not content: the panel never shows anyone's tasks, focus or finance. It reuses the app's parts (Page Title, compact button, underline tabs, the filter's search field, Panels, outline buttons, the destructive text action, Dialog) and adds three: the account row, the state pill and the switch.
+- **Account list:** no cards. A list closed by a 1px Rule above and a 1px Rule under each row. A row is a link, min 3.75rem, 0.6rem by 0.75rem padding, 8px radius, Panel Two on hover, laid out as a four-column grid: who (the name at 700 over the e-mail in Meta Muted; the e-mail alone at 700 when there is no name; the owner's own row adds "você" in 0.75rem Muted at 600), the state pills, "último acesso 12 set" (or "nunca acessou") in Meta Muted in a fixed 8.5rem column so the dates align across rows, and a Muted chevron. Names and e-mails ellipsize. The search matches name and e-mail without regard to accents. An empty result is one Muted sentence in a 1px dashed Rule Strong box (10px radius).
+- **State pill:** a 1.375rem full pill, 0 0.55rem padding, Panel Two fill, 1px Rule Strong border, 0.75rem at 700, Muted, never wrapping: "Administrador", "Suspensa", "Senha provisória", "Sem autenticador". "Suspensa" alone is Ink, because it changes whether the account can be used. The pill container always renders, even empty, so rows keep their columns.
+- **Registro tab:** the same hairline list; each item holds the sentence of what was done (0.875rem) and its date and time in Meta Muted at the right, wrapping under it when narrow, 0.8rem by 0.75rem padding.
+- **Account page:** the back link "‹ Contas" (a link button with a 0.875rem chevron left), the header, then two Panels titled in Label style:
+  - **FUNÇÕES:** one row per feature, min 3.5rem, divided by 1px Rules: the name at 700 over one Meta line of what it opens, and the switch at the right. Kanban and Calendário depend on Tarefas: with Tarefas off their text falls to 55% and their switches are disabled. A change saves at once (switches stay disabled until the server answers), rolls back if refused, and reports in one Meta `role="status"` line, in Ink on failure; the line leaves the layout while empty.
+  - **CONTA:** "Criada em" and "Último acesso" as Meta terms over values at 600, 2.5rem apart, then the outline actions, then "Excluir conta" as the destructive text action at the foot, left-aligned. On the owner's own account the actions are replaced by one Meta sentence.
+- **Switch:** a real `role="switch"` button, a 2.75rem by 1.5rem full pill. Off: Panel Two track, 1px Rule Strong border, a 1rem Muted knob at the left. On: Ink track and border, the knob in Ground slid 1.2rem right. Track, border and knob change over 0.2s on the shared ease-out. An invisible ::before extends the target to 44px without enlarging the drawing. Disabled: 45% and a not-allowed cursor. The feature's name is its label and the Meta line its description. Selection stays neutral: never violet, never green.
+- **Nova conta dialog:** the standard Dialog with E-mail, Nome (with a Meta hint) and a FUNÇÕES fieldset of neutral checkboxes in an auto-fit grid (columns at least 9rem), each row 2.75rem at 600. Unchecking Tarefas unchecks Kanban and Calendário and disables them (55%).
+- **Confirmation dialog:** the standard Dialog with a Headline question, one sentence naming the account and the consequence, "Cancelar" and the action. Deleting asks for the account's e-mail, typed in a field whose label quotes it (the e-mail keeps its own case inside the uppercase label); the action stays disabled until it matches. As everywhere else, destruction is never a violet fill: "Excluir para sempre" is the underlined text action on the left, with "Cancelar" on the right; the reversible actions (suspend, reactivate, new password, remove authenticator) keep the primary button.
+- **Temporary password (signature):** a fixed Dialog (see Dialog) that shows the password once: a Ground well with a 1px Rule Strong border, 10px radius, 1.25rem by 1rem padding, holding the password centered in Secret Figure, split into groups of four 0.4em apart (selected whole on click), and a "Copiar senha" link button that copies it without spaces and turns to its done form. Below, a Meta warning that it will not be shown again, and one primary button, "Pronto", that closes it. Nothing keeps the password after closing.
+
+### Two-Step Verification
+The gate's authenticator screens (see Account gate in Layout).
+- **Register the authenticator:** Headline, one Muted sentence, then an ordered list of three steps (0.9rem apart, line-height 1.5, numbers at 800 in Muted). The second step holds the QR code and the key side by side, wrapping: the QR on a 9rem QR Ground tile (0.5rem padding, 10px radius), and beside it the Label "CHAVE", the key in groups of four, and a "Copiar chave" link button. Then the code field, the full-width primary "Ativar verificação" and the "Sair" link button, centered.
+- **Type the code:** Headline, one Muted sentence, the code field, the primary "Confirmar" and "Sair", then a centered Meta line on what to do if the phone is lost.
+- Errors are the ERRO notice above the button, and a wrong code clears the field. While the QR loads, a Meta line says so.
+
 ### Perfil
 A simple page (Page Title, then two panels). The first holds the profile form: first name and surname, birth date and occupation, each pair in the auto-fit two-column grid, then the primary "Salvar perfil" with "Perfil salvo." (0.875rem, 600, Muted, `role="status"`; never green, which stays for XP, level and completion) beside it once saved. When the profile is incomplete the title becomes "Complete seu perfil" and one Muted sentence (44ch) leads the panel. The second panel, titled CONTA in Label style, lists the e-mail (Meta muted term, Ink value) and a "Sair da conta" link button.
 
 ### Dialog
 A native modal `<dialog>` (focus trapped, Esc and backdrop click close), Panel fill, 1px Rule, 16px radius, Panel lift, width min(100% - 2rem, 32rem), 28px padding, over the Backdrop scrim. Enters with a 10px rise and 0.98 scale (0.35s ease-out). A Headline title, then a standard form (fields 20px apart; a pair of fields, such as category and date, sits in two columns and stacks at 60rem and below), then the action row: destructive text action pinned left (only when editing), then "Cancelar" as a link button, then the primary button at the right. Errors appear as a notice above the actions.
+
+**Fixed dialog.** For what must not be lost to a stray key or click (the temporary password), the dialog is fixed: Esc and a click on the backdrop do nothing, and only its own button closes it. Every other dialog keeps Esc and backdrop close.
 
 **Task dialog.** Fields in order: Título; Descrição (optional textarea, "Opcional." hint); Categoria and Data prevista as a pair; then **Tags**, a fieldset with a Label legend and a wrapping row of tag chips (0.5rem apart). A chip is a 2.25rem pill (1px Rule border, 0 0.8rem padding, 0.875rem at 600, Muted) holding the tag ring and the name; hover raises the border to Rule Strong and the text to Ink; a chip that is on (`aria-pressed`) gets the neutral selection, Panel Two fill with a Rule Strong border and Ink text, never violet. A last dashed chip "+ Nova tag" opens an inline row, not a box: the name field (flexible), a "Criar tag" link button and a 36px close icon button, with the color picker beneath. "Salvar" stays the dialog's only violet action. Enter creates the tag and switches it on; Esc or the close button closes only the inline row. The Tags legend keeps 0.75rem below it (legends are not grid items). With no tags yet, one Muted hint sentence sits above the chips.
 
@@ -893,6 +982,8 @@ A Panel Two circle with a 2px green ring and initials at 700: 48px in a profile 
 - **Do** keep primary buttons and inputs at least 48px tall, completion targets and navigation items at least 44px, and icon buttons 40px.
 - **Do** draw new icons on the 16px grid with a 2px round-capped stroke in `currentColor`.
 - **Do** mark the focus phase, the time and the cycles in neutrals (Ink, Muted, Rule Strong), and leave green on the Foco page to task completion.
+- **Do** show account state as neutral pills and feature access as neutral switches (on is an Ink track); separate account rows with 1px Rules, not cards.
+- **Do** show a secret once, in tabular groups of four with a copy action, inside a fixed dialog.
 
 ### Don't:
 - **Don't** add a third accent, or use red for errors, deletion or a streak at risk. The amber and rose deadline tints stay inside the Deadline Badge and the deadline reminder.
@@ -909,3 +1000,5 @@ A Panel Two circle with a 2px green ring and initials at 700: 48px in a profile 
 - **Don't** hardcode hex or rgb literals in component CSS; add a token instead.
 - **Don't** show placeholder numbers while stats load; use the neutral skeleton.
 - **Don't** frame, recolor or borrow colors from the Spotify embed; it brings its own surface, and the system's palette stays ours.
+- **Don't** color account state green or red, or turn a switch violet; administration carries no progress and no alarm.
+- **Don't** darken the QR Ground tile in any theme; the code must stay readable by a camera.

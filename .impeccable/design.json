@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-13T14:33:42.245Z",
+  "generatedAt": "2026-09-13T17:05:12.171Z",
   "title": "Design System: RoutinXP",
   "extensions": {
     "colorMeta": {
@@ -408,6 +408,21 @@
           "#a3a7b3",
           "#f3f4f7"
         ]
+      },
+      "qr-fundo": {
+        "role": "neutral",
+        "displayName": "QR Ground",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#1f1f1f",
+          "#3b3b3b",
+          "#5e5e5e",
+          "#828282",
+          "#a6a6a6",
+          "#c9c9c9",
+          "#e8e8e8",
+          "#ffffff"
+        ]
       }
     },
     "typographyMeta": {
@@ -478,6 +493,14 @@
       "focus-clock": {
         "displayName": "Focus Clock",
         "purpose": "Time left on the Foco clock only; the largest type in the app, 110% width, tabular, sized by container (cqi). Ink running, Muted paused."
+      },
+      "secret-figure": {
+        "displayName": "Secret Figure",
+        "purpose": "The temporary password, shown once in a fixed dialog: tabular, centered, in groups of four."
+      },
+      "code-entry": {
+        "displayName": "Code Entry",
+        "purpose": "The typed 6-digit verification code: tabular, centered, 0.3em tracking."
       }
     },
     "shadows": [
@@ -829,6 +852,38 @@
       "description": "Foco rodar phase: Panel with the phase Label, cycle pills (done Ink, current Ink 45% into Rule Strong, rest Rule Strong), the Focus Clock time, primary + outline controls and the Encerrar link. Neutral only: no green, violet only on the action. Waiting for the user (\"HORA DA PAUSA\"), the primary button (Iniciar pausa / Iniciar foco) pulses a Violet Halo ring every 2.2s until pressed.",
       "html": "<section class=\"ds-relogio\"><p class=\"ds-relogio-fase\">Foco · 2 de 4</p><ol class=\"ds-ciclos\" aria-hidden=\"true\"><li data-estado=\"feito\"></li><li data-estado=\"atual\"></li><li></li><li></li></ol><p class=\"ds-relogio-tempo\" role=\"timer\">18:42</p><div class=\"ds-relogio-ctl\"><button class=\"ds-relogio-btn\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M5.5 3.5v9M10.5 3.5v9\" stroke=\"currentColor\" stroke-width=\"2.5\" stroke-linecap=\"round\"/></svg>Pausar</button><button class=\"ds-relogio-out\"><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"M3.5 3.5 9 8l-5.5 4.5V3.5ZM12.5 3.5v9\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>Pular</button></div><button class=\"ds-relogio-fim\">Encerrar sessão</button></section>",
       "css": ".ds-relogio { container-type: inline-size; display: grid; justify-items: center; gap: 1rem; padding: 2.25rem 1.5rem 1.5rem; background: var(--panel, #1c1d24); border: 1px solid var(--rule, #2e3039); border-radius: 16px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.35), 0 16px 40px -12px rgb(0 0 0 / 0.55); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; color: var(--ink, #f3f4f7); text-align: center; } .ds-relogio-fase { margin: 0; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; } .ds-ciclos { display: flex; gap: 0.4rem; margin: 0; padding: 0; list-style: none; } .ds-ciclos li { width: 1.75rem; height: 0.375rem; border-radius: 999px; background: var(--rule-strong, #454856); transition: background-color 0.3s cubic-bezier(0.16,1,0.3,1); } .ds-ciclos li[data-estado='feito'] { background: var(--ink, #f3f4f7); } .ds-ciclos li[data-estado='atual'] { background: color-mix(in oklab, var(--ink, #f3f4f7) 45%, var(--rule-strong, #454856)); } .ds-relogio-tempo { margin: 0.25rem 0 0.5rem; font-size: clamp(3.75rem, 11cqi, 6rem); font-weight: 800; font-stretch: 110%; line-height: 1; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; } .ds-relogio-ctl { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; } .ds-relogio-btn, .ds-relogio-out { display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; min-height: 3rem; border-radius: 10px; font: inherit; font-weight: 700; cursor: pointer; } .ds-relogio-btn svg, .ds-relogio-out svg { width: 1rem; height: 1rem; } .ds-relogio-btn { min-width: 10rem; padding: 0 1.5rem; border: 0; background: var(--purple, #7c3aed); color: var(--on-purple, #fff); box-shadow: 0 8px 20px -10px var(--purple-glow, rgb(124 58 237 / 0.75)); } .ds-relogio-btn:hover { background: var(--purple-hover, #8b5cf6); } .ds-relogio-out { padding: 0 1.25rem; border: 1px solid var(--rule-strong, #454856); background: none; color: var(--ink, #f3f4f7); } .ds-relogio-out:hover { border-color: var(--muted, #a3a7b3); background: var(--panel-2, #25262f); } .ds-relogio-fim { margin-top: 0.25rem; padding: 0.25rem 0; border: 0; background: none; font: inherit; font-size: 0.875rem; font-weight: 600; color: var(--purple-soft, #c4b5fd); text-decoration: underline; text-decoration-color: var(--purple-link-line, rgb(196 181 253 / 0.4)); text-underline-offset: 4px; cursor: pointer; } .ds-relogio button:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 2px; }"
+    },
+    {
+      "name": "Account Row with State Pills",
+      "kind": "custom",
+      "refersTo": "account-row",
+      "description": "Administração list: hairline-divided rows (no cards), neutral state pills, last access in a fixed 8.5rem column, chevron.",
+      "html": "<ul class=\"ds-contas\"><li><a class=\"ds-conta\" href=\"#\"><span class=\"ds-conta__quem\"><span class=\"ds-conta__nome\">Ana Souza <span class=\"ds-conta__voce\">você</span></span><span class=\"ds-conta__meta\">ana.souza@exemplo.com</span></span><span class=\"ds-selos\"><span class=\"ds-selo\">Administrador</span></span><span class=\"ds-conta__meta\">último acesso 13 set</span><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"m6 3.5 4.5 4.5L6 12.5\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a></li><li><a class=\"ds-conta\" href=\"#\"><span class=\"ds-conta__quem\"><span class=\"ds-conta__nome\">diego.rocha@exemplo.com</span></span><span class=\"ds-selos\"><span class=\"ds-selo\" data-forte=\"true\">Suspensa</span></span><span class=\"ds-conta__meta\">último acesso 11 set</span><svg viewBox=\"0 0 16 16\" fill=\"none\" aria-hidden=\"true\"><path d=\"m6 3.5 4.5 4.5L6 12.5\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg></a></li></ul>",
+      "css": ".ds-contas { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--rule, #2e3039); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; } .ds-contas li { border-bottom: 1px solid var(--rule, #2e3039); } .ds-conta { display: grid; grid-template-columns: minmax(0, 1fr) auto 8.5rem auto; align-items: center; gap: 0.5rem 1rem; min-height: 3.75rem; padding: 0.6rem 0.75rem; border-radius: 8px; color: var(--ink, #f3f4f7); text-decoration: none; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-conta:hover { background: var(--panel-2, #25262f); } .ds-conta:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 2px; } .ds-conta svg { width: 0.875rem; height: 0.875rem; color: var(--muted, #a3a7b3); } .ds-conta__quem { display: grid; gap: 0.1rem; min-width: 0; } .ds-conta__nome { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-conta__voce { font-size: 0.75rem; font-weight: 600; color: var(--muted, #a3a7b3); } .ds-conta__meta { font-size: 0.8125rem; color: var(--muted, #a3a7b3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-selos { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.35rem; } .ds-selo { display: inline-flex; align-items: center; min-height: 1.375rem; padding: 0 0.55rem; border: 1px solid var(--rule-strong, #454856); border-radius: 999px; background: var(--panel-2, #25262f); font-size: 0.75rem; font-weight: 700; color: var(--muted, #a3a7b3); white-space: nowrap; } .ds-selo[data-forte='true'] { color: var(--ink, #f3f4f7); }"
+    },
+    {
+      "name": "Switch",
+      "kind": "input",
+      "refersTo": "switch",
+      "description": "Neutral role=\"switch\" for feature access: Panel Two track off, Ink track with a Ground knob on; 44px target via ::before. Never violet or green.",
+      "html": "<div class=\"ds-funcao\"><span><span class=\"ds-funcao__nome\">Tarefas</span><span class=\"ds-funcao__dica\">Lista de tarefas, categorias e tags.</span></span><button type=\"button\" role=\"switch\" aria-checked=\"true\" aria-label=\"Tarefas\" class=\"ds-interruptor\"><span></span></button></div><div class=\"ds-funcao\"><span><span class=\"ds-funcao__nome\">Kanban</span><span class=\"ds-funcao__dica\">Quadro com colunas próprias.</span></span><button type=\"button\" role=\"switch\" aria-checked=\"false\" aria-label=\"Kanban\" class=\"ds-interruptor\" onclick=\"this.setAttribute('aria-checked', this.getAttribute('aria-checked') !== 'true')\"><span></span></button></div>",
+      "css": ".ds-funcao { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 3.5rem; padding: 0.5rem 0; font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; color: var(--ink, #f3f4f7); } .ds-funcao + .ds-funcao { border-top: 1px solid var(--rule, #2e3039); } .ds-funcao > span { display: grid; gap: 0.1rem; } .ds-funcao__nome { font-weight: 700; } .ds-funcao__dica { font-size: 0.8125rem; color: var(--muted, #a3a7b3); } .ds-interruptor { position: relative; flex: none; width: 2.75rem; height: 1.5rem; padding: 0; border: 1px solid var(--rule-strong, #454856); border-radius: 999px; background: var(--panel-2, #25262f); cursor: pointer; transition: background-color 0.2s cubic-bezier(0.16,1,0.3,1), border-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-interruptor::before { content: ''; position: absolute; inset: -0.625rem -0.25rem; } .ds-interruptor span { position: absolute; top: 50%; left: 0.2rem; width: 1rem; height: 1rem; border-radius: 50%; background: var(--muted, #a3a7b3); transform: translateY(-50%); transition: transform 0.2s cubic-bezier(0.16,1,0.3,1), background-color 0.2s cubic-bezier(0.16,1,0.3,1); } .ds-interruptor[aria-checked='true'] { border-color: var(--ink, #f3f4f7); background: var(--ink, #f3f4f7); } .ds-interruptor[aria-checked='true'] span { background: var(--ground, #121318); transform: translate(1.2rem, -50%); } .ds-interruptor:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 3px; } .ds-interruptor:disabled { opacity: 0.45; cursor: not-allowed; }"
+    },
+    {
+      "name": "Temporary Password",
+      "kind": "custom",
+      "refersTo": "temp-password",
+      "description": "Signature of Administração: the password shown once in a Ground well, Secret Figure in groups of four, with Copiar senha; lives in a fixed dialog.",
+      "html": "<div class=\"ds-senha\"><output class=\"ds-senha__valor\"><span>Kq7m</span><span>2Xp9</span><span>Lw4t</span></output><button type=\"button\" class=\"ds-senha__copiar\">Copiar senha</button></div><p class=\"ds-senha__aviso\">Ela não aparece de novo depois que você fechar esta janela.</p>",
+      "css": ".ds-senha { display: grid; justify-items: center; gap: 0.5rem; padding: 1.25rem 1rem; border: 1px solid var(--rule-strong, #454856); border-radius: 10px; background: var(--ground, #121318); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; color: var(--ink, #f3f4f7); } .ds-senha__valor { font-size: 1.5rem; font-weight: 800; letter-spacing: 0.06em; font-variant-numeric: tabular-nums; text-align: center; user-select: all; } .ds-senha__valor span { display: inline-block; white-space: nowrap; } .ds-senha__valor span + span { margin-left: 0.4em; } .ds-senha__copiar { padding: 4px 0; border: 0; background: none; font: inherit; font-size: 0.875rem; font-weight: 600; color: var(--purple-soft, #c4b5fd); text-decoration: underline; text-decoration-color: var(--purple-link-line, rgb(196 181 253 / 0.4)); text-underline-offset: 4px; cursor: pointer; } .ds-senha__copiar:hover { text-decoration-color: currentColor; } .ds-senha__copiar:focus-visible { outline: 2px solid var(--purple-soft, #c4b5fd); outline-offset: 2px; } .ds-senha__aviso { margin: 0.75rem 0 0; font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-size: 0.8125rem; color: var(--muted, #a3a7b3); }"
+    },
+    {
+      "name": "Authenticator Setup",
+      "kind": "custom",
+      "refersTo": "qr-tile",
+      "description": "Two-step verification: the QR on the white QR Ground tile beside the key in groups of four, then the 6-digit Code Entry field.",
+      "html": "<div class=\"ds-qr\"><div class=\"ds-qr__img\" role=\"img\" aria-label=\"QR code\"></div><div class=\"ds-qr__chave\"><span class=\"ds-qr__rotulo\">Chave</span><code><span>JBSW</span> <span>Y3DP</span> <span>EHPK</span> <span>3PXP</span></code></div></div><label class=\"ds-qr__rotulo\" for=\"ds-codigo\">Código de 6 dígitos</label><input id=\"ds-codigo\" class=\"ds-codigo\" inputmode=\"numeric\" autocomplete=\"one-time-code\" maxlength=\"6\" value=\"482913\">",
+      "css": ".ds-qr { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-bottom: 1.25rem; font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; color: var(--ink, #f3f4f7); } .ds-qr__img { flex: none; width: 9rem; height: 9rem; box-sizing: border-box; padding: 0.5rem; border-radius: 10px; background: var(--qr-fundo, #ffffff) linear-gradient(90deg, #000 0 30%, transparent 30% 70%, #000 70%) content-box; } .ds-qr__chave { flex: 1 1 12rem; display: grid; gap: 0.35rem; } .ds-qr__rotulo { display: block; margin-bottom: 0.5rem; font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted, #a3a7b3); } .ds-qr__chave code { font-family: inherit; font-size: 0.875rem; font-weight: 700; letter-spacing: 0.06em; word-spacing: 0.2em; } .ds-qr__chave code span { white-space: nowrap; } .ds-codigo { box-sizing: border-box; width: 100%; height: 48px; padding: 0 15px; border: 1px solid var(--rule, #2e3039); border-radius: 10px; background: var(--ground, #121318); color: var(--ink, #f3f4f7); font-family: 'Archivo Variable', 'Archivo', system-ui, sans-serif; font-size: 1.375rem; font-weight: 800; letter-spacing: 0.3em; font-variant-numeric: tabular-nums; text-align: center; outline: none; transition: border-color 0.2s, box-shadow 0.2s; } .ds-codigo:hover { border-color: var(--rule-strong, #454856); } .ds-codigo:focus-visible { border-color: var(--purple-soft, #c4b5fd); box-shadow: 0 0 0 3px var(--purple-halo, rgb(124 58 237 / 0.35)); }"
     }
   ],
   "narrative": {
@@ -847,7 +902,7 @@
     "rules": [
       {
         "name": "The Two Jobs Rule",
-        "body": "Green means progress and purple means action; neither ever stands in for the other. No green buttons, no purple XP, no third accent. Purple never marks selection: a current side-menu page, a selected chip, segment or swatch is shown with neutrals (Panel Two, Rule Strong, Ink). The single violet indicator is the active underline-tab bar, which marks the current mode. Green is also never spent on something that earned nothing: a \"+0 XP\" is Muted, and no flight launches for it. The deadline tints (Tertiary) are status, not a third accent: they stay inside the Deadline Badge and the deadline reminder's clock.",
+        "body": "Green means progress and purple means action; neither ever stands in for the other. No green buttons, no purple XP, no third accent. Purple never marks selection: a current side-menu page, a selected chip, segment or swatch is shown with neutrals (Panel Two, Rule Strong, Ink). The single violet indicator is the active underline-tab bar, which marks the current mode. Green is also never spent on something that earned nothing: a \"+0 XP\" is Muted, and no flight launches for it. The deadline tints (Tertiary) are status, not a third accent: they stay inside the Deadline Badge and the deadline reminder's clock. Administration takes no accent for state: an account's state pills and its feature switches are neutrals (nothing there is progress, nothing is an alarm), and violet stays on the actions.",
         "section": "colors"
       },
       {
@@ -910,7 +965,9 @@
       "Do animate XP by count-up plus a `translateX` fill on the shared ease-out `cubic-bezier(0.16, 1, 0.3, 1)`, and let reduced-motion collapse it.",
       "Do keep primary buttons and inputs at least 48px tall, completion targets and navigation items at least 44px, and icon buttons 40px.",
       "Do draw new icons on the 16px grid with a 2px round-capped stroke in `currentColor`.",
-      "Do mark the focus phase, the time and the cycles in neutrals (Ink, Muted, Rule Strong), and leave green on the Foco page to task completion."
+      "Do mark the focus phase, the time and the cycles in neutrals (Ink, Muted, Rule Strong), and leave green on the Foco page to task completion.",
+      "Do show account state as neutral pills and feature access as neutral switches (on is an Ink track); separate account rows with 1px Rules, not cards.",
+      "Do show a secret once, in tabular groups of four with a copy action, inside a fixed dialog."
     ],
     "donts": [
       "Don't add a third accent, or use red for errors, deletion or a streak at risk. The amber and rose deadline tints stay inside the Deadline Badge and the deadline reminder.",
@@ -926,7 +983,9 @@
       "Don't set body, rows or forms in the expanded width; that axis is for display, page title, wordmark and badges.",
       "Don't hardcode hex or rgb literals in component CSS; add a token instead.",
       "Don't show placeholder numbers while stats load; use the neutral skeleton.",
-      "Don't frame, recolor or borrow colors from the Spotify embed; it brings its own surface, and the system's palette stays ours."
+      "Don't frame, recolor or borrow colors from the Spotify embed; it brings its own surface, and the system's palette stays ours.",
+      "Don't color account state green or red, or turn a switch violet; administration carries no progress and no alarm.",
+      "Don't darken the QR Ground tile in any theme; the code must stay readable by a camera."
     ]
   }
 }

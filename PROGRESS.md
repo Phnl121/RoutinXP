@@ -5,7 +5,9 @@ Este arquivo é o ponto de handoff entre ferramentas (Code, Antigravity, ou qual
 ## Estado atual
 (a ferramenta que estiver trabalhando atualiza esta seção a cada sessão: o que existe, o que está funcionando, o que está pela metade)
 
-Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo está no ar e foi testado pelo usuário em produção: PWA no celular, Integrações com os links reais das disciplinas, Kanban, Calendário, tarefas e Foco com os avisos. Não há funcionalidade pela metade. O log de sessões abaixo guarda o histórico e o detalhe de cada entrega.
+Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo está no ar e foi testado pelo usuário em produção: PWA no celular, Integrações com os links reais das disciplinas, Kanban, Calendário, tarefas e Foco com os avisos. O log de sessões abaixo guarda o histórico e o detalhe de cada entrega.
+
+**Pronto no código, ainda não publicado (2026-09-13):** painel de administração (`/admin`) e verificação em duas etapas obrigatória. Commitado localmente; falta migration, Edge Functions e push, na ordem de "Publicar o painel de administração" em Pendências.
 
 ### Infraestrutura
 - **Pasta local:** `C:\Users\pedro\Desktop\RoutinXP` (renomeada de `App - Rotina` pelo usuário em 2026-09-13). O git e o link da Supabase CLI continuaram funcionando.
@@ -30,7 +32,8 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
     - `20260911230000_avisos_foco`;
     - `20260913154343_teto_xp_por_dia`;
     - `20260913154344_push_sem_sequestro`;
-    - `20260913154346_limites_por_usuario`.
+    - `20260913154346_limites_por_usuario`;
+    - `20260913200000_painel_admin` (**ainda não aplicada**).
   - **Mudança no banco:**
     - Criar a migration com `npx.cmd supabase migration new <nome>`.
     - Escrever o SQL no arquivo gerado.
@@ -41,6 +44,7 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
     - `sincronizar-calendarios` lê os calendários iCal. O pg_cron chama a cada 30 min; cada calendário é lido a cada ~3 h.
     - `avisos-foco` envia o Web Push do fim de fase. O pg_cron confere a cada 15 s e só chama quando há aviso vencido.
     - As duas se autenticam com o segredo `routinxp_cron_sync` do Vault.
+    - `admin-usuarios` atende o painel de administração. É a única publicada **com** verificação de JWT: `npx.cmd supabase functions deploy admin-usuarios --use-api` (sem `--no-verify-jwt`). Ainda não publicada.
   - **Segredos:** `VAPID_PUBLIC_KEY` e `VAPID_PRIVATE_KEY`.
   - **Segurança:**
     - RLS em todas as tabelas.
@@ -92,6 +96,12 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 - **Dados de teste:** as 8 tarefas de exemplo foram apagadas pelo usuário (2026-09-13).
 
 ### Pendências
+- **Publicar o painel de administração** (autorização do usuário, nesta ordem):
+  1. No painel do Supabase, Authentication > Multi-Factor: conferir que o TOTP (app autenticador) está ligado.
+  2. `npx.cmd supabase db push` (migration `20260913200000_painel_admin`).
+  3. No SQL Editor, marcar o primeiro administrador: `update public.contas_app set papel = 'admin' where user_id = (select id from auth.users where email = '<seu e-mail>');` (o e-mail não vai para o repositório).
+  4. Publicar `admin-usuarios` (com JWT), `sincronizar-calendarios` e `avisos-foco` (as duas com `--no-verify-jwt`).
+  5. Push na `main`. No próximo acesso, todas as contas cadastram o autenticador.
 - **Técnicas:**
   - O pacote JS passa de 500 kB; dá para carregar cada página só quando for aberta (lazy loading).
   - O SMTP padrão do Supabase envia só ~2 e-mails por hora. O SMTP próprio depende de um domínio.
@@ -115,6 +125,33 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
+
+### 2026-09-13, Claude Code (Opus 5): painel de administração e verificação em duas etapas
+Pedido do usuário: um painel para ver as contas do sistema e liberar funções por conta, antes do financeiro. Escolhas: todas as funções controláveis; conta criada com senha provisória gerada; verificação em duas etapas para todo mundo; último acesso só com a data; estrutura "lista e página da conta" (página de decisão do Impeccable).
+
+Feito (commitado localmente, **nada publicado**):
+- **Banco** (`20260913200000_painel_admin`):
+  - `contas_app`: papel (`usuario`/`admin`), funções liberadas (tarefas, kanban, calendario, foco, painel, integracoes, financeiro), nome e hash da senha provisória. Contas existentes recebem tudo menos financeiro.
+  - `registro_admin`: quem fez o quê no painel, sem senhas.
+  - Políticas restritivas em todas as tabelas: exigem sessão `aal2` que ainda existe em `auth.sessions`, senha provisória já trocada e a função certa. As funções chamadas pelo app (`concluir_tarefa`, `minhas_estatisticas`, `registrar_push`, `agendar_aviso_foco`) ganharam o mesmo portão; as originais viraram `*_sem_portao`.
+  - `minha_conta()` diz ao app o papel, as funções, se a senha é provisória e se a sessão ainda vale.
+  - `encerrar_sessoes` e `marcar_senha_provisoria`: só a chave de serviço.
+- **Edge Function `admin-usuarios`:** listar, criar (senha de 16 caracteres; desfaz a conta se algo falhar), funções, suspender/reativar, senha nova, remover autenticador e excluir (pede o e-mail digitado). Suspender, senha nova e remover autenticador encerram as sessões na hora. O admin não age sobre a própria conta.
+- **Cron:** `sincronizar-calendarios` só lê calendários de contas com Integrações; `avisos-foco` descarta avisos de contas sem Foco.
+- **App:**
+  - `PortaoConta` entre o login e a casca: cadastrar autenticador (QR ou chave), digitar o código, trocar a senha provisória; sessão encerrada pelo painel volta ao login.
+  - Menu, rotas, dados carregados, abas de Tarefas, card de foco do Painel e botão "Nova tarefa" seguem as funções da conta.
+  - `/admin` (lista + registro) e `/admin/:id` (funções com interruptores, dados e ações). Kanban e Calendário dependem de Tarefas.
+  - Pré-visualização: `/admin?previa`, `/?previa&etapa=autenticador|codigo|senha`, `&funcoes=tarefas,foco` para simular conta comum.
+- **Impeccable:** brief em `.impeccable/surfaces/src-pages-admin-jsx.md`, capturas em `.impeccable/review/admin/`; revisão final com 8 correções e 3 regressões, todas resolvidas.
+
+Travou:
+- Sem Docker, a migration não foi testada num banco local; revisada à mão.
+- O `[auth.mfa.totp]` do `config.toml` vale só localmente; no projeto hospedado é o painel do Supabase.
+
+Próximo:
+- Publicar (ver Pendências) e testar com uma conta de teste: criar, primeiro acesso, liberar e tirar funções, suspender.
+- Depois, o controle financeiro, a partir da fase 0.3 (modelo de dados); as fases 0.1 e 0.2 (trava e verificação) ficam cobertas pelo painel.
 
 ### 2026-09-13, Claude Code (Opus 5): correções da auditoria de segurança
 Pedido do usuário: auditoria de segurança e correção do que desse para corrigir no código.
