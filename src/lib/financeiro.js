@@ -12,7 +12,7 @@ function ok({ data, error }) {
 const CAMPOS_CONTA = 'id, nome, tipo, cor, origem, item_id, saldo_inicial_centavos, saldo_inicial_em, dia_fechamento, dia_vencimento, arquivada, posicao, created_at'
 const CAMPOS_CATEGORIA = 'id, nome, cor, tipo, grupo, arquivada, posicao, created_at'
 const CAMPOS_TRANSACAO =
-  'id, tipo, valor_centavos, data, descricao, conta_id, conta_destino_id, categoria_id, origem, pendente, duplicata_de, recorrencia_id, referencia, parcela, created_at'
+  'id, tipo, valor_centavos, data, descricao, conta_id, conta_destino_id, categoria_id, categoria_origem, origem, pendente, duplicata_de, recorrencia_id, referencia, parcela, created_at'
 const CAMPOS_RECORRENCIA =
   'id, nome, tipo, valor_centavos, valor_variavel, frequencia, inicio, fim, parcelas, conta_id, categoria_id, ativa, created_at'
 
@@ -99,6 +99,8 @@ const camposTransacao = (x) => ({
   conta_id: x.conta_id,
   conta_destino_id: x.tipo === 'transferencia' ? x.conta_destino_id : null,
   categoria_id: x.tipo === 'transferencia' ? null : x.categoria_id || null,
+  // Categoria escolhida na tela é da pessoa: regra nenhuma troca depois.
+  categoria_origem: x.tipo !== 'transferencia' && x.categoria_id ? 'manual' : null,
 })
 
 export async function salvarTransacaoFin(transacao) {
@@ -232,4 +234,44 @@ export async function juntarContas(importadaId, manualId) {
 // banco); "são diferentes" só tira a marca. Uma operação só no banco.
 export async function resolverDuplicata(transacao, _manual, juntar) {
   ok(await supabase.rpc('fin_resolver_duplicata', { p_banco: transacao.id, p_juntar: juntar }))
+}
+
+// ---------- Regras de categorização (fase 5) ----------
+
+const CAMPOS_REGRA = 'id, termo, categoria_id, tipo, conta_id, prioridade, origem, created_at'
+
+// Primeira visita: cria o dicionário inicial (não faz nada se já houver regra). Devolve quantas criou.
+export async function prepararRegras() {
+  return ok(await supabase.rpc('fin_preparar_regras'))
+}
+
+export async function listarRegras() {
+  return ok(await supabase.from('fin_regras').select(CAMPOS_REGRA).order('prioridade', { ascending: false }).order('termo'))
+}
+
+export async function salvarRegra(regra) {
+  const campos = {
+    termo: regra.termo.trim(),
+    categoria_id: regra.categoria_id,
+    tipo: regra.tipo || null,
+    conta_id: regra.conta_id || null,
+    prioridade: regra.prioridade ?? 0,
+    origem: 'usuario',
+  }
+  const consulta = regra.id ? supabase.from('fin_regras').update(campos).eq('id', regra.id) : supabase.from('fin_regras').insert(campos)
+  return ok(await consulta.select(CAMPOS_REGRA).single())
+}
+
+export async function excluirRegra(id) {
+  ok(await supabase.from('fin_regras').delete().eq('id', id))
+}
+
+// Passa as regras em tudo que não foi categorizado à mão. Devolve quantos lançamentos mudaram.
+export async function aplicarRegras() {
+  return ok(await supabase.rpc('fin_aplicar_regras'))
+}
+
+// Só a categoria (tocar na fila "A revisar"): vira escolha da pessoa.
+export async function categorizarTransacao(id, categoriaId) {
+  ok(await supabase.from('fin_transacoes').update({ categoria_id: categoriaId, categoria_origem: 'manual' }).eq('id', id))
 }

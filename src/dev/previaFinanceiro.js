@@ -3,6 +3,7 @@
 import { hojeBrasilia } from '../lib/datas'
 import { andarMes, limitesDoMes, mesDe } from '../lib/dinheiro'
 import { somarMeses } from '../lib/gastosFixos'
+import { combina } from '../lib/regras'
 
 let seq = 500
 const novoId = () => `fin-${seq++}`
@@ -138,6 +139,9 @@ recorrencias.filter((r) => r.tipo === 'parcelada').forEach(gerarParcelas)
   transacoes.push(
     { ...tx('saida', 4500, noMes(12), 'RESTAURANTE SABOR CASEIRO', 'fc3'), origem: 'banco', pendente: false, duplicata_de: almoco?.id ?? null },
     { ...tx('saida', 6790, noMes(13), 'IFOOD *PEDIDO', 'fc3'), origem: 'banco', pendente: true, duplicata_de: null },
+    { ...tx('saida', 2390, noMes(11), 'UBER *TRIP HELP.UBER.COM', 'fc3'), origem: 'banco', pendente: false, duplicata_de: null },
+    { ...tx('saida', 18900, noMes(9), 'PAG*POSTO SHELL AV PAULISTA', 'fc3'), origem: 'banco', pendente: false, duplicata_de: null },
+    { ...tx('saida', 3490, noMes(8), 'PADARIA DOCE PAO', 'fc1'), origem: 'banco', pendente: false, duplicata_de: null },
   )
 }
 // Cobranças já pagas: aluguel e internet deste mês.
@@ -341,4 +345,60 @@ export async function resolverDuplicata(transacao, manual, juntar) {
     return
   }
   transacoes = transacoes.map((x) => (x.id === transacao.id ? { ...x, duplicata_de: null } : x))
+}
+
+// ---------- Regras na prévia ----------
+let regras = [
+  { id: 'rg-1', termo: 'ifood', categoria_id: 'fk2', tipo: 'saida', conta_id: null, prioridade: 0, origem: 'sugerida', created_at: agora() },
+  { id: 'rg-2', termo: 'uber', categoria_id: 'fk3', tipo: 'saida', conta_id: null, prioridade: 0, origem: 'sugerida', created_at: agora() },
+  { id: 'rg-3', termo: 'netflix', categoria_id: 'fk8', tipo: 'saida', conta_id: null, prioridade: 0, origem: 'sugerida', created_at: agora() },
+  { id: 'rg-4', termo: 'farmacia', categoria_id: 'fk4', tipo: 'saida', conta_id: null, prioridade: 0, origem: 'sugerida', created_at: agora() },
+]
+
+export async function prepararRegras() {
+  await espera()
+  return 0
+}
+
+export async function listarRegras() {
+  await espera()
+  return copia(regras)
+}
+
+export async function salvarRegra(regra) {
+  await espera()
+  if (regra.id) {
+    regras = regras.map((x) => (x.id === regra.id ? { ...x, ...regra, origem: 'usuario' } : x))
+    return copia(regras.find((x) => x.id === regra.id))
+  }
+  const nova = { prioridade: 0, conta_id: null, created_at: agora(), ...regra, tipo: regra.tipo || null, origem: 'usuario', id: novoId() }
+  regras = [nova, ...regras]
+  return copia(nova)
+}
+
+export async function excluirRegra(id) {
+  await espera()
+  regras = regras.filter((x) => x.id !== id)
+}
+
+export async function aplicarRegras() {
+  await espera()
+  let mudou = 0
+  transacoes = transacoes.map((x) => {
+    if (x.tipo === 'transferencia' || (x.categoria_id && x.categoria_origem === 'manual')) return x
+    if (x.categoria_id && !x.categoria_origem) return x
+    const tipoCat = x.tipo === 'entrada' ? 'receita' : 'despesa'
+    const regra = [...regras]
+      .sort((a, b) => b.prioridade - a.prioridade || b.termo.length - a.termo.length)
+      .find((g) => (!g.tipo || g.tipo === x.tipo) && categorias.find((c) => c.id === g.categoria_id)?.tipo === tipoCat && combina(x.descricao, g.termo))
+    if (!regra || regra.categoria_id === x.categoria_id) return x
+    mudou++
+    return { ...x, categoria_id: regra.categoria_id, categoria_origem: 'regra' }
+  })
+  return mudou
+}
+
+export async function categorizarTransacao(id, categoriaId) {
+  await espera()
+  transacoes = transacoes.map((x) => (x.id === id ? { ...x, categoria_id: categoriaId, categoria_origem: 'manual' } : x))
 }

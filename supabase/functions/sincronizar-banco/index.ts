@@ -45,7 +45,15 @@ type ContaPluggy = {
   balance: number
   creditData?: { balanceCloseDate?: string | null; balanceDueDate?: string | null } | null
 }
-type TransacaoPluggy = { id: string; description: string; amount: number; date: string; type: 'DEBIT' | 'CREDIT'; status?: string }
+type TransacaoPluggy = {
+  id: string
+  description: string
+  amount: number
+  date: string
+  type: 'DEBIT' | 'CREDIT'
+  status?: string
+  category?: string | null
+}
 type Importada = {
   externo: string
   conta_id: string
@@ -54,6 +62,7 @@ type Importada = {
   data: string
   descricao: string
   pendente: boolean
+  categoriaBanco: string | null
 }
 
 function resposta(corpo: unknown, status = 200) {
@@ -113,7 +122,7 @@ const itensConfigurados = () =>
 async function sincronizar(userId: string, itens: string[]) {
   const chave = await chavePluggy()
   const dia = hoje()
-  const resumo = { contas: 0, importados: 0, atualizados: 0, transferencias: 0, duplicatas: 0, erros: [] as string[] }
+  const resumo = { contas: 0, importados: 0, atualizados: 0, transferencias: 0, duplicatas: 0, categorizados: 0, erros: [] as string[] }
   const importadas: Importada[] = []
   const contasLidas: { id: string; tipo: string; saldoBanco: number; saldoInicialEm: string; desde: string }[] = []
 
@@ -184,6 +193,7 @@ async function sincronizar(userId: string, itens: string[]) {
             data: diaDaPluggy(x.date),
             descricao: (x.description?.trim() || 'Lançamento do banco').slice(0, 200),
             pendente: x.status === 'PENDING',
+            categoriaBanco: x.category?.trim().slice(0, 120) || null,
           })
         }
       }
@@ -197,7 +207,13 @@ async function sincronizar(userId: string, itens: string[]) {
   }
 
   try {
-    if (importadas.length) await gravarLancamentos(userId, importadas, contasLidas, resumo)
+    if (importadas.length) {
+      await gravarLancamentos(userId, importadas, contasLidas, resumo)
+      // Fase 5: regras e pista do banco categorizam o que chegou (a escolha manual não muda).
+      const { data: categorizados, error: erroRegras } = await admin.rpc('fin_aplicar_regras', { p_user: userId })
+      if (erroRegras) throw erroRegras
+      resumo.categorizados = Number(categorizados ?? 0)
+    }
     await ajustarSaldos(userId, contasLidas)
   } catch (erro) {
     // Falha ao gravar fica registrada nas conexões, para a tela mostrar.
@@ -299,6 +315,7 @@ async function gravarLancamentos(
         origem: 'banco',
         externo_id: x.externo,
         pendente: x.pendente,
+        categoria_banco: x.categoriaBanco,
         duplicata_de: manual?.id ?? null,
       })
     }

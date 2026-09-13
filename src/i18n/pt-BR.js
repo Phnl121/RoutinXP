@@ -834,6 +834,38 @@ export const t = {
       texto: 'Cadastre onde o seu dinheiro fica: conta corrente, poupança, cartão ou dinheiro. Depois é só lançar entradas e saídas.',
       acao: 'Cadastrar conta',
     },
+    regras: {
+      titulo: 'Regras de categoria',
+      abrir: 'Regras',
+      texto: 'Quando a descrição tiver o termo, o lançamento cai na categoria. O que você escolher à mão nunca é trocado.',
+      nova: 'Nova regra',
+      termo: 'Descrição contém',
+      termoExemplo: 'Ex.: uber',
+      termoDica: 'Palavras inteiras, sem diferença de maiúsculas e acentos.',
+      categoria: 'Categoria',
+      tipo: 'Vale para',
+      tipos: { '': 'Entradas e saídas', saida: 'Só saídas', entrada: 'Só entradas' },
+      criar: 'Criar regra',
+      salvando: 'Salvando…',
+      excluir: 'Excluir',
+      excluirRotulo: (termo) => `Excluir a regra ${termo}`,
+      sugerida: 'sugerida',
+      vazio: 'Nenhuma regra ainda.',
+      aplicar: 'Aplicar regras agora',
+      aplicando: 'Aplicando…',
+      aplicadas: (n) => (n === 0 ? 'Nenhum lançamento mudou.' : `${n} ${n === 1 ? 'lançamento categorizado' : 'lançamentos categorizados'}.`),
+      criada: (n) => (n === 0 ? 'Regra criada.' : `Regra criada: ${n} ${n === 1 ? 'lançamento categorizado' : 'lançamentos categorizados'}.`),
+      fechar: 'Fechar',
+      duplicada: 'Já existe uma regra com esse termo.',
+      categoriaSalva: (descricao) => `Categoria salva. Criar uma regra para ${descricao}?`,
+      criarRegra: 'Criar regra',
+    },
+    revisar: {
+      faixa: (n) => `${n} ${n === 1 ? 'lançamento a revisar' : 'lançamentos a revisar'} neste mês`,
+      ver: 'Revisar',
+      escolher: 'Escolher categoria',
+      categoriaDe: (descricao) => `Categoria de ${descricao}`,
+    },
     bancos: {
       titulo: 'Bancos conectados',
       convite: 'Traga os lançamentos do seu banco sozinhos, pelo Open Finance (MeuPluggy). Só leitura: nada é movimentado.',
@@ -848,10 +880,10 @@ export const t = {
       diaAs: (dia, hora) => `${dia} às ${hora}`,
       consentimento: (dia) => `consentimento até ${dia}`,
       erroItem: 'Não deu para ler este banco. Se o consentimento venceu, renove no MeuPluggy.',
-      resultado: (n, duplicatas) =>
+      resultado: (n, duplicatas, categorizados = 0) =>
         n === 0
           ? 'Tudo em dia: nenhum lançamento novo.'
-          : `${n} ${n === 1 ? 'lançamento novo' : 'lançamentos novos'}${duplicatas ? `, ${duplicatas} para revisar como possível duplicata` : ''}.`,
+          : `${n} ${n === 1 ? 'lançamento novo' : 'lançamentos novos'}${categorizados ? `, ${categorizados} já com categoria` : ''}${duplicatas ? `, ${duplicatas} para revisar como possível duplicata` : ''}.`,
       erros: {
         muitas_tentativas: 'O banco foi lido há pouco. Espere alguns minutos para atualizar de novo.',
         sem_itens: 'Nenhum banco configurado. Confira os segredos da Pluggy no Supabase.',

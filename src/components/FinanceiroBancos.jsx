@@ -27,7 +27,7 @@ export function BancosConectados({ conexoes, onLer, onDesconectar }) {
     setMensagem(null)
     try {
       const resumo = await onLer(conectado ? 'sincronizar' : 'conectar')
-      setMensagem({ tipo: resumo.erros?.length ? 'erro' : 'ok', texto: resumo.erros?.length ? b.erroItem : b.resultado(resumo.importados, resumo.duplicatas) })
+      setMensagem({ tipo: resumo.erros?.length ? 'erro' : 'ok', texto: resumo.erros?.length ? b.erroItem : b.resultado(resumo.importados, resumo.duplicatas, resumo.categorizados) })
     } catch (e) {
       setMensagem({ tipo: 'erro', texto: b.erros[e?.codigoBanco] ?? b.erros.falha })
     } finally {

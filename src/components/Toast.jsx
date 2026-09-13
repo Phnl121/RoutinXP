@@ -34,7 +34,7 @@ export function Toast({ aviso, onDesfazer, onFechar }) {
         {aviso.tipo === 'desfazer' && (
           <>
             <button type="button" className="link-btn" onClick={desfazer}>
-              {t.tarefas.desfazer}
+              {aviso.acaoTexto ?? t.tarefas.desfazer}
             </button>
             <span className="toast__tempo" aria-hidden="true" />
           </>

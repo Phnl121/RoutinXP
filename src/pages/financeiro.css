@@ -1329,3 +1329,108 @@ button.fin-dre__botao:hover {
   color: var(--ink);
   white-space: nowrap;
 }
+
+/* ---------- Regras de categoria (fase 5) ---------- */
+
+.fin-revisar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  margin: 0.5rem 0 0;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* Na fila "A revisar", a linha divide espaço com o seletor de categoria. */
+.fin-lista__item {
+  display: flex;
+  align-items: center;
+}
+
+.fin-lista__item > .fin-linha {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.fin-lista__categoria {
+  flex: 0 0 11.5rem;
+  margin-right: 0.75rem;
+}
+
+.fin-lista__categoria .input {
+  min-height: 2.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
+  font-size: 0.875rem;
+}
+
+.fin-regra-nova {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.fin-regras__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+}
+
+.fin-regras__status {
+  margin: 0;
+}
+
+.fin-regras__status:empty {
+  display: none;
+}
+
+.fin-regras {
+  display: grid;
+  max-height: 18rem;
+  margin: 0 0 0.5rem;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.fin-regras__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 2.75rem;
+  padding: 0.3rem 0;
+}
+
+.fin-regras__item + .fin-regras__item {
+  border-top: 1px solid var(--rule);
+}
+
+.fin-regras__texto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.1rem 0.5rem;
+  min-width: 0;
+}
+
+.fin-regras__termo {
+  font-weight: 700;
+}
+
+@container (max-width: 30rem) {
+  .fin-lista__item {
+    flex-wrap: wrap;
+  }
+
+  .fin-lista__categoria {
+    flex: 1 1 100%;
+    margin: 0 0.75rem 0.6rem 2.2rem;
+  }
+}

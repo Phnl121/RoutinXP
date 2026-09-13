@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { MESES_DO_RESUMO, useFinanceiro } from '../lib/useFinanceiro'
 import {
   agruparPorDia,
@@ -17,6 +17,8 @@ import {
 } from '../lib/dinheiro'
 import { DrePessoal, EvolucaoMeses, GastosPorCategoria } from '../components/FinanceiroResumo'
 import { BancosConectados } from '../components/FinanceiroBancos'
+import { RegrasDialog } from '../components/FinanceiroRegras'
+import { termoSugerido } from '../lib/regras'
 import { ehAdmin, useConta } from '../lib/conta'
 import { Link } from 'react-router'
 import { cobrancasEntre, custoMensal, somarDias } from '../lib/gastosFixos'
@@ -90,6 +92,28 @@ export default function Financeiro() {
     [d],
   )
   const fecharAviso = useCallback(() => setAviso(null), [])
+  // A sugestão de regra some sozinha depois de alguns segundos.
+  useEffect(() => {
+    if (!aviso?.chave?.startsWith('regra-')) return undefined
+    const timer = setTimeout(() => setAviso((a) => (a?.chave === aviso.chave ? null : a)), 8000)
+    return () => clearTimeout(timer)
+  }, [aviso])
+
+  // Depois de escolher a categoria de um lançamento do banco: "Criar uma regra para ...?".
+  const sugerirRegra = useCallback((transacao, categoriaId) => {
+    const termo = termoSugerido(transacao.descricao)
+    if (!termo || !categoriaId) return
+    setAviso({
+      tipo: 'desfazer',
+      chave: `regra-${transacao.id}-${categoriaId}`,
+      texto: t.financeiro.regras.categoriaSalva(termo.toUpperCase()),
+      acaoTexto: t.financeiro.regras.criarRegra,
+      onDesfazer: () => {
+        setAviso(null)
+        setDlg({ tipo: 'regras', sugestao: { termo, categoria_id: categoriaId, tipo: transacao.tipo } })
+      },
+    })
+  }, [])
 
   const limparFiltros = () => {
     setBusca('')
@@ -100,6 +124,7 @@ export default function Financeiro() {
 
   const novoLancamento = () => setDlg({ tipo: 'lancamento' })
   const semContas = d.estado === 'pronto' && d.contas.length === 0
+  const aRevisar = d.transacoes.filter((x) => x.tipo !== 'transferencia' && !x.categoria_id).length
 
   if (d.estado !== 'pronto') {
     return (
@@ -176,6 +201,9 @@ export default function Financeiro() {
             </button>
           </div>
           <div className="fin__acoes">
+            <button type="button" className="link-btn" onClick={() => setDlg({ tipo: 'regras' })}>
+              {fin.regras.abrir}
+            </button>
             <button type="button" className="link-btn" onClick={() => setDlg({ tipo: 'categorias' })}>
               {fin.categorias}
             </button>
@@ -274,6 +302,22 @@ export default function Financeiro() {
                   </span>
                 </div>
 
+                {aRevisar > 0 && categoriaId !== 'revisar' && (
+                  <p className="fin-revisar">
+                    <span>{fin.revisar.faixa(aRevisar)}</span>
+                    <button
+                      type="button"
+                      className="link-btn"
+                      onClick={() => {
+                        setCategoriaId('revisar')
+                        setTipo('todos')
+                      }}
+                    >
+                      {fin.revisar.ver}
+                    </button>
+                  </p>
+                )}
+
                 {filtrando && (
                   <p className="fin-filtros__resumo" role="status">
                     <span>{l.filtrados(filtradas.length, formatarReais(somaFiltro.entradas), formatarReais(somaFiltro.saidas))}</span>
@@ -316,7 +360,7 @@ export default function Financeiro() {
                       </h3>
                       <ul className="fin-lista">
                         {g.itens.map((x) => (
-                          <li key={x.id}>
+                          <li key={x.id} className="fin-lista__item">
                             <LinhaLancamento
                               transacao={x}
                               conta={contaPorId[x.conta_id]}
@@ -324,6 +368,36 @@ export default function Financeiro() {
                               categoria={categoriaPorId[x.categoria_id]}
                               onAbrir={() => setDlg({ tipo: 'lancamento', item: x })}
                             />
+                            {/* Na fila "A revisar": a categoria se escolhe na própria linha. */}
+                            {categoriaId === 'revisar' && x.tipo !== 'transferencia' && (
+                              <span className="select fin-lista__categoria">
+                                <select
+                                  className="input"
+                                  aria-label={fin.revisar.categoriaDe(x.descricao)}
+                                  value=""
+                                  onChange={async (e) => {
+                                    const escolhida = e.target.value
+                                    try {
+                                      await d.categorizar(x.id, escolhida)
+                                      if (x.origem === 'banco') sugerirRegra(x, escolhida)
+                                    } catch (erro) {
+                                      setAviso({ tipo: 'erro', texto: mensagemErroDados(erro) })
+                                    }
+                                  }}
+                                >
+                                  <option value="" disabled>
+                                    {fin.revisar.escolher}
+                                  </option>
+                                  {d.categorias
+                                    .filter((c) => !c.arquivada && c.tipo === (x.tipo === 'entrada' ? 'receita' : 'despesa'))
+                                    .map((c) => (
+                                      <option key={c.id} value={c.id}>
+                                        {c.nome}
+                                      </option>
+                                    ))}
+                                </select>
+                              </span>
+                            )}
                           </li>
                         ))}
                       </ul>
@@ -416,13 +490,29 @@ export default function Financeiro() {
           categorias={d.categorias}
           manualParecido={dlg.item?.duplicata_de ? d.historico.find((x) => x.id === dlg.item.duplicata_de) : null}
           onResolverDuplicata={d.resolverDuplicata}
-          onSalvar={d.salvarTransacao}
+          onSalvar={async (transacao) => {
+            await d.salvarTransacao(transacao)
+            if (dlg.item?.origem === 'banco' && transacao.categoria_id && transacao.categoria_id !== dlg.item.categoria_id) {
+              sugerirRegra(dlg.item, transacao.categoria_id)
+            }
+          }}
           onExcluir={excluir}
           onFechar={() => setDlg(null)}
         />
       )}
       {dlg?.tipo === 'conta' && (
         <ContaFinDialog conta={dlg.item} saldoAtual={dlg.item ? d.saldos[dlg.item.id] : undefined} contas={d.contas} onJuntar={d.juntarContas} onSalvar={d.salvarConta} onExcluir={d.excluirConta} onFechar={() => setDlg(null)} />
+      )}
+      {dlg?.tipo === 'regras' && (
+        <RegrasDialog
+          regras={d.regras}
+          categorias={d.categorias}
+          sugestao={dlg.sugestao}
+          onSalvar={d.salvarRegra}
+          onExcluir={d.excluirRegra}
+          onAplicar={d.aplicarRegras}
+          onFechar={() => setDlg(null)}
+        />
       )}
       {dlg?.tipo === 'categorias' && (
         <CategoriasFinDialog
