@@ -9,7 +9,7 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 
 **Painel de administração e verificação em duas etapas publicados e testados pelo usuário (2026-09-13).**
 
-**Pronto no código, ainda não publicado (2026-09-13):** menu lateral em seções e Financeiro (fases 0.3, 0.4 e 1: página do mês, lançamentos manuais, contas e categorias). Faltam as migrations `20260913205000_tarefas_fk_no_action` e `20260913210000_financeiro_modelo`, liberar a função Financeiro para a conta no painel e o push.
+**Financeiro no ar e testado pelo usuário (2026-09-13):** menu em seções, fases 0 a 3 (página do mês, lançamentos manuais, contas, categorias, resumo com DRE e evolução, Gastos fixos). Falta aplicar `20260913230000_gastos_fixos_tipo_fixo` (correção da revisão) e publicar os ajustes finais.
 
 ### Infraestrutura
 - **Pasta local:** `C:\Users\pedro\Desktop\RoutinXP` (renomeada de `App - Rotina` pelo usuário em 2026-09-13). O git e o link da Supabase CLI continuaram funcionando.
@@ -36,8 +36,11 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
     - `20260913154344_push_sem_sequestro`;
     - `20260913154346_limites_por_usuario`;
     - `20260913200000_painel_admin`;
-    - `20260913205000_tarefas_fk_no_action` (**ainda não aplicada**);
-    - `20260913210000_financeiro_modelo` (**ainda não aplicada**).
+    - `20260913205000_tarefas_fk_no_action`;
+    - `20260913210000_financeiro_modelo`;
+    - `20260913220000_financeiro_gastos_fixos`;
+    - `20260913230000_gastos_fixos_tipo_fixo` (**ainda não aplicada**).
+  - **Permissão local:** `.claude/settings.local.json` (fora do git) libera para o Claude Code `npx.cmd supabase db push`, `migration list`, `functions deploy` e `git push`. Continua valendo: só com pedido do usuário no chat.
   - **Mudança no banco:**
     - Criar a migration com `npx.cmd supabase migration new <nome>`.
     - Escrever o SQL no arquivo gerado.
@@ -100,8 +103,8 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 - **Dados de teste:** as 8 tarefas de exemplo foram apagadas pelo usuário (2026-09-13).
 
 ### Pendências
-- **Publicar o Financeiro** (autorização do usuário): `db push` (as duas migrations acima), push na `main` e, no painel de administração, ligar a função Financeiro na própria conta. Depois testar: primeira conta, lançamentos de saída, entrada e transferência, editar saldo, categorias.
-- **Financeiro, próximas fases:** 2 (resumo do mês e DRE pessoal), 3 (contas a pagar e assinaturas), 4 (MeuPluggy), 5 (categorização por regras), 6 (orçamento e metas; gamificação ainda sem decisão).
+- **Aplicar `20260913230000_gastos_fixos_tipo_fixo` e publicar** os ajustes da revisão de Gastos fixos (autorização do usuário).
+- **Financeiro, próximas fases:** 3.6 (avisos de vencimento: faixa no topo e push um dia antes), 4 (Open Finance pelo MeuPluggy; depende do usuário criar a conta, a aplicação na Pluggy e guardar as chaves nos segredos do Supabase), 5 (categorização por regras), 6 (orçamento e metas; gamificação sem decisão).
 - **Técnicas:**
   - O pacote JS passa de 500 kB; dá para carregar cada página só quando for aberta (lazy loading).
   - O SMTP padrão do Supabase envia só ~2 e-mails por hora. O SMTP próprio depende de um domínio.
@@ -124,6 +127,27 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
+
+### 2026-09-13, Claude Code (Opus 5): Financeiro, fases 2 e 3
+Pedidos do usuário: seguir para a fase 2; depois, uma página própria "Gastos fixos" com assinaturas, compras parceladas (ex.: 12x), pagamentos e outros.
+
+Feito (publicado: migration `20260913220000_financeiro_gastos_fixos` aplicada e push; testado pelo usuário):
+- **Fase 2, na página Financeiro:** comparação com o mês anterior (no mês em andamento, até o mesmo dia); "Para onde foi" (gastos por categoria, tocar filtra); "Resultado do mês" (DRE pessoal com linhas que abrem as categorias); "Últimos 6 meses" (entradas × saídas, colunas tocáveis). O hook busca 6 meses de uma vez; sem migration.
+- **Fase 3, página `/financeiro/gastos-fixos`** (estrutura "Próximas cobranças ao lado dos cadastros", escolhida na página de decisão do Impeccable):
+  - `fin_recorrencias` (assinatura, parcelada, conta, outro; mensal, anual, semanal; valor variável; pausar) e vínculo em `fin_transacoes` (`recorrencia_id`, `referencia`, `parcela`, índice único por cobrança).
+  - Compra parcelada: `fin_gerar_parcelas` cria as parcelas como saídas datadas em cada mês. Parcelas futuras aparecem no Financeiro como "agendado" e ficam fora dos totais e do saldo até a data.
+  - Assinaturas e contas: "Pagar" cria o lançamento com a data de hoje (valor variável abre janela para confirmar); "Desfazer" apaga. Vencidas só contam a partir do dia do cadastro.
+  - Placar: comprometido por mês, assinaturas por ano, parcelas a pagar e pagos no mês. Cartão resumo no Financeiro.
+- **Revisões finais:** fase 2 (7 correções) e Gastos fixos (7 correções) aplicadas. Uma delas pede a migration `20260913230000_gastos_fixos_tipo_fixo`: o tipo do gasto fixo não muda depois de criado e refazer parcelas nunca apaga pagamentos.
+- **Permissões:** o usuário criou `.claude/settings.local.json` para o Claude Code aplicar migrations e dar push quando pedido.
+
+Travou:
+- Sem Docker, as migrations não foram testadas num banco local; revisadas à mão e pelo revisor.
+- A primeira migration de Gastos fixos foi aplicada antes da revisão terminar; a correção veio numa migration nova.
+
+Próximo:
+- Aplicar `20260913230000_gastos_fixos_tipo_fixo` e publicar.
+- Decidir entre a fase 3.6 (avisos de vencimento) e a fase 4 (MeuPluggy).
 
 ### 2026-09-13, Claude Code (Opus 5): menu em seções e Financeiro (fases 0.3, 0.4 e 1)
 Pedidos do usuário: o menu lateral dividido por categorias (prioridade) e seguir com o financeiro, lançamento manual primeiro, na ordem de fases do plano.
