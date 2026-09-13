@@ -125,7 +125,7 @@ export function DrePessoal({ dre }) {
             </li>
           )
         })}
-        <li className="fin-dre__linha fin-dre__resultado">
+        <li className="fin-dre__linha fin-dre__resultado" data-tom={dre.resultado > 0 ? 'entrada' : dre.resultado < 0 ? 'saida' : 'neutro'}>
           <div className="fin-dre__botao">
             <span className="fin-dre__nome">{r.dre.linhas.resultado}</span>
             <span className="fin-dre__fatia">{base > 0 ? `${Math.round((dre.resultado / base) * 100)}%` : ''}</span>

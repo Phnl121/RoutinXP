@@ -26,6 +26,11 @@
   --saida-wash: rgb(251 122 106 / 0.14);
   --transferencia: #7cc6f5;
   --transferencia-wash: rgb(124 198 245 / 0.14);
+  /* Tipos de gasto fixo: os mesmos tons das categorias iniciais. */
+  --tom-assinatura: #b39ddb;
+  --tom-parcelada: #6c9be8;
+  --tom-conta: #e0a050;
+  --tom-outro: #8f9bb3;
 
   /* Verde e roxo alinhados à logo RoutinXP (public/marca). */
   --green: #22c55e;

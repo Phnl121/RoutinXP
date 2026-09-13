@@ -234,21 +234,21 @@ export default function Financeiro() {
           <>
             <section className="panel fin-placar" aria-label={fin.placar.rotulo}>
               <dl className="fin-placar__itens">
-                <div>
+                <div data-tom="entrada">
                   <dt className="label">{fin.placar.entradas}</dt>
                   <dd className="fin-placar__valor" data-direcao="entrada">
                     {formatarReais(placar.entradas)}
                   </dd>
                   {comparacao && comparacao.entradas !== null && variacao(fin.placar.pct(comparacao.entradas, nomeAntes))}
                 </div>
-                <div>
+                <div data-tom="saida">
                   <dt className="label">{fin.placar.saidas}</dt>
                   <dd className="fin-placar__valor" data-direcao="saida">
                     {formatarReais(placar.saidas)}
                   </dd>
                   {comparacao && comparacao.saidas !== null && variacao(fin.placar.pct(comparacao.saidas, nomeAntes))}
                 </div>
-                <div>
+                <div data-tom={placar.resultado > 0 ? 'entrada' : placar.resultado < 0 ? 'saida' : 'neutro'}>
                   <dt className="label">{fin.placar.resultado}</dt>
                   <dd className="fin-placar__valor" data-direcao={placar.resultado > 0 ? 'entrada' : placar.resultado < 0 ? 'saida' : undefined}>
                     {formatarReais(placar.resultado, { sinal: true })}
@@ -257,7 +257,7 @@ export default function Financeiro() {
                     comparacao.resultado !== 0 &&
                     variacao(fin.placar.diferenca(formatarReais(Math.abs(comparacao.resultado)), comparacao.resultado > 0, nomeAntes))}
                 </div>
-                <div>
+                <div data-tom="poupado">
                   <dt className="label">{fin.placar.poupado}</dt>
                   <dd className="fin-placar__valor">
                     {poupado === null ? <span className="fin-placar__nada">{fin.placar.semEntradas}</span> : `${poupado}%`}
@@ -443,7 +443,7 @@ export default function Financeiro() {
                       )
                     })}
                   </ul>
-                  <div className="fin-contas__total">
+                  <div className="fin-contas__total" data-tom={saldoTotal < 0 ? 'saida' : 'entrada'}>
                     <span className="label">{fin.contas.total}</span>
                     <span className="fin-contas__valor">{formatarReais(saldoTotal)}</span>
                   </div>
@@ -548,7 +548,15 @@ function LinhaLancamento({ transacao: x, conta, destino, categoria, onAbrir }) {
   const marcas = [x.pendente ? l.pendente : null, x.duplicata_de ? l.duplicata : null].filter(Boolean).join(' · ')
   const valor = x.tipo === 'entrada' ? x.valor_centavos : x.tipo === 'saida' ? -x.valor_centavos : x.valor_centavos
   return (
-    <button type="button" className="fin-linha" onClick={onAbrir} data-tipo={x.tipo} data-agendado={x.data > hojeBrasilia()}>
+    <button
+      type="button"
+      className="fin-linha"
+      onClick={onAbrir}
+      data-tipo={x.tipo}
+      data-agendado={x.data > hojeBrasilia()}
+      data-categoria={Boolean(categoria)}
+      style={categoria ? { '--c': categoria.cor } : undefined}
+    >
       <span
         className="fin-linha__ponto"
         data-vazio={transferencia || revisar}

@@ -146,7 +146,13 @@ export default function GastosFixos() {
     const prazo = formatarPrazo(c.dia)
     const parcelada = c.rec.tipo === 'parcelada'
     return (
-      <li key={chaveCobranca(c.rec.id, c.dia)} className="gf-cobranca" data-paga={!parcelada && Boolean(c.pagamento)}>
+      <li
+        key={chaveCobranca(c.rec.id, c.dia)}
+        className="gf-cobranca"
+        data-paga={!parcelada && Boolean(c.pagamento)}
+        data-vencida={!parcelada && !c.pagamento && c.dia < hoje}
+        style={corDe[c.rec.categoria_id] ? { '--c': corDe[c.rec.categoria_id] } : undefined}
+      >
         <span className="fin-bloco" data-vazio={!corDe[c.rec.categoria_id]} style={corDe[c.rec.categoria_id] ? { '--c': corDe[c.rec.categoria_id] } : undefined} aria-hidden="true" />
         <span className="gf-cobranca__texto">
           <span className="gf-cobranca__nome">{c.rec.nome}</span>
@@ -220,21 +226,21 @@ export default function GastosFixos() {
           <>
             <section className="panel fin-placar" aria-label={g.placar.rotulo}>
               <dl className="fin-placar__itens">
-                <div>
+                <div data-tom="saida">
                   <dt className="label">{g.placar.mensal}</dt>
                   <dd className="fin-placar__valor">{formatarReais(mensal)}</dd>
                   <dd className="fin-placar__var">{g.placar.mensalDica}</dd>
                 </div>
-                <div>
+                <div data-tom="assinatura">
                   <dt className="label">{g.placar.anual}</dt>
                   <dd className="fin-placar__valor">{formatarReais(assinaturasAno)}</dd>
                 </div>
-                <div>
+                <div data-tom="parcelada">
                   <dt className="label">{g.placar.parcelas}</dt>
                   <dd className="fin-placar__valor">{formatarReais(parcelasFalta)}</dd>
                   <dd className="fin-placar__var">{g.placar.parcelasDica(parceladasAbertas.length)}</dd>
                 </div>
-                <div>
+                <div data-tom="entrada">
                   <dt className="label">{g.placar.pagos}</dt>
                   <dd className="fin-placar__valor">{g.placar.pagosValor(pagosNoMes, doMes.length)}</dd>
                 </div>
@@ -276,7 +282,7 @@ export default function GastosFixos() {
                   if (!itens.length) return null
                   const subtotal = itens.reduce((soma, rec) => soma + custoMensal(rec, hoje), 0)
                   return (
-                    <section key={tipo} className="panel gf-grupo" aria-labelledby={`gf-${tipo}`}>
+                    <section key={tipo} className="panel gf-grupo" data-tom={tipo} aria-labelledby={`gf-${tipo}`}>
                       <div className="fin-resumo__cabeca">
                         <h2 id={`gf-${tipo}`} className="label gf-grupo__titulo" data-tipo={tipo}>
                           {g.tipos[tipo]}
@@ -359,7 +365,13 @@ function LinhaGasto({ rec, conta, cor, hoje, onAbrir }) {
           ? g.proxima(rotuloDia(proxima.dia))
           : null
   return (
-    <button type="button" className="gf-gasto" onClick={onAbrir} data-pausada={!rec.ativa || (parcelada && progresso.restantes === 0)}>
+    <button
+      type="button"
+      className="gf-gasto"
+      onClick={onAbrir}
+      data-pausada={!rec.ativa || (parcelada && progresso.restantes === 0)}
+      style={cor ? { '--c': cor } : undefined}
+    >
       <span className="fin-bloco" data-vazio={!cor} style={cor ? { '--c': cor } : undefined} aria-hidden="true" />
       <span className="gf-gasto__texto">
         <span className="gf-gasto__nome">{rec.nome}</span>

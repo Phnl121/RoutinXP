@@ -1598,3 +1598,201 @@ button.fin-dre__botao:hover {
     transform: none;
   }
 }
+
+/* ---------- Cards com cor (pedido do usuário, 2026-09-14) ----------
+   Mesmo fundo escuro e mesmos cantos; o tom entra no preenchimento e na borda, como as capas
+   de categoria nos cards de tarefa. O texto continua em Ink para ler bem sobre o tom. */
+
+[data-tom='entrada'] {
+  --tom: var(--entrada);
+}
+
+[data-tom='saida'] {
+  --tom: var(--saida);
+}
+
+[data-tom='poupado'] {
+  --tom: var(--transferencia);
+}
+
+[data-tom='neutro'] {
+  --tom: var(--muted);
+}
+
+[data-tom='assinatura'] {
+  --tom: var(--tom-assinatura);
+}
+
+[data-tom='parcelada'] {
+  --tom: var(--tom-parcelada);
+}
+
+[data-tom='conta'] {
+  --tom: var(--tom-conta);
+}
+
+[data-tom='outro'] {
+  --tom: var(--tom-outro);
+}
+
+/* Placar: cada número vira um card próprio no seu tom. */
+.fin-placar {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.fin-placar__itens {
+  gap: 0.75rem;
+}
+
+.fin-placar__itens > div,
+.fin-placar__itens > div + div {
+  position: relative;
+  overflow: hidden;
+  padding: 1.1rem 1.35rem;
+  border: 1px solid color-mix(in oklab, var(--tom, var(--muted)) 38%, var(--rule));
+  border-radius: var(--radius);
+  background:
+    radial-gradient(120% 140% at 100% 0%, color-mix(in oklab, var(--tom, var(--muted)) 24%, transparent) 0%, transparent 60%),
+    color-mix(in oklab, var(--tom, var(--muted)) 9%, var(--panel));
+  box-shadow: var(--shadow);
+}
+
+@container (max-width: 44rem) {
+  .fin-placar__itens > div:nth-child(3),
+  .fin-placar__itens > div:nth-child(n + 3) {
+    border: 1px solid color-mix(in oklab, var(--tom, var(--muted)) 38%, var(--rule));
+  }
+
+  .fin-placar__itens > div,
+  .fin-placar__itens > div + div {
+    padding: 0.9rem 1rem;
+  }
+}
+
+.fin-placar__itens .label {
+  color: color-mix(in oklab, var(--tom, var(--muted)) 55%, var(--ink));
+}
+
+/* No placar colorido, o valor volta ao Ink: a cor já está no card (Poupado, Resultado zero). */
+.fin-placar__valor:not([data-direcao]) {
+  color: var(--ink);
+}
+
+.fin-placar__var {
+  color: color-mix(in oklab, var(--tom, var(--muted)) 35%, var(--muted));
+}
+
+.fin-placar__atalho {
+  margin: 0.25rem 0 0;
+}
+
+/* Lançamentos: cada linha num tom suave da categoria; transferência azul-céu. */
+.fin-linha[data-categoria='true'] {
+  background: color-mix(in oklab, var(--c) 8%, var(--panel));
+}
+
+.fin-linha[data-categoria='true']:hover {
+  background: color-mix(in oklab, var(--c) 15%, var(--panel));
+}
+
+.fin-linha[data-tipo='transferencia'] {
+  background: color-mix(in oklab, var(--transferencia) 8%, var(--panel));
+}
+
+.fin-linha[data-tipo='transferencia']:hover {
+  background: color-mix(in oklab, var(--transferencia) 15%, var(--panel));
+}
+
+/* Sem categoria continua neutro: é o que pede revisão. */
+
+.fin-lista li + li {
+  border-top-color: color-mix(in oklab, var(--rule) 70%, transparent);
+}
+
+/* Saldo total: faixa no tom do sinal. */
+.fin-contas__total {
+  margin: 0 -0.75rem;
+  padding: 0.85rem 0.75rem;
+  border-top: 0;
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--tom) 12%, var(--panel));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--tom) 30%, transparent);
+}
+
+.fin-contas__total .label {
+  color: color-mix(in oklab, var(--tom) 55%, var(--ink));
+}
+
+/* Cards da coluna lateral com tom próprio. */
+.fin-bancos {
+  border-color: color-mix(in oklab, var(--transferencia) 30%, var(--rule));
+  background: color-mix(in oklab, var(--transferencia) 7%, var(--panel));
+}
+
+.gf-cartao {
+  border-color: color-mix(in oklab, var(--saida) 30%, var(--rule));
+  background: color-mix(in oklab, var(--saida) 8%, var(--panel));
+}
+
+.gf-cartao .label,
+.fin-bancos .label {
+  color: var(--ink);
+}
+
+/* Resultado do mês: a linha final no tom do sinal. */
+.fin-dre__resultado {
+  margin-top: 0.35rem;
+  border-top: 0 !important;
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--tom) 12%, var(--panel));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--tom) 30%, transparent);
+}
+
+/* Gastos fixos: grupos no tom do tipo; linhas no tom da categoria; vencida com fundo coral. */
+.gf-grupo[data-tom] {
+  border-color: color-mix(in oklab, var(--tom) 32%, var(--rule));
+  background:
+    radial-gradient(90% 60% at 100% 0%, color-mix(in oklab, var(--tom) 14%, transparent) 0%, transparent 70%),
+    color-mix(in oklab, var(--tom) 5%, var(--panel));
+}
+
+.gf-grupo[data-tom] .gf-grupo__titulo {
+  color: color-mix(in oklab, var(--tom) 55%, var(--ink));
+}
+
+.gf-gasto {
+  background: color-mix(in oklab, var(--c, var(--panel)) 7%, transparent);
+}
+
+.gf-gasto:hover {
+  background: color-mix(in oklab, var(--c, var(--muted)) 15%, var(--panel));
+}
+
+.gf-lista {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.gf-cobranca {
+  margin: 0 -0.75rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--c, var(--panel)) 7%, transparent);
+}
+
+.gf-cobranca + .gf-cobranca {
+  margin-top: 0.35rem;
+  border-top: 0;
+}
+
+.gf-cobranca[data-vencida='true'] {
+  background: color-mix(in oklab, var(--saida) 12%, var(--panel));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--saida) 35%, transparent);
+}
+
+.gf-cobranca[data-paga='true'] {
+  background: none;
+}
