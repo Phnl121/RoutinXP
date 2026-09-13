@@ -29,7 +29,8 @@
   /* Tipos de gasto fixo: os mesmos tons das categorias iniciais. */
   --tom-assinatura: #b39ddb;
   --tom-parcelada: #6c9be8;
-  --tom-conta: #e0a050;
+  /* Conta fixa em areia: o âmbar fica só com o selo de prazo. */
+  --tom-conta: #c9b37e;
   --tom-outro: #8f9bb3;
 
   /* Verde e roxo alinhados à logo RoutinXP (public/marca). */

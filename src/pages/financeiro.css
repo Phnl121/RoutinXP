@@ -1576,19 +1576,19 @@ button.fin-dre__botao:hover {
 }
 
 .gf-grupo__titulo[data-tipo='assinatura']::before {
-  background: #b39ddb;
+  background: var(--tom-assinatura);
 }
 
 .gf-grupo__titulo[data-tipo='parcelada']::before {
-  background: #6c9be8;
+  background: var(--tom-parcelada);
 }
 
 .gf-grupo__titulo[data-tipo='conta']::before {
-  background: #e0a050;
+  background: var(--tom-conta);
 }
 
 .gf-grupo__titulo[data-tipo='outro']::before {
-  background: #8f9bb3;
+  background: var(--tom-outro);
 }
 
 @media (min-width: 60rem) {
@@ -1795,4 +1795,16 @@ button.fin-dre__botao:hover {
 
 .gf-cobranca[data-paga='true'] {
   background: none;
+}
+
+/* Pontos pequenos dentro do Resultado do mês: sem o bloco da linha de lançamento. */
+.fin-dre__item-nome .fin-linha__ponto {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--c);
+}
+
+.fin-dre__item-nome .fin-linha__ponto::after {
+  content: none;
 }
