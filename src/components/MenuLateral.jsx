@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { NavLink } from 'react-router'
 import { Logo } from './Logo'
-import { IconeBaixar, IconeCalendario, IconeCarteira, IconeEscudo, IconeEtiqueta, IconeFechar, IconeFoco, IconeGrafico, IconeLista, IconeMenuLateral, IconePessoa } from './icones'
+import { IconeBaixar, IconeCalendario, IconeCarteira, IconeRepetir, IconeEscudo, IconeEtiqueta, IconeFechar, IconeFoco, IconeGrafico, IconeLista, IconeMenuLateral, IconePessoa } from './icones'
 import { calcularNivel } from '../lib/nivel'
 import { rotaPermitida, useConta } from '../lib/conta'
 import { iniciaisDoPerfil } from '../lib/datas'
@@ -23,7 +23,10 @@ const SECOES = [
   {
     id: 'financas',
     titulo: m.secoes.financas,
-    itens: [{ para: '/financeiro', rotulo: m.financeiro, Icone: IconeCarteira }],
+    itens: [
+      { para: '/financeiro', rotulo: m.financeiro, Icone: IconeCarteira },
+      { para: '/financeiro/gastos-fixos', rotulo: m.gastosFixos, Icone: IconeRepetir },
+    ],
   },
   {
     id: 'organizacao',
@@ -117,7 +120,7 @@ export function MenuLateral({ recolhido, onAlternar, gavetaAberta, onFecharGavet
                 {titulo}
               </span>
               {itens.map(({ para, rotulo, Icone }) => (
-                <NavLink key={para} to={para} end={para === '/'} className="menu-lateral__item" title={recolhido ? rotulo : undefined}>
+                <NavLink key={para} to={para} end={para === '/' || para === '/financeiro'} className="menu-lateral__item" title={recolhido ? rotulo : undefined}>
                   <Icone />
                   <span className="menu-lateral__texto">{rotulo}</span>
                 </NavLink>

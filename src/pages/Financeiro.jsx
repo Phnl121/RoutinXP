@@ -16,6 +16,8 @@ import {
   variacaoPct,
 } from '../lib/dinheiro'
 import { DrePessoal, EvolucaoMeses, GastosPorCategoria } from '../components/FinanceiroResumo'
+import { Link } from 'react-router'
+import { cobrancasEntre, custoMensal, somarDias } from '../lib/gastosFixos'
 import { CategoriasFinDialog, ContaFinDialog, LancamentoDialog, Segmentos } from '../components/FinanceiroParts'
 import { Toast } from '../components/Toast'
 import { Aviso } from '../components/AuthParts'
@@ -356,6 +358,25 @@ export default function Financeiro() {
                     {arquivadas > 0 && <span className="hint">{fin.contas.arquivadas(arquivadas)}</span>}
                   </div>
                 </section>
+
+                {d.recorrencias.length > 0 && (
+                  <section className="panel fin-resumo gf-cartao" aria-labelledby="gf-cartao">
+                    <h2 id="gf-cartao" className="label">
+                      {t.gastosFixos.cartao.titulo}
+                    </h2>
+                    <p className="gf-cartao__valor">
+                      {t.gastosFixos.cartao.mensal(formatarReais(d.recorrencias.reduce((soma, rec) => soma + custoMensal(rec, hojeBrasilia()), 0)))}
+                    </p>
+                    <p className="hint">
+                      {t.gastosFixos.cartao.proximas(
+                        d.recorrencias.flatMap((rec) => cobrancasEntre(rec, hojeBrasilia(), somarDias(hojeBrasilia(), 7))).length,
+                      )}
+                    </p>
+                    <Link to="/financeiro/gastos-fixos" className="link-btn gf-cartao__ver">
+                      {t.gastosFixos.cartao.ver}
+                    </Link>
+                  </section>
+                )}
 
                 <GastosPorCategoria linhas={gastos} onEscolher={verCategoria} />
                 <DrePessoal dre={dre} />

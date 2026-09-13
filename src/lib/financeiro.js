@@ -11,7 +11,10 @@ function ok({ data, error }) {
 
 const CAMPOS_CONTA = 'id, nome, tipo, cor, saldo_inicial_centavos, saldo_inicial_em, dia_fechamento, dia_vencimento, arquivada, posicao, created_at'
 const CAMPOS_CATEGORIA = 'id, nome, cor, tipo, grupo, arquivada, posicao, created_at'
-const CAMPOS_TRANSACAO = 'id, tipo, valor_centavos, data, descricao, conta_id, conta_destino_id, categoria_id, origem, created_at'
+const CAMPOS_TRANSACAO =
+  'id, tipo, valor_centavos, data, descricao, conta_id, conta_destino_id, categoria_id, origem, recorrencia_id, referencia, parcela, created_at'
+const CAMPOS_RECORRENCIA =
+  'id, nome, tipo, valor_centavos, valor_variavel, frequencia, inicio, fim, parcelas, conta_id, categoria_id, ativa, created_at'
 
 // Primeira visita: cria as categorias iniciais (não faz nada se já existirem).
 export async function prepararFinanceiro() {
@@ -107,4 +110,80 @@ export async function salvarTransacaoFin(transacao) {
 
 export async function excluirTransacaoFin(id) {
   ok(await supabase.from('fin_transacoes').delete().eq('id', id))
+}
+
+// ---------- Gastos fixos (fase 3) ----------
+
+export async function listarRecorrencias() {
+  return ok(await supabase.from('fin_recorrencias').select(CAMPOS_RECORRENCIA).order('created_at'))
+}
+
+const camposRecorrencia = (x) => ({
+  nome: x.nome.trim(),
+  tipo: x.tipo,
+  valor_centavos: x.valor_centavos,
+  valor_variavel: x.tipo === 'parcelada' ? false : Boolean(x.valor_variavel),
+  frequencia: x.tipo === 'parcelada' ? 'mensal' : x.frequencia,
+  inicio: x.inicio,
+  fim: x.tipo === 'parcelada' ? null : x.fim || null,
+  parcelas: x.tipo === 'parcelada' ? x.parcelas : null,
+  conta_id: x.conta_id,
+  categoria_id: x.categoria_id || null,
+  ativa: x.tipo === 'parcelada' ? true : x.ativa !== false,
+})
+
+// Salva o gasto fixo; numa compra parcelada, cria ou refaz as parcelas logo em seguida.
+export async function salvarRecorrencia(rec) {
+  const consulta = rec.id
+    ? supabase.from('fin_recorrencias').update(camposRecorrencia(rec)).eq('id', rec.id)
+    : supabase.from('fin_recorrencias').insert(camposRecorrencia(rec))
+  const salva = ok(await consulta.select(CAMPOS_RECORRENCIA).single())
+  if (salva.tipo === 'parcelada') {
+    const { error } = await supabase.rpc('fin_gerar_parcelas', { p_recorrencia: salva.id })
+    // Compra nova sem parcelas não fica pela metade.
+    if (error) {
+      if (!rec.id) await supabase.from('fin_recorrencias').delete().eq('id', salva.id)
+      throw error
+    }
+  }
+  return salva
+}
+
+// Excluir: as parcelas ou cobranças com data futura saem junto; as já passadas continuam nos
+// lançamentos (sem o vínculo).
+export async function excluirRecorrencia(id, hoje) {
+  ok(await supabase.from('fin_transacoes').delete().eq('recorrencia_id', id).gt('data', hoje))
+  ok(await supabase.from('fin_recorrencias').delete().eq('id', id))
+}
+
+// Lançamentos ligados a gastos fixos com cobrança entre dois dias (o que já foi pago).
+export async function listarPagamentos(inicio, fim) {
+  return ok(
+    await supabase
+      .from('fin_transacoes')
+      .select(CAMPOS_TRANSACAO)
+      .not('recorrencia_id', 'is', null)
+      .gte('referencia', inicio)
+      .lte('referencia', fim),
+  )
+}
+
+// Marcar a cobrança como paga: vira uma saída ligada ao gasto fixo e ao dia da cobrança.
+export async function pagarCobranca({ rec, referencia, valor_centavos, data, conta_id }) {
+  return ok(
+    await supabase
+      .from('fin_transacoes')
+      .insert({
+        tipo: 'saida',
+        valor_centavos,
+        data,
+        descricao: rec.nome,
+        conta_id,
+        categoria_id: rec.categoria_id,
+        recorrencia_id: rec.id,
+        referencia,
+      })
+      .select(CAMPOS_TRANSACAO)
+      .single(),
+  )
 }

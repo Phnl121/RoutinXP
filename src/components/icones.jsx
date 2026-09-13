@@ -101,6 +101,16 @@ export function IconePular() {
   )
 }
 
+// Repetição (Gastos fixos): duas setas em ciclo.
+export function IconeRepetir() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M12.5 6.25A4.75 4.75 0 0 0 4 4.5M3.5 9.75A4.75 4.75 0 0 0 12 11.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <path d="M4.25 1.75V4.75h3M11.75 14.25V11.25h-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 // Carteira (Financeiro).
 export function IconeCarteira() {
   return (

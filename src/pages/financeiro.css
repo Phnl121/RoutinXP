@@ -983,3 +983,218 @@ button.fin-dre__botao:hover {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ---------- Gastos fixos (fase 3) ---------- */
+
+.gf__cabeca {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* Próximas cobranças (estreita) ao lado dos cadastros por tipo (larga). */
+.gf__grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.gf-proximas {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1.5rem;
+}
+
+.gf-dia + .gf-dia {
+  margin-top: 0.5rem;
+}
+
+.gf-dia__cabeca {
+  margin: 0.5rem 0 0.35rem;
+}
+
+.gf-cobrancas {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gf-cobranca {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.25rem;
+  padding: 0.45rem 0;
+}
+
+.gf-cobranca + .gf-cobranca {
+  border-top: 1px solid var(--rule);
+}
+
+.gf-cobranca__texto,
+.gf-gasto__texto {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.gf-cobranca__nome,
+.gf-gasto__nome {
+  overflow: hidden;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.gf-cobranca__detalhe,
+.gf-gasto__detalhe {
+  overflow: hidden;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.gf-cobranca__lado,
+.gf-gasto__lado {
+  display: grid;
+  justify-items: end;
+  gap: 0.2rem;
+  flex: none;
+}
+
+.gf-cobranca__valor,
+.gf-gasto__valor {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.gf-cobranca__estado {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.8125rem;
+}
+
+.gf-cobranca[data-paga='true'] .gf-cobranca__nome,
+.gf-cobranca[data-paga='true'] .gf-cobranca__valor {
+  color: var(--muted);
+}
+
+.gf-pago {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.gf-pago svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.gf-grupos {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.gf-grupo {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1.5rem;
+}
+
+.gf-grupo__subtotal {
+  font-size: 0.875rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.gf-lista {
+  margin: 0 -0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.gf-gasto {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.45rem 0.75rem;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font: inherit;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease-out);
+}
+
+.gf-gasto:hover {
+  background: var(--panel-2);
+}
+
+/* Pausado ou quitado: continua na lista, em segundo plano. */
+.gf-gasto[data-pausada='true'] .gf-gasto__nome,
+.gf-gasto[data-pausada='true'] .gf-gasto__valor {
+  color: var(--muted);
+}
+
+.gf-gasto__extra {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.gf-total,
+.gf-dica {
+  margin: -0.5rem 0 0;
+}
+
+/* Cartão resumo na página Financeiro. */
+.gf-cartao {
+  gap: 0.35rem;
+}
+
+.gf-cartao__valor {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.gf-cartao .hint {
+  margin: 0;
+}
+
+.gf-cartao__ver {
+  justify-self: start;
+  margin-top: 0.35rem;
+}
+
+@container (max-width: 58rem) {
+  .gf__grade {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@container (max-width: 30rem) {
+  .gf-proximas,
+  .gf-grupo {
+    padding: 1.25rem;
+  }
+
+  .gf-cobranca {
+    align-items: flex-start;
+  }
+}

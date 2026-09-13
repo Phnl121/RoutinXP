@@ -225,7 +225,7 @@ export default function Shell({ session }) {
           {/* No celular a barra não tem "Nova tarefa": o botão flutuante faz esse papel em
               todas as páginas (a de Tarefas tem o próprio, que abre o formulário ali mesmo; a do
               Financeiro tem o de novo lançamento). */}
-          {comTarefas && location.pathname !== '/' && location.pathname !== '/financeiro' && (
+          {comTarefas && location.pathname !== '/' && !location.pathname.startsWith('/financeiro') && (
             <button type="button" className="fab" onClick={novaTarefa} aria-label={t.topo.novaTarefa}>
               <IconeMais />
             </button>

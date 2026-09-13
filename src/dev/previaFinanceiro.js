@@ -2,6 +2,7 @@
 // src/lib/financeiro.js, com dados fictícios em memória.
 import { hojeBrasilia } from '../lib/datas'
 import { andarMes, limitesDoMes, mesDe } from '../lib/dinheiro'
+import { somarMeses } from '../lib/gastosFixos'
 
 let seq = 500
 const novoId = () => `fin-${seq++}`
@@ -87,6 +88,56 @@ let transacoes = [
     ]
   }),
 ]
+
+// Gastos fixos da prévia (fase 3).
+const rec = (id, nome, tipo, valor, inicio, conta_id, categoria_id, extra = {}) => ({
+  id,
+  nome,
+  tipo,
+  valor_centavos: valor,
+  valor_variavel: false,
+  frequencia: 'mensal',
+  inicio,
+  fim: null,
+  parcelas: null,
+  conta_id,
+  categoria_id,
+  ativa: true,
+  created_at: agora(),
+  ...extra,
+})
+const diaDoMes = (m, d) => `${m}-${String(d).padStart(2, '0')}`
+let recorrencias = [
+  rec('fr-1', 'Netflix', 'assinatura', 5590, diaDoMes(andarMes(mes, -8), 6), 'fc3', 'fk8'),
+  rec('fr-2', 'Spotify', 'assinatura', 2190, diaDoMes(andarMes(mes, -14), 18), 'fc3', 'fk8'),
+  rec('fr-3', 'iCloud', 'assinatura', 1490, diaDoMes(andarMes(mes, -3), 22), 'fc3', 'fk8'),
+  rec('fr-4', 'Domínio do portfólio', 'assinatura', 6990, diaDoMes(andarMes(mes, 2), 3), 'fc3', 'fk8', { frequencia: 'anual' }),
+  rec('fr-5', 'Aluguel', 'conta', 180000, diaDoMes(andarMes(mes, -10), 5), 'fc1', 'fk1'),
+  rec('fr-6', 'Conta de luz', 'conta', 18000, diaDoMes(andarMes(mes, -10), 16), 'fc1', 'fk1', {
+    valor_variavel: true,
+    created_at: new Date(Date.now() - 40 * 86400000).toISOString(),
+  }),
+  rec('fr-7', 'Internet', 'conta', 9990, diaDoMes(andarMes(mes, -10), 12), 'fc1', 'fk1'),
+  rec('fr-8', 'Notebook', 'parcelada', 41650, diaDoMes(andarMes(mes, -6), 8), 'fc3', 'fk7', { parcelas: 12 }),
+  rec('fr-9', 'Curso de inglês', 'parcelada', 21000, diaDoMes(andarMes(mes, -1), 20), 'fc3', 'fk5', { parcelas: 6 }),
+  rec('fr-10', 'Academia', 'outro', 9900, diaDoMes(andarMes(mes, -4), 10), 'fc1', 'fk4', { ativa: false }),
+]
+// Parcelas de uma compra parcelada: como fin_gerar_parcelas no banco (refaz as futuras).
+function gerarParcelas(r) {
+  transacoes = transacoes.filter((x) => x.recorrencia_id !== r.id || (x.data <= hoje && x.parcela <= r.parcelas))
+  for (let n = 1; n <= r.parcelas; n++) {
+    const dia = somarMeses(r.inicio, n - 1)
+    if (transacoes.some((x) => x.recorrencia_id === r.id && x.referencia === dia)) continue
+    transacoes.push({ ...tx('saida', r.valor_centavos, dia, `${r.nome} (${n}/${r.parcelas})`, r.conta_id, r.categoria_id), recorrencia_id: r.id, referencia: dia, parcela: n })
+  }
+}
+recorrencias.filter((r) => r.tipo === 'parcelada').forEach(gerarParcelas)
+// Cobranças já pagas: aluguel e internet deste mês.
+// O aluguel deste mês já estava nos lançamentos: só ganha o vínculo.
+transacoes = transacoes.map((x) => (x.descricao === 'Aluguel' && x.data === noMes(5) ? { ...x, recorrencia_id: 'fr-5', referencia: noMes(5) } : x))
+transacoes.push(
+  { ...tx('saida', 9990, noMes(12), 'Internet', 'fc1', 'fk1'), recorrencia_id: 'fr-7', referencia: noMes(12) },
+)
 
 const copia = (x) => structuredClone(x)
 const falha = (message, code) => Promise.reject({ message, code })
@@ -184,4 +235,43 @@ export async function salvarTransacaoFin(transacao) {
 export async function excluirTransacaoFin(id) {
   await espera()
   transacoes = transacoes.filter((x) => x.id !== id)
+}
+
+export async function listarRecorrencias() {
+  await espera()
+  return copia(recorrencias)
+}
+
+export async function salvarRecorrencia(r) {
+  await espera()
+  if (r.id) {
+    recorrencias = recorrencias.map((x) => (x.id === r.id ? { ...x, ...r } : x))
+    const salva = recorrencias.find((x) => x.id === r.id)
+    if (salva.tipo === 'parcelada') gerarParcelas(salva)
+    return copia(salva)
+  }
+  const nova = { ativa: true, created_at: agora(), fim: null, ...r, id: novoId() }
+  recorrencias = [...recorrencias, nova]
+  if (nova.tipo === 'parcelada') gerarParcelas(nova)
+  return copia(nova)
+}
+
+export async function excluirRecorrencia(id) {
+  await espera()
+  transacoes = transacoes.filter((x) => x.recorrencia_id !== id || x.data <= hoje)
+  recorrencias = recorrencias.filter((x) => x.id !== id)
+  transacoes = transacoes.map((x) => (x.recorrencia_id === id ? { ...x, recorrencia_id: null } : x))
+}
+
+export async function listarPagamentos(inicio, fim) {
+  await espera()
+  return copia(transacoes.filter((x) => x.recorrencia_id && x.referencia >= inicio && x.referencia <= fim))
+}
+
+export async function pagarCobranca({ rec: r, referencia, valor_centavos, data, conta_id }) {
+  await espera()
+  if (transacoes.some((x) => x.recorrencia_id === r.id && x.referencia === referencia)) return falha('duplicada', '23505')
+  const nova = { ...tx('saida', valor_centavos, data, r.nome, conta_id, r.categoria_id), recorrencia_id: r.id, referencia }
+  transacoes = [nova, ...transacoes]
+  return copia(nova)
 }
