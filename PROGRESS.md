@@ -47,7 +47,8 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
     - XP, streak e conclusão são gravados só pelo servidor (privilégio por coluna).
     - Tabelas de push e avisos acessíveis só por funções.
     - Acesso anônimo testado e recusado (401) em cada tabela nova.
-    - CAPTCHA (Cloudflare Turnstile) em entrar, criar conta e esqueci minha senha.
+    - CAPTCHA (Cloudflare Turnstile) em entrar e esqueci minha senha; cadastro fechado no servidor e "Secure password change" ligado.
+    - Teto de XP guardado em `user_stats`, limites de linhas por usuário e cabeçalhos CSP/segurança na Vercel (auditoria de 2026-09-13).
     - URLs de Auth e hostname do Turnstile em `routinxp.vercel.app`.
 - **Impeccable:**
   - `PRODUCT.md`, `DESIGN.md` e `.impeccable/design.json` (sincronizados com o código em 2026-09-13);
@@ -130,10 +131,11 @@ Travou:
 - Sem Docker, as migrations não foram testadas num banco local; foram revisadas à mão.
 - DNS rebinding no leitor de calendários continua possível em tese: o runtime não deixa fixar o IP conferido na conexão.
 
-Próximo (usuário):
-- Testar "Testar link" em Integrações: se todo link der "link inválido", o runtime não tem `Deno.resolveDns` (aparece no log da função).
-- Painel do Supabase: senha mínima 8 com letras e números e "Secure password change" (Authentication → Sign In / Providers → Email). Cadastro fechado, CAPTCHA e lista de usuários já conferidos (2026-09-13).
-- Conferir em produção o login, o player do Spotify (CSP) e os avisos do Foco.
+Conferido pelo usuário (2026-09-13): cadastro fechado, CAPTCHA ligado, lista de usuários revisada, "Secure password change" ligado, "Testar link" das Integrações funcionando (o runtime tem `Deno.resolveDns`) e player do Spotify aparecendo com a CSP em produção.
+
+Próximo:
+- Confirmar no painel a senha mínima de 8 caracteres com letras e números (Authentication → Sign In / Providers → Email).
+- Risco aceito: DNS rebinding teórico no leitor de calendários.
 
 ### 2026-09-13, Claude Code (Opus 5): app por convite
 Pedido do usuário: ninguém cria conta sozinho; o dono cria as contas (senha provisória) no painel do Supabase. Isso também protege a futura área financeira.
