@@ -3,11 +3,13 @@ import { useSession } from './lib/useSession'
 import Entrar from './pages/Entrar'
 import RedefinirSenha from './pages/RedefinirSenha'
 import Tarefas from './pages/Tarefas'
-import Shell from './pages/Shell'
+import PortaoConta from './pages/PortaoConta'
 import Perfil from './pages/Perfil'
 import Painel from './pages/Painel'
 import Integracoes from './pages/Integracoes'
 import Categorias from './pages/Categorias'
+import Admin from './pages/Admin'
+import AdminConta from './pages/AdminConta'
 import { t } from './i18n/pt-BR'
 import { emPrevia, sessaoPrevia } from './dev/previa'
 
@@ -34,7 +36,8 @@ export default function App() {
           path="/redefinir-senha"
           element={<RedefinirSenha session={session} convite={convite} aoConcluir={clearRecovery} />}
         />
-        {/* Páginas do app logado, dentro da casca com menu lateral. */}
+        {/* Páginas do app logado: primeiro a verificação em duas etapas e a troca da senha
+            provisória (PortaoConta), depois a casca com menu lateral. */}
         <Route
           element={
             !session ? (
@@ -42,7 +45,7 @@ export default function App() {
             ) : recovery ? (
               <Navigate to="/redefinir-senha" replace />
             ) : (
-              <Shell session={session} />
+              <PortaoConta session={session} />
             )
           }
         >
@@ -53,6 +56,8 @@ export default function App() {
           <Route path="/painel" element={<Painel />} />
           <Route path="/categorias" element={<Categorias />} />
           <Route path="/integracoes" element={<Integracoes />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/:id" element={<AdminConta />} />
           <Route path="/perfil" element={<Perfil />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

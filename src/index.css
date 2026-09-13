@@ -14,6 +14,8 @@
   --ink: #f3f4f7;
   --muted: #a3a7b3;
   --backdrop: rgb(6 7 10 / 0.72);
+  /* Fundo do QR code do autenticador: claro em qualquer tema, para o leitor do celular. */
+  --qr-fundo: #ffffff;
 
   /* Verde e roxo alinhados à logo RoutinXP (public/marca). */
   --green: #22c55e;

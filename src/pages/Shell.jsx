@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Outlet, useLocation, useNavigate } from 'react-router'
+import { Navigate, Outlet, useLocation, useNavigate } from 'react-router'
 import { useDados } from '../lib/useDados'
+import { primeiraRota, rotaPermitida, temFuncao, useConta } from '../lib/conta'
 import { DadosContexto } from '../lib/dadosContexto'
 import { MenuLateral } from '../components/MenuLateral'
 import { TopBar } from '../components/TopBar'
@@ -73,7 +74,9 @@ function lerMenuRecolhido() {
 // Casca do app logado: menu lateral + barra superior + lembrete + página atual.
 // Os dados do usuário ficam aqui e são compartilhados pelas páginas (DadosContexto).
 export default function Shell({ session }) {
-  const d = useDados(session.user.id)
+  // Papel e funções liberadas da conta (PortaoConta já conferiu a verificação).
+  const conta = useConta()
+  const d = useDados(session.user.id, conta.funcoes)
   // Pomodoro da página Foco: vive na casca para continuar ao trocar de página.
   const foco = useFoco(session.user.id, d.registrarFoco, t.foco.aviso, () => garantirInscricao(d.registrarPush).catch(() => {}))
   const [recolhido, setRecolhido] = useState(lerMenuRecolhido)
@@ -161,9 +164,11 @@ export default function Shell({ session }) {
   // Dispensar um aviso vale até amanhã e libera o próximo da fila.
   const [streakDispensado, dispensarStreak] = useDispensaDoDia(`routinxp:lembrete:${hoje}`)
   const [prazosDispensado, dispensarPrazos] = useDispensaDoDia(`routinxp:prazos:${hoje}`)
-  const streakVisivel = streakEmRisco(d.stats, hoje) && !streakDispensado
+  // Streak e prazos só falam de tarefas: sem a função Tarefas, esses avisos não aparecem.
+  const comTarefas = temFuncao(conta, 'tarefas')
+  const streakVisivel = comTarefas && streakEmRisco(d.stats, hoje) && !streakDispensado
   const prazos = contarPrazos(d.tarefas, hoje)
-  const prazosVisivel = !streakVisivel && prazos.paraHoje + prazos.atrasadas > 0 && !prazosDispensado
+  const prazosVisivel = comTarefas && !streakVisivel && prazos.paraHoje + prazos.atrasadas > 0 && !prazosDispensado
   const { estado, carregar } = d
   // A internet voltou depois de uma falha de carregamento: busca os dados de novo.
   useEffect(() => {
@@ -172,6 +177,9 @@ export default function Shell({ session }) {
 
   // "Nova tarefa" funciona de qualquer página: leva para Tarefas e abre o formulário.
   const novaTarefa = () => navigate('/', { state: { novaTarefa: Date.now() } })
+
+  // Página de uma função que a conta não tem (link antigo, função desligada): vai para a primeira liberada.
+  if (!rotaPermitida(conta, location.pathname)) return <Navigate to={primeiraRota(conta)} replace />
 
   return (
     <DadosContexto.Provider value={d}>
@@ -212,11 +220,11 @@ export default function Shell({ session }) {
           )}
           {online && modoInstalacao && !streakVisivel && !prazosVisivel && <ConviteInstalar onInstalar={instalar} />}
           <Outlet context={{ session }} />
-          {focoMontado && <Foco visivel={noFoco} userId={session.user.id} />}
+          {focoMontado && temFuncao(conta, 'foco') && <Foco visivel={noFoco} userId={session.user.id} />}
           {dlgIos && <DialogoInstalarIos onFechar={() => setDlgIos(false)} />}
           {/* No celular a barra não tem "Nova tarefa": o botão flutuante faz esse papel em
               todas as páginas (a de Tarefas tem o próprio, que abre o formulário ali mesmo). */}
-          {location.pathname !== '/' && (
+          {comTarefas && location.pathname !== '/' && (
             <button type="button" className="fab" onClick={novaTarefa} aria-label={t.topo.novaTarefa}>
               <IconeMais />
             </button>

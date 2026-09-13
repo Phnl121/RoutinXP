@@ -1,8 +1,9 @@
 import { useEffect } from 'react'
 import { NavLink } from 'react-router'
 import { Logo } from './Logo'
-import { IconeBaixar, IconeCalendario, IconeEtiqueta, IconeFechar, IconeFoco, IconeGrafico, IconeLista, IconeMenuLateral, IconePessoa } from './icones'
+import { IconeBaixar, IconeCalendario, IconeEscudo, IconeEtiqueta, IconeFechar, IconeFoco, IconeGrafico, IconeLista, IconeMenuLateral, IconePessoa } from './icones'
 import { calcularNivel } from '../lib/nivel'
+import { rotaPermitida, useConta } from '../lib/conta'
 import { iniciaisDoPerfil } from '../lib/datas'
 import { nomeCompleto } from '../lib/perfil'
 import { t } from '../i18n/pt-BR'
@@ -14,6 +15,7 @@ const ITENS = [
   { para: '/painel', rotulo: m.painel, Icone: IconeGrafico },
   { para: '/categorias', rotulo: t.categoriasPagina.titulo, Icone: IconeEtiqueta },
   { para: '/integracoes', rotulo: t.integracoes.titulo, Icone: IconeCalendario },
+  { para: '/admin', rotulo: m.admin, Icone: IconeEscudo },
   { para: '/perfil', rotulo: m.perfil, Icone: IconePessoa },
 ]
 
@@ -55,6 +57,9 @@ export function MenuLateral({ recolhido, onAlternar, gavetaAberta, onFecharGavet
   }, [gavetaAberta, onFecharGaveta])
 
   const nivel = calcularNivel(stats?.xp_total ?? 0).nivel
+  // Só as páginas que a conta tem (funções liberadas; Administração só para administradores).
+  const conta = useConta()
+  const itens = ITENS.filter((item) => rotaPermitida(conta, item.para))
 
   return (
     <>
@@ -79,7 +84,7 @@ export function MenuLateral({ recolhido, onAlternar, gavetaAberta, onFecharGavet
         </div>
 
         <nav className="menu-lateral__nav">
-          {ITENS.map(({ para, rotulo, Icone }) => (
+          {itens.map(({ para, rotulo, Icone }) => (
             <NavLink key={para} to={para} end={para === '/'} className="menu-lateral__item" title={recolhido ? rotulo : undefined}>
               <Icone />
               <span className="menu-lateral__texto">{rotulo}</span>

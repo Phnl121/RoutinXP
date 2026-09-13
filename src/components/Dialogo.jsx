@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react'
 
 // <dialog> modal nativo: foco preso, Esc fecha, clique no fundo fecha.
 // O componente abre ao montar; o pai o desmonta em onFechar.
-export function Dialogo({ tituloId, onFechar, children, dialogoRef }) {
+// fixo: só fecha pelo botão (nem Esc nem clique no fundo), para o que não pode se perder.
+export function Dialogo({ tituloId, onFechar, children, dialogoRef, fixo = false }) {
   const interno = useRef(null)
   const ref = dialogoRef ?? interno
 
@@ -17,8 +18,11 @@ export function Dialogo({ tituloId, onFechar, children, dialogoRef }) {
       className="dialogo"
       aria-labelledby={tituloId}
       onClose={onFechar}
+      onCancel={(evento) => {
+        if (fixo) evento.preventDefault()
+      }}
       onClick={(evento) => {
-        if (evento.target === ref.current) ref.current.close()
+        if (!fixo && evento.target === ref.current) ref.current.close()
       }}
     >
       <div className="dialogo__conteudo">{children}</div>

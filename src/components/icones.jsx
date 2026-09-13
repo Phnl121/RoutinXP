@@ -101,6 +101,15 @@ export function IconePular() {
   )
 }
 
+// Escudo (Administração).
+export function IconeEscudo() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M8 1.75 2.75 3.75v4c0 3.1 2.2 5.3 5.25 6.5 3.05-1.2 5.25-3.4 5.25-6.5v-4L8 1.75Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 export function IconeFechar() {
   return (
     <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">

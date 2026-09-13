@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useDadosApp } from '../lib/dadosContexto'
+import { temFuncao, useConta } from '../lib/conta'
 import { calcularNivel } from '../lib/nivel'
 import { resumoFoco, resumoPainel } from '../lib/painel'
 import { GraficoFoco } from '../components/GraficoFoco'
@@ -15,6 +16,7 @@ const p = t.painel
 
 export default function Painel() {
   const d = useDadosApp()
+  const conta = useConta()
   const [periodo, setPeriodo] = useState(7)
 
   const resumo = useMemo(() => resumoPainel(d.tarefas, d.categorias, periodo), [d.tarefas, d.categorias, periodo])
@@ -89,6 +91,8 @@ export default function Painel() {
             )}
           </section>
 
+          {/* Minutos de foco só para quem tem a função Foco. */}
+          {temFuncao(conta, 'foco') && (
           <section className="panel painel__cartao" aria-labelledby="painel-foco">
             <header className="painel__cabeca">
               <div className="painel__titulos">
@@ -107,6 +111,7 @@ export default function Painel() {
               </>
             )}
           </section>
+          )}
         </div>
 
         <section className="panel painel__tempo" aria-labelledby="painel-tempo">

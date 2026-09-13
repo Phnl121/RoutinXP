@@ -7,6 +7,67 @@ export const emPrevia =
 
 export const sessaoPrevia = { user: { id: 'previa', email: 'ana.souza@exemplo.com' } }
 
+// Conta da pré-visualização: administradora com todas as funções (sem passar pela verificação).
+// Com `&funcoes=tarefas,foco` na URL, simula uma conta comum só com essas funções.
+const funcoesDaUrl = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('funcoes') : null
+export const contaPrevia = funcoesDaUrl
+  ? { papel: 'usuario', funcoes: funcoesDaUrl.split(','), senha_provisoria: false }
+  : {
+      papel: 'admin',
+      funcoes: ['tarefas', 'kanban', 'calendario', 'foco', 'painel', 'integracoes', 'financeiro'],
+      senha_provisoria: false,
+    }
+
+// Painel de administração na pré-visualização (mesma interface da Edge Function admin-usuarios).
+const instanteAdmin = (dias) => new Date(Date.now() - dias * 86400000).toISOString()
+let contasAdmin = [
+  { id: 'previa', email: 'ana.souza@exemplo.com', nome: 'Ana Souza', criado_em: instanteAdmin(4), ultimo_acesso: instanteAdmin(0), suspenso: false, autenticador: true, papel: 'admin', funcoes: [...contaPrevia.funcoes], senha_provisoria: false, eu: true },
+  { id: 'u-bruno', email: 'bruno.lima@exemplo.com', nome: 'Bruno Lima', criado_em: instanteAdmin(3), ultimo_acesso: instanteAdmin(1), suspenso: false, autenticador: true, papel: 'usuario', funcoes: ['tarefas', 'kanban', 'calendario', 'foco', 'painel'], senha_provisoria: false, eu: false },
+  { id: 'u-carla', email: 'carla.dias@exemplo.com', nome: 'Carla Dias', criado_em: instanteAdmin(1), ultimo_acesso: null, suspenso: false, autenticador: false, papel: 'usuario', funcoes: ['tarefas', 'foco'], senha_provisoria: true, eu: false },
+  { id: 'u-diego', email: 'diego.rocha@exemplo.com', nome: null, criado_em: instanteAdmin(2), ultimo_acesso: instanteAdmin(2), suspenso: true, autenticador: true, papel: 'usuario', funcoes: ['tarefas'], senha_provisoria: false, eu: false },
+]
+let registroAdmin = [
+  { id: 3, acao: 'suspender', alvo_email: 'diego.rocha@exemplo.com', detalhes: {}, created_at: instanteAdmin(0.5) },
+  { id: 2, acao: 'criar', alvo_email: 'carla.dias@exemplo.com', detalhes: { funcoes: ['tarefas', 'foco'] }, created_at: instanteAdmin(1) },
+  { id: 1, acao: 'funcoes', alvo_email: 'bruno.lima@exemplo.com', detalhes: {}, created_at: instanteAdmin(2) },
+]
+let seqAdmin = 10
+const registrarPrevia = (acao, alvo_email) => {
+  registroAdmin = [{ id: seqAdmin++, acao, alvo_email, detalhes: {}, created_at: new Date().toISOString() }, ...registroAdmin]
+}
+
+export async function previaAdmin(acao, dados) {
+  const alvo = contasAdmin.find((c) => c.id === dados.id)
+  const falha = (erro) => Promise.reject({ message: erro, codigoAdmin: erro })
+  if (acao === 'listar') return structuredClone({ usuarios: contasAdmin, registro: registroAdmin })
+  if (acao === 'criar') {
+    if (contasAdmin.some((c) => c.email === dados.email)) return falha('email_existe')
+    const nova = { id: `u-${seqAdmin++}`, email: dados.email, nome: dados.nome || null, criado_em: new Date().toISOString(), ultimo_acesso: null, suspenso: false, autenticador: false, papel: 'usuario', funcoes: dados.funcoes, senha_provisoria: true, eu: false }
+    contasAdmin = [...contasAdmin, nova]
+    registrarPrevia('criar', dados.email)
+    return { id: nova.id, email: nova.email, senha: 'Kp7mWq2xRt9vLb4n' }
+  }
+  if (!alvo) return falha('conta_nao_encontrada')
+  const trocar = (campos) => {
+    contasAdmin = contasAdmin.map((c) => (c.id === alvo.id ? { ...c, ...campos } : c))
+  }
+  if (acao === 'funcoes') {
+    trocar({ funcoes: dados.funcoes })
+    registrarPrevia('funcoes', alvo.email)
+    return { ok: true }
+  }
+  if (alvo.eu) return falha('propria_conta')
+  if (acao === 'suspender' || acao === 'reativar') trocar({ suspenso: acao === 'suspender' })
+  if (acao === 'nova_senha') trocar({ senha_provisoria: true })
+  if (acao === 'remover_autenticador') trocar({ autenticador: false })
+  if (acao === 'excluir') {
+    if (dados.confirmacao !== alvo.email) return falha('confirmacao')
+    contasAdmin = contasAdmin.filter((c) => c.id !== alvo.id)
+  }
+  registrarPrevia(acao, alvo.email)
+  return acao === 'nova_senha' ? { senha: 'Hs4nTe8yPq3wMz6c' } : { ok: true }
+}
+
 const hoje = new Date()
 const dia = (n) => {
   const d = new Date(hoje)

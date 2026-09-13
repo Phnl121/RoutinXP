@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 import { useDadosApp } from '../lib/dadosContexto'
+import { temFuncao, useConta } from '../lib/conta'
 import { ordenarConcluidas, ordenarPendentes } from '../lib/datas'
 import { useConcluirComVoo } from '../lib/useVooXp'
 import { FILTRO_VAZIO, contarFiltros, filtrarTarefas } from '../lib/filtros'
@@ -60,7 +61,11 @@ export default function Tarefas() {
   const location = useLocation()
   const [filtro, setFiltroTarefas] = useState(FILTRO_VAZIO)
   const [filtroAberto, setFiltroAberto] = useState(false)
-  const [visao, setVisao] = useState(lerVisao)
+  // Kanban e Calendário só aparecem com a função liberada; sem ela, a visão volta para a Lista.
+  const conta = useConta()
+  const liberadaVisao = (v) => v === 'lista' || temFuncao(conta, v === 'quadro' ? 'kanban' : 'calendario')
+  const [visaoEscolhida, setVisao] = useState(lerVisao)
+  const visao = liberadaVisao(visaoEscolhida) ? visaoEscolhida : 'lista'
   const [modoCal, setModoCal] = useState(lerModoCal)
   const [situacao, setSituacao] = useState('pendente')
 
@@ -239,12 +244,16 @@ export default function Tarefas() {
                   <button type="button" aria-pressed={visao === 'lista'} onClick={() => trocarVisao('lista')}>
                     {tt.visoes.lista}
                   </button>
-                  <button type="button" aria-pressed={visao === 'quadro'} onClick={() => trocarVisao('quadro')}>
-                    {tt.visoes.quadro}
-                  </button>
-                  <button type="button" aria-pressed={visao === 'calendario'} onClick={() => trocarVisao('calendario')}>
-                    {tt.visoes.calendario}
-                  </button>
+                  {liberadaVisao('quadro') && (
+                    <button type="button" aria-pressed={visao === 'quadro'} onClick={() => trocarVisao('quadro')}>
+                      {tt.visoes.quadro}
+                    </button>
+                  )}
+                  {liberadaVisao('calendario') && (
+                    <button type="button" aria-pressed={visao === 'calendario'} onClick={() => trocarVisao('calendario')}>
+                      {tt.visoes.calendario}
+                    </button>
+                  )}
                 </div>
                 {visao === 'calendario' && (
                   <div className="segmentos cal-modos" role="group" aria-label={tt.calendario.modos.rotulo}>

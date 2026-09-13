@@ -21,18 +21,26 @@ function mensagemDoGanho(xp, motivo) {
   return null
 }
 
-const buscarTudo = () =>
-  Promise.all([
-    api.listarCategorias(),
-    api.listarTarefas(),
+// Só busca o que as funções liberadas usam: sem a função, o banco nem responde aqueles dados
+// (e o Kanban, por exemplo, tentaria criar as colunas padrão).
+const nada = () => Promise.resolve([])
+const buscarTudo = (funcoes) => {
+  const tem = (...lista) => lista.some((f) => funcoes.includes(f))
+  const comTarefas = tem('tarefas', 'kanban', 'calendario', 'foco', 'painel')
+  return Promise.all([
+    comTarefas ? api.listarCategorias() : nada(),
+    comTarefas ? api.listarTarefas() : nada(),
     api.lerEstatisticas(),
     api.lerPerfil(),
-    api.listarTags(),
-    api.listarFontes(),
-    api.listarColunas(),
+    comTarefas ? api.listarTags() : nada(),
+    tem('integracoes') ? api.listarFontes() : nada(),
+    tem('kanban') ? api.listarColunas() : nada(),
     // Os minutos de foco são extras: se falharem, o resto do app carrega mesmo assim.
-    api.listarFocos().catch(() => []),
+    tem('foco', 'painel') ? api.listarFocos().catch(() => []) : nada(),
   ])
+}
+
+const TODAS = ['tarefas', 'kanban', 'calendario', 'foco', 'painel', 'integracoes']
 
 // Blocos de foco que não chegaram ao banco (sem internet): ficam guardados e vão depois.
 const chavePendentes = (userId) => `routinxp:focos-pendentes:${userId}`
@@ -53,7 +61,10 @@ function gravarPendentes(userId, lista) {
 }
 
 // Estado de categorias, tarefas, estatísticas e perfil do usuário, com atualizações otimistas.
-export function useDados(userId) {
+export function useDados(userId, funcoes = TODAS) {
+  // Chave estável: a lista chega nova a cada render, mas só muda quando as funções mudam.
+  const chaveFuncoes = funcoes.join(',')
+  const buscar = useCallback(() => buscarTudo(chaveFuncoes.split(',')), [chaveFuncoes])
   const [perfil, setPerfil] = useState(null)
   const [categorias, setCategorias] = useState([])
   const [tags, setTags] = useState([])
@@ -85,22 +96,22 @@ export function useDados(userId) {
   // "Tentar de novo": volta ao estado de carregamento e busca outra vez.
   const carregar = useCallback(() => {
     setEstado('carregando')
-    buscarTudo().then(aplicar, falhouCarregar)
-  }, [aplicar, falhouCarregar])
+    buscar().then(aplicar, falhouCarregar)
+  }, [buscar, aplicar, falhouCarregar])
 
   // Busca de novo sem voltar ao estado "carregando" (depois de uma sincronização, por exemplo).
-  const recarregar = useCallback(() => buscarTudo().then(aplicar, () => {}), [aplicar])
+  const recarregar = useCallback(() => buscar().then(aplicar, () => {}), [buscar, aplicar])
 
   useEffect(() => {
     let ativo = true
-    buscarTudo().then(
+    buscar().then(
       (dados) => ativo && aplicar(dados),
       () => ativo && falhouCarregar(),
     )
     return () => {
       ativo = false
     }
-  }, [aplicar, falhouCarregar])
+  }, [buscar, aplicar, falhouCarregar])
 
   // Se a tela fechar com uma exclusão pendente, ela é enviada na hora.
   useEffect(

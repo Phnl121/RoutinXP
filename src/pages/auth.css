@@ -124,6 +124,7 @@
 
 /* Cartão da tela de nova senha: não usa .entrar__form, que depende da grade do login. */
 .auth-simples__painel {
+  min-width: 0;
   padding: 2rem;
 }
 
@@ -160,4 +161,71 @@
   .entrar__form {
     padding: 1.5rem;
   }
+}
+
+/* ---------- Verificação em duas etapas ---------- */
+
+.verificacao__passos {
+  display: grid;
+  gap: 0.9rem;
+  margin: 0 0 1.5rem;
+  padding-left: 1.25rem;
+  line-height: 1.5;
+}
+
+.verificacao__passos li::marker {
+  font-weight: 800;
+  color: var(--muted);
+}
+
+/* QR code sobre fundo claro (o leitor do app precisa do contraste) e a chave ao lado. */
+.verificacao__qr {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.verificacao__qr img {
+  flex: none;
+  width: 9rem;
+  height: 9rem;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--qr-fundo);
+}
+
+.verificacao__chave {
+  flex: 1 1 12rem;
+  display: grid;
+  gap: 0.35rem;
+  justify-items: start;
+  min-width: 0;
+}
+
+.verificacao__chave code {
+  max-width: 100%;
+  font-family: var(--font);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  word-spacing: 0.2em;
+}
+
+.verificacao__grupo {
+  white-space: nowrap;
+}
+
+.verificacao__codigo {
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.verificacao__perdeu {
+  margin-top: 1.25rem;
+  text-align: center;
 }

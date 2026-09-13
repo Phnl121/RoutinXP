@@ -89,6 +89,8 @@ export default function Perfil() {
           <dt className="hint">{p.email}</dt>
           <dd>{session.user.email}</dd>
         </dl>
+        {/* A casca só abre depois do código do autenticador: aqui a verificação sempre está ativa. */}
+        <p className="hint">{t.verificacao.ativa}</p>
         <button type="button" className="link-btn" onClick={() => supabase.auth.signOut()}>
           {p.sair}
         </button>
