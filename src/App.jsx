@@ -8,6 +8,7 @@ import Perfil from './pages/Perfil'
 import Painel from './pages/Painel'
 import Integracoes from './pages/Integracoes'
 import Categorias from './pages/Categorias'
+import Financeiro from './pages/Financeiro'
 import Admin from './pages/Admin'
 import AdminConta from './pages/AdminConta'
 import { t } from './i18n/pt-BR'
@@ -54,6 +55,7 @@ export default function App() {
               continuarem ao trocar de página; a rota só a mostra. */}
           <Route path="/foco" element={null} />
           <Route path="/painel" element={<Painel />} />
+          <Route path="/financeiro" element={<Financeiro />} />
           <Route path="/categorias" element={<Categorias />} />
           <Route path="/integracoes" element={<Integracoes />} />
           <Route path="/admin" element={<Admin />} />

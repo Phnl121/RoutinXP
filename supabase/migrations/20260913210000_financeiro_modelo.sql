@@ -15,8 +15,10 @@ create table public.fin_contas (
   nome                   text not null check (char_length(trim(nome)) between 1 and 60),
   tipo                   text not null check (tipo in ('corrente', 'poupanca', 'cartao', 'dinheiro')),
   cor                    text check (cor is null or cor ~ '^#[0-9A-Fa-f]{6}$'),
-  -- Saldo no dia em que a conta foi cadastrada. No cartão, a fatura em aberto (negativa).
+  -- Saldo a partir do dia saldo_inicial_em. No cartão, a fatura em aberto (negativa).
   saldo_inicial_centavos bigint not null default 0 check (abs(saldo_inicial_centavos) <= 100000000000),
+  -- Lançamentos com data anterior (um mês passado registrado depois) não mexem no saldo.
+  saldo_inicial_em       date not null default (now() at time zone 'America/Sao_Paulo')::date,
   -- Só cartão: dia em que a fatura fecha e dia em que vence.
   dia_fechamento         smallint check (dia_fechamento between 1 and 31),
   dia_vencimento         smallint check (dia_vencimento between 1 and 31),
@@ -70,8 +72,10 @@ create table public.fin_transacoes (
   origem           text not null default 'manual' check (origem in ('manual', 'banco')),
   created_at       timestamptz not null default now(),
   updated_at       timestamptz not null default now(),
-  foreign key (conta_id, user_id) references public.fin_contas (id, user_id) on delete restrict,
-  foreign key (conta_destino_id, user_id) references public.fin_contas (id, user_id) on delete restrict,
+  -- NO ACTION (e não RESTRICT): a conferência fica para o fim do comando, então excluir o
+  -- usuário inteiro (cascata) funciona; excluir só a conta com lançamentos continua recusado.
+  foreign key (conta_id, user_id) references public.fin_contas (id, user_id) on delete no action,
+  foreign key (conta_destino_id, user_id) references public.fin_contas (id, user_id) on delete no action,
   -- Excluir a categoria deixa as transações "a revisar", sem apagar nada.
   foreign key (categoria_id, user_id) references public.fin_categorias (id, user_id) on delete set null (categoria_id),
   check ((tipo = 'transferencia') = (conta_destino_id is not null)),
@@ -165,3 +169,73 @@ create trigger fin_categorias_limite before insert on public.fin_categorias
   for each row execute function public.limitar_linhas_por_usuario('200');
 create trigger fin_transacoes_limite before insert on public.fin_transacoes
   for each row execute function public.limitar_linhas_por_usuario('100000');
+
+-- ---------------------------------------------------------------------------
+-- Funções chamadas pelo app (rodam com as permissões de quem chama: RLS vale)
+-- ---------------------------------------------------------------------------
+
+-- Primeira visita ao Financeiro: cria o conjunto inicial de categorias (editável depois).
+-- Não faz nada se a conta já tiver alguma categoria financeira.
+create function public.fin_preparar()
+returns void
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+begin
+  if not public.tem_funcao('financeiro') then
+    raise exception 'sem_acesso' using errcode = '42501';
+  end if;
+  if exists (select 1 from public.fin_categorias where user_id = auth.uid()) then
+    return;
+  end if;
+  insert into public.fin_categorias (nome, cor, tipo, grupo, posicao) values
+    ('Moradia',      '#6c9be8', 'despesa', 'fixa',       0),
+    ('Alimentação',  '#e0a050', 'despesa', 'variavel',   1),
+    ('Transporte',   '#5fc4c0', 'despesa', 'variavel',   2),
+    ('Saúde',        '#e27d8f', 'despesa', 'variavel',   3),
+    ('Educação',     '#b39ddb', 'despesa', 'fixa',       4),
+    ('Lazer',        '#d98a6a', 'despesa', 'variavel',   5),
+    ('Compras',      '#c9b37e', 'despesa', 'variavel',   6),
+    ('Assinaturas',  '#8f9bb3', 'despesa', 'assinatura', 7),
+    ('Outros',       '#8f9bb3', 'despesa', 'variavel',   8),
+    ('Salário',      '#6c9be8', 'receita', null,         0),
+    ('Freelance',    '#5fc4c0', 'receita', null,         1),
+    ('Outros',       '#8f9bb3', 'receita', null,         2)
+  -- Duas abas (ou a primeira carga repetida) ao mesmo tempo: a segunda não falha.
+  on conflict do nothing;
+end;
+$$;
+
+revoke execute on function public.fin_preparar() from public, anon;
+grant execute on function public.fin_preparar() to authenticated;
+
+-- Saldo de cada conta até hoje (Brasília): saldo inicial + entradas − saídas, com as
+-- transferências saindo de uma conta e entrando na outra. Contam os lançamentos de
+-- saldo_inicial_em até hoje: os de antes já estavam no saldo inicial, os futuros ainda não.
+create function public.fin_saldos()
+returns table (conta_id uuid, saldo_centavos bigint)
+language sql
+stable
+security invoker
+set search_path = ''
+as $$
+  with hoje as (select (now() at time zone 'America/Sao_Paulo')::date as dia)
+  select c.id,
+         c.saldo_inicial_centavos
+         + coalesce((
+             select sum(case when t.tipo = 'entrada' then t.valor_centavos else -t.valor_centavos end)
+               from public.fin_transacoes t, hoje
+              where t.conta_id = c.id and t.data between c.saldo_inicial_em and hoje.dia
+           ), 0)
+         + coalesce((
+             select sum(t.valor_centavos)
+               from public.fin_transacoes t, hoje
+              where t.conta_destino_id = c.id and t.data between c.saldo_inicial_em and hoje.dia
+           ), 0)
+    from public.fin_contas c
+   where c.user_id = auth.uid();
+$$;
+
+revoke execute on function public.fin_saldos() from public, anon;
+grant execute on function public.fin_saldos() to authenticated;

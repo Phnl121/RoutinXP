@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { NavLink } from 'react-router'
 import { Logo } from './Logo'
-import { IconeBaixar, IconeCalendario, IconeEscudo, IconeEtiqueta, IconeFechar, IconeFoco, IconeGrafico, IconeLista, IconeMenuLateral, IconePessoa } from './icones'
+import { IconeBaixar, IconeCalendario, IconeCarteira, IconeEscudo, IconeEtiqueta, IconeFechar, IconeFoco, IconeGrafico, IconeLista, IconeMenuLateral, IconePessoa } from './icones'
 import { calcularNivel } from '../lib/nivel'
 import { rotaPermitida, useConta } from '../lib/conta'
 import { iniciaisDoPerfil } from '../lib/datas'
@@ -10,7 +10,6 @@ import { t } from '../i18n/pt-BR'
 
 const m = t.menu
 // Páginas em seções: o dia a dia no alto, o que se configura de vez em quando embaixo.
-// O Financeiro entra como seção própria entre Rotina e Organização.
 const SECOES = [
   {
     id: 'rotina',
@@ -20,6 +19,11 @@ const SECOES = [
       { para: '/foco', rotulo: m.foco, Icone: IconeFoco },
       { para: '/painel', rotulo: m.painel, Icone: IconeGrafico },
     ],
+  },
+  {
+    id: 'financas',
+    titulo: m.secoes.financas,
+    itens: [{ para: '/financeiro', rotulo: m.financeiro, Icone: IconeCarteira }],
   },
   {
     id: 'organizacao',

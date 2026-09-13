@@ -22,6 +22,7 @@ const ROTAS = [
   { para: '/', funcao: 'tarefas' },
   { para: '/foco', funcao: 'foco' },
   { para: '/painel', funcao: 'painel' },
+  { para: '/financeiro', funcao: 'financeiro' },
   { para: '/categorias', funcao: 'tarefas' },
   { para: '/integracoes', funcao: 'integracoes' },
   { para: '/admin', admin: true },

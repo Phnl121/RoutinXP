@@ -223,8 +223,9 @@ export default function Shell({ session }) {
           {focoMontado && temFuncao(conta, 'foco') && <Foco visivel={noFoco} userId={session.user.id} />}
           {dlgIos && <DialogoInstalarIos onFechar={() => setDlgIos(false)} />}
           {/* No celular a barra não tem "Nova tarefa": o botão flutuante faz esse papel em
-              todas as páginas (a de Tarefas tem o próprio, que abre o formulário ali mesmo). */}
-          {comTarefas && location.pathname !== '/' && (
+              todas as páginas (a de Tarefas tem o próprio, que abre o formulário ali mesmo; a do
+              Financeiro tem o de novo lançamento). */}
+          {comTarefas && location.pathname !== '/' && location.pathname !== '/financeiro' && (
             <button type="button" className="fab" onClick={novaTarefa} aria-label={t.topo.novaTarefa}>
               <IconeMais />
             </button>

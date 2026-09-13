@@ -1,0 +1,596 @@
+/* Financeiro: o mês numa página só (placar, lançamentos por dia, contas e cartões). */
+
+.fin {
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+  width: min(100%, 90rem);
+  margin-inline: auto;
+  padding: clamp(1.25rem, 3vw, 2rem) clamp(1rem, 3vw, 2rem) 6rem;
+  /* A grade responde ao espaço do conteúdo (menu aberto, recolhido ou gaveta). */
+  container-type: inline-size;
+}
+
+.fin__erro {
+  display: grid;
+  gap: 0.75rem;
+  justify-items: start;
+}
+
+/* ---------- Cabeçalho: título, mês e ações ---------- */
+
+.fin__cabeca {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-areas: 'titulo mes acoes';
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
+.fin__cabeca .main__titulo {
+  grid-area: titulo;
+}
+
+.fin__mes {
+  grid-area: mes;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.fin__mes-nome {
+  min-width: 11.5rem;
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 800;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.fin__seta {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    background-color 0.2s var(--ease-out),
+    color 0.2s var(--ease-out);
+}
+
+.fin__seta:hover {
+  background: var(--panel-2);
+  color: var(--ink);
+}
+
+.fin__seta svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.fin__acoes {
+  grid-area: acoes;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* ---------- Primeira conta ---------- */
+
+.fin-comecar {
+  display: grid;
+  gap: 0.75rem;
+  justify-items: start;
+  max-width: 36rem;
+  padding: 1.75rem;
+}
+
+.fin-comecar__titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.fin-comecar__texto {
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+}
+
+/* ---------- Placar do mês ---------- */
+
+.fin-placar {
+  padding: 0;
+}
+
+.fin-placar__itens {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+}
+
+.fin-placar__itens > div {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1.1rem 1.5rem;
+}
+
+.fin-placar__itens > div + div {
+  border-left: 1px solid var(--rule);
+}
+
+.fin-placar__valor {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.fin-placar__nada {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* ---------- Grade: lançamentos e coluna lateral ---------- */
+
+.fin__grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.fin__lado {
+  display: grid;
+  gap: 1.25rem;
+}
+
+/* ---------- Filtros ---------- */
+
+.fin-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.fin-busca {
+  position: relative;
+  flex: 1 1 13rem;
+}
+
+.fin-busca svg {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  width: 1rem;
+  height: 1rem;
+  color: var(--muted);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.fin-busca .input {
+  padding-left: 2.5rem;
+}
+
+.fin-filtros__select {
+  flex: 1 1 12rem;
+}
+
+.fin-filtros__resumo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  margin: 0.25rem 0.125rem 0;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+/* Seletor segmentado em fluxo (tipo de lançamento, grupo da categoria). */
+.fin-segmentos {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-self: start;
+  padding: 3px;
+  background: var(--ground);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+}
+
+.fin-segmentos button {
+  min-height: 2.25rem;
+  padding: 0 0.95rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    background-color 0.2s var(--ease-out),
+    color 0.2s var(--ease-out);
+}
+
+.fin-segmentos button:hover {
+  color: var(--ink);
+}
+
+.fin-segmentos button[aria-pressed='true'] {
+  background: var(--panel-2);
+  color: var(--ink);
+}
+
+/* ---------- Lançamentos por dia ---------- */
+
+.fin-lanc {
+  display: grid;
+  gap: 0.25rem;
+  align-content: start;
+  min-width: 0;
+}
+
+.fin-dia {
+  display: grid;
+}
+
+.fin-dia__cabeca {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1rem 0.75rem 0.45rem;
+  font-size: inherit;
+}
+
+.fin-dia__total {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.fin-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  overflow: hidden;
+}
+
+.fin-lista li + li {
+  border-top: 1px solid var(--rule);
+}
+
+.fin-linha {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  min-height: 3.5rem;
+  padding: 0.55rem 1rem;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease-out);
+}
+
+.fin-linha:hover {
+  background: var(--panel-2);
+}
+
+.fin-linha:focus-visible {
+  outline-offset: -2px;
+}
+
+.fin-linha__ponto {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background: var(--c);
+}
+
+/* Transferência e lançamento sem categoria: anel vazado, sem cor. */
+.fin-linha__ponto[data-vazio='true'] {
+  background: none;
+  box-shadow: inset 0 0 0 2px var(--check-ring);
+}
+
+.fin-linha__texto {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.fin-linha__descricao {
+  overflow: hidden;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.fin-linha__detalhe {
+  overflow: hidden;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* "A revisar" é um pedido de atenção leve: texto em Ink, sem cor de alarme. */
+.fin-linha__detalhe[data-revisar='true'] {
+  color: var(--ink);
+}
+
+.fin-linha__valor {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Transferência não é gasto nem receita: o valor fica em segundo plano. */
+.fin-linha[data-tipo='transferencia'] .fin-linha__valor {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.fin-vazio {
+  display: grid;
+  justify-items: start;
+  gap: 0.25rem;
+  margin-top: 0.75rem;
+  padding: 1rem 1.1rem 0.5rem;
+  border: 1px dashed var(--rule-strong);
+  border-radius: var(--radius-sm);
+}
+
+.fin-vazio p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.fin-vazio .acao-nova {
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* ---------- Contas e cartões ---------- */
+
+.fin-contas {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.5rem;
+}
+
+.fin-contas__lista {
+  margin: 0 -0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.fin-conta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.45rem 0.75rem;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font: inherit;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease-out);
+}
+
+.fin-conta:hover {
+  background: var(--panel-2);
+}
+
+.fin-conta__quem {
+  display: grid;
+  gap: 0.05rem;
+  min-width: 0;
+}
+
+.fin-conta__nome {
+  overflow: hidden;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.fin-conta__saldo {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.fin-contas__total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--rule);
+}
+
+.fin-contas__valor {
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.fin-contas__pe {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.fin-contas__pe .acao-nova {
+  width: auto;
+  margin: 0 0 0 -0.85rem;
+  border: 0;
+}
+
+/* ---------- Janelas ---------- */
+
+/* Valor digitado como numa maquininha: grande e tabular. */
+.fin-valor {
+  font-size: 1.125rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.fin-marcar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.75rem;
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+.fin-cats {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.fin-cats__grupo {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.fin-cats__grupo .tags-lista__nova {
+  margin-top: 0;
+}
+
+/* Celular estreito: os dois seletores do filtro, um por linha. */
+@container (max-width: 30rem) {
+  .fin-filtros__select {
+    flex-basis: 100%;
+  }
+}
+
+/* O botão flutuante só aparece no celular: no computador o cabeçalho já tem "Lançamento". */
+.fin__fab {
+  display: none;
+}
+
+/* ---------- Espaço estreito ---------- */
+
+@container (max-width: 58rem) {
+  .fin__grade {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Contas antes dos lançamentos: o saldo é a primeira pergunta. */
+  .fin__lado {
+    order: -1;
+  }
+}
+
+/* Sem espaço para as três partes numa linha: o mês desce e ocupa a largura. */
+@container (max-width: 66rem) {
+  .fin__cabeca {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'titulo acoes'
+      'mes mes';
+  }
+
+  .fin__mes {
+    justify-self: start;
+    margin-left: -0.6rem;
+  }
+}
+
+@container (max-width: 44rem) {
+  .fin__mes {
+    justify-self: stretch;
+    justify-content: space-between;
+    margin-left: 0;
+  }
+
+  .fin-placar__itens {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .fin-placar__itens > div:nth-child(3) {
+    border-left: 0;
+  }
+
+  .fin-placar__itens > div:nth-child(n + 3) {
+    border-top: 1px solid var(--rule);
+  }
+
+  .fin-placar__itens > div {
+    padding: 0.9rem 1.1rem;
+  }
+
+  .fin-placar__valor {
+    font-size: 1.25rem;
+  }
+
+  .fin-filtros__select {
+    flex: 1 1 9rem;
+  }
+
+  /* Tipo de lançamento numa linha só, dividindo a largura. */
+  .fin-filtros .fin-segmentos {
+    flex: 1 1 100%;
+    flex-wrap: nowrap;
+  }
+
+  .fin-filtros .fin-segmentos button {
+    flex: 1 1 auto;
+    padding: 0 0.5rem;
+  }
+}
+
+@media (max-width: 59.99rem) {
+  .fin__novo {
+    display: none;
+  }
+
+  .fin__fab {
+    display: grid;
+  }
+
+  .fin__seta {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .fin-segmentos button {
+    min-height: 2.75rem;
+  }
+
+  .fin-contas {
+    padding: 1.25rem;
+  }
+}
