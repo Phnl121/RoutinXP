@@ -209,10 +209,12 @@ async function sincronizar(userId: string, itens: string[]) {
   try {
     if (importadas.length) {
       await gravarLancamentos(userId, importadas, contasLidas, resumo)
+      // (as regras rodam também quando só houve atualização)
       // Fase 5: regras e pista do banco categorizam o que chegou (a escolha manual não muda).
+      // Falha nas regras não desfaz a leitura: fica registrada e o saldo ainda é ajustado.
       const { data: categorizados, error: erroRegras } = await admin.rpc('fin_aplicar_regras', { p_user: userId })
-      if (erroRegras) throw erroRegras
-      resumo.categorizados = Number(categorizados ?? 0)
+      if (erroRegras) resumo.erros.push('regras')
+      else resumo.categorizados = Number(categorizados ?? 0)
     }
     await ajustarSaldos(userId, contasLidas)
   } catch (erro) {
@@ -249,7 +251,7 @@ async function gravarLancamentos(
   for (const x of importadas) {
     const atual = conhecidos.get(x.externo)
     if (!atual) continue
-    const campos: Record<string, unknown> = { valor_centavos: x.valor, data: x.data, pendente: x.pendente }
+    const campos: Record<string, unknown> = { valor_centavos: x.valor, data: x.data, pendente: x.pendente, categoria_banco: x.categoriaBanco }
     await admin.from('fin_transacoes').update(campos).eq('id', atual.id)
     resumo.atualizados++
   }

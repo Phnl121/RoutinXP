@@ -154,7 +154,7 @@ export function RegrasDialog({ regras, categorias, sugestao, onSalvar, onExcluir
                     {regra.origem === 'sugerida' ? ` · ${g.sugerida}` : ''}
                   </span>
                 </span>
-                <button type="button" className="link-btn" onClick={() => onExcluir(regra.id)} aria-label={g.excluirRotulo(regra.termo)}>
+                <button type="button" className="link-btn" onClick={() => onExcluir(regra.id).catch((e) => setErro(mensagemErroDados(e)))} aria-label={g.excluirRotulo(regra.termo)}>
                   {g.excluir}
                 </button>
               </li>

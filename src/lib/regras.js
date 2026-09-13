@@ -14,13 +14,15 @@ export const combina = (descricao, termo) => ` ${normalizar(descricao)} `.includ
 // Palavras que aparecem em qualquer extrato e não dizem onde foi o gasto.
 const RUIDO = new Set([
   'pag', 'pagto', 'pagamento', 'compra', 'compras', 'pix', 'ted', 'doc', 'debito', 'credito', 'cartao', 'transferencia',
-  'enviada', 'recebida', 'pedido', 'parcela', 'loja', 'app', 'br', 'sa', 'ltda', 'me', 'eireli', 'com', 'www', 'http', 'https', 'de', 'da', 'do', 'em', 'no', 'na',
+  'enviada', 'recebida', 'enviado', 'recebido', 'pedido', 'parcela', 'loja', 'app', 'br', 'sa', 'ltda', 'me', 'eireli', 'com', 'www', 'http', 'https', 'de', 'da', 'do', 'em', 'no', 'na',
 ])
 
-// Sugestão de termo a partir da descrição do banco: "UBER *TRIP HELP.UBER.COM" → "uber trip".
+// Sugestão de termo a partir da descrição do banco: a primeira palavra que diz algo
+// ("UBER *TRIP HELP.UBER.COM" → "uber"; "PAG*POSTO SHELL" → "posto").
 export function termoSugerido(descricao) {
-  const palavras = normalizar(descricao)
-    .split(' ')
-    .filter((p) => p.length >= 2 && !/^\d+$/.test(p) && !RUIDO.has(p))
-  return palavras.slice(0, 2).join(' ')
+  return (
+    normalizar(descricao)
+      .split(' ')
+      .find((p) => p.length >= 3 && !/^\d+$/.test(p) && !RUIDO.has(p)) ?? ''
+  )
 }

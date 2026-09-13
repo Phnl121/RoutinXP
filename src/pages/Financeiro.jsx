@@ -18,7 +18,7 @@ import {
 import { DrePessoal, EvolucaoMeses, GastosPorCategoria } from '../components/FinanceiroResumo'
 import { BancosConectados } from '../components/FinanceiroBancos'
 import { RegrasDialog } from '../components/FinanceiroRegras'
-import { termoSugerido } from '../lib/regras'
+import { combina, termoSugerido } from '../lib/regras'
 import { ehAdmin, useConta } from '../lib/conta'
 import { Link } from 'react-router'
 import { cobrancasEntre, custoMensal, somarDias } from '../lib/gastosFixos'
@@ -92,6 +92,7 @@ export default function Financeiro() {
     [d],
   )
   const fecharAviso = useCallback(() => setAviso(null), [])
+  const regrasAtuais = d.regras
   // A sugestão de regra some sozinha depois de alguns segundos.
   useEffect(() => {
     if (!aviso?.chave?.startsWith('regra-')) return undefined
@@ -103,6 +104,8 @@ export default function Financeiro() {
   const sugerirRegra = useCallback((transacao, categoriaId) => {
     const termo = termoSugerido(transacao.descricao)
     if (!termo || !categoriaId) return
+    // Já existe regra que pega esta descrição: não sugere outra.
+    if (regrasAtuais.some((regra) => combina(transacao.descricao, regra.termo))) return
     setAviso({
       tipo: 'desfazer',
       chave: `regra-${transacao.id}-${categoriaId}`,
@@ -113,7 +116,7 @@ export default function Financeiro() {
         setDlg({ tipo: 'regras', sugestao: { termo, categoria_id: categoriaId, tipo: transacao.tipo } })
       },
     })
-  }, [])
+  }, [regrasAtuais])
 
   const limparFiltros = () => {
     setBusca('')
@@ -529,7 +532,10 @@ export default function Financeiro() {
           onFechar={() => setDlg(null)}
         />
       )}
-      <Toast aviso={aviso} onFechar={fecharAviso} />
+      {/* Na fila "A revisar", o aviso vai para o canto e não cobre o seletor da próxima linha. */}
+      <div className="fin-toast" data-fila={categoriaId === 'revisar'}>
+        <Toast aviso={aviso} onFechar={fecharAviso} />
+      </div>
     </>
   )
 }

@@ -1590,3 +1590,11 @@ button.fin-dre__botao:hover {
 .gf-grupo__titulo[data-tipo='outro']::before {
   background: #8f9bb3;
 }
+
+@media (min-width: 60rem) {
+  .fin-toast[data-fila='true'] .toast-area {
+    left: auto;
+    right: 2rem;
+    transform: none;
+  }
+}

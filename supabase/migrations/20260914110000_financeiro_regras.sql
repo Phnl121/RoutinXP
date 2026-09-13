@@ -69,6 +69,29 @@ as $$
   );
 $$;
 
+-- Normalizados uma vez só (colunas geradas): aplicar as regras não refaz a expressão regular
+-- em cada par regra × lançamento. Com espaço nas pontas, para comparar palavras inteiras.
+alter table public.fin_transacoes
+  add column descricao_normalizada text generated always as (' ' || trim(public.fin_normalizar(descricao)) || ' ') stored;
+alter table public.fin_regras
+  add column termo_normalizado text generated always as (' ' || trim(public.fin_normalizar(termo)) || ' ') stored;
+
+-- Preferências do Financeiro por pessoa (o dicionário inicial é criado uma vez só).
+create table public.fin_preferencias (
+  user_id            uuid primary key default auth.uid() references auth.users (id) on delete cascade,
+  regras_preparadas  boolean not null default false,
+  updated_at         timestamptz not null default now()
+);
+
+alter table public.fin_preferencias enable row level security;
+
+create policy "fin_preferencias: own" on public.fin_preferencias for all to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy "fin_preferencias: funcao" on public.fin_preferencias as restrictive for all to authenticated
+  using ((select public.tem_funcao('financeiro'))) with check ((select public.tem_funcao('financeiro')));
+
+revoke all on public.fin_preferencias from anon;
+
 -- ---------------------------------------------------------------------------
 -- Aplicar as regras
 -- ---------------------------------------------------------------------------
@@ -104,9 +127,9 @@ begin
                 and (r.conta_id is null or r.conta_id = t.conta_id)
                 and c.tipo = case t.tipo when 'entrada' then 'receita' else 'despesa' end
                 and not c.arquivada
-                -- Palavras inteiras: "tim" não pega "ultimo"; "mercado livre" vence "mercado" pelo tamanho.
-                and (' ' || trim(public.fin_normalizar(t.descricao)) || ' ') like ('% ' || trim(public.fin_normalizar(r.termo)) || ' %')
-              order by r.prioridade desc, char_length(r.termo) desc
+                -- Palavras inteiras: "tim" não pega "ultimo"; "uber eats" vence "uber" pelo tamanho.
+                and t.descricao_normalizada like ('%' || r.termo_normalizado || '%')
+              order by r.prioridade desc, char_length(r.termo_normalizado) desc
               limit 1
            ) as categoria_id
       from public.fin_transacoes t
@@ -122,27 +145,46 @@ begin
      and (t.categoria_id is distinct from alvo.categoria_id or t.categoria_origem is distinct from 'regra');
   get diagnostics v_regras = row_count;
 
+  -- Regra excluída ou editada: o que ela tinha categorizado e nenhuma regra pega mais volta
+  -- para "a revisar" (a pista do banco, logo abaixo, ainda pode categorizar).
+  update public.fin_transacoes t
+     set categoria_id = null, categoria_origem = null
+   where t.user_id = v_user
+     and t.categoria_origem = 'regra'
+     and not exists (
+       select 1
+         from public.fin_regras r
+         join public.fin_categorias c on c.id = r.categoria_id
+        where r.user_id = v_user
+          and r.categoria_id = t.categoria_id
+          and (r.tipo is null or r.tipo = t.tipo)
+          and (r.conta_id is null or r.conta_id = t.conta_id)
+          and not c.arquivada
+          and t.descricao_normalizada like ('%' || r.termo_normalizado || '%')
+     );
+
   -- Pista do banco: palavras da categoria da Pluggy apontam para o nome de uma categoria.
   with pista as (
     select t.id,
            case
-             when t.tipo = 'entrada' and b ~ '(salary|payroll|wage)' then 'salario'
+             -- \m e \M: palavra inteira ("rent" não pega "rental" nem "current").
+             when t.tipo = 'entrada' and b ~ '\m(salary|payroll|wages?)\M' then 'salario'
              when t.tipo = 'entrada' then null
-             when b ~ '(streaming|subscription|digital service|software)' then 'assinaturas'
-             when b ~ '(food|grocer|supermarket|eating|restaurant|bakery|delivery)' then 'alimentacao'
-             when b ~ '(transport|taxi|ride|gas station|fuel|parking|toll|mobility|bus|metro)' then 'transporte'
-             when b ~ '(health|pharmac|drugstore|medical|dent|hospital|clinic|insurance)' then 'saude'
-             when b ~ '(education|school|university|course|book)' then 'educacao'
-             when b ~ '(rent|housing|utilit|electric|water|internet|telecom|phone|condo)' then 'moradia'
-             when b ~ '(leisure|entertainment|travel|hotel|airline|sport|gym|bar|culture)' then 'lazer'
-             when b ~ '(shopping|clothing|electronic|store|retail|marketplace|online)' then 'compras'
+             when b ~ '\m(streaming|subscriptions?|digital services?|software)\M' then 'assinaturas'
+             when b ~ '\m(food|groceries|grocery|supermarkets?|eating out|restaurants?|bakery|food delivery)\M' then 'alimentacao'
+             when b ~ '\m(transportation|transport|taxi|ride hailing|gas stations?|fuel|parking|tolls?|public transportation)\M' then 'transporte'
+             when b ~ '\m(health|healthcare|pharmacy|pharmacies|drugstore|medical|dentist|dental|hospital|clinics?|health insurance)\M' then 'saude'
+             when b ~ '\m(education|schools?|university|courses?|books?|bookstore)\M' then 'educacao'
+             when b ~ '\m(rent|housing|utilities|electricity|water|internet|telecommunications|telecom|mobile phone|condominium)\M' then 'moradia'
+             when b ~ '\m(leisure|entertainment|travel|hotels?|airlines?|sports?|gyms?|bars?|culture)\M' then 'lazer'
+             when b ~ '\m(shopping|clothing|electronics|department stores?|retail|marketplace|online shopping)\M' then 'compras'
            end as nome
       from (
         select t.id, t.tipo, lower(coalesce(t.categoria_banco, '')) as b
           from public.fin_transacoes t
          where t.user_id = v_user
            and t.tipo <> 'transferencia'
-           and t.categoria_id is null
+           and (t.categoria_id is null or t.categoria_origem = 'banco')
            and t.categoria_banco is not null
       ) t
   )
@@ -182,7 +224,8 @@ begin
   if not public.tem_funcao('financeiro') then
     raise exception 'sem_acesso' using errcode = '42501';
   end if;
-  if exists (select 1 from public.fin_regras where user_id = auth.uid()) then
+  if exists (select 1 from public.fin_preferencias where user_id = auth.uid() and regras_preparadas)
+     or exists (select 1 from public.fin_regras where user_id = auth.uid()) then
     return 0;
   end if;
 
@@ -191,13 +234,13 @@ begin
     from (values
       -- Alimentação
       ('ifood', 'alimentacao', 'saida'), ('rappi', 'alimentacao', 'saida'), ('ze delivery', 'alimentacao', 'saida'),
-      ('mcdonalds', 'alimentacao', 'saida'), ('burger king', 'alimentacao', 'saida'), ('subway', 'alimentacao', 'saida'),
+      ('mcdonald s', 'alimentacao', 'saida'), ('burger king', 'alimentacao', 'saida'), ('subway', 'alimentacao', 'saida'),
       ('padaria', 'alimentacao', 'saida'), ('restaurante', 'alimentacao', 'saida'), ('lanchonete', 'alimentacao', 'saida'),
-      ('supermercado', 'alimentacao', 'saida'), ('mercado', 'alimentacao', 'saida'), ('atacadao', 'alimentacao', 'saida'),
+      ('supermercado', 'alimentacao', 'saida'), ('mercadinho', 'alimentacao', 'saida'), ('atacadao', 'alimentacao', 'saida'),
       ('assai', 'alimentacao', 'saida'), ('carrefour', 'alimentacao', 'saida'), ('pao de acucar', 'alimentacao', 'saida'),
       ('uber eats', 'alimentacao', 'saida'), ('hortifruti', 'alimentacao', 'saida'), ('acougue', 'alimentacao', 'saida'),
       -- Transporte
-      ('uber', 'transporte', 'saida'), ('99app', 'transporte', 'saida'), ('99 pop', 'transporte', 'saida'),
+      ('uber', 'transporte', 'saida'), ('99app', 'transporte', 'saida'), ('99pop', 'transporte', 'saida'),
       ('cabify', 'transporte', 'saida'), ('posto', 'transporte', 'saida'), ('shell', 'transporte', 'saida'),
       ('ipiranga', 'transporte', 'saida'), ('petrobras', 'transporte', 'saida'), ('estacionamento', 'transporte', 'saida'),
       ('sem parar', 'transporte', 'saida'), ('conectcar', 'transporte', 'saida'), ('metro', 'transporte', 'saida'),
@@ -215,14 +258,14 @@ begin
       ('smart fit', 'saude', 'saida'), ('academia', 'saude', 'saida'),
       -- Moradia
       ('aluguel', 'moradia', 'saida'), ('condominio', 'moradia', 'saida'), ('enel', 'moradia', 'saida'),
-      ('cemig', 'moradia', 'saida'), ('light', 'moradia', 'saida'), ('sabesp', 'moradia', 'saida'),
-      ('copasa', 'moradia', 'saida'), ('vivo', 'moradia', 'saida'), ('claro', 'moradia', 'saida'),
+      ('cemig', 'moradia', 'saida'), ('light servicos', 'moradia', 'saida'), ('sabesp', 'moradia', 'saida'),
+      ('copasa', 'moradia', 'saida'), ('vivo fibra', 'moradia', 'saida'), ('telefonica', 'moradia', 'saida'), ('claro', 'moradia', 'saida'),
       ('tim', 'moradia', 'saida'), ('oi fibra', 'moradia', 'saida'), ('comgas', 'moradia', 'saida'),
       -- Compras
       ('mercadolivre', 'compras', 'saida'), ('mercado livre', 'compras', 'saida'), ('amazon', 'compras', 'saida'),
       ('shopee', 'compras', 'saida'), ('aliexpress', 'compras', 'saida'), ('magalu', 'compras', 'saida'),
       ('magazine luiza', 'compras', 'saida'), ('americanas', 'compras', 'saida'), ('shein', 'compras', 'saida'),
-      ('renner', 'compras', 'saida'), ('riachuelo', 'compras', 'saida'), ('c a', 'compras', 'saida'),
+      ('renner', 'compras', 'saida'), ('riachuelo', 'compras', 'saida'), ('cea modas', 'compras', 'saida'),
       ('kabum', 'compras', 'saida'), ('casas bahia', 'compras', 'saida'), ('leroy merlin', 'compras', 'saida'),
       -- Lazer
       ('cinema', 'lazer', 'saida'), ('cinemark', 'lazer', 'saida'), ('ingresso', 'lazer', 'saida'),
@@ -242,9 +285,48 @@ begin
      and c.tipo = case d.tipo when 'entrada' then 'receita' else 'despesa' end
   on conflict do nothing;
   get diagnostics v_total = row_count;
+  -- Marcado mesmo sem criar nenhuma: excluir o dicionário não o traz de volta.
+  insert into public.fin_preferencias (regras_preparadas) values (true)
+  on conflict (user_id) do update set regras_preparadas = true, updated_at = now();
   return v_total;
 end;
 $$;
 
 revoke execute on function public.fin_preparar_regras() from public, anon;
 grant execute on function public.fin_preparar_regras() to authenticated;
+
+-- ---------------------------------------------------------------------------
+-- Juntar duplicata: a categoria do manual (escolhida pela pessoa) vence a da regra
+-- ---------------------------------------------------------------------------
+create or replace function public.fin_resolver_duplicata(p_banco uuid, p_juntar boolean)
+returns void
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  b public.fin_transacoes;
+  m public.fin_transacoes;
+begin
+  select * into b from public.fin_transacoes where id = p_banco;
+  if b.id is null or b.origem <> 'banco' then
+    raise exception 'lancamento_invalido' using errcode = '22023';
+  end if;
+  if p_juntar and b.duplicata_de is not null then
+    select * into m from public.fin_transacoes where id = b.duplicata_de;
+  end if;
+  if m.id is not null then
+    delete from public.fin_transacoes where id = m.id;
+    update public.fin_transacoes
+       set duplicata_de = null,
+           categoria_id = coalesce(m.categoria_id, b.categoria_id),
+           categoria_origem = case when m.categoria_id is not null then 'manual' else b.categoria_origem end,
+           recorrencia_id = coalesce(b.recorrencia_id, m.recorrencia_id),
+           referencia = coalesce(b.referencia, m.referencia),
+           parcela = coalesce(b.parcela, m.parcela)
+     where id = b.id;
+  else
+    update public.fin_transacoes set duplicata_de = null where id = b.id;
+  end if;
+end;
+$$;
