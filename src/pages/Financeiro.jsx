@@ -233,17 +233,23 @@ export default function Financeiro() {
               <dl className="fin-placar__itens">
                 <div>
                   <dt className="label">{fin.placar.entradas}</dt>
-                  <dd className="fin-placar__valor">{formatarReais(placar.entradas)}</dd>
+                  <dd className="fin-placar__valor" data-direcao="entrada">
+                    {formatarReais(placar.entradas)}
+                  </dd>
                   {comparacao && comparacao.entradas !== null && variacao(fin.placar.pct(comparacao.entradas, nomeAntes))}
                 </div>
                 <div>
                   <dt className="label">{fin.placar.saidas}</dt>
-                  <dd className="fin-placar__valor">{formatarReais(placar.saidas)}</dd>
+                  <dd className="fin-placar__valor" data-direcao="saida">
+                    {formatarReais(placar.saidas)}
+                  </dd>
                   {comparacao && comparacao.saidas !== null && variacao(fin.placar.pct(comparacao.saidas, nomeAntes))}
                 </div>
                 <div>
                   <dt className="label">{fin.placar.resultado}</dt>
-                  <dd className="fin-placar__valor">{formatarReais(placar.resultado, { sinal: true })}</dd>
+                  <dd className="fin-placar__valor" data-direcao={placar.resultado > 0 ? 'entrada' : placar.resultado < 0 ? 'saida' : undefined}>
+                    {formatarReais(placar.resultado, { sinal: true })}
+                  </dd>
                   {comparacao &&
                     comparacao.resultado !== 0 &&
                     variacao(fin.placar.diferenca(formatarReais(Math.abs(comparacao.resultado)), comparacao.resultado > 0, nomeAntes))}
@@ -353,7 +359,7 @@ export default function Financeiro() {
                         </span>
                         {/* Dia só com transferências não mexe no resultado: sem total. */}
                         {g.total !== 0 && g.dia <= hojeDia && (
-                          <span className="fin-dia__total" aria-label={l.totalDia(formatarReais(g.total, { sinal: true }))}>
+                          <span className="fin-dia__total" data-direcao={g.total > 0 ? 'entrada' : 'saida'} aria-label={l.totalDia(formatarReais(g.total, { sinal: true }))}>
                           {formatarReais(g.total, { sinal: true })}
                         </span>
                         )}
@@ -425,7 +431,7 @@ export default function Financeiro() {
                                 {c.tipo === 'cartao' && c.dia_vencimento ? ` · ${fin.contas.vence(c.dia_vencimento)}` : ''}
                               </span>
                             </span>
-                            <span className="fin-conta__saldo">
+                            <span className="fin-conta__saldo" data-direcao={saldo < 0 ? 'saida' : undefined}>
                               {c.tipo === 'cartao' && saldo < 0 && <span className="hint">{fin.contas.fatura} </span>}
                               {formatarReais(c.tipo === 'cartao' && saldo < 0 ? -saldo : saldo)}
                             </span>
@@ -532,9 +538,7 @@ export default function Financeiro() {
 function LinhaLancamento({ transacao: x, conta, destino, categoria, onAbrir }) {
   const transferencia = x.tipo === 'transferencia'
   const revisar = !transferencia && !categoria
-  const detalhe = transferencia
-    ? l.transferencia(conta?.nome ?? '—', destino?.nome ?? '—')
-    : `${categoria?.nome ?? l.semCategoria} · ${conta?.nome ?? '—'}`
+  const detalhe = transferencia ? l.transferencia(conta?.nome ?? '—', destino?.nome ?? '—') : conta?.nome ?? '—'
   const marcas = [x.pendente ? l.pendente : null, x.duplicata_de ? l.duplicata : null].filter(Boolean).join(' · ')
   const valor = x.tipo === 'entrada' ? x.valor_centavos : x.tipo === 'saida' ? -x.valor_centavos : x.valor_centavos
   return (
@@ -550,6 +554,14 @@ function LinhaLancamento({ transacao: x, conta, destino, categoria, onAbrir }) {
         {/* As marcas ficam fora das reticências: no celular, "possível duplicata" não some. */}
         <span className="fin-linha__detalhes">
           <span className="fin-linha__detalhe" data-revisar={revisar}>
+            {!transferencia && (
+              <>
+                <span className="fin-linha__cat" style={categoria ? { '--c': categoria.cor } : undefined}>
+                  {categoria?.nome ?? l.semCategoria}
+                </span>
+                {' · '}
+              </>
+            )}
             {detalhe}
           </span>
           {marcas && <span className="fin-linha__marcas">{marcas}</span>}

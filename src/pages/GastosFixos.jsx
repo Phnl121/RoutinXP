@@ -36,6 +36,7 @@ export default function GastosFixos() {
   const hoje = hojeBrasilia()
 
   const contaPorId = useMemo(() => Object.fromEntries(d.contas.map((c) => [c.id, c])), [d.contas])
+  const corDe = useMemo(() => Object.fromEntries(d.categorias.map((c) => [c.id, c.cor])), [d.categorias])
   const pagoPor = useMemo(() => new Map(d.pagamentos.map((x) => [chaveCobranca(x.recorrencia_id, x.referencia), x])), [d.pagamentos])
 
   if (d.estado !== 'pronto') {
@@ -146,6 +147,7 @@ export default function GastosFixos() {
     const parcelada = c.rec.tipo === 'parcelada'
     return (
       <li key={chaveCobranca(c.rec.id, c.dia)} className="gf-cobranca" data-paga={!parcelada && Boolean(c.pagamento)}>
+        <span className="fin-bloco" data-vazio={!corDe[c.rec.categoria_id]} style={corDe[c.rec.categoria_id] ? { '--c': corDe[c.rec.categoria_id] } : undefined} aria-hidden="true" />
         <span className="gf-cobranca__texto">
           <span className="gf-cobranca__nome">{c.rec.nome}</span>
           <span className="gf-cobranca__detalhe">
@@ -276,7 +278,7 @@ export default function GastosFixos() {
                   return (
                     <section key={tipo} className="panel gf-grupo" aria-labelledby={`gf-${tipo}`}>
                       <div className="fin-resumo__cabeca">
-                        <h2 id={`gf-${tipo}`} className="label">
+                        <h2 id={`gf-${tipo}`} className="label gf-grupo__titulo" data-tipo={tipo}>
                           {g.tipos[tipo]}
                         </h2>
                         {subtotal > 0 && <span className="gf-grupo__subtotal">{g.subtotal(formatarReais(subtotal))}</span>}
@@ -284,7 +286,13 @@ export default function GastosFixos() {
                       <ul className="gf-lista">
                         {itens.map((rec) => (
                           <li key={rec.id}>
-                            <LinhaGasto rec={rec} conta={contaPorId[rec.conta_id]} hoje={hoje} onAbrir={() => setDlg({ tipo: 'gasto', item: rec })} />
+                            <LinhaGasto
+                              rec={rec}
+                              conta={contaPorId[rec.conta_id]}
+                              cor={corDe[rec.categoria_id]}
+                              hoje={hoje}
+                              onAbrir={() => setDlg({ tipo: 'gasto', item: rec })}
+                            />
                           </li>
                         ))}
                       </ul>
@@ -332,7 +340,7 @@ export default function GastosFixos() {
 }
 
 // Um gasto fixo cadastrado: como se repete, onde é cobrado e quanto pesa.
-function LinhaGasto({ rec, conta, hoje, onAbrir }) {
+function LinhaGasto({ rec, conta, cor, hoje, onAbrir }) {
   const parcelada = rec.tipo === 'parcelada'
   const progresso = parcelada ? progressoParcelas(rec, hoje) : null
   const proxima = !parcelada && rec.ativa ? proximaCobranca(rec, hoje) : null
@@ -352,6 +360,7 @@ function LinhaGasto({ rec, conta, hoje, onAbrir }) {
           : null
   return (
     <button type="button" className="gf-gasto" onClick={onAbrir} data-pausada={!rec.ativa || (parcelada && progresso.restantes === 0)}>
+      <span className="fin-bloco" data-vazio={!cor} style={cor ? { '--c': cor } : undefined} aria-hidden="true" />
       <span className="gf-gasto__texto">
         <span className="gf-gasto__nome">{rec.nome}</span>
         <span className="gf-gasto__detalhe">{detalhe}</span>

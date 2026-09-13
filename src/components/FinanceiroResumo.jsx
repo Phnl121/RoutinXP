@@ -41,7 +41,10 @@ export function GastosPorCategoria({ linhas, onEscolher }) {
                   <span className="fin-gastos__valor">{formatarReais(total)}</span>
                   {/* O trilho ocupa a linha inteira: todas as barras medem sobre o mesmo comprimento. */}
                   <span className="fin-gastos__trilho" aria-hidden="true">
-                    <span className="fin-gastos__barra" style={{ width: `${Math.max((total / maior) * 100, 1.5)}%` }} />
+                    <span
+                      className="fin-gastos__barra"
+                      style={{ width: `${Math.max((total / maior) * 100, 1.5)}%`, ...(categoria ? { '--c': categoria.cor } : {}) }}
+                    />
                   </span>
                 </button>
               </li>
@@ -86,7 +89,9 @@ export function DrePessoal({ dre }) {
                 <span className="fin-dre__rotulo">{r.dre.linhas[chave]}</span>
               </span>
               <span className="fin-dre__fatia">{base > 0 && chave !== 'receitas' ? `${Math.round((linha.total / base) * 100)}%` : ''}</span>
-              <span className="fin-dre__valor">{formatarReais(sinal * linha.total, { sinal: sinal > 0 && linha.total > 0 })}</span>
+              <span className="fin-dre__valor" data-direcao={linha.total === 0 ? undefined : sinal > 0 ? 'entrada' : 'saida'}>
+                {formatarReais(sinal * linha.total, { sinal: sinal > 0 && linha.total > 0 })}
+              </span>
             </>
           )
           return (
@@ -124,7 +129,9 @@ export function DrePessoal({ dre }) {
           <div className="fin-dre__botao">
             <span className="fin-dre__nome">{r.dre.linhas.resultado}</span>
             <span className="fin-dre__fatia">{base > 0 ? `${Math.round((dre.resultado / base) * 100)}%` : ''}</span>
-            <span className="fin-dre__valor">{formatarReais(dre.resultado, { sinal: true })}</span>
+            <span className="fin-dre__valor" data-direcao={dre.resultado > 0 ? 'entrada' : dre.resultado < 0 ? 'saida' : undefined}>
+              {formatarReais(dre.resultado, { sinal: true })}
+            </span>
           </div>
         </li>
       </ul>

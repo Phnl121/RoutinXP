@@ -17,6 +17,16 @@
   /* Fundo do QR code do autenticador: claro em qualquer tema, para o leitor do celular. */
   --qr-fundo: #ffffff;
 
+  /* Dinheiro (pedido do usuário, 2026-09-14): cor pela direção, sempre junto do sinal.
+     Verde-água (não é o verde do XP) para o que entra, coral para o que sai, azul-céu para
+     transferências entre contas próprias. Todos acima de 7:1 sobre o Panel. */
+  --entrada: #2dd4bf;
+  --entrada-wash: rgb(45 212 191 / 0.14);
+  --saida: #fb7a6a;
+  --saida-wash: rgb(251 122 106 / 0.14);
+  --transferencia: #7cc6f5;
+  --transferencia-wash: rgb(124 198 245 / 0.14);
+
   /* Verde e roxo alinhados à logo RoutinXP (public/marca). */
   --green: #22c55e;
   --green-tip: #86efac;

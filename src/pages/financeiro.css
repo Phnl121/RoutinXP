@@ -1434,3 +1434,159 @@ button.fin-dre__botao:hover {
     margin: 0 0.75rem 0.6rem 2.2rem;
   }
 }
+
+/* ---------- Cor (pedido do usuário, 2026-09-14) ----------
+   Direção do dinheiro: verde-água entra, coral sai, azul-céu transfere; sempre com o sinal.
+   Categoria: o bloco da linha e o nome levam a cor da categoria. */
+
+[data-direcao='entrada'] {
+  color: var(--entrada);
+}
+
+[data-direcao='saida'] {
+  color: var(--saida);
+}
+
+.fin-linha[data-tipo='entrada'] .fin-linha__valor {
+  color: var(--entrada);
+}
+
+.fin-linha[data-tipo='saida'] .fin-linha__valor {
+  color: var(--saida);
+}
+
+.fin-linha[data-tipo='transferencia'] .fin-linha__valor {
+  font-weight: 700;
+  color: var(--transferencia);
+}
+
+.fin-linha[data-agendado='true'] .fin-linha__valor {
+  color: var(--muted);
+}
+
+/* Bloco da categoria: quadrado com a cor da categoria em tom suave e o ponto cheio no meio. */
+.fin-linha__ponto,
+.fin-bloco {
+  position: relative;
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--c, var(--muted)) 22%, transparent);
+  box-shadow: none;
+}
+
+.fin-linha__ponto::after,
+.fin-bloco::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background: var(--c, var(--muted));
+}
+
+/* Sem categoria: bloco vazado, para chamar a revisão sem parecer alarme. */
+.fin-linha__ponto[data-vazio='true'],
+.fin-bloco[data-vazio='true'] {
+  background: none;
+  box-shadow: inset 0 0 0 1.5px var(--rule-strong);
+}
+
+.fin-linha__ponto[data-vazio='true']::after,
+.fin-bloco[data-vazio='true']::after {
+  background: none;
+  box-shadow: inset 0 0 0 2px var(--check-ring);
+}
+
+/* Transferência: bloco azul-céu. */
+.fin-linha[data-tipo='transferencia'] .fin-linha__ponto {
+  background: var(--transferencia-wash);
+  box-shadow: none;
+}
+
+.fin-linha[data-tipo='transferencia'] .fin-linha__ponto::after {
+  background: var(--transferencia);
+  box-shadow: none;
+}
+
+/* Nome da categoria na cor dela, clareado para ler bem sobre o Panel. */
+.fin-linha__cat {
+  font-weight: 600;
+  color: color-mix(in oklab, var(--c, var(--muted)) 70%, var(--ink));
+}
+
+.fin-linha__detalhe[data-revisar='true'] .fin-linha__cat {
+  color: var(--ink);
+}
+
+/* Para onde foi: cada barra na cor da sua categoria. */
+.fin-gastos__barra,
+.fin-gastos__linha[data-maior='true'] .fin-gastos__barra {
+  background: var(--c, var(--muted));
+}
+
+/* Evolução: entradas verde-água, saídas coral (a legenda e a forma continuam). */
+.fin-evol__chave[data-serie='entradas'],
+.fin-evol__barra[data-serie='entradas'] {
+  background: var(--entrada);
+}
+
+.fin-evol__chave[data-serie='saidas'],
+.fin-evol__barra[data-serie='saidas'] {
+  background: var(--saida);
+  box-shadow: none;
+}
+
+/* Gastos fixos: todo valor é saída. Pagas e pausados continuam em segundo plano. */
+.gf-cobranca__valor,
+.gf-gasto__valor {
+  color: var(--saida);
+}
+
+.gf-cobranca[data-paga='true'] .gf-cobranca__valor,
+.gf-gasto[data-pausada='true'] .gf-gasto__valor {
+  color: var(--muted);
+}
+
+/* Gastos fixos: bloco da categoria em cada linha; ponto de cor por tipo no título do grupo. */
+.gf-cobranca,
+.gf-gasto {
+  justify-content: flex-start;
+}
+
+.gf-cobranca__texto,
+.gf-gasto__texto {
+  flex: 1 1 auto;
+}
+
+.gf-grupo__titulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gf-grupo__titulo::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+}
+
+.gf-grupo__titulo[data-tipo='assinatura']::before {
+  background: #b39ddb;
+}
+
+.gf-grupo__titulo[data-tipo='parcelada']::before {
+  background: #6c9be8;
+}
+
+.gf-grupo__titulo[data-tipo='conta']::before {
+  background: #e0a050;
+}
+
+.gf-grupo__titulo[data-tipo='outro']::before {
+  background: #8f9bb3;
+}
