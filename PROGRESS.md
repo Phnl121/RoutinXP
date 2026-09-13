@@ -7,7 +7,7 @@ Este arquivo é o ponto de handoff entre ferramentas (Code, Antigravity, ou qual
 
 Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo está no ar e foi testado pelo usuário em produção: PWA no celular, Integrações com os links reais das disciplinas, Kanban, Calendário, tarefas e Foco com os avisos. O log de sessões abaixo guarda o histórico e o detalhe de cada entrega.
 
-**Pronto no código, ainda não publicado (2026-09-13):** painel de administração (`/admin`) e verificação em duas etapas obrigatória. Commitado localmente; falta migration, Edge Functions e push, na ordem de "Publicar o painel de administração" em Pendências.
+**Painel de administração e verificação em duas etapas publicados (2026-09-13):** migration aplicada, Edge Functions publicadas, primeiro administrador marcado e push feito pelo usuário. Falta o teste do usuário em produção.
 
 ### Infraestrutura
 - **Pasta local:** `C:\Users\pedro\Desktop\RoutinXP` (renomeada de `App - Rotina` pelo usuário em 2026-09-13). O git e o link da Supabase CLI continuaram funcionando.
@@ -33,7 +33,7 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
     - `20260913154343_teto_xp_por_dia`;
     - `20260913154344_push_sem_sequestro`;
     - `20260913154346_limites_por_usuario`;
-    - `20260913200000_painel_admin` (**ainda não aplicada**).
+    - `20260913200000_painel_admin`.
   - **Mudança no banco:**
     - Criar a migration com `npx.cmd supabase migration new <nome>`.
     - Escrever o SQL no arquivo gerado.
@@ -44,7 +44,7 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
     - `sincronizar-calendarios` lê os calendários iCal. O pg_cron chama a cada 30 min; cada calendário é lido a cada ~3 h.
     - `avisos-foco` envia o Web Push do fim de fase. O pg_cron confere a cada 15 s e só chama quando há aviso vencido.
     - As duas se autenticam com o segredo `routinxp_cron_sync` do Vault.
-    - `admin-usuarios` atende o painel de administração. É a única publicada **com** verificação de JWT: `npx.cmd supabase functions deploy admin-usuarios --use-api` (sem `--no-verify-jwt`). Ainda não publicada.
+    - `admin-usuarios` atende o painel de administração. É a única publicada **com** verificação de JWT: `npx.cmd supabase functions deploy admin-usuarios --use-api` (sem `--no-verify-jwt`).
   - **Segredos:** `VAPID_PUBLIC_KEY` e `VAPID_PRIVATE_KEY`.
   - **Segurança:**
     - RLS em todas as tabelas.
@@ -96,12 +96,7 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 - **Dados de teste:** as 8 tarefas de exemplo foram apagadas pelo usuário (2026-09-13).
 
 ### Pendências
-- **Publicar o painel de administração** (autorização do usuário, nesta ordem):
-  1. No painel do Supabase, Authentication > Multi-Factor: conferir que o TOTP (app autenticador) está ligado.
-  2. `npx.cmd supabase db push` (migration `20260913200000_painel_admin`).
-  3. No SQL Editor, marcar o primeiro administrador: `update public.contas_app set papel = 'admin' where user_id = (select id from auth.users where email = '<seu e-mail>');` (o e-mail não vai para o repositório).
-  4. Publicar `admin-usuarios` (com JWT), `sincronizar-calendarios` e `avisos-foco` (as duas com `--no-verify-jwt`).
-  5. Push na `main`. No próximo acesso, todas as contas cadastram o autenticador.
+- **Testar o painel em produção (usuário):** cadastrar o autenticador no próximo acesso, criar uma conta de teste, fazer o primeiro acesso dela, ligar e desligar funções, suspender e reativar.
 - **Técnicas:**
   - O pacote JS passa de 500 kB; dá para carregar cada página só quando for aberta (lazy loading).
   - O SMTP padrão do Supabase envia só ~2 e-mails por hora. O SMTP próprio depende de um domínio.
@@ -129,7 +124,7 @@ Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer
 ### 2026-09-13, Claude Code (Opus 5): painel de administração e verificação em duas etapas
 Pedido do usuário: um painel para ver as contas do sistema e liberar funções por conta, antes do financeiro. Escolhas: todas as funções controláveis; conta criada com senha provisória gerada; verificação em duas etapas para todo mundo; último acesso só com a data; estrutura "lista e página da conta" (página de decisão do Impeccable).
 
-Feito (commitado localmente, **nada publicado**):
+Feito (publicado pelo usuário: migration, `admin-usuarios` com JWT, `sincronizar-calendarios` e `avisos-foco`, admin marcado no SQL Editor e push):
 - **Banco** (`20260913200000_painel_admin`):
   - `contas_app`: papel (`usuario`/`admin`), funções liberadas (tarefas, kanban, calendario, foco, painel, integracoes, financeiro), nome e hash da senha provisória. Contas existentes recebem tudo menos financeiro.
   - `registro_admin`: quem fez o quê no painel, sem senhas.
@@ -147,10 +142,12 @@ Feito (commitado localmente, **nada publicado**):
 
 Travou:
 - Sem Docker, a migration não foi testada num banco local; revisada à mão.
+- A primeira `db push` falhou: um delimitador `$$` virou `$` numa edição por script (corrigido em seguida).
+- O modo automático do Claude Code bloqueou `db push`; o usuário rodou os comandos.
 - O `[auth.mfa.totp]` do `config.toml` vale só localmente; no projeto hospedado é o painel do Supabase.
 
 Próximo:
-- Publicar (ver Pendências) e testar com uma conta de teste: criar, primeiro acesso, liberar e tirar funções, suspender.
+- Testar com uma conta de teste: criar, primeiro acesso, liberar e tirar funções, suspender.
 - Depois, o controle financeiro, a partir da fase 0.3 (modelo de dados); as fases 0.1 e 0.2 (trava e verificação) ficam cobertas pelo painel.
 
 ### 2026-09-13, Claude Code (Opus 5): correções da auditoria de segurança
