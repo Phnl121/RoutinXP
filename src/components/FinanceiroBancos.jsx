@@ -22,11 +22,12 @@ export function BancosConectados({ conexoes, onLer, onDesconectar }) {
   const [desconectando, setDesconectando] = useState(null)
   const conectado = conexoes.length > 0
 
-  async function ler() {
+  // modo: 'conectar' também liga os bancos novos da configuração (outro banco no MeuPluggy).
+  async function ler(modo = conectado ? 'sincronizar' : 'conectar') {
     setLendo(true)
     setMensagem(null)
     try {
-      const resumo = await onLer(conectado ? 'sincronizar' : 'conectar')
+      const resumo = await onLer(modo)
       setMensagem({ tipo: resumo.erros?.length ? 'erro' : 'ok', texto: resumo.erros?.length ? b.erroItem : b.resultado(resumo.importados, resumo.duplicatas, resumo.categorizados) })
     } catch (e) {
       setMensagem({ tipo: 'erro', texto: b.erros[e?.codigoBanco] ?? b.erros.falha })
@@ -61,9 +62,14 @@ export function BancosConectados({ conexoes, onLer, onDesconectar }) {
         <p className="hint fin-bancos__convite">{b.convite}</p>
       )}
       <div className="fin-bancos__pe">
-        <button type="button" className={conectado ? 'botao-contorno fin-bancos__botao' : 'btn fin-bancos__botao'} onClick={ler} disabled={lendo}>
+        <button type="button" className={conectado ? 'botao-contorno fin-bancos__botao' : 'btn fin-bancos__botao'} onClick={() => ler()} disabled={lendo}>
           {lendo ? (conectado ? b.atualizando : b.conectando) : conectado ? b.atualizar : b.conectar}
         </button>
+        {conectado && (
+          <button type="button" className="link-btn" onClick={() => ler('conectar')} disabled={lendo}>
+            {b.conectarOutro}
+          </button>
+        )}
         <p className="hint fin-bancos__mensagem" role="status" data-erro={mensagem?.tipo === 'erro'}>
           {mensagem?.texto ?? ''}
         </p>

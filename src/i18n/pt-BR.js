@@ -971,6 +971,7 @@ export const t = {
       titulo: 'Bancos conectados',
       convite: 'Traga os lançamentos do seu banco sozinhos, pelo Open Finance (MeuPluggy). Só leitura: nada é movimentado.',
       conectar: 'Conectar bancos',
+      conectarOutro: 'Buscar bancos novos',
       conectando: 'Conectando…',
       atualizar: 'Atualizar agora',
       atualizando: 'Lendo os bancos…',
