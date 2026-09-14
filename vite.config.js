@@ -29,11 +29,21 @@ function serviceWorker() {
     },
     writeBundle(_, bundle) {
       const hash = createHash('sha256')
+      // Na instalação vai só o que abre a página inicial: o arquivo de entrada e o que ele importa
+      // direto (mais CSS, fontes e imagens). As outras páginas são guardadas quando abertas.
+      const iniciais = new Set()
+      const marcar = (nome) => {
+        if (iniciais.has(nome) || !bundle[nome]) return
+        iniciais.add(nome)
+        for (const importado of bundle[nome].imports ?? []) marcar(importado)
+      }
+      for (const [nome, item] of Object.entries(bundle)) if (item.type === 'chunk' && item.isEntry) marcar(nome)
       const gerados = []
       for (const [nome, item] of Object.entries(bundle)) {
         if (nome.endsWith('.map')) continue
-        gerados.push(`/${nome}`)
         hash.update(nome).update(item.type === 'chunk' ? item.code : item.source)
+        if (item.type === 'chunk' && !iniciais.has(nome)) continue
+        gerados.push(`/${nome}`)
       }
       // Os arquivos de public/ também entram na versão: trocar um ícone ou o manifest
       // gera um service worker novo, e o app instalado busca a versão nova.

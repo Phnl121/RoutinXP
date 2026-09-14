@@ -5,7 +5,7 @@ import { emPrevia, previaApi } from '../dev/previa'
 import { t } from '../i18n/pt-BR'
 
 // Em /?previa (só em desenvolvimento) os dados vêm de uma fixture em memória.
-const api = emPrevia ? previaApi : apiReal
+const api = import.meta.env.DEV && emPrevia ? previaApi : apiReal
 
 // Tempo para desfazer uma exclusão antes de ela ir para o banco.
 const PRAZO_DESFAZER = 5000
@@ -78,19 +78,22 @@ export function useDados(userId, funcoes = TODAS) {
   const [recem, setRecem] = useState(null) // id da tarefa concluída por último (para a animação)
   const exclusao = useRef(null) // { tarefa, timer }
 
-  const aplicar = useCallback(([c, tf, s, p, tg, fo, co, fc]) => {
-    // Blocos ainda não enviados aparecem desde já (vão ao banco em seguida).
-    const pendentes = lerPendentes(userId).filter((b) => !fc.some((f) => f.id === b.id))
-    setFocos([...fc, ...pendentes])
-    setColunas(co)
-    setCategorias(c)
-    setTarefas(tf)
-    setStats(s)
-    setPerfil(p)
-    setTags(tg)
-    setFontes(fo)
-    setEstado('pronto')
-  }, [userId])
+  const aplicar = useCallback(
+    ([c, tf, s, p, tg, fo, co, fc]) => {
+      // Blocos ainda não enviados aparecem desde já (vão ao banco em seguida).
+      const pendentes = lerPendentes(userId).filter((b) => !fc.some((f) => f.id === b.id))
+      setFocos([...fc, ...pendentes])
+      setColunas(co)
+      setCategorias(c)
+      setTarefas(tf)
+      setStats(s)
+      setPerfil(p)
+      setTags(tg)
+      setFontes(fo)
+      setEstado('pronto')
+    },
+    [userId],
+  )
   const falhouCarregar = useCallback(() => setEstado('erro'), [])
 
   // "Tentar de novo": volta ao estado de carregamento e busca outra vez.
@@ -149,9 +152,7 @@ export function useDados(userId, funcoes = TODAS) {
     if (!antes || antes.status === 'concluida') return null
     setRecem(id)
     setTarefas((ts) =>
-      ts.map((x) =>
-        x.id === id ? { ...x, status: 'concluida', completed_at: new Date().toISOString(), xp_value: null } : x,
-      ),
+      ts.map((x) => (x.id === id ? { ...x, status: 'concluida', completed_at: new Date().toISOString(), xp_value: null } : x)),
     )
     try {
       const r = await api.concluirTarefa(id)
@@ -203,9 +204,7 @@ export function useDados(userId, funcoes = TODAS) {
 
   async function salvarCategoria({ id, nome, cor }) {
     const salva = id ? await api.atualizarCategoria(id, { nome, cor }) : await api.criarCategoria({ nome, cor })
-    setCategorias((cs) =>
-      (id ? cs.map((c) => (c.id === id ? salva : c)) : [...cs, salva]).sort((a, b) => a.nome.localeCompare(b.nome)),
-    )
+    setCategorias((cs) => (id ? cs.map((c) => (c.id === id ? salva : c)) : [...cs, salva]).sort((a, b) => a.nome.localeCompare(b.nome)))
     return salva
   }
 
@@ -283,7 +282,10 @@ export function useDados(userId, funcoes = TODAS) {
     async (bloco) => {
       try {
         await api.registrarFoco(bloco)
-        gravarPendentes(userId, lerPendentes(userId).filter((b) => b.id !== bloco.id))
+        gravarPendentes(
+          userId,
+          lerPendentes(userId).filter((b) => b.id !== bloco.id),
+        )
       } catch {
         const pendentes = lerPendentes(userId)
         if (!pendentes.some((b) => b.id === bloco.id)) gravarPendentes(userId, [...pendentes, bloco])

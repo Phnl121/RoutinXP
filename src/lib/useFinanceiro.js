@@ -5,7 +5,7 @@ import { emPrevia } from '../dev/previa'
 import { andarMes } from './dinheiro'
 
 // Em /financeiro?previa (só em desenvolvimento) os dados vêm de uma fixture em memória.
-const api = emPrevia ? apiPrevia : apiReal
+const api = import.meta.env.DEV && emPrevia ? apiPrevia : apiReal
 
 // Tempo para desfazer a exclusão de um lançamento antes de ela ir para o banco.
 const PRAZO_DESFAZER = 5000

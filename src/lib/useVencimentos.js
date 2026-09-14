@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
-import * as apiReal from './financeiro'
-import * as apiPrevia from '../dev/previaFinanceiro'
 import { emPrevia } from '../dev/previa'
 import { diaBrasilia, hojeBrasilia } from './datas'
 import { somarDias, vencimentosProximos } from './gastosFixos'
 
-const api = emPrevia ? apiPrevia : apiReal
+// Baixado na primeira vez que a faixa precisa (só contas com Financeiro).
+const carregarApi = () => (import.meta.env.DEV && emPrevia ? import('../dev/previaFinanceiro') : import('./financeiro'))
 
 // Atrasadas aparecem na faixa por até uma semana; depois disso ficam só em Gastos fixos.
 const DIAS_ATRAS = 7
@@ -36,12 +35,15 @@ export function useVencimentos(ativo) {
     if (!ativo) return undefined
     let vivo = true
     const hoje = hojeBrasilia()
-    Promise.all([
-      api.listarRecorrencias(),
-      api.listarPagamentos(somarDias(hoje, -DIAS_ATRAS), somarDias(hoje, 1)),
-      api.listarContasFin(),
-      api.listarSaldosFin(),
-    ])
+    carregarApi()
+      .then((api) =>
+        Promise.all([
+          api.listarRecorrencias(),
+          api.listarPagamentos(somarDias(hoje, -DIAS_ATRAS), somarDias(hoje, 1)),
+          api.listarContasFin(),
+          api.listarSaldosFin(),
+        ]),
+      )
       .then(([recorrencias, pagamentos, contas, saldos]) => {
         const porConta = Object.fromEntries(saldos.map((s) => [s.conta_id, s.saldo_centavos]))
         if (vivo)

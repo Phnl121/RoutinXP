@@ -7,7 +7,7 @@ import { somarDias } from './gastosFixos'
 import { andarMes, mesDe } from './dinheiro'
 import { avisarPagamentosMudaram } from './useVencimentos'
 
-const api = emPrevia ? apiPrevia : apiReal
+const api = import.meta.env.DEV && emPrevia ? apiPrevia : apiReal
 
 // Janela das cobranças na página: vencidas dos últimos 60 dias até os próximos 31.
 export const DIAS_ATRAS = 60

@@ -3,7 +3,7 @@ import * as apiReal from './agendaApi'
 import * as apiPrevia from '../dev/previaAgenda'
 import { emPrevia } from '../dev/previa'
 
-const api = emPrevia ? apiPrevia : apiReal
+const api = import.meta.env.DEV && emPrevia ? apiPrevia : apiReal
 
 // Eventos do período na tela. Muda o período, busca de novo; salvar e excluir atualizam a lista.
 export function useAgenda(diaInicio, diaFim) {

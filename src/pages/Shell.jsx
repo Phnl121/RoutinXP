@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router'
 import { useDados } from '../lib/useDados'
 import { primeiraRota, rotaPermitida, temFuncao, useConta } from '../lib/conta'
@@ -18,7 +18,9 @@ import { useVencimentos } from '../lib/useVencimentos'
 import { hojeBrasilia } from '../lib/datas'
 import { FocoContexto, formatarTempo, restanteDe, useAgora, useFoco, useFocoApp } from '../lib/foco'
 import { garantirInscricao } from '../lib/push'
-import Foco from './Foco'
+import { carregarPagina } from '../lib/carregarPagina'
+// A página Foco (e o player do Spotify) baixa na primeira visita a /foco.
+const Foco = carregarPagina(() => import('./Foco'))
 import { t } from '../i18n/pt-BR'
 import './tarefas.css'
 import './shell.css'
@@ -200,55 +202,70 @@ export default function Shell({ session }) {
   return (
     <DadosContexto.Provider value={d}>
       <FocoContexto.Provider value={foco}>
-      <TituloAba />
-      <div className="shell" data-recolhido={recolhido}>
-        <MenuLateral
-          recolhido={recolhido}
-          onAlternar={alternarMenu}
-          gavetaAberta={gavetaAberta}
-          onFecharGaveta={fecharGaveta}
-          perfil={d.perfil}
-          stats={d.stats}
-          email={session.user.email}
-          onInstalar={modoInstalacao ? instalar : undefined}
-        />
-        <div className="shell__conteudo">
-          <TopBar
-            stats={d.stats}
-            perfil={d.perfil}
-            email={session.user.email}
-            onAbrirMenu={() => setGavetaAberta(true)}
+        <TituloAba />
+        <div className="shell" data-recolhido={recolhido}>
+          <MenuLateral
+            recolhido={recolhido}
+            onAlternar={alternarMenu}
             gavetaAberta={gavetaAberta}
+            onFecharGaveta={fecharGaveta}
+            perfil={d.perfil}
+            stats={d.stats}
+            email={session.user.email}
+            onInstalar={modoInstalacao ? instalar : undefined}
           />
-          {/* Região de status sempre montada: leitor de tela anuncia quando a conexão cai. */}
-          <div role="status">
-            {!online && (
-              <div className="lembrete">
-                <IconeSemConexao />
-                <p>{t.conexao.offline}</p>
-              </div>
+          <div className="shell__conteudo">
+            <TopBar
+              stats={d.stats}
+              perfil={d.perfil}
+              email={session.user.email}
+              onAbrirMenu={() => setGavetaAberta(true)}
+              gavetaAberta={gavetaAberta}
+            />
+            {/* Região de status sempre montada: leitor de tela anuncia quando a conexão cai. */}
+            <div role="status">
+              {!online && (
+                <div className="lembrete">
+                  <IconeSemConexao />
+                  <p>{t.conexao.offline}</p>
+                </div>
+              )}
+            </div>
+            {/* Offline, o lembrete de streak espera: concluir agora não salvaria. */}
+            {online && streakVisivel && <LembreteStreak stats={d.stats} onDispensar={dispensarStreak} />}
+            {online && prazosVisivel && (
+              <LembretePrazos paraHoje={prazos.paraHoje} atrasadas={prazos.atrasadas} onDispensar={dispensarPrazos} />
             )}
-          </div>
-          {/* Offline, o lembrete de streak espera: concluir agora não salvaria. */}
-          {online && streakVisivel && <LembreteStreak stats={d.stats} onDispensar={dispensarStreak} />}
-          {online && prazosVisivel && (
-            <LembretePrazos paraHoje={prazos.paraHoje} atrasadas={prazos.atrasadas} onDispensar={dispensarPrazos} />
-          )}
-          {online && vencimentosVisivel && <LembreteVencimentos {...vencimentos} onDispensar={dispensarVencimentos} />}
-          {online && modoInstalacao && !streakVisivel && !prazosVisivel && !vencimentosVisivel && <ConviteInstalar onInstalar={instalar} />}
-          <Outlet context={{ session }} />
-          {focoMontado && temFuncao(conta, 'foco') && <Foco visivel={noFoco} userId={session.user.id} />}
-          {dlgIos && <DialogoInstalarIos onFechar={() => setDlgIos(false)} />}
-          {/* No celular a barra não tem "Nova tarefa": o botão flutuante faz esse papel em
+            {online && vencimentosVisivel && <LembreteVencimentos {...vencimentos} onDispensar={dispensarVencimentos} />}
+            {online && modoInstalacao && !streakVisivel && !prazosVisivel && !vencimentosVisivel && (
+              <ConviteInstalar onInstalar={instalar} />
+            )}
+            {/* Enquanto a página baixa, o menu e a barra continuam no lugar. */}
+            <Suspense
+              fallback={
+                <p className="label pagina-carregando" aria-busy="true">
+                  {t.app.carregando}
+                </p>
+              }
+            >
+              <Outlet context={{ session }} />
+            </Suspense>
+            {focoMontado && temFuncao(conta, 'foco') && (
+              <Suspense fallback={null}>
+                <Foco visivel={noFoco} userId={session.user.id} />
+              </Suspense>
+            )}
+            {dlgIos && <DialogoInstalarIos onFechar={() => setDlgIos(false)} />}
+            {/* No celular a barra não tem "Nova tarefa": o botão flutuante faz esse papel em
               todas as páginas (a de Tarefas tem o próprio, que abre o formulário ali mesmo; a do
               Financeiro tem o de novo lançamento). */}
-          {comTarefas && location.pathname !== '/' && location.pathname !== '/agenda' && !location.pathname.startsWith('/financeiro') && (
-            <button type="button" className="fab" onClick={novaTarefa} aria-label={t.topo.novaTarefa}>
-              <IconeMais />
-            </button>
-          )}
+            {comTarefas && location.pathname !== '/' && location.pathname !== '/agenda' && !location.pathname.startsWith('/financeiro') && (
+              <button type="button" className="fab" onClick={novaTarefa} aria-label={t.topo.novaTarefa}>
+                <IconeMais />
+              </button>
+            )}
+          </div>
         </div>
-      </div>
       </FocoContexto.Provider>
     </DadosContexto.Provider>
   )

@@ -63,7 +63,7 @@ export async function nivelDeVerificacao() {
 // Começa o cadastro do app autenticador. Descarta cadastros abandonados (não confirmados).
 // Devolve { id, qr, chave }.
 export async function iniciarCadastroAutenticador() {
-  if (emPrevia) return { id: 'previa', qr: QR_PREVIA, chave: 'JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP' }
+  if (import.meta.env.DEV && emPrevia) return { id: 'previa', qr: QR_PREVIA, chave: 'JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP' }
   const { data: fatores, error: erroLista } = await supabase.auth.mfa.listFactors()
   if (erroLista) throw erroLista
   for (const fator of fatores.all.filter((f) => f.factor_type === 'totp' && f.status !== 'verified')) {
@@ -76,7 +76,7 @@ export async function iniciarCadastroAutenticador() {
 
 // O autenticador já cadastrado (para pedir o código no login).
 export async function autenticadorCadastrado() {
-  if (emPrevia) return { id: 'previa' }
+  if (import.meta.env.DEV && emPrevia) return { id: 'previa' }
   const { data, error } = await supabase.auth.mfa.listFactors()
   if (error) throw error
   return data.totp[0] ?? null
@@ -84,7 +84,7 @@ export async function autenticadorCadastrado() {
 
 // Confere o código de 6 dígitos; com sucesso, a sessão passa a ser verificada (aal2).
 export async function confirmarCodigo(factorId, codigo) {
-  if (emPrevia) return
+  if (import.meta.env.DEV && emPrevia) return
   const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId, code: codigo })
   if (error) throw error
 }
@@ -98,7 +98,7 @@ export async function confirmarTrocaDeSenha() {
 
 // Painel de administração (Edge Function admin-usuarios). Erros chegam como { codigoAdmin }.
 export async function chamarAdmin(acao, dados = {}) {
-  if (emPrevia) return previaAdmin(acao, dados)
+  if (import.meta.env.DEV && emPrevia) return previaAdmin(acao, dados)
   const { data, error } = await supabase.functions.invoke('admin-usuarios', { body: { acao, ...dados } })
   if (error) {
     let detalhe = null

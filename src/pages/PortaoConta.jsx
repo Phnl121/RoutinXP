@@ -5,8 +5,10 @@ import { emPrevia, contaPrevia } from '../dev/previa'
 import { Aviso } from '../components/AuthParts'
 import { Logo } from '../components/Logo'
 import Shell from './Shell'
-import Verificacao from './Verificacao'
-import RedefinirSenha from './RedefinirSenha'
+import { carregarPagina } from '../lib/carregarPagina'
+// Só quem ainda não verificou ou tem senha provisória baixa estas telas.
+const Verificacao = carregarPagina(() => import('./Verificacao'))
+const RedefinirSenha = carregarPagina(() => import('./RedefinirSenha'))
 import { t } from '../i18n/pt-BR'
 import './auth.css'
 
@@ -35,8 +37,10 @@ async function situacaoDaConta() {
 export default function PortaoConta({ session }) {
   // carregando | autenticador | codigo | senha | liberada | erro
   // Na pré-visualização, ?etapa=autenticador|codigo|senha mostra a tela correspondente.
-  const [etapa, setEtapa] = useState(emPrevia ? (new URLSearchParams(window.location.search).get('etapa') ?? 'liberada') : 'carregando')
-  const [conta, setConta] = useState(emPrevia ? contaPrevia : null)
+  const [etapa, setEtapa] = useState(
+    import.meta.env.DEV && emPrevia ? (new URLSearchParams(window.location.search).get('etapa') ?? 'liberada') : 'carregando',
+  )
+  const [conta, setConta] = useState(import.meta.env.DEV && emPrevia ? contaPrevia : null)
 
   const aplicar = useCallback(({ etapa: proxima, conta: minha }) => {
     if (minha) setConta(minha)
@@ -44,13 +48,13 @@ export default function PortaoConta({ session }) {
   }, [])
 
   const conferir = useCallback(() => {
-    if (!emPrevia) situacaoDaConta().then(aplicar)
+    if (!(import.meta.env.DEV && emPrevia)) situacaoDaConta().then(aplicar)
   }, [aplicar])
 
   // A cada token novo (login, código confirmado, sessão renovada) confere de novo.
   const token = session.access_token
   useEffect(() => {
-    if (emPrevia) return undefined
+    if (import.meta.env.DEV && emPrevia) return undefined
     let ativo = true
     situacaoDaConta().then((r) => ativo && aplicar(r))
     return () => {

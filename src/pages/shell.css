@@ -590,3 +590,10 @@
 .lembrete--vencimentos[data-atrasada='true'] > svg {
   color: var(--prazo-atrasado);
 }
+
+/* Página baixando (carregamento por página): ocupa o lugar do conteúdo, sem pular a barra. */
+.pagina-carregando {
+  width: min(100%, 90rem);
+  margin: 0 auto;
+  padding: 3rem clamp(1rem, 3vw, 2rem);
+}

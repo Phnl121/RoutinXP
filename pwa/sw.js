@@ -1,7 +1,8 @@
 // Service worker do RoutinXP (modelo). O build (plugin em vite.config.js) troca os marcadores
 // pela versão e pela lista de arquivos gerados e grava o resultado em dist/sw.js.
 //
-// - Instala: guarda a casca do app (HTML, JS, CSS, fontes, ícones) para abrir na hora e offline.
+// - Instala: guarda a casca do app e a página inicial (HTML, JS, CSS, fontes, ícones).
+// - As outras páginas (arquivos em /assets/) são guardadas na primeira vez que são abertas.
 // - Navegação: rede primeiro (sempre a versão mais nova); sem internet, usa o index.html guardado.
 // - Arquivos do app: do cache (os nomes têm hash, então nunca ficam velhos).
 // - Supabase, Turnstile e qualquer outro domínio: nunca passam pelo cache.
@@ -79,5 +80,18 @@ self.addEventListener('fetch', (evento) => {
     return
   }
 
-  evento.respondWith(caches.match(pedido).then((guardado) => guardado ?? fetch(pedido)))
+  evento.respondWith(
+    caches.match(pedido).then(
+      (guardado) =>
+        guardado ??
+        fetch(pedido).then((resposta) => {
+          // Página aberta pela primeira vez: o arquivo (com hash no nome) fica para as próximas.
+          if (resposta.ok && new URL(pedido.url).pathname.startsWith('/assets/')) {
+            const copia = resposta.clone()
+            caches.open(CACHE).then((cache) => cache.put(pedido, copia))
+          }
+          return resposta
+        }),
+    ),
+  )
 })
