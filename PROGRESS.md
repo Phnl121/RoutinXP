@@ -131,6 +131,15 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
 
+### 2026-09-14, Claude Code (Opus 5): temas, Agenda e relatório
+Feito (tudo publicado):
+- Temas claro e bege (Perfil > Aparência: Sistema, Claro, Bege, Escuro), com tokens próprios e contraste acima de 4,5:1.
+- Gastos fixos no cartão lançam sozinhos no dia (cartão manual) e o aviso de vencimento passa a ser o da fatura; categorias da Pluggy traduzidas e aplicadas à lista inteira.
+- Agenda (/agenda): eventos com local, categoria, repetição e lembrete por push (Edge Function avisos-agenda, a cada 5 min); tarefas ganham "quando fazer", separado do prazo; visões Dia, Semana (lista no celular) e Mês; função Agenda no painel. Revisão com 8 correções.
+- Relatório "Raio-X do RoutinXP" (verificação, benchmark e roteiro): https://claude.ai/code/artifact/4af090bd-bbbf-4d46-b089-b0203d4006d5
+
+Próximo (do relatório): tarefas recorrentes, tela Meu dia, entrada rápida, arrastar na Agenda, hábitos.
+
 ### 2026-09-14, Claude Code (Opus 5): Lançamentos e Controle, fases 5.5, 3.6 e 6
 Pedidos do usuário: dividir o Financeiro em duas abas (Lançamentos só para lançar e categorizar; Controle com DRE, categorias, gráficos e filtros) e fazer, em ordem, 5.5, 3.6 e 6.
 
