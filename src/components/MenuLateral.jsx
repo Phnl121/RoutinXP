@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { NavLink } from 'react-router'
 import { Logo } from './Logo'
-import { IconeBaixar, IconeCalendario, IconeCarteira, IconeRepetir, IconeRosca, IconeEscudo, IconeEtiqueta, IconeFechar, IconeFoco, IconeGrafico, IconeLista, IconeMenuLateral, IconePessoa } from './icones'
+import { IconeAgenda, IconeBaixar, IconeCalendario, IconeCarteira, IconeRepetir, IconeRosca, IconeEscudo, IconeEtiqueta, IconeFechar, IconeFoco, IconeGrafico, IconeLista, IconeMenuLateral, IconePessoa } from './icones'
 import { calcularNivel } from '../lib/nivel'
 import { rotaPermitida, useConta } from '../lib/conta'
 import { iniciaisDoPerfil } from '../lib/datas'
@@ -16,6 +16,7 @@ const SECOES = [
     titulo: m.secoes.rotina,
     itens: [
       { para: '/', rotulo: m.tarefas, Icone: IconeLista },
+      { para: '/agenda', rotulo: m.agenda, Icone: IconeAgenda },
       { para: '/foco', rotulo: m.foco, Icone: IconeFoco },
       { para: '/painel', rotulo: m.painel, Icone: IconeGrafico },
     ],

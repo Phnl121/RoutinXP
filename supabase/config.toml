@@ -434,3 +434,6 @@ enabled = true
 # o administrador verificado (admin_verificado) antes de ler o banco.
 [functions.sincronizar-banco]
 verify_jwt = false
+
+[functions.avisos-agenda]
+verify_jwt = false

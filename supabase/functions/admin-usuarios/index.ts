@@ -21,7 +21,7 @@ const CORS = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
-const FUNCOES = ['tarefas', 'kanban', 'calendario', 'foco', 'painel', 'integracoes', 'financeiro']
+const FUNCOES = ['tarefas', 'agenda', 'kanban', 'calendario', 'foco', 'painel', 'integracoes', 'financeiro']
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const SUSPENSO_PARA_SEMPRE = '876000h' // 100 anos

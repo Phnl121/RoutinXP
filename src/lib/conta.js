@@ -9,7 +9,7 @@ import { emPrevia, previaAdmin } from '../dev/previa'
 const QR_PREVIA =
   'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 21"><path d="M0 0h7v7H0zM14 0h7v7h-7zM0 14h7v7H0zM9 2h2v2H9zM9 9h3v3H9zM15 10h2v4h-2zM10 15h4v2h-4zM18 17h3v4h-3z"/></svg>'
 
-export const FUNCOES = ['tarefas', 'kanban', 'calendario', 'foco', 'painel', 'integracoes', 'financeiro']
+export const FUNCOES = ['tarefas', 'agenda', 'kanban', 'calendario', 'foco', 'painel', 'integracoes', 'financeiro']
 
 export const ContaContexto = createContext(null)
 export const useConta = () => useContext(ContaContexto)
@@ -20,6 +20,7 @@ export const ehAdmin = (conta) => conta?.papel === 'admin'
 // Páginas do app e o que libera cada uma. Perfil fica sempre aberto.
 const ROTAS = [
   { para: '/', funcao: 'tarefas' },
+  { para: '/agenda', funcao: 'agenda' },
   { para: '/foco', funcao: 'foco' },
   { para: '/painel', funcao: 'painel' },
   { para: '/financeiro', funcao: 'financeiro' },

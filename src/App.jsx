@@ -3,6 +3,7 @@ import { useSession } from './lib/useSession'
 import Entrar from './pages/Entrar'
 import RedefinirSenha from './pages/RedefinirSenha'
 import Tarefas from './pages/Tarefas'
+import Agenda from './pages/Agenda'
 import PortaoConta from './pages/PortaoConta'
 import Perfil from './pages/Perfil'
 import Painel from './pages/Painel'
@@ -55,6 +56,7 @@ export default function App() {
           <Route path="/" element={<Tarefas />} />
           {/* A página Foco fica montada na casca (Shell) para o cronômetro e a música
               continuarem ao trocar de página; a rota só a mostra. */}
+          <Route path="/agenda" element={<Agenda />} />
           <Route path="/foco" element={null} />
           <Route path="/painel" element={<Painel />} />
           <Route path="/financeiro" element={<Financeiro />} />

@@ -117,7 +117,8 @@ export default function Shell({ session }) {
 
   // Aviso de vencimento (Financeiro): com a permissão já dada neste navegador, mantém a inscrição
   // do push em dia a cada abertura do app (o aviso é mandado pelo servidor, um dia antes).
-  const temFinanceiro = temFuncao(conta, 'financeiro')
+  // O mesmo vale para os lembretes da Agenda.
+  const temFinanceiro = temFuncao(conta, 'financeiro') || temFuncao(conta, 'agenda')
   useEffect(() => {
     if (temFinanceiro) garantirInscricao(registrarPush).catch(() => {})
   }, [temFinanceiro, registrarPush])
@@ -241,7 +242,7 @@ export default function Shell({ session }) {
           {/* No celular a barra não tem "Nova tarefa": o botão flutuante faz esse papel em
               todas as páginas (a de Tarefas tem o próprio, que abre o formulário ali mesmo; a do
               Financeiro tem o de novo lançamento). */}
-          {comTarefas && location.pathname !== '/' && !location.pathname.startsWith('/financeiro') && (
+          {comTarefas && location.pathname !== '/' && location.pathname !== '/agenda' && !location.pathname.startsWith('/financeiro') && (
             <button type="button" className="fab" onClick={novaTarefa} aria-label={t.topo.novaTarefa}>
               <IconeMais />
             </button>

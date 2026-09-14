@@ -26,7 +26,7 @@ function mensagemDoGanho(xp, motivo) {
 const nada = () => Promise.resolve([])
 const buscarTudo = (funcoes) => {
   const tem = (...lista) => lista.some((f) => funcoes.includes(f))
-  const comTarefas = tem('tarefas', 'kanban', 'calendario', 'foco', 'painel')
+  const comTarefas = tem('tarefas', 'kanban', 'calendario', 'foco', 'painel', 'agenda')
   return Promise.all([
     comTarefas ? api.listarCategorias() : nada(),
     comTarefas ? api.listarTarefas() : nada(),
@@ -40,7 +40,7 @@ const buscarTudo = (funcoes) => {
   ])
 }
 
-const TODAS = ['tarefas', 'kanban', 'calendario', 'foco', 'painel', 'integracoes']
+const TODAS = ['tarefas', 'kanban', 'calendario', 'foco', 'painel', 'integracoes', 'agenda']
 
 // Blocos de foco que não chegaram ao banco (sem internet): ficam guardados e vão depois.
 const chavePendentes = (userId) => `routinxp:focos-pendentes:${userId}`

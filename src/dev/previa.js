@@ -14,7 +14,7 @@ export const contaPrevia = funcoesDaUrl
   ? { papel: 'usuario', funcoes: funcoesDaUrl.split(','), senha_provisoria: false }
   : {
       papel: 'admin',
-      funcoes: ['tarefas', 'kanban', 'calendario', 'foco', 'painel', 'integracoes', 'financeiro'],
+      funcoes: ['tarefas', 'kanban', 'calendario', 'foco', 'painel', 'integracoes', 'financeiro', 'agenda'],
       senha_provisoria: false,
     }
 
@@ -122,6 +122,17 @@ let tarefas = [
   tarefa('t21', 'Planejar a semana', 'c4', null, 8640 + 200, 10),
   tarefa('t22', 'Mapa mental de História', 'c1', dia(-6), 8640 + 300, 15),
 ]
+
+// Algumas tarefas marcadas para um dia, para a Agenda (com e sem horário).
+const planejamentoPrevia = ({ planejadaDia, planejadaInicio, planejadaFim }) => ({
+  planejada_dia: planejadaDia || null,
+  planejada_inicio: planejadaDia && planejadaInicio ? `${planejadaInicio.slice(0, 5)}:00` : null,
+  planejada_fim: planejadaDia && planejadaInicio && planejadaFim ? `${planejadaFim.slice(0, 5)}:00` : null,
+})
+const PLANOS = { t1: [dia(0), '09:30', '10:00'], t2: [dia(1), '14:00', '16:00'], t4: [dia(2), null, null], t3: [dia(0), '16:30', '17:30'] }
+tarefas = tarefas.map((x) =>
+  PLANOS[x.id] ? { ...x, ...planejamentoPrevia({ planejadaDia: PLANOS[x.id][0], planejadaInicio: PLANOS[x.id][1], planejadaFim: PLANOS[x.id][2] }) } : x,
+)
 
 let tags = [
   { id: 'g1', nome: 'Urgente', cor: '#e27d8f' },
@@ -301,8 +312,9 @@ export const previaApi = {
     return espera(null)
   },
   listarTarefas: () => espera(tarefas),
-  criarTarefa: ({ titulo, descricao, categoriaId, dataPrevista, tagIds = [] }) => {
+  criarTarefa: ({ titulo, descricao, categoriaId, dataPrevista, tagIds = [], ...resto }) => {
     const x = {
+      ...planejamentoPrevia(resto),
       id: novoId(),
       titulo: titulo.trim(),
       descricao: descricao?.trim() || null,
@@ -317,11 +329,12 @@ export const previaApi = {
     tarefas = [...tarefas, x]
     return espera(x)
   },
-  atualizarTarefa: (id, { titulo, descricao, categoriaId, dataPrevista, tagIds = [] }) => {
+  atualizarTarefa: (id, { titulo, descricao, categoriaId, dataPrevista, tagIds = [], ...resto }) => {
     tarefas = tarefas.map((x) =>
       x.id === id
         ? {
             ...x,
+            ...('planejadaDia' in resto ? planejamentoPrevia(resto) : {}),
             titulo: titulo.trim(),
             descricao: descricao?.trim() || null,
             category_id: categoriaId,

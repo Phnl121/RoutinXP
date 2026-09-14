@@ -37,8 +37,8 @@ self.addEventListener('push', (evento) => {
   }
   // O app aberto pode ter avisado há pouco: substitui sem tocar de novo (o push precisa sempre
   // mostrar uma notificação, então ela é mostrada mesmo assim). Cada tipo de aviso tem a sua
-  // etiqueta: o de vencimento não apaga o do foco. Só o do foco fica até ser tocado.
-  const tag = dados.tag === 'routinxp-vencimento' ? dados.tag : 'routinxp-foco'
+  // etiqueta: o de vencimento e os da agenda não apagam o do foco. Só o do foco fica até ser tocado.
+  const tag = dados.tag === 'routinxp-vencimento' || /^routinxp-agenda-[\w-]+$/.test(dados.tag ?? '') ? dados.tag : 'routinxp-foco'
   evento.waitUntil(
     self.registration.getNotifications({ tag }).then((abertas) =>
       self.registration.showNotification(dados.titulo || 'RoutinXP', {

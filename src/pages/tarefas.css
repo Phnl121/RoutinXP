@@ -1581,3 +1581,51 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* ---------- Quando fazer (tarefa na Agenda) ---------- */
+
+.quando {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0.85rem 0.9rem 0.8rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--panel-2);
+}
+
+.quando__titulo {
+  padding: 0;
+}
+
+.quando__campos {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.6rem;
+}
+
+.quando__campos .field {
+  gap: 0.25rem;
+}
+
+.quando__rotulo {
+  font-weight: 600;
+}
+
+.quando .input {
+  background: var(--panel);
+}
+
+.quando .input:disabled {
+  opacity: 0.55;
+}
+
+@media (max-width: 30rem) {
+  .quando__campos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quando__campos .field:first-child {
+    grid-column: 1 / -1;
+  }
+}

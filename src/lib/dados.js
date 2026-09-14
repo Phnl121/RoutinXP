@@ -146,18 +146,26 @@ export async function moverTarefaColuna(id, colunaId) {
 }
 
 const CAMPOS_TAREFA =
-  'id, titulo, descricao, status, data_prevista, xp_value, created_at, completed_at, category_id, column_id, task_tags(tag_id)'
+  'id, titulo, descricao, status, data_prevista, planejada_dia, planejada_inicio, planejada_fim, xp_value, created_at, completed_at, category_id, column_id, task_tags(tag_id)'
 
 // O Supabase devolve as tags como [{ tag_id }]; a interface usa tag_ids: [id, ...].
 function comTags({ task_tags, ...tarefa }) {
   return { ...tarefa, tag_ids: (task_tags ?? []).map((x) => x.tag_id) }
 }
 
-const conteudo = ({ titulo, descricao, categoriaId, dataPrevista, colunaId }) => ({
+// Quando fazer (Agenda): o dia e, se houver, o horário. Sem dia, sem horário.
+const planejamento = ({ planejadaDia, planejadaInicio, planejadaFim }) => ({
+  planejada_dia: planejadaDia || null,
+  planejada_inicio: (planejadaDia && planejadaInicio) || null,
+  planejada_fim: (planejadaDia && planejadaInicio && planejadaFim) || null,
+})
+
+const conteudo = ({ titulo, descricao, categoriaId, dataPrevista, colunaId, ...resto }) => ({
   titulo: titulo.trim(),
   descricao: descricao?.trim() || null,
   category_id: categoriaId,
   data_prevista: dataPrevista || null,
+  ...('planejadaDia' in resto ? planejamento(resto) : {}),
   ...(colunaId !== undefined ? { column_id: colunaId || null } : {}),
 })
 

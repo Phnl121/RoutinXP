@@ -164,7 +164,7 @@ export function ConfirmarAcaoDialogo({ acao, conta, onConfirmar, onFechar }) {
   )
 }
 
-const FUNCOES_PADRAO = ['tarefas', 'kanban', 'calendario', 'foco', 'painel']
+const FUNCOES_PADRAO = ['tarefas', 'agenda', 'kanban', 'calendario', 'foco', 'painel']
 
 // Nova conta: e-mail, nome para identificar e funções. Devolve { id, email, senha }.
 export function NovaContaDialogo({ onCriada, onFechar }) {

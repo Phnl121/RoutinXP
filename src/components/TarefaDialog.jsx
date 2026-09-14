@@ -7,7 +7,19 @@ import { t } from '../i18n/pt-BR'
 
 const f = t.formTarefa
 
-export function TarefaDialog({ tarefa, categorias, tags = [], colunas = [], categoriaPadrao, onFechar, onSalvar, onExcluir, onCriarCategoria, onCriarTag }) {
+export function TarefaDialog({
+  tarefa,
+  inicial,
+  categorias,
+  tags = [],
+  colunas = [],
+  categoriaPadrao,
+  onFechar,
+  onSalvar,
+  onExcluir,
+  onCriarCategoria,
+  onCriarTag,
+}) {
   const ref = useRef(null)
   const id = useId()
   const [titulo, setTitulo] = useState(tarefa?.titulo ?? '')
@@ -17,15 +29,24 @@ export function TarefaDialog({ tarefa, categorias, tags = [], colunas = [], cate
   // Coluna do Kanban (só para pendentes, e só quando o usuário criou colunas próprias).
   const [colunaId, setColunaId] = useState(tarefa?.column_id ?? '')
   const mostrarColuna = colunas.length > 0 && tarefa?.status !== 'concluida'
-  const alternarTag = (tagId, marcar) => setTagIds((atuais) => (marcar ? [...new Set([...atuais, tagId])] : atuais.filter((x) => x !== tagId)))
+  const alternarTag = (tagId, marcar) =>
+    setTagIds((atuais) => (marcar ? [...new Set([...atuais, tagId])] : atuais.filter((x) => x !== tagId)))
   const [categoriaId, setCategoriaId] = useState(tarefa?.category_id ?? categoriaPadrao ?? categorias[0]?.id ?? '')
   const [data, setData] = useState(tarefa?.data_prevista ?? '')
+  // Quando fazer (Agenda): dia e, opcionalmente, horário. O prazo continua sendo a data limite.
+  const [planoDia, setPlanoDia] = useState(tarefa?.planejada_dia ?? inicial?.planejada_dia ?? '')
+  const [planoInicio, setPlanoInicio] = useState(tarefa?.planejada_inicio?.slice(0, 5) ?? '')
+  const [planoFim, setPlanoFim] = useState(tarefa?.planejada_fim?.slice(0, 5) ?? '')
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState(null)
   const fechar = () => ref.current?.close()
 
   async function enviar(evento) {
     evento.preventDefault()
+    if (planoDia && planoInicio && planoFim && planoFim <= planoInicio) {
+      setErro(f.quandoFimAntes)
+      return
+    }
     setSalvando(true)
     setErro(null)
     try {
@@ -35,6 +56,9 @@ export function TarefaDialog({ tarefa, categorias, tags = [], colunas = [], cate
         descricao,
         categoriaId,
         dataPrevista: data,
+        planejadaDia: planoDia,
+        planejadaInicio: planoDia ? planoInicio : '',
+        planejadaFim: planoDia && planoInicio ? planoFim : '',
         tagIds,
         ...(mostrarColuna ? { colunaId: colunas.some((c) => c.id === colunaId) ? colunaId : null } : {}),
       })
@@ -135,6 +159,70 @@ export function TarefaDialog({ tarefa, categorias, tags = [], colunas = [], cate
               </span>
             </div>
           </div>
+
+          <fieldset className="quando">
+            <legend className="label quando__titulo">{f.quando}</legend>
+            <div className="quando__campos">
+              <div className="field">
+                <label className="hint quando__rotulo" htmlFor={`${id}-qd`}>
+                  {f.quandoDia}
+                </label>
+                <input
+                  id={`${id}-qd`}
+                  className="input"
+                  type="date"
+                  value={planoDia}
+                  aria-describedby={`${id}-qdd`}
+                  onChange={(e) => setPlanoDia(e.target.value)}
+                />
+              </div>
+              <div className="field">
+                <label className="hint quando__rotulo" htmlFor={`${id}-qi`}>
+                  {f.quandoInicio}
+                </label>
+                <input
+                  id={`${id}-qi`}
+                  className="input"
+                  type="time"
+                  step={300}
+                  disabled={!planoDia}
+                  value={planoInicio}
+                  onChange={(e) => setPlanoInicio(e.target.value)}
+                />
+              </div>
+              <div className="field">
+                <label className="hint quando__rotulo" htmlFor={`${id}-qf`}>
+                  {f.quandoFim}
+                </label>
+                <input
+                  id={`${id}-qf`}
+                  className="input"
+                  type="time"
+                  step={300}
+                  disabled={!planoDia || !planoInicio}
+                  min={planoInicio || undefined}
+                  value={planoFim}
+                  onChange={(e) => setPlanoFim(e.target.value)}
+                />
+              </div>
+            </div>
+            <span className="hint" id={`${id}-qdd`}>
+              {f.quandoDica}{' '}
+              {planoDia && (
+                <button
+                  type="button"
+                  className="link-btn"
+                  onClick={() => {
+                    setPlanoDia('')
+                    setPlanoInicio('')
+                    setPlanoFim('')
+                  }}
+                >
+                  {f.quandoLimpar}
+                </button>
+              )}
+            </span>
+          </fieldset>
 
           {mostrarColuna && (
             <div className="field">

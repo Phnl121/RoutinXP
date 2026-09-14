@@ -263,3 +263,33 @@ export function IconeLua() {
     </svg>
   )
 }
+
+// Agenda (menu): calendário com um horário marcado.
+export function IconeAgenda() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <rect x="2" y="3" width="12" height="11" rx="2" stroke="currentColor" strokeWidth="2" />
+      <path d="M2 6.75h12M5.5 1.75v2.5M10.5 1.75v2.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      <rect x="5" y="9" width="3" height="2.25" rx="0.6" fill="currentColor" />
+    </svg>
+  )
+}
+
+// Prazo de tarefa (Agenda): bandeira.
+export function IconeBandeira() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M3.5 14.25V2.25M3.5 2.75h8.25l-1.75 3 1.75 3H3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+// Local de um evento: alfinete.
+export function IconeLocal() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M8 14.25s4.5-4.1 4.5-7.5a4.5 4.5 0 0 0-9 0c0 3.4 4.5 7.5 4.5 7.5Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      <circle cx="8" cy="6.75" r="1.5" fill="currentColor" />
+    </svg>
+  )
+}

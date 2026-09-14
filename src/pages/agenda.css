@@ -1,0 +1,954 @@
+/* ---------- Agenda (pedido do usuário, 2026-09-14) ----------
+   Três formas, uma para cada coisa: evento é um bloco cheio na cor da categoria; tarefa marcada
+   é um contorno tracejado com o círculo de concluir (a mesma cara da lista); prazo é uma
+   bandeira âmbar. A cor da categoria é identidade (como nos cards de tarefa), nunca estado. */
+
+.ag {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  width: min(100%, 90rem);
+  margin-inline: auto;
+  padding: clamp(1.25rem, 3vw, 2rem) clamp(1rem, 3vw, 2rem) 6rem;
+  container-type: inline-size;
+}
+
+.ag__cabeca {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+}
+
+.ag__periodo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  min-width: 0;
+}
+
+.ag__titulo-periodo {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ag__acoes {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ag__modos {
+  position: static;
+}
+
+.ag__barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+}
+
+.ag__filtro {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.ag__erro {
+  display: grid;
+  justify-items: start;
+  gap: 0.75rem;
+}
+
+.ag__visao[aria-busy='true'] {
+  opacity: 0.6;
+  transition: opacity 0.2s var(--ease-out);
+}
+
+/* ---------- Legenda ---------- */
+
+.ag-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.ag-legenda li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ag-legenda__marca {
+  width: 1.1rem;
+  height: 0.7rem;
+  border-radius: 3px;
+}
+
+.ag-legenda [data-tipo='evento'] .ag-legenda__marca {
+  background: color-mix(in oklab, var(--tom-parcelada) 30%, var(--panel));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--tom-parcelada) 60%, var(--rule));
+}
+
+.ag-legenda [data-tipo='tarefa'] .ag-legenda__marca {
+  border: 1.5px dashed var(--check-ring);
+}
+
+.ag-legenda svg {
+  width: 0.8rem;
+  height: 0.8rem;
+  color: var(--prazo-perto-texto);
+}
+
+/* ---------- Botão Novo e a escolha evento / tarefa ---------- */
+
+.ag-novo {
+  position: relative;
+}
+
+.ag-novo__botao svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.ag-novo__menu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  z-index: 30;
+  display: grid;
+  gap: 0.15rem;
+  min-width: 16rem;
+  padding: 0.35rem;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  animation: ag-menu 0.16s var(--ease-out);
+}
+
+@keyframes ag-menu {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.ag-novo__opcao {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.55rem 0.6rem;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.ag-novo__opcao:hover,
+.ag-novo__opcao:focus-visible {
+  background: var(--panel-2);
+  outline: none;
+}
+
+.ag-novo__icone {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 8px;
+}
+
+.ag-novo__icone svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* O ícone repete a forma da legenda: evento cheio, tarefa tracejada. */
+.ag-novo__opcao[data-tipo='evento'] .ag-novo__icone {
+  background: color-mix(in oklab, var(--tom-parcelada) 22%, var(--panel));
+  color: color-mix(in oklab, var(--tom-parcelada) 70%, var(--ink));
+}
+
+.ag-novo__opcao[data-tipo='tarefa'] .ag-novo__icone {
+  border: 1.5px dashed var(--check-ring);
+  color: var(--muted);
+}
+
+.ag-novo__nome {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.ag-novo__dica {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* No computador o Novo fica no cabeçalho; no celular, no botão flutuante. */
+.ag-novo[data-flutuante='true'] {
+  display: none;
+}
+
+.ag-novo__fab {
+  position: fixed;
+}
+
+.ag-novo[data-flutuante='true'] .ag-novo__menu {
+  position: fixed;
+  top: auto;
+  right: 1rem;
+  bottom: calc(5.5rem + env(safe-area-inset-bottom));
+}
+
+/* ---------- Círculo de concluir ---------- */
+
+.ag-check {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  padding: 0;
+  border: 2px solid var(--check-ring);
+  border-radius: 50%;
+  background: var(--panel);
+  color: transparent;
+  cursor: pointer;
+  transition:
+    background-color 0.2s var(--ease-out),
+    border-color 0.2s var(--ease-out);
+}
+
+/* Área de toque maior que o círculo. */
+.ag-check::after {
+  content: '';
+  position: absolute;
+  inset: -0.6rem;
+}
+
+.ag-check {
+  position: relative;
+}
+
+.ag-check svg {
+  width: 0.6rem;
+  height: 0.6rem;
+}
+
+.ag-check:hover:not(:disabled) {
+  border-color: var(--green);
+  color: var(--green-texto);
+}
+
+.ag-check[data-feita='true'] {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--on-green);
+  cursor: default;
+}
+
+/* ---------- Item compacto (dia todo, mês e lista) ---------- */
+
+.ag-item {
+  --c: var(--tom-outro);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  min-width: 0;
+  min-height: 1.6rem;
+  padding: 0.15rem 0.45rem;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.ag-item__titulo {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ag-item__hora {
+  flex: none;
+  font-weight: 700;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.ag-item__ponto {
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--c);
+}
+
+/* Evento com horário: ponto na cor e fundo só no hover. Dia todo: faixa cheia na cor. */
+.ag-item[data-tipo='evento']:hover {
+  background: color-mix(in oklab, var(--c) 14%, transparent);
+}
+
+.ag-item[data-tipo='evento'][data-dia-todo='true'] {
+  background: color-mix(in oklab, var(--c) 26%, var(--panel));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--c) 50%, var(--rule));
+}
+
+.ag-item[data-tipo='evento'][data-dia-todo='true']:hover {
+  background: color-mix(in oklab, var(--c) 34%, var(--panel));
+}
+
+.ag-item[data-tipo='tarefa'] {
+  padding: 0 0.1rem 0 0.4rem;
+  border: 1.5px dashed color-mix(in oklab, var(--c) 70%, var(--rule-strong));
+  background: var(--panel);
+  cursor: default;
+}
+
+.ag-item__abrir {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1;
+  min-width: 0;
+  min-height: 1.45rem;
+  padding: 0 0.35rem 0 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.ag-item[data-tipo='tarefa']:hover {
+  background: var(--panel-2);
+}
+
+.ag-item[data-feita='true'] .ag-item__titulo {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.ag-item[data-tipo='prazo'] {
+  border: 1px solid color-mix(in oklab, var(--prazo-perto) 45%, var(--rule));
+  background: color-mix(in oklab, var(--prazo-perto) 10%, var(--panel));
+  color: var(--prazo-perto-texto);
+}
+
+.ag-item[data-tipo='prazo'] svg {
+  flex: none;
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.ag-item[data-tipo='prazo']:hover {
+  background: color-mix(in oklab, var(--prazo-perto) 18%, var(--panel));
+}
+
+.ag-item:focus-visible,
+.ag-item__abrir:focus-visible,
+.ag-bloco:focus-visible,
+.ag-bloco__abrir:focus-visible {
+  outline: 2px solid var(--purple-soft);
+  outline-offset: 1px;
+}
+
+/* ---------- Grade de horas (Semana e Dia) ---------- */
+
+.ag-grade {
+  --gutter: 3.5rem;
+  display: block;
+  height: clamp(26rem, calc(100dvh - 15rem), 52rem);
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.ag-grade__cabeca,
+.ag-grade__topo,
+.ag-grade__corpo {
+  display: grid;
+  grid-template-columns: var(--gutter) repeat(var(--dias), minmax(0, 1fr));
+}
+
+.ag-grade__cabeca {
+  border-bottom: 1px solid var(--rule);
+}
+
+.ag-grade__canto {
+  align-self: center;
+  padding: 0 0.4rem;
+  font-size: 0.625rem;
+  text-align: right;
+}
+
+.ag-grade__dia {
+  display: grid;
+  justify-items: center;
+  gap: 0.1rem;
+  padding: 0.6rem 0.25rem 0.55rem;
+  border: 0;
+  border-left: 1px solid var(--rule);
+  background: none;
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.ag-grade__dia:disabled {
+  cursor: default;
+}
+
+.ag-grade__dia:hover:not(:disabled) {
+  background: var(--panel-2);
+}
+
+.ag-grade__semana {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ag-grade__numero {
+  display: grid;
+  place-items: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  font-size: 1.125rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hoje: a seleção neutra do app (Panel Two e contorno forte). */
+.ag-grade__dia[data-hoje='true'] .ag-grade__numero {
+  background: var(--panel-2);
+  box-shadow: inset 0 0 0 1px var(--rule-strong);
+}
+
+.ag-grade__dia[data-hoje='true'] .ag-grade__semana {
+  color: var(--ink);
+}
+
+.ag-grade__topo {
+  border-bottom: 1px solid var(--rule);
+  background: color-mix(in oklab, var(--panel-2) 45%, var(--panel));
+}
+
+.ag-grade__topo-dia {
+  display: grid;
+  align-content: start;
+  gap: 0.25rem;
+  max-height: 7.5rem;
+  margin: 0;
+  padding: 0.35rem;
+  overflow-y: auto;
+  list-style: none;
+  border-left: 1px solid var(--rule);
+}
+
+/* Cabeçalho dos dias e faixa de dia todo ficam presos no alto enquanto as horas rolam. */
+.ag-grade__fixo {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--panel);
+}
+
+.ag-grade__corpo {
+  position: relative;
+  padding-top: 0.5rem;
+}
+
+.ag-grade__horas {
+  display: grid;
+  grid-template-rows: repeat(24, var(--altura-hora));
+}
+
+.ag-grade__hora {
+  position: relative;
+  padding-right: 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-align: right;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  transform: translateY(-0.45rem);
+}
+
+.ag-grade__coluna {
+  position: relative;
+  height: calc(24 * var(--altura-hora));
+  border-left: 1px solid var(--rule);
+  /* Linha de cada hora cheia e, mais leve, de cada meia hora. */
+  background:
+    repeating-linear-gradient(to bottom, var(--rule) 0 1px, transparent 1px var(--altura-hora)),
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0 calc(var(--altura-hora) / 2),
+      color-mix(in oklab, var(--rule) 45%, transparent) calc(var(--altura-hora) / 2) calc(var(--altura-hora) / 2 + 1px),
+      transparent calc(var(--altura-hora) / 2 + 1px) var(--altura-hora)
+    );
+  cursor: cell;
+}
+
+.ag-grade__coluna[data-hoje='true'] {
+  background-color: color-mix(in oklab, var(--panel-2) 55%, transparent);
+}
+
+/* Agora: linha de tinta com um ponto, neutra (nem verde de XP, nem roxo de ação). */
+.ag-agora {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  height: 2px;
+  background: var(--ink);
+  pointer-events: none;
+}
+
+.ag-agora::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+/* ---------- Blocos ---------- */
+
+.ag-bloco {
+  --c: var(--tom-outro);
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  align-content: start;
+  gap: 0.05rem;
+  overflow: hidden;
+  padding: 0.3rem 0.45rem;
+  border: 0;
+  border-radius: 7px;
+  font: inherit;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+  transition: filter 0.15s var(--ease-out);
+}
+
+.ag-bloco[data-tipo='evento'] {
+  background: color-mix(in oklab, var(--c) 28%, var(--panel));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklab, var(--c) 55%, var(--rule)),
+    0 1px 0 0 var(--panel);
+}
+
+.ag-bloco[data-tipo='evento']:hover {
+  background: color-mix(in oklab, var(--c) 38%, var(--panel));
+}
+
+.ag-bloco[data-curto='true'] {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding-block: 0;
+}
+
+.ag-bloco__titulo {
+  overflow: hidden;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ag-bloco__hora {
+  overflow: hidden;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+.ag-bloco__local {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  overflow: hidden;
+  font-size: 0.6875rem;
+  color: color-mix(in oklab, var(--ink) 72%, transparent);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ag-bloco__local svg {
+  flex: none;
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+/* Tarefa marcada com horário: papel com contorno tracejado na cor da categoria. */
+.ag-bloco[data-tipo='tarefa'] {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  padding: 0.35rem 0.4rem;
+  border: 1.5px dashed color-mix(in oklab, var(--c) 70%, var(--rule-strong));
+  background: var(--panel);
+  cursor: default;
+}
+
+.ag-bloco[data-tipo='tarefa'][data-curto='true'] {
+  align-items: center;
+  padding-block: 0;
+}
+
+.ag-bloco[data-tipo='tarefa'] .ag-check {
+  margin-top: 0.05rem;
+}
+
+.ag-bloco__abrir {
+  display: grid;
+  align-content: start;
+  gap: 0.05rem;
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.ag-bloco[data-tipo='tarefa']:hover {
+  background: var(--panel-2);
+}
+
+.ag-bloco[data-feita='true'] .ag-bloco__titulo {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+/* ---------- Mês ---------- */
+
+.ag-mes {
+  overflow: hidden;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.ag-mes__semana,
+.ag-mes__dias {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.ag-mes__semana {
+  border-bottom: 1px solid var(--rule);
+}
+
+.ag-mes__semana span {
+  padding: 0.55rem 0.6rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.ag-mes__dia {
+  display: grid;
+  align-content: start;
+  gap: 0.2rem;
+  min-height: 7.25rem;
+  padding: 0.35rem;
+  border-right: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.ag-mes__dia:nth-child(7n) {
+  border-right: 0;
+}
+
+.ag-mes__dia[data-fora='true'] {
+  background: color-mix(in oklab, var(--panel-2) 50%, var(--panel));
+}
+
+.ag-mes__itens {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ag-mes__mais {
+  justify-self: start;
+  padding: 0.1rem 0.45rem;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.ag-mes__mais:hover {
+  background: var(--panel-2);
+  color: var(--ink);
+}
+
+/* ---------- Semana no celular: lista por dia ---------- */
+
+.ag-lista {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.ag-lista__dia {
+  padding: 0.8rem 0.9rem;
+  background: var(--panel);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+}
+
+.ag-lista__dia[data-hoje='true'] {
+  box-shadow: inset 0 0 0 1px var(--rule-strong);
+}
+
+.ag-lista__titulo {
+  margin: 0 0 0.4rem;
+}
+
+.ag-lista__titulo::first-letter {
+  text-transform: uppercase;
+}
+
+.ag-lista__nada {
+  margin: 0;
+}
+
+.ag-lista__itens {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ag-lista__linha {
+  display: grid;
+  grid-template-columns: 3.4rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ag-lista__hora {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.ag-lista .ag-item {
+  min-height: 2.5rem;
+  font-size: 0.875rem;
+}
+
+.ag-lista .ag-item[data-tipo='evento'] {
+  background: color-mix(in oklab, var(--c) 16%, var(--panel));
+}
+
+.ag-vazio {
+  padding: 2rem 0;
+  text-align: center;
+}
+
+/* ---------- Espaço estreito ---------- */
+
+@container (max-width: 62rem) {
+  .ag__cabeca {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'titulo acoes'
+      'periodo periodo';
+  }
+
+  .ag__cabeca .main__titulo {
+    grid-area: titulo;
+  }
+
+  .ag__periodo {
+    grid-area: periodo;
+  }
+
+  .ag__acoes {
+    grid-area: acoes;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .ag-novo[data-flutuante='true'] {
+    display: block;
+  }
+
+  .ag__acoes .ag-novo {
+    display: none;
+  }
+
+  .ag-grade {
+    --gutter: 2.75rem;
+  }
+
+  .ag-grade {
+    height: calc(100dvh - 15.5rem);
+  }
+
+  .ag-mes__dia {
+    min-height: 4.25rem;
+    padding: 0.2rem;
+  }
+
+  /* No mês do celular os itens viram marcas: a lista completa fica no Dia. */
+  .ag-mes .ag-item {
+    min-height: 0.45rem;
+    height: 0.45rem;
+    padding: 0;
+    overflow: hidden;
+    font-size: 0;
+    pointer-events: none;
+  }
+
+  .ag-mes .ag-item[data-tipo='evento'] {
+    background: var(--c);
+  }
+
+  .ag-mes .ag-item[data-tipo='tarefa'] {
+    background: none;
+  }
+
+  .ag-mes .ag-item :is(svg, .ag-check, .ag-item__ponto) {
+    display: none;
+  }
+
+  .ag-mes__dia {
+    cursor: pointer;
+  }
+
+  .ag-legenda {
+    display: none;
+  }
+}
+
+/* Cabeçalho e faixa de dia todo reservam o espaço da barra de rolagem da grade: as colunas
+   ficam alinhadas com as de cima. */
+.ag-mes__dia,
+.ag-mes__itens li,
+.ag-grade__topo-dia li {
+  min-width: 0;
+}
+
+.ag-mes__itens,
+.ag-grade__topo-dia {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* ---------- Janela do evento ---------- */
+
+.ev-dia-todo {
+  justify-self: start;
+}
+
+.ev-periodo {
+  display: grid;
+  gap: 0.6rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.ev-periodo__linha {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr) minmax(0, 8.5rem);
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.ev-periodo__nome {
+  margin: 0;
+}
+
+.ev-notas {
+  display: grid;
+  gap: 0.25rem;
+  margin-top: -0.5rem;
+}
+
+.ev-lembrete .link-btn {
+  font-size: inherit;
+}
+
+.ev-excluir {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
+@media (max-width: 30rem) {
+  .ev-periodo__linha {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 7.5rem);
+  }
+
+  .ev-periodo__nome {
+    grid-column: 1 / -1;
+    margin-bottom: -0.3rem;
+  }
+}
