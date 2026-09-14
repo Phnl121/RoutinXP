@@ -57,7 +57,11 @@ function MenuNovo({ onEvento, onTarefa, flutuante = false }) {
   useEffect(() => {
     if (!aberto) return undefined
     const fora = (evento) => !raiz.current?.contains(evento.target) && setAberto(false)
-    const tecla = (evento) => evento.key === 'Escape' && setAberto(false)
+    const tecla = (evento) => {
+      if (evento.key !== 'Escape') return
+      setAberto(false)
+      raiz.current?.querySelector('button')?.focus()
+    }
     document.addEventListener('pointerdown', fora)
     document.addEventListener('keydown', tecla)
     return () => {
@@ -70,11 +74,15 @@ function MenuNovo({ onEvento, onTarefa, flutuante = false }) {
     acao()
   }
   return (
-    <div className="ag-novo" data-flutuante={flutuante} ref={raiz}>
+    <div
+      className="ag-novo"
+      data-flutuante={flutuante}
+      ref={raiz}
+      onBlur={(evento) => !evento.currentTarget.contains(evento.relatedTarget) && setAberto(false)}
+    >
       <button
         type="button"
         className={flutuante ? 'fab ag-novo__fab' : 'btn btn--compacto ag-novo__botao'}
-        aria-haspopup="menu"
         aria-expanded={aberto}
         aria-label={a.novoRotulo}
         onClick={() => setAberto((x) => !x)}
@@ -83,8 +91,8 @@ function MenuNovo({ onEvento, onTarefa, flutuante = false }) {
         {!flutuante && a.novo}
       </button>
       {aberto && (
-        <div className="ag-novo__menu" role="menu">
-          <button type="button" role="menuitem" className="ag-novo__opcao" data-tipo="evento" autoFocus onClick={() => escolher(onEvento)}>
+        <div className="ag-novo__menu">
+          <button type="button" className="ag-novo__opcao" data-tipo="evento" autoFocus onClick={() => escolher(onEvento)}>
             <span className="ag-novo__icone" aria-hidden="true">
               <IconeAgenda />
             </span>
@@ -93,7 +101,7 @@ function MenuNovo({ onEvento, onTarefa, flutuante = false }) {
               <span className="ag-novo__dica">{a.novoEventoDica}</span>
             </span>
           </button>
-          <button type="button" role="menuitem" className="ag-novo__opcao" data-tipo="tarefa" onClick={() => escolher(onTarefa)}>
+          <button type="button" className="ag-novo__opcao" data-tipo="tarefa" onClick={() => escolher(onTarefa)}>
             <span className="ag-novo__icone" aria-hidden="true">
               <IconeCheck />
             </span>
@@ -114,6 +122,11 @@ export default function Agenda() {
   const { concluirComVoo, voos } = useConcluirComVoo(d)
   const estreito = useEstreito()
   const [params, setParams] = useSearchParams()
+  const [, setTique] = useState(0)
+  useEffect(() => {
+    const timer = setInterval(() => setTique((n) => n + 1), 60000)
+    return () => clearInterval(timer)
+  }, [])
   const hoje = agoraBrasilia().slice(0, 10)
   const modoUrl = params.get('modo')
   const modo = MODOS.includes(modoUrl) ? modoUrl : MODOS.includes(lerSalvo(CHAVE_MODO, '')) ? lerSalvo(CHAVE_MODO, '') : 'semana'
@@ -141,7 +154,14 @@ export default function Agenda() {
   ]
 
   const passo = { dia: (n) => somarDias(cursor, n), semana: (n) => somarDias(cursor, 7 * n), mes: (n) => somarMeses(cursor, n) }[modo]
-  const tituloPeriodo = modo === 'dia' ? (estreito ? rotuloDiaCurto(cursor) : rotuloDiaLongo(cursor)) : modo === 'semana' ? rotuloSemana(cursor) : rotuloMes(cursor)
+  const tituloPeriodo =
+    modo === 'dia'
+      ? estreito
+        ? rotuloDiaCurto(cursor)
+        : rotuloDiaLongo(cursor)
+      : modo === 'semana'
+        ? rotuloSemana(cursor)
+        : rotuloMes(cursor)
 
   // Dia sugerido para criar algo: o do Dia aberto; na semana ou mês, hoje (se estiver na tela).
   const diaParaNovo = modo === 'dia' ? cursor : dias.includes(hoje) ? hoje : diaInicio
@@ -292,7 +312,8 @@ export default function Agenda() {
       )}
 
       <VoosXp voos={voos} />
-      <Toast aviso={aviso ?? d.aviso} onDesfazer={d.desfazerExclusao} onFechar={aviso ? fecharAviso : d.fecharAviso} />
+      {/* Aviso de tarefa (com Desfazer) passa na frente do aviso de evento. */}
+      <Toast aviso={d.aviso ?? aviso} onDesfazer={d.desfazerExclusao} onFechar={d.aviso ? d.fecharAviso : fecharAviso} />
     </>
   )
 }

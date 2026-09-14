@@ -109,13 +109,20 @@ function Bloco({ bloco, categoriasPorId, onAbrir, onConcluir }) {
     top: `${(bloco.de / 60) * ALTURA_HORA}px`,
     height: `${altura}px`,
     left: `calc(${(bloco.coluna / bloco.colunas) * 100}% + 2px)`,
-    width: `calc(${100 / bloco.colunas}% - 4px)`,
+    width: `calc(${((bloco.largura ?? 1) * 100) / bloco.colunas}% - 4px)`,
     ...(cor ? { '--c': cor } : {}),
   }
   const horario = rotuloHorario(item, rotuloDiaCurto)
   if (item.tipo === 'tarefa') {
     return (
-      <div className="ag-bloco" data-tipo="tarefa" data-curto={curto} data-feita={item.tarefa.status === 'concluida'} style={estilo}>
+      <div
+        className="ag-bloco"
+        data-tipo="tarefa"
+        data-curto={curto}
+        data-feita={item.tarefa.status === 'concluida'}
+        style={estilo}
+        title={tituloDoItem(item)}
+      >
         <Concluir tarefa={item.tarefa} onConcluir={onConcluir} />
         <button type="button" className="ag-bloco__abrir" onClick={() => onAbrir(item)} aria-label={rotuloDoItem(item)}>
           <span className="ag-bloco__titulo">{item.tarefa.titulo}</span>
@@ -128,6 +135,7 @@ function Bloco({ bloco, categoriasPorId, onAbrir, onConcluir }) {
     <button
       type="button"
       className="ag-bloco"
+      title={tituloDoItem(item)}
       data-tipo="evento"
       data-curto={curto}
       data-sem-cor={!cor}
@@ -255,7 +263,15 @@ export function GradeMes({ cursor, itens, categoriasPorId, onAbrir, onConcluir, 
           const doDia = [...topo, ...blocos.map((b) => b.item).sort((x, y) => x.inicio.localeCompare(y.inicio))]
           const extras = doDia.length - MAX_NO_MES
           return (
-            <div key={dia} className="ag-mes__dia" data-fora={!mesmoMes(dia, cursor)} data-hoje={dia === hoje}>
+            // Tocar em qualquer lugar do dia abre o Dia (no celular os itens viram marcas).
+            // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+            <div
+              key={dia}
+              className="ag-mes__dia"
+              data-fora={!mesmoMes(dia, cursor)}
+              data-hoje={dia === hoje}
+              onClick={(evento) => evento.target === evento.currentTarget && onAbrirDia(dia)}
+            >
               <button
                 type="button"
                 className="cal-num"

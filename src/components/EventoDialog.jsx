@@ -10,6 +10,7 @@ import { t } from '../i18n/pt-BR'
 const e = t.agenda.evento
 const REPETICOES = ['nao', 'diaria', 'semanal', 'mensal', 'anual']
 const LEMBRETES = ['sem', 0, 10, 30, 60, 1440]
+const LEMBRETES_DIA_TODO = ['sem', 0, 1440]
 
 // Aviso sobre o lembrete: só aparece quando há lembrete e este aparelho ainda não recebe push.
 function AvisoLembrete({ registrarPush }) {
@@ -50,7 +51,11 @@ export function EventoDialog({
 }) {
   const ref = useRef(null)
   const id = useId()
-  const base = evento ?? inicial
+  // Numa repetição, o formulário mostra o dia clicado (com o horário da série).
+  const deslocamento = evento && ocorrencia ? paraMinutos(ocorrencia) - paraMinutos(diaDe(evento.inicio)) : 0
+  const base = evento
+    ? { ...evento, inicio: deMinutos(paraMinutos(evento.inicio) + deslocamento), fim: deMinutos(paraMinutos(evento.fim) + deslocamento) }
+    : inicial
   const [titulo, setTitulo] = useState(evento?.titulo ?? '')
   const [diaTodo, setDiaTodo] = useState(Boolean(base?.dia_todo))
   const [diaInicio, setDiaInicio] = useState(diaDe(base.inicio))
@@ -89,6 +94,9 @@ export function EventoDialog({
     if (repeticao !== 'nao' && repetirAte && repetirAte < diaInicio) return setErro(e.ateAntes)
     setSalvando(true)
     setErro(null)
+    // Editar a partir de uma repetição move a série inteira pelo mesmo tanto.
+    const serieInicio = deMinutos(paraMinutos(inicio) - deslocamento)
+    const serieFim = deMinutos(paraMinutos(fim) - deslocamento)
     try {
       await onSalvar({
         id: evento?.id,
@@ -96,8 +104,8 @@ export function EventoDialog({
         descricao,
         local,
         dia_todo: diaTodo,
-        inicio,
-        fim,
+        inicio: serieInicio,
+        fim: serieFim,
         categoria_id: categoriaId,
         repeticao,
         repetir_ate: repetirAte,
@@ -169,6 +177,7 @@ export function EventoDialog({
               checked={diaTodo}
               onChange={(x) => {
                 setDiaTodo(x.target.checked)
+                if (x.target.checked && !LEMBRETES_DIA_TODO.includes(lembrete === 'sem' ? 'sem' : Number(lembrete))) setLembrete(0)
                 if (!x.target.checked && diaFim === diaInicio && horaFim <= horaInicio)
                   setHoraFim(horaDe(deMinutos(paraMinutos(`${diaInicio}T${horaInicio}`) + 60)))
               }}
@@ -265,7 +274,7 @@ export function EventoDialog({
               </label>
               <span className="select">
                 <select id={`${id}-lb`} className="input" value={lembrete} onChange={(x) => setLembrete(x.target.value)}>
-                  {LEMBRETES.map((v) => (
+                  {(diaTodo ? LEMBRETES_DIA_TODO : LEMBRETES).map((v) => (
                     <option key={v} value={v}>
                       {e.lembretes[v]}
                     </option>

@@ -101,13 +101,23 @@ function iniciosEntre(e: Evento, de: number, ate: number) {
 
 const hhmm = (texto: string) => texto.slice(11, 16)
 
-function texto(e: Evento, ocorrencia: string) {
-  const quando: Record<number, string> = { 0: 'agora', 10: 'em 10 min', 30: 'em 30 min', 60: 'em 1 hora', 1440: 'amanhã' }
+// "em 25 min", "agora", "amanhã" ou "hoje": pelo tempo que falta de verdade (o evento pode ter
+// sido criado dentro da janela do lembrete).
+function quando(e: Evento, ocorrencia: string, agora: number) {
+  if (e.dia_todo) return ocorrencia.slice(0, 10) === deMin(agora).slice(0, 10) ? 'hoje' : 'amanhã'
+  const falta = Math.round((paraMin(ocorrencia) - agora) / 5) * 5
+  if (falta <= 0) return 'agora'
+  if (falta >= 1380) return 'amanhã'
+  if (falta >= 60) return `em ${Math.floor(falta / 60)} h${falta % 60 ? ` ${falta % 60} min` : ''}`
+  return `em ${falta} min`
+}
+
+function texto(e: Evento, ocorrencia: string, agora: number) {
   const duracao = paraMin(e.fim) - paraMin(e.inicio)
   const fim = deMin(paraMin(ocorrencia) + duracao)
   const horario = e.dia_todo ? 'Dia todo' : `${hhmm(ocorrencia)}–${hhmm(fim)}`
   return {
-    titulo: `${e.titulo} · ${e.dia_todo && e.lembrete_min === 0 ? 'hoje' : quando[e.lembrete_min]}`,
+    titulo: `${e.titulo} · ${quando(e, ocorrencia, agora)}`,
     corpo: [horario, e.local].filter(Boolean).join(' · '),
   }
 }
@@ -178,31 +188,50 @@ Deno.serve(async (req) => {
   if (erroInscricoes) return resposta({ erro: 'falha' }, 500)
 
   const vencidas: string[] = []
+  // Ocorrências que chegaram a pelo menos um aparelho (ou que não têm aparelho para chegar).
+  const entregues = new Set<string>()
+  const tentadas = new Set<string>()
   let enviados = 0
   await Promise.allSettled(
     aEnviar.flatMap(({ evento, ocorrencia }) =>
       ((inscricoes ?? []) as Inscricao[])
         .filter((s) => s.user_id === evento.user_id)
         .map(async (s) => {
+          const id = chave(evento.id, ocorrencia)
+          tentadas.add(id)
           try {
             await webpush.sendNotification(
               { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },
               JSON.stringify({
-                ...texto(evento, ocorrencia),
+                ...texto(evento, ocorrencia, agora),
                 url: `/agenda?modo=dia&dia=${ocorrencia.slice(0, 10)}`,
                 tag: `routinxp-agenda-${evento.id}`,
               }),
               { TTL: 30 * 60, urgency: 'high' },
             )
             enviados += 1
+            entregues.add(id)
           } catch (erro) {
             const status = (erro as { statusCode?: number })?.statusCode
-            if (status === 404 || status === 410) vencidas.push(s.id)
+            if (status === 404 || status === 410) {
+              vencidas.push(s.id)
+              // Aparelho que não existe mais não merece nova tentativa.
+              entregues.add(id)
+            }
           }
         }),
     ),
   )
 
   if (vencidas.length) await admin.from('push_subscriptions').delete().in('id', [...new Set(vencidas)])
+
+  // Falha passageira (serviço de push fora, tempo esgotado): libera o registro para a próxima
+  // execução, 5 min depois, ainda dentro da janela, tentar de novo.
+  for (const { evento, ocorrencia } of aEnviar) {
+    const id = chave(evento.id, ocorrencia)
+    if (tentadas.has(id) && !entregues.has(id)) {
+      await admin.from('agenda_avisos_enviados').delete().match({ evento_id: evento.id, ocorrencia })
+    }
+  }
   return resposta({ enviados, removidas: vencidas.length })
 })

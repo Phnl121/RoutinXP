@@ -162,7 +162,11 @@ export function itensDoDia(itens, dia) {
   return { topo, blocos: organizarColunas(blocos) }
 }
 
-// Blocos que se sobrepõem dividem a largura: cada um ganha uma coluna e o total do grupo.
+// Fim na tela: um bloco curto tem altura mínima de ~25 min.
+const fimVisual = (bloco) => Math.max(bloco.ate, bloco.de + 26)
+
+// Blocos que se sobrepõem dividem a largura: cada um ganha uma coluna e o total do grupo; quando
+// as colunas à direita estão livres naquele horário, o bloco se estende por elas (`largura`).
 function organizarColunas(blocos) {
   const ordenados = [...blocos].sort((a, b) => a.de - b.de || b.ate - a.ate)
   const grupos = []
@@ -174,19 +178,28 @@ function organizarColunas(blocos) {
       grupo = []
     }
     grupo.push(bloco)
-    fimGrupo = Math.max(fimGrupo, bloco.ate)
+    fimGrupo = Math.max(fimGrupo, fimVisual(bloco))
   }
   if (grupo.length) grupos.push(grupo)
   for (const g of grupos) {
     const colunas = []
     for (const bloco of g) {
-      // Um bloco curto (menos de 20 min) ocupa visualmente 20 min.
       const i = colunas.findIndex((ate) => ate <= bloco.de)
       const coluna = i >= 0 ? i : colunas.length
-      colunas[coluna] = Math.max(bloco.ate, bloco.de + 20)
+      colunas[coluna] = fimVisual(bloco)
       bloco.coluna = coluna
     }
-    for (const bloco of g) bloco.colunas = colunas.length
+    for (const bloco of g) {
+      bloco.colunas = colunas.length
+      let largura = 1
+      while (
+        bloco.coluna + largura < colunas.length &&
+        !g.some((outro) => outro.coluna === bloco.coluna + largura && outro.de < fimVisual(bloco) && fimVisual(outro) > bloco.de)
+      ) {
+        largura++
+      }
+      bloco.largura = largura
+    }
   }
   return ordenados
 }

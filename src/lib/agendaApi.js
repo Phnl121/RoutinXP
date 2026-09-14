@@ -21,9 +21,9 @@ export async function listarEventos(diaInicio, diaFim) {
       .from('agenda_eventos')
       .select(CAMPOS_EVENTO)
       .lt('inicio', depois)
-      .or(`and(repeticao.eq.nao,fim.gte.${antes}),and(repeticao.neq.nao,or(repetir_ate.is.null,repetir_ate.gte.${diaInicio}))`)
+      .or(`and(repeticao.eq.nao,fim.gte.${antes}),and(repeticao.neq.nao,or(repetir_ate.is.null,repetir_ate.gte.${somarDias(diaInicio, -366)}))`)
       .order('inicio')
-      .limit(2000),
+      .limit(5000),
   )
 }
 
