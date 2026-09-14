@@ -6,13 +6,12 @@ const p = t.financeiro.placar
 
 // Placar do mês em quatro cards (Entradas, Saídas, Resultado, Poupado), comparado com o mês
 // anterior (no mês em andamento, até o mesmo dia). Recebe os lançamentos já filtrados.
-export function PlacarMes({ mes, doMes, doMesAnterior, mesAnterior, contaId, atalho }) {
-  const placar = somarFiltro(doMes, contaId)
+export function PlacarMes({ mes, doMes, doMesAnterior, mesAnterior, atalho }) {
+  const placar = somarFiltro(doMes)
   const emAndamento = mes === mesAtual()
   const diaHoje = Number(hojeBrasilia().slice(8, 10))
   const antes = somarFiltro(
     doMesAnterior.filter((x) => !emAndamento || Number(x.data.slice(8, 10)) <= diaHoje),
-    contaId,
   )
   const nomeAntes = emAndamento ? p.ateDia(nomeDoMes(mesAnterior), diaHoje) : nomeDoMes(mesAnterior)
   const poupado = placar.entradas > 0 ? Math.round((placar.resultado / placar.entradas) * 100) : null

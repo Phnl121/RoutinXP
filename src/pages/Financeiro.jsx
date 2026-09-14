@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { useFinanceiro } from '../lib/useFinanceiro'
 import { useAcoesFinanceiro } from '../lib/useAcoesFinanceiro'
-import { mesAtual, nomeDoMes } from '../lib/dinheiro'
+import { mesAtual, mesValido, nomeDoMes } from '../lib/dinheiro'
 import { ehAdmin, useConta } from '../lib/conta'
 import { mensagemErroDados } from '../lib/dadosErros'
 import { ContasCartoes, ListaPorDia, MesSeletor } from '../components/FinanceiroLista'
@@ -20,7 +20,9 @@ const l = fin.lancamentos
 // Lançamentos (pedido do usuário, 2026-09-14): só lançar entradas e saídas e categorizá-las.
 // Placar, gráficos, DRE e filtros ficam na página Controle, logo abaixo no menu.
 export default function Financeiro() {
-  const [mes, setMes] = useState(mesAtual)
+  const [params, setParams] = useSearchParams()
+  const mes = mesValido(params.get('mes')) ?? mesAtual()
+  const setMes = (novo) => setParams({ mes: novo }, { replace: true })
   const d = useFinanceiro(mes)
   const acoes = useAcoesFinanceiro(d)
   const { setDlg, setAviso, sugerirRegra } = acoes
@@ -114,19 +116,10 @@ export default function Financeiro() {
                     { valor: 'revisar', rotulo: fin.revisar.aRevisar(aRevisar.length) },
                   ]}
                 />
-                <Link to="/financeiro/controle" className="link-btn">
+                <Link to={`/financeiro/controle?mes=${mes}`} className="link-btn">
                   {fin.verControle}
                 </Link>
               </div>
-
-              {!revisando && aRevisar.length > 0 && (
-                <p className="fin-revisar">
-                  <span>{fin.revisar.faixa(aRevisar.length)}</span>
-                  <button type="button" className="link-btn" onClick={() => setVisao('revisar')}>
-                    {fin.revisar.ver}
-                  </button>
-                </p>
-              )}
 
               {d.carregandoMes ? (
                 <p className="label" aria-busy="true">

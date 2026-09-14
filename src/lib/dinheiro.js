@@ -137,18 +137,13 @@ export function montarDre(transacoes, categoriaPorId) {
 // Variação percentual inteira entre dois valores; null quando não há base de comparação.
 export const variacaoPct = (atual, anterior) => (anterior > 0 ? Math.round(((atual - anterior) / anterior) * 100) : null)
 
-// Entradas, saídas e transferências somadas; com uma conta escolhida, a transferência entra ou sai
-// daquela conta. Lançamentos com data futura (parcelas agendadas) não contam.
-export function somarFiltro(lista, contaId) {
+// Entradas e saídas dos lançamentos que já aconteceram (parcelas agendadas não contam).
+// Transferências entre contas próprias ficam fora de todos os números do Controle, como no
+// resultado do mês e nos gráficos; o filtro por conta avisa isso.
+export function somarFiltro(lista) {
   const hojeDia = hojeBrasilia()
-  const efetivas = lista.filter((x) => x.data <= hojeDia)
-  if (!contaId) return somar(efetivas)
-  const soma = efetivas.reduce(
-    (s, x) => {
-      const entra = x.tipo === 'entrada' || (x.tipo === 'transferencia' && x.conta_destino_id === contaId)
-      return entra ? { ...s, entradas: s.entradas + x.valor_centavos } : { ...s, saidas: s.saidas + x.valor_centavos }
-    },
-    { entradas: 0, saidas: 0 },
-  )
-  return { ...soma, resultado: soma.entradas - soma.saidas }
+  return somar(lista.filter((x) => x.data <= hojeDia))
 }
+
+// "2026-08" vindo do endereço; qualquer outra coisa vira null.
+export const mesValido = (texto) => (/^\d{4}-(0[1-9]|1[0-2])$/.test(texto ?? '') ? texto : null)

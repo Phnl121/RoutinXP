@@ -1877,3 +1877,36 @@ button.fin-dre__botao:hover {
     padding: 1.1rem;
   }
 }
+
+@container (max-width: 30rem) {
+  .fin-dre__botao {
+    grid-template-columns: minmax(0, 1fr) 2.25rem auto;
+    gap: 0.4rem;
+  }
+
+  .fin-dre__nome {
+    white-space: normal;
+  }
+
+  .fin-dre__rotulo {
+    overflow: visible;
+  }
+
+  .fin-dre__resultado .fin-dre__valor {
+    font-size: 1rem;
+  }
+}
+
+.ctl-aviso {
+  margin: 0;
+}
+
+.fin-lanc__barra {
+  flex-wrap: nowrap;
+}
+
+@container (max-width: 30rem) {
+  .fin-lanc__barra {
+    flex-wrap: wrap;
+  }
+}

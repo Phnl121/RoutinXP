@@ -1,7 +1,18 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Link, useSearchParams } from 'react-router'
 import { MESES_DO_RESUMO, useFinanceiro } from '../lib/useFinanceiro'
 import { useAcoesFinanceiro } from '../lib/useAcoesFinanceiro'
-import { andarMes, formatarReais, gastosPorCategoria, mesAtual, mesesAte, montarDre, somarFiltro, somarPorMes } from '../lib/dinheiro'
+import {
+  andarMes,
+  formatarReais,
+  mesValido,
+  gastosPorCategoria,
+  mesAtual,
+  mesesAte,
+  montarDre,
+  somarFiltro,
+  somarPorMes,
+} from '../lib/dinheiro'
 import { hojeBrasilia } from '../lib/datas'
 import { ContasCartoes, ListaPorDia, MesSeletor } from '../components/FinanceiroLista'
 import { FinanceiroDialogos } from '../components/FinanceiroDialogos'
@@ -21,15 +32,25 @@ const c = t.controle
 // Lançamentos. Placar com comparação, filtros que valem para todos os números, para onde foi o
 // dinheiro, resultado do mês (DRE), evolução, saldos e gastos fixos.
 export default function Controle() {
-  const [mes, setMes] = useState(mesAtual)
+  // O mês vem do endereço (?mes=2026-08): "Ver o controle do mês" abre o mesmo mês de Lançamentos.
+  const [params, setParams] = useSearchParams()
+  const mes = mesValido(params.get('mes')) ?? mesAtual()
+  const setMes = (novo) => setParams({ mes: novo }, { replace: true })
   const d = useFinanceiro(mes)
   const acoes = useAcoesFinanceiro(d)
+  const rolarParaLista = useRef(false)
   const [busca, setBusca] = useState('')
   const [tipo, setTipo] = useState('todos')
   const [categoriaId, setCategoriaId] = useState('')
   const [contaId, setContaId] = useState('')
 
   const contaPorId = useMemo(() => Object.fromEntries(d.contas.map((x) => [x.id, x])), [d.contas])
+  // Rolar só depois de a lista filtrada estar na tela (a página muda de altura ao filtrar).
+  useEffect(() => {
+    if (!rolarParaLista.current) return
+    rolarParaLista.current = false
+    document.getElementById('ctl-lista')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [categoriaId])
   const categoriaPorId = useMemo(() => Object.fromEntries(d.categorias.map((x) => [x.id, x])), [d.categorias])
 
   if (d.estado !== 'pronto') {
@@ -70,7 +91,9 @@ export default function Controle() {
     d.historico.filter((x) => x.data <= hojeDia && passa(x)),
     mesesAte(mes, MESES_DO_RESUMO),
   )
-  const soma = somarFiltro(doMes, contaId)
+  const soma = somarFiltro(doMes)
+  const semContas = d.contas.length === 0
+  const soTransferencias = tipo === 'transferencia'
 
   const limpar = () => {
     setBusca('')
@@ -81,7 +104,7 @@ export default function Controle() {
   const verCategoria = (id) => {
     setCategoriaId(id)
     setTipo('todos')
-    document.getElementById('ctl-lista')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    rolarParaLista.current = true
   }
 
   return (
@@ -93,91 +116,119 @@ export default function Controle() {
           <div className="fin__acoes" />
         </header>
 
-        <PlacarMes mes={mes} doMes={doMes} doMesAnterior={doMesAnterior} mesAnterior={mesAnterior} contaId={contaId} />
+        {semContas ? (
+          <section className="panel fin-comecar" aria-labelledby="ctl-comecar">
+            <h2 id="ctl-comecar" className="fin-comecar__titulo">
+              {fin.comecar.titulo}
+            </h2>
+            <p className="fin-comecar__texto">{c.semContas}</p>
+            <Link to="/financeiro" className="btn">
+              {c.irLancamentos}
+            </Link>
+          </section>
+        ) : (
+          <>
+            {!soTransferencias && <PlacarMes mes={mes} doMes={doMes} doMesAnterior={doMesAnterior} mesAnterior={mesAnterior} />}
 
-        <section className="panel ctl-filtros" aria-labelledby="ctl-filtros">
-          <h2 id="ctl-filtros" className="label">
-            {c.filtros}
-          </h2>
-          <div className="fin-filtros">
-            <label className="fin-busca">
-              <IconeLupa />
-              <span className="visually-hidden">{l.busca}</span>
-              <input className="input" type="search" placeholder={l.busca} value={busca} onChange={(e) => setBusca(e.target.value)} />
-            </label>
-            <Segmentos
-              rotulo={l.tipoRotulo}
-              valor={tipo}
-              onMudar={setTipo}
-              opcoes={['todos', 'entrada', 'saida', 'transferencia'].map((v) => ({ valor: v, rotulo: l.tipos[v] }))}
-            />
-            <span className="select fin-filtros__select">
-              <select className="input" aria-label={t.formTarefa.categoria} value={categoriaId} onChange={(e) => setCategoriaId(e.target.value)}>
-                <option value="">{l.todasCategorias}</option>
-                <option value="revisar">{l.semCategoria}</option>
-                {d.categorias.map((x) => (
-                  <option key={x.id} value={x.id}>
-                    {x.nome} · {x.tipo === 'despesa' ? fin.formLancamento.tipos.saida : fin.formLancamento.tipos.entrada}
-                  </option>
-                ))}
-              </select>
-            </span>
-            <span className="select fin-filtros__select">
-              <select className="input" aria-label={fin.contas.titulo} value={contaId} onChange={(e) => setContaId(e.target.value)}>
-                <option value="">{l.todasContas}</option>
-                {d.contas.map((x) => (
-                  <option key={x.id} value={x.id}>
-                    {x.nome}
-                  </option>
-                ))}
-              </select>
-            </span>
-          </div>
-          {filtrando && (
-            <p className="fin-filtros__resumo" role="status">
-              <span>{l.filtrados(doMes.length, formatarReais(soma.entradas), formatarReais(soma.saidas))}</span>
-              <button type="button" className="link-btn" onClick={limpar}>
-                {l.limpar}
-              </button>
-            </p>
-          )}
-        </section>
+            <section className="panel ctl-filtros" aria-labelledby="ctl-filtros">
+              <h2 id="ctl-filtros" className="label">
+                {c.filtros}
+              </h2>
+              <div className="fin-filtros">
+                <label className="fin-busca">
+                  <IconeLupa />
+                  <span className="visually-hidden">{l.busca}</span>
+                  <input className="input" type="search" placeholder={l.busca} value={busca} onChange={(e) => setBusca(e.target.value)} />
+                </label>
+                <Segmentos
+                  rotulo={l.tipoRotulo}
+                  valor={tipo}
+                  onMudar={setTipo}
+                  opcoes={['todos', 'entrada', 'saida', 'transferencia'].map((v) => ({ valor: v, rotulo: l.tipos[v] }))}
+                />
+                <span className="select fin-filtros__select">
+                  <select
+                    className="input"
+                    aria-label={t.formTarefa.categoria}
+                    value={categoriaId}
+                    onChange={(e) => setCategoriaId(e.target.value)}
+                  >
+                    <option value="">{l.todasCategorias}</option>
+                    <option value="revisar">{l.semCategoria}</option>
+                    {d.categorias.map((x) => (
+                      <option key={x.id} value={x.id}>
+                        {x.nome} · {x.tipo === 'despesa' ? fin.formLancamento.tipos.saida : fin.formLancamento.tipos.entrada}
+                      </option>
+                    ))}
+                  </select>
+                </span>
+                <span className="select fin-filtros__select">
+                  <select className="input" aria-label={fin.contas.titulo} value={contaId} onChange={(e) => setContaId(e.target.value)}>
+                    <option value="">{l.todasContas}</option>
+                    {d.contas.map((x) => (
+                      <option key={x.id} value={x.id}>
+                        {x.nome}
+                      </option>
+                    ))}
+                  </select>
+                </span>
+              </div>
+              {filtrando && (
+                <p className="fin-filtros__resumo" role="status">
+                  <span>
+                    {soTransferencias
+                      ? c.transferencias(doMes.length)
+                      : l.filtrados(doMes.length, formatarReais(soma.entradas), formatarReais(soma.saidas))}
+                    {contaId && !soTransferencias ? ` · ${c.semTransferencias}` : ''}
+                  </span>
+                  <button type="button" className="link-btn" onClick={limpar}>
+                    {l.limpar}
+                  </button>
+                </p>
+              )}
+            </section>
 
-        <div className="ctl__grade">
-          <div className="ctl__coluna">
-            <GastosPorCategoria linhas={gastosPorCategoria(efetivas, categoriaPorId)} onEscolher={verCategoria} />
-            <DrePessoal dre={montarDre(efetivas, categoriaPorId)} />
-          </div>
-          <div className="ctl__coluna">
-            <EvolucaoMeses meses={evolucao} mesAtual={mes} />
-            <ContasCartoes contas={d.contas} saldos={d.saldos} />
-            <CartaoGastosFixos recorrencias={d.recorrencias} />
-          </div>
-        </div>
+            {soTransferencias ? (
+              <p className="fin-vazio ctl-aviso">{c.soTransferencias}</p>
+            ) : (
+              <div className="ctl__grade">
+                <div className="ctl__coluna">
+                  <GastosPorCategoria linhas={gastosPorCategoria(efetivas, categoriaPorId)} onEscolher={verCategoria} />
+                  <DrePessoal dre={montarDre(efetivas, categoriaPorId)} />
+                </div>
+                <div className="ctl__coluna">
+                  <EvolucaoMeses meses={evolucao} mesAtual={mes} />
+                  <ContasCartoes contas={d.contas} saldos={d.saldos} />
+                  <CartaoGastosFixos recorrencias={d.recorrencias} />
+                </div>
+              </div>
+            )}
 
-        {/* A lista só aparece com filtro: é o detalhe do que os números mostram. */}
-        <section className="ctl-lista" id="ctl-lista" aria-labelledby="ctl-lista-titulo">
-          <h2 id="ctl-lista-titulo" className="label">
-            {filtrando ? c.listaFiltro : c.lista}
-          </h2>
-          {!filtrando ? (
-            <p className="hint">{c.listaDica}</p>
-          ) : doMes.length === 0 ? (
-            <div className="fin-vazio">
-              <p>{l.vazioFiltro}</p>
-            </div>
-          ) : (
-            <ListaPorDia
-              transacoes={doMes}
-              contaPorId={contaPorId}
-              categoriaPorId={categoriaPorId}
-              categorias={d.categorias}
-              revisando={false}
-              onAbrir={(x) => acoes.setDlg({ tipo: 'lancamento', item: x })}
-              onCategorizar={() => {}}
-            />
-          )}
-        </section>
+            {/* A lista só aparece com filtro: é o detalhe do que os números mostram. */}
+            {filtrando && (
+              <section className="ctl-lista" id="ctl-lista" aria-labelledby="ctl-lista-titulo">
+                <h2 id="ctl-lista-titulo" className="label">
+                  {c.listaFiltro}
+                </h2>
+                {doMes.length === 0 ? (
+                  <div className="fin-vazio">
+                    <p>{l.vazioFiltro}</p>
+                  </div>
+                ) : (
+                  <ListaPorDia
+                    transacoes={doMes}
+                    contaPorId={contaPorId}
+                    categoriaPorId={categoriaPorId}
+                    categorias={d.categorias}
+                    revisando={false}
+                    onAbrir={(x) => acoes.setDlg({ tipo: 'lancamento', item: x })}
+                    onCategorizar={() => {}}
+                  />
+                )}
+              </section>
+            )}
+          </>
+        )}
       </main>
 
       <FinanceiroDialogos d={d} acoes={acoes} />

@@ -751,7 +751,11 @@ export const t = {
     filtros: 'Filtros',
     lista: 'Lançamentos',
     listaFiltro: 'Lançamentos do filtro',
-    listaDica: 'Escolha um filtro (ou toque numa categoria em Para onde foi) para ver os lançamentos por trás dos números.',
+    semContas: 'O controle mostra o mês a partir das suas contas e lançamentos. Comece cadastrando uma conta em Lançamentos.',
+    irLancamentos: 'Ir para Lançamentos',
+    semTransferencias: 'transferências entre suas contas não entram nos números',
+    transferencias: (n) => `${n} ${n === 1 ? 'transferência' : 'transferências'} entre suas contas`,
+    soTransferencias: 'Transferências só mudam o dinheiro de conta: não entram no placar, no resultado nem nos gráficos. Veja a lista abaixo.',
   },
 
   financeiro: {
@@ -1084,6 +1088,17 @@ export const t = {
       data: 'Pago em',
       conta: 'Pago com',
       confirmar: 'Marcar como paga',
+    },
+    sugestoes: {
+      titulo: 'Parecem gastos fixos',
+      texto: 'Cobranças que se repetem todo mês com valor parecido. Cadastre para acompanhar o vencimento.',
+      detalhe: (vezes, dia, conta) => `${vezes} meses seguidos · perto do dia ${dia}${conta ? ` · ${conta}` : ''}`,
+      cadastrar: 'Cadastrar',
+      ignorar: 'Ignorar',
+      ignorarRotulo: (nome) => `Ignorar a sugestão ${nome}`,
+      cadastrada: (nome) => `${nome} cadastrado nos gastos fixos.`,
+      faixa: (n) => `${n} ${n === 1 ? 'cobrança se repete' : 'cobranças se repetem'} todo mês e ${n === 1 ? 'parece um gasto fixo' : 'parecem gastos fixos'}`,
+      ver: 'Ver sugestões',
     },
     cartao: {
       titulo: 'Gastos fixos',
