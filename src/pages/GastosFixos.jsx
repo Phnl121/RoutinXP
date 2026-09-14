@@ -451,6 +451,7 @@ export default function GastosFixos() {
                               conta={contaPorId[rec.conta_id]}
                               cor={corDe[rec.categoria_id]}
                               hoje={hoje}
+                              paga={(dia) => pagoPor.has(chaveCobranca(rec.id, dia))}
                               onAbrir={() => setDlg({ tipo: 'gasto', item: rec })}
                             />
                           </li>
@@ -518,10 +519,10 @@ export default function GastosFixos() {
 }
 
 // Um gasto fixo cadastrado: como se repete, onde é cobrado e quanto pesa.
-function LinhaGasto({ rec, conta, cor, hoje, onAbrir }) {
+function LinhaGasto({ rec, conta, cor, hoje, paga, onAbrir }) {
   const parcelada = rec.tipo === 'parcelada'
   const progresso = parcelada ? progressoParcelas(rec, hoje) : null
-  const proxima = !parcelada && rec.ativa ? proximaCobranca(rec, hoje) : null
+  const proxima = !parcelada && rec.ativa ? proximaCobranca(rec, hoje, paga) : null
   const detalhe = parcelada
     ? g.progresso(progresso.pagas, progresso.total, formatarReais(progresso.falta))
     : [repeticao(rec), rec.valor_variavel ? g.proximas.aproximado : null, conta?.nome].filter(Boolean).join(' · ')

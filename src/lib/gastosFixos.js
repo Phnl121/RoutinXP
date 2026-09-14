@@ -63,9 +63,10 @@ export function custoAnual(rec) {
   return rec.valor_centavos * 12
 }
 
-// Próxima cobrança a partir de hoje (inclusive), ou null se acabou.
-export function proximaCobranca(rec, hoje) {
-  return cobrancasEntre(rec, hoje, somarMeses(hoje, 13))[0] ?? null
+// Próxima cobrança a partir de hoje (inclusive) ainda sem pagamento, ou null se acabou.
+// `paga(dia)` diz se a cobrança daquele dia já foi paga (pagar adiantado pula para a seguinte).
+export function proximaCobranca(rec, hoje, paga = () => false) {
+  return cobrancasEntre(rec, hoje, somarMeses(hoje, 13)).find((c) => !paga(c.dia)) ?? null
 }
 
 // Chave de uma cobrança: o gasto e o dia.
