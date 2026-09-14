@@ -106,7 +106,8 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 
 ### Pendências
 - **Conferir as regras (usuário):** abrir o Financeiro (o dicionário inicial é criado e aplicado na primeira visita), revisar o que sobrar em "a revisar" e criar regras pelas sugestões.
-- **Financeiro, próximas fases:** 5.5 (recorrências detectadas viram sugestão de gasto fixo), 3.6 (avisos de vencimento: faixa no topo e push um dia antes), 6 (orçamento por categoria e metas; gamificação sem decisão). Depois: Agenda.
+- **Testar (usuário):** divisão Lançamentos/Controle, sugestões de gastos fixos, faixa e push de vencimento (ativar em Gastos fixos, no celular com o app instalado), limites por categoria e meta de poupança no Controle.
+- **Financeiro, próximas fases:** gamificação do financeiro (sem decisão). Depois: Agenda.
 - **Técnicas:**
   - O pacote JS passa de 500 kB; dá para carregar cada página só quando for aberta (lazy loading).
   - O SMTP padrão do Supabase envia só ~2 e-mails por hora. O SMTP próprio depende de um domínio.
@@ -129,6 +130,22 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
+
+### 2026-09-14, Claude Code (Opus 5): Lançamentos e Controle, fases 5.5, 3.6 e 6
+Pedidos do usuário: dividir o Financeiro em duas abas (Lançamentos só para lançar e categorizar; Controle com DRE, categorias, gráficos e filtros) e fazer, em ordem, 5.5, 3.6 e 6.
+
+Feito:
+- **Divisão:** `/financeiro` virou Lançamentos (fila "a revisar", contas, bancos) e `/financeiro/controle` o Controle (placar, filtros que valem para tudo, Para onde foi, Resultado do mês, 6 meses, saldos, gastos fixos). O mês fica no endereço (`?mes=`). Revisão com 8 correções.
+- **5.5:** cobranças que se repetem (3 meses ou mais, a cada 25 a 35 dias, valor parecido) viram "Parecem gastos fixos" em Gastos fixos, com Cadastrar (preenchido, liga os lançamentos antigos como pagos) e Ignorar (guardado no banco). Faixa em Lançamentos.
+- **3.6:** faixa no topo do app com gastos fixos atrasados (até 7 dias), de hoje e de amanhã (fila: streak, prazos, vencimentos, instalar). Edge Function `avisos-vencimento`, todo dia às 8h de Brasília, manda o push de quem vence amanhã e ainda não foi pago. Opção "Aviso no celular" em Gastos fixos. O push agora vale para quem tem Foco ou Financeiro; a notificação de vencimento não substitui a do Foco.
+- **6:** `fin_orcamentos` com limite por categoria de despesa (janela com a média dos últimos meses) e meta de poupança (parte das entradas ou valor fixo). No Controle, Orçamento do mês (âmbar a partir de 80%, coral ao passar) e Meta de poupança; faixa em Lançamentos quando uma categoria aperta.
+- **Revisão final** com 8 correções (sugestão sem duplicar, ignorar sem sobrescrever, faixa atualizada depois de pagar, ordem no celular, contas recolhidas no celular, leituras paginadas na função).
+
+Travou:
+- Nada. Sem banco local: a migration e a função só são testadas depois de publicadas.
+
+Próximo:
+- Usuário testar; decidir a gamificação do financeiro ou seguir para a Agenda.
 
 ### 2026-09-14, Claude Code (Opus 5): Open Finance, regras de categoria e Financeiro colorido
 Pedidos do usuário: fase 4 (MeuPluggy), depois categorizar o que chegou "a revisar" (fase 5), depois deixar o Financeiro vivo e colorido (texto e cards), sem perder a essência do app.
