@@ -203,10 +203,65 @@ select {
   max-width: 100%;
 }
 
-/* Logo: o nome "Routin" é claro no escuro e tinta no claro. A regra só esconde a versão do
+/* ---------- Tema bege (pedido do usuário, 2026-09-14) ----------
+   Papel creme e quente, como um caderno: fundo aveia, cartões marfim, tinta café. Mesma
+   estrutura do claro (cartões sobem pela sombra, agora âmbar-escura), com os tons de texto
+   aquecidos e fundos o bastante para 5:1 sobre o Panel Two creme. */
+:root[data-tema='bege'] {
+  --ground: #efe7d8;
+  --topbar: #f7f1e5;
+  --panel: #fbf7ee;
+  --panel-2: #f3ecdf;
+  --rule: #e4d9c6;
+  --rule-strong: #cbbda4;
+  /* 4,5:1 no Panel, 4,1:1 no Panel Two. */
+  --check-ring: #7d7160;
+  --ink: #2b2219;
+  --muted: #695d4e;
+  --backdrop: rgb(43 34 25 / 0.42);
+
+  --entrada: #0a6e61;
+  --entrada-wash: rgb(10 110 97 / 0.1);
+  --saida: #b0351f;
+  --saida-wash: rgb(176 53 31 / 0.09);
+  --transferencia: #1b5f8c;
+  --transferencia-wash: rgb(27 95 140 / 0.1);
+  --tom-assinatura: #6a4aa8;
+  --tom-parcelada: #2f5cae;
+  --tom-conta: #6e5420;
+  --tom-outro: #555e72;
+
+  --green: #1fa64f;
+  --green-tip: #4ade80;
+  --green-wash: rgb(31 166 79 / 0.1);
+  --green-line: rgb(21 107 55 / 0.35);
+  --green-glow: rgb(31 166 79 / 0.4);
+  --green-texto: #156b37;
+  --on-green: #052e16;
+  --prazo-perto: #d4862a;
+  --prazo-perto-texto: #8a4f09;
+  --prazo-atrasado: #b3304c;
+  --on-prazo: #1d1407;
+  --on-atrasado: #ffffff;
+
+  --purple: #7c3aed;
+  --purple-hover: #6124c4;
+  --purple-soft: #6124c4;
+  --purple-glow: rgb(124 58 237 / 0.3);
+  --purple-halo: rgb(124 58 237 / 0.2);
+  --purple-selection: rgb(124 58 237 / 0.18);
+  --purple-link-line: rgb(97 36 196 / 0.35);
+  --on-purple: #ffffff;
+
+  --shadow: 0 1px 2px rgb(70 48 18 / 0.07), 0 12px 32px -14px rgb(70 48 18 / 0.18);
+
+  color-scheme: light;
+}
+
+/* Logo: o nome "Routin" é claro no escuro e tinta nos temas claros (claro e bege). A regra só esconde a versão do
    outro tema; quando e onde a logo aparece continua com as regras de cada lugar. */
-:root[data-tema='claro'] .logo--escuro,
-:root:not([data-tema='claro']) .logo--claro {
+:root:is([data-tema='claro'], [data-tema='bege']) .logo--escuro,
+:root:not([data-tema='claro'], [data-tema='bege']) .logo--claro {
   display: none;
 }
 

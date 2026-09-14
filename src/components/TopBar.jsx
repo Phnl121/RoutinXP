@@ -92,10 +92,10 @@ export function TopBar({ stats, perfil, email, onAbrirMenu, gavetaAberta }) {
         <div id="menu-conta" popover="auto" className="menu">
           {perfil && <p className="menu__nome">{nomeCompleto(perfil)}</p>}
           <p className="menu__email">{email}</p>
-          {/* Um toque troca entre claro e escuro (a opção Sistema fica no Perfil). */}
-          <button type="button" className="menu__item menu__item--icone" onClick={() => mudarTema(tema === 'claro' ? 'escuro' : 'claro')}>
-            {tema === 'claro' ? <IconeLua /> : <IconeSol />}
-            {tema === 'claro' ? t.conta.temaEscuro : t.conta.temaClaro}
+          {/* Um toque troca entre claro e escuro (Bege e Sistema ficam no Perfil). */}
+          <button type="button" className="menu__item menu__item--icone" onClick={() => mudarTema(tema === 'escuro' ? 'claro' : 'escuro')}>
+            {tema === 'escuro' ? <IconeSol /> : <IconeLua />}
+            {tema === 'escuro' ? t.conta.temaClaro : t.conta.temaEscuro}
           </button>
           <button type="button" className="menu__item" onClick={() => supabase.auth.signOut()}>
             {t.conta.sair}

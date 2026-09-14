@@ -109,7 +109,7 @@ export const t = {
   tema: {
     titulo: 'Aparência',
     rotulo: 'Tema do app',
-    opcoes: { sistema: 'Sistema', claro: 'Claro', escuro: 'Escuro' },
+    opcoes: { sistema: 'Sistema', claro: 'Claro', bege: 'Bege', escuro: 'Escuro' },
     dica: 'Sistema segue o modo claro ou escuro do aparelho. Vale para este navegador.',
   },
 

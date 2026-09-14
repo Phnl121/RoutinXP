@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 
-// Tema do app (pedido do usuário, 2026-09-14): escuro (o original), claro ou o do sistema.
+// Tema do app (pedido do usuário, 2026-09-14): escuro (o original), claro, bege ou o do sistema.
 // Guardado por navegador. O index.html aplica antes do primeiro desenho, sem piscar.
 const CHAVE = 'routinxp:tema'
 const EVENTO = 'routinxp:tema'
-const COR_BARRA = { escuro: '#0d0e12', claro: '#fbfbfd' }
-export const TEMAS = ['sistema', 'claro', 'escuro']
+const COR_BARRA = { escuro: '#0d0e12', claro: '#fbfbfd', bege: '#f7f1e5' }
+export const TEMAS = ['sistema', 'claro', 'bege', 'escuro']
 
 const sistemaClaro = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: light)').matches
 
