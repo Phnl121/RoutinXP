@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import * as apiReal from './financeiro'
 import * as apiPrevia from '../dev/previaFinanceiro'
 import { emPrevia } from '../dev/previa'
 import { hojeBrasilia } from './datas'
 import { somarDias } from './gastosFixos'
 import { andarMes, mesDe } from './dinheiro'
+import { avisarPagamentosMudaram } from './useVencimentos'
 
 const api = emPrevia ? apiPrevia : apiReal
 
@@ -106,6 +107,7 @@ export function useGastosFixos() {
   const pagar = useCallback(async (cobranca) => {
     const pagamento = await api.pagarCobranca(cobranca)
     setDados((d) => ({ ...d, pagamentos: [...d.pagamentos, pagamento] }))
+    avisarPagamentosMudaram()
     return pagamento
   }, [])
 
@@ -113,13 +115,21 @@ export function useGastosFixos() {
   const desfazerPagamento = useCallback(async (transacaoId) => {
     await api.excluirTransacaoFin(transacaoId)
     setDados((d) => ({ ...d, pagamentos: d.pagamentos.filter((x) => x.id !== transacaoId) }))
+    avisarPagamentosMudaram()
   }, [])
 
   // Sugestão aceita: cadastra e liga os lançamentos antigos como pagamentos das cobranças.
+  // Se ligar falhar, tentar de novo só refaz a ligação (o gasto fixo já foi cadastrado).
+  const sugestoesSalvas = useRef(new Map()) // chave da sugestão → gasto fixo salvo
   const cadastrarSugestao = useCallback(
     async (rec, sugestao) => {
-      const salva = await salvar(rec)
+      let salva = sugestoesSalvas.current.get(sugestao.chave)
+      if (!salva) {
+        salva = await salvar(rec)
+        sugestoesSalvas.current.set(sugestao.chave, salva)
+      }
       await api.vincularPagamentos(salva.id, sugestao.ocorrencias)
+      avisarPagamentosMudaram()
       const ids = new Set(sugestao.ocorrencias.map((o) => o.id))
       setDados((d) => ({
         ...d,
@@ -130,14 +140,17 @@ export function useGastosFixos() {
     [salvar, recarregarPagamentos],
   )
 
-  const ignorarSugestao = useCallback(
-    async (chave) => {
-      setDados((d) => ({ ...d, ignoradas: [...d.ignoradas, chave] }))
-      const lista = await api.ignorarSugestao(chave, dados.ignoradas)
+  // Some na hora; se não gravar, volta e o erro sobe para a página avisar.
+  const ignorarSugestao = useCallback(async (chave) => {
+    setDados((d) => ({ ...d, ignoradas: [...d.ignoradas, chave] }))
+    try {
+      const lista = await api.ignorarSugestao(chave)
       setDados((d) => ({ ...d, ignoradas: lista }))
-    },
-    [dados.ignoradas],
-  )
+    } catch (erro) {
+      setDados((d) => ({ ...d, ignoradas: d.ignoradas.filter((x) => x !== chave) }))
+      throw erro
+    }
+  }, [])
 
   const mudarAvisoVencimentos = useCallback(async (ligado) => {
     setDados((d) => ({ ...d, avisarVencimentos: ligado }))

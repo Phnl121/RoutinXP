@@ -304,10 +304,9 @@ export async function salvarAvisoVencimentos(ligado) {
 }
 
 // Dispensar uma sugestão: a chave fica guardada e ela não volta.
-export async function ignorarSugestao(chave, atuais) {
-  const lista = [...new Set([...(atuais ?? []), chave])].slice(-300)
-  ok(await supabase.from('fin_preferencias').upsert({ sugestoes_ignoradas: lista, updated_at: new Date().toISOString() }, { onConflict: 'user_id' }))
-  return lista
+// O banco acrescenta à lista (não sobrescreve o que outro aparelho gravou).
+export async function ignorarSugestao(chave) {
+  return ok(await supabase.rpc('fin_ignorar_sugestao', { p_chave: chave })) ?? []
 }
 
 // Depois de cadastrar o gasto fixo sugerido: os lançamentos que o formaram viram os pagamentos

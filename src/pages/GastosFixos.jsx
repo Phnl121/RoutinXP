@@ -34,7 +34,7 @@ function repeticao(rec) {
 
 // Aviso no celular um dia antes do vencimento (fase 3.6). A permissão é deste navegador; ligar e
 // desligar o aviso vale para a conta (o servidor manda para todos os aparelhos inscritos).
-function AvisoCelular({ ligado, onMudar, onErro }) {
+function AvisoCelular({ ligado, noAlto, onMudar, onErro }) {
   const { registrarPush } = useDadosApp()
   const [permissao, setPermissao] = useState(permissaoAtual)
   const a = g.avisoCelular
@@ -81,7 +81,7 @@ function AvisoCelular({ ligado, onMudar, onErro }) {
     )
   }
   return (
-    <div className="gf-aviso">
+    <div className="gf-aviso" data-alto={noAlto}>
       <h3 className="label">{a.titulo}</h3>
       {conteudo}
     </div>
@@ -157,7 +157,11 @@ export default function GastosFixos() {
                 <button
                   type="button"
                   className="link-btn"
-                  onClick={() => d.ignorarSugestao(s.chave)}
+                  onClick={() =>
+                    d
+                      .ignorarSugestao(s.chave)
+                      .catch(() => setAviso({ tipo: 'erro', texto: t.dadosErros.generico, chave: `ignorar-${Date.now()}` }))
+                  }
                   aria-label={g.sugestoes.ignorarRotulo(s.nome)}
                 >
                   {g.sugestoes.ignorar}
@@ -201,6 +205,16 @@ export default function GastosFixos() {
     )
     .filter((c) => c.pagamento)
     .sort((a, b) => a.dia.localeCompare(b.dia))
+  // Convite para ativar o aviso fica logo abaixo do título; ativo, a opção desce para o fim da lista.
+  const avisoNoAlto = permissaoAtual() !== 'granted'
+  const avisoCelular = (
+    <AvisoCelular
+      ligado={d.avisarVencimentos}
+      noAlto={avisoNoAlto}
+      onMudar={d.mudarAvisoVencimentos}
+      onErro={() => setAviso({ tipo: 'erro', texto: g.avisoCelular.erro, chave: `aviso-${Date.now()}` })}
+    />
+  )
   const porDia = proximas.reduce((mapa, c) => mapa.set(c.dia, [...(mapa.get(c.dia) ?? []), c]), new Map())
 
   // Placar.
@@ -388,6 +402,7 @@ export default function GastosFixos() {
                 <h2 id="gf-proximas" className="label">
                   {g.proximas.titulo}
                 </h2>
+                {avisoNoAlto && avisoCelular}
                 {vencidas.length > 0 && (
                   <div className="gf-dia">
                     <h3 className="gf-dia__cabeca label">{g.proximas.vencidas}</h3>
@@ -410,11 +425,7 @@ export default function GastosFixos() {
                     <ul className="gf-cobrancas">{pagasNoMes.map(linhaCobranca)}</ul>
                   </div>
                 )}
-                <AvisoCelular
-                  ligado={d.avisarVencimentos}
-                  onMudar={d.mudarAvisoVencimentos}
-                  onErro={() => setAviso({ tipo: 'erro', texto: g.avisoCelular.erro, chave: `aviso-${Date.now()}` })}
-                />
+                {!avisoNoAlto && avisoCelular}
               </section>
 
               <div className="gf-grupos">

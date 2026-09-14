@@ -28,6 +28,17 @@ type Recorrencia = {
 }
 type Inscricao = { id: string; user_id: string; endpoint: string; p256dh: string; auth: string }
 
+// Lê todas as linhas, de 1000 em 1000 (o limite de cada consulta da API).
+async function todas<T>(consulta: (de: number, ate: number) => PromiseLike<{ data: T[] | null; error: unknown }>) {
+  const linhas: T[] = []
+  for (let de = 0; ; de += 1000) {
+    const { data, error } = await consulta(de, de + 999)
+    if (error) throw error
+    linhas.push(...(data ?? []))
+    if (!data || data.length < 1000) return linhas
+  }
+}
+
 function resposta(corpo: unknown, status = 200) {
   return new Response(JSON.stringify(corpo), { status, headers: { 'Content-Type': 'application/json' } })
 }
@@ -92,37 +103,52 @@ Deno.serve(async (req) => {
   const amanha = somarDias(hoje, 1)
 
   // Quem recebe: conta com o Financeiro liberado, algum aparelho inscrito e o aviso ligado.
-  const { data: inscricoes, error: erroInscricoes } = await admin.from('push_subscriptions').select('id, user_id, endpoint, p256dh, auth')
-  if (erroInscricoes) return resposta({ erro: 'falha' }, 500)
-  const comAparelho = [...new Set(((inscricoes ?? []) as Inscricao[]).map((s) => s.user_id))]
+  let inscricoes: Inscricao[]
+  try {
+    inscricoes = await todas<Inscricao>((de, ate) => admin.from('push_subscriptions').select('id, user_id, endpoint, p256dh, auth').order('id').range(de, ate))
+  } catch {
+    return resposta({ erro: 'falha' }, 500)
+  }
+  const comAparelho = [...new Set(inscricoes.map((s) => s.user_id))]
   if (!comAparelho.length) return resposta({ enviados: 0 })
 
-  const [{ data: contas }, { data: desligados }] = await Promise.all([
+  const [{ data: contas, error: erroContas }, { data: desligados, error: erroPreferencias }] = await Promise.all([
     admin.from('contas_app').select('user_id').contains('funcoes', ['financeiro']).in('user_id', comAparelho),
     admin.from('fin_preferencias').select('user_id').eq('avisar_vencimentos', false).in('user_id', comAparelho),
   ])
+  if (erroContas || erroPreferencias) return resposta({ erro: 'falha' }, 500)
   const semAviso = new Set((desligados ?? []).map((p) => p.user_id))
   const usuarios = (contas ?? []).map((c) => c.user_id).filter((id) => !semAviso.has(id))
   if (!usuarios.length) return resposta({ enviados: 0 })
 
-  const { data: recorrencias, error } = await admin
-    .from('fin_recorrencias')
-    .select('id, user_id, nome, valor_centavos, valor_variavel, frequencia, inicio, fim')
-    .eq('ativa', true)
-    .neq('tipo', 'parcelada')
-    .lte('inicio', amanha)
-    .or(`fim.is.null,fim.gte.${amanha}`)
-    .in('user_id', usuarios)
-  if (error) return resposta({ erro: 'falha' }, 500)
-  const vencem = ((recorrencias ?? []) as Recorrencia[]).filter((r) => cobraEm(r, amanha))
+  let recorrencias: Recorrencia[]
+  try {
+    recorrencias = await todas<Recorrencia>((de, ate) =>
+      admin
+        .from('fin_recorrencias')
+        .select('id, user_id, nome, valor_centavos, valor_variavel, frequencia, inicio, fim')
+        .eq('ativa', true)
+        .neq('tipo', 'parcelada')
+        .lte('inicio', amanha)
+        .or(`fim.is.null,fim.gte.${amanha}`)
+        .in('user_id', usuarios)
+        .order('id')
+        .range(de, ate),
+    )
+  } catch {
+    return resposta({ erro: 'falha' }, 500)
+  }
+  const vencem = recorrencias.filter((r) => cobraEm(r, amanha))
   if (!vencem.length) return resposta({ enviados: 0 })
 
   // Já pago antes do vencimento: não avisa.
-  const { data: pagos } = await admin
+  // Sem saber o que já foi pago, melhor não avisar do que avisar conta paga.
+  const { data: pagos, error: erroPagos } = await admin
     .from('fin_transacoes')
     .select('recorrencia_id')
     .in('recorrencia_id', vencem.map((r) => r.id))
     .eq('referencia', amanha)
+  if (erroPagos) return resposta({ erro: 'falha' }, 500)
   const pagas = new Set((pagos ?? []).map((p) => p.recorrencia_id))
   const porUsuario = new Map<string, Recorrencia[]>()
   for (const r of vencem) {
@@ -134,7 +160,7 @@ Deno.serve(async (req) => {
   const vencidas: string[] = []
   let enviados = 0
   await Promise.allSettled(
-    ((inscricoes ?? []) as Inscricao[])
+    inscricoes
       .filter((s) => porUsuario.has(s.user_id))
       .map(async (s) => {
         const recs = porUsuario.get(s.user_id)!.sort((a, b) => b.valor_centavos - a.valor_centavos)

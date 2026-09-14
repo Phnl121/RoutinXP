@@ -920,6 +920,8 @@ export const t = {
       fatura: 'fatura',
       vence: (dia) => `vence dia ${dia}`,
       arquivadas: (n) => `${n} ${n === 1 ? 'arquivada' : 'arquivadas'}`,
+      ver: (n) => `Ver ${n === 1 ? 'a conta' : `as ${n} contas`}`,
+      esconder: 'Esconder contas',
     },
     comecar: {
       titulo: 'Comece pela sua primeira conta',

@@ -9,6 +9,38 @@ alter table public.fin_preferencias
   add column sugestoes_ignoradas text[] not null default '{}'
     check (cardinality(sugestoes_ignoradas) <= 300);
 
+-- Ignorar acrescenta à lista no banco (outro aparelho pode ter ignorado outra sugestão antes);
+-- guarda as 300 mais recentes. Devolve a lista gravada.
+create function public.fin_ignorar_sugestao(p_chave text)
+returns text[]
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  v_lista text[];
+begin
+  if auth.uid() is null then
+    raise exception 'sem_acesso' using errcode = '42501';
+  end if;
+  if p_chave is null or char_length(p_chave) not between 1 and 200 then
+    raise exception 'chave_invalida' using errcode = '22023';
+  end if;
+  insert into public.fin_preferencias as p (user_id, sugestoes_ignoradas)
+  values (auth.uid(), array[p_chave])
+  on conflict (user_id) do update
+    set sugestoes_ignoradas = (array_remove(p.sugestoes_ignoradas, p_chave) || p_chave)[
+          greatest(1, cardinality(array_remove(p.sugestoes_ignoradas, p_chave)) + 1 - 299):
+        ],
+        updated_at = now()
+  returning sugestoes_ignoradas into v_lista;
+  return v_lista;
+end;
+$$;
+
+revoke execute on function public.fin_ignorar_sugestao(text) from public, anon;
+grant execute on function public.fin_ignorar_sugestao(text) to authenticated;
+
 -- ---------------------------------------------------------------------------
 -- 3.6 Avisos de vencimento
 -- ---------------------------------------------------------------------------
@@ -100,6 +132,14 @@ begin
   if exists (
     select 1
       from jsonb_array_elements(p_limites) l
+     where jsonb_typeof(l -> 'limite_centavos') <> 'number'
+        or jsonb_typeof(l -> 'categoria_id') <> 'string'
+  ) then
+    raise exception 'limites_invalidos' using errcode = '22023';
+  end if;
+  if exists (
+    select 1
+      from jsonb_array_elements(p_limites) l
       left join public.fin_categorias c on c.id = (l ->> 'categoria_id')::uuid and c.user_id = v_user
      where c.id is null or c.tipo <> 'despesa'
   ) then
@@ -110,9 +150,11 @@ begin
    where user_id = v_user
      and categoria_id not in (select (l ->> 'categoria_id')::uuid from jsonb_array_elements(p_limites) l);
 
+  -- A mesma categoria repetida vale uma vez (a última).
   insert into public.fin_orcamentos (user_id, categoria_id, limite_centavos)
-  select v_user, (l ->> 'categoria_id')::uuid, (l ->> 'limite_centavos')::bigint
-    from jsonb_array_elements(p_limites) l
+  select distinct on ((l ->> 'categoria_id')::uuid) v_user, (l ->> 'categoria_id')::uuid, (l ->> 'limite_centavos')::bigint
+    from jsonb_array_elements(p_limites) with ordinality as e(l, i)
+   order by (l ->> 'categoria_id')::uuid, i desc
   on conflict (user_id, categoria_id)
   do update set limite_centavos = excluded.limite_centavos, updated_at = now()
    where public.fin_orcamentos.limite_centavos is distinct from excluded.limite_centavos;

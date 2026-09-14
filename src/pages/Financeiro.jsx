@@ -108,87 +108,90 @@ export default function Financeiro() {
             </button>
           </section>
         ) : (
-          <div className="fin__grade">
-            <section className="fin-lanc" aria-labelledby="fin-lanc">
-              <h2 id="fin-lanc" className="visually-hidden">
-                {l.titulo}
-              </h2>
-              <div className="fin-lanc__barra">
-                <Segmentos
-                  rotulo={fin.revisar.visao}
-                  valor={visao}
-                  onMudar={setVisao}
-                  opcoes={[
-                    { valor: 'todos', rotulo: fin.revisar.todos(d.transacoes.length) },
-                    { valor: 'revisar', rotulo: fin.revisar.aRevisar(aRevisar.length) },
-                  ]}
-                />
+          <>
+            {apertadas.length > 0 && !revisando && (
+              <p className="fin-revisar fin-revisar--orcamento" data-passou={passaram > 0}>
+                <span>
+                  {apertadas.length === 1
+                    ? t.controle.orcamento.faixaUma(apertadas[0].categoria.nome, Math.round(apertadas[0].fatia * 100), passaram > 0)
+                    : t.controle.orcamento.faixaVarias(apertadas.length, passaram)}
+                </span>
                 <Link to={`/financeiro/controle?mes=${mes}`} className="link-btn">
-                  {fin.verControle}
+                  {t.controle.orcamento.verOrcamento}
                 </Link>
-              </div>
+              </p>
+            )}
 
-              {apertadas.length > 0 && !revisando && (
-                <p className="fin-revisar fin-revisar--orcamento" data-passou={passaram > 0}>
-                  <span>
-                    {apertadas.length === 1
-                      ? t.controle.orcamento.faixaUma(apertadas[0].categoria.nome, Math.round(apertadas[0].fatia * 100), passaram > 0)
-                      : t.controle.orcamento.faixaVarias(apertadas.length, passaram)}
-                  </span>
+            {sugestoes.length > 0 && !revisando && (
+              <p className="fin-revisar fin-revisar--sugestao">
+                <span>{t.gastosFixos.sugestoes.faixa(sugestoes.length)}</span>
+                <Link to="/financeiro/gastos-fixos" className="link-btn">
+                  {t.gastosFixos.sugestoes.ver}
+                </Link>
+              </p>
+            )}
+
+            <div className="fin__grade">
+              <section className="fin-lanc" aria-labelledby="fin-lanc">
+                <h2 id="fin-lanc" className="visually-hidden">
+                  {l.titulo}
+                </h2>
+                <div className="fin-lanc__barra">
+                  <Segmentos
+                    rotulo={fin.revisar.visao}
+                    valor={visao}
+                    onMudar={setVisao}
+                    opcoes={[
+                      { valor: 'todos', rotulo: fin.revisar.todos(d.transacoes.length) },
+                      { valor: 'revisar', rotulo: fin.revisar.aRevisar(aRevisar.length) },
+                    ]}
+                  />
                   <Link to={`/financeiro/controle?mes=${mes}`} className="link-btn">
-                    {t.controle.orcamento.verOrcamento}
+                    {fin.verControle}
                   </Link>
-                </p>
-              )}
-
-              {sugestoes.length > 0 && !revisando && (
-                <p className="fin-revisar fin-revisar--sugestao">
-                  <span>{t.gastosFixos.sugestoes.faixa(sugestoes.length)}</span>
-                  <Link to="/financeiro/gastos-fixos" className="link-btn">
-                    {t.gastosFixos.sugestoes.ver}
-                  </Link>
-                </p>
-              )}
-
-              {d.carregandoMes ? (
-                <p className="label" aria-busy="true">
-                  {t.app.carregando}
-                </p>
-              ) : d.erroMes ? (
-                <Aviso>{fin.erroMes}</Aviso>
-              ) : lista.length === 0 ? (
-                <div className="fin-vazio">
-                  <p>{revisando ? fin.revisar.vazio : l.vazioMes(nomeDoMes(mes))}</p>
-                  {!revisando && (
-                    <button type="button" className="acao-nova" onClick={novoLancamento}>
-                      <IconeMais />
-                      {fin.novoLancamentoRotulo}
-                    </button>
-                  )}
                 </div>
-              ) : (
-                <ListaPorDia
-                  transacoes={lista}
-                  contaPorId={contaPorId}
-                  categoriaPorId={categoriaPorId}
-                  categorias={d.categorias}
-                  revisando={revisando}
-                  onAbrir={(x) => setDlg({ tipo: 'lancamento', item: x })}
-                  onCategorizar={categorizar}
-                />
-              )}
-            </section>
 
-            <aside className="fin__lado">
-              <ContasCartoes
-                contas={d.contas}
-                saldos={d.saldos}
-                onAbrir={(c) => setDlg({ tipo: 'conta', item: c })}
-                onNova={() => setDlg({ tipo: 'conta' })}
-              />
-              {ehAdmin(conta) && <BancosConectados conexoes={d.conexoes} onLer={d.lerBancos} onDesconectar={d.desconectarBanco} />}
-            </aside>
-          </div>
+                {d.carregandoMes ? (
+                  <p className="label" aria-busy="true">
+                    {t.app.carregando}
+                  </p>
+                ) : d.erroMes ? (
+                  <Aviso>{fin.erroMes}</Aviso>
+                ) : lista.length === 0 ? (
+                  <div className="fin-vazio">
+                    <p>{revisando ? fin.revisar.vazio : l.vazioMes(nomeDoMes(mes))}</p>
+                    {!revisando && (
+                      <button type="button" className="acao-nova" onClick={novoLancamento}>
+                        <IconeMais />
+                        {fin.novoLancamentoRotulo}
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <ListaPorDia
+                    transacoes={lista}
+                    contaPorId={contaPorId}
+                    categoriaPorId={categoriaPorId}
+                    categorias={d.categorias}
+                    revisando={revisando}
+                    onAbrir={(x) => setDlg({ tipo: 'lancamento', item: x })}
+                    onCategorizar={categorizar}
+                  />
+                )}
+              </section>
+
+              <aside className="fin__lado">
+                <ContasCartoes
+                  recolhivel
+                  contas={d.contas}
+                  saldos={d.saldos}
+                  onAbrir={(c) => setDlg({ tipo: 'conta', item: c })}
+                  onNova={() => setDlg({ tipo: 'conta' })}
+                />
+                {ehAdmin(conta) && <BancosConectados conexoes={d.conexoes} onLer={d.lerBancos} onDesconectar={d.desconectarBanco} />}
+              </aside>
+            </div>
+          </>
         )}
       </main>
 

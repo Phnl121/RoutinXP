@@ -2241,3 +2241,84 @@ button.fin-dre__botao:hover {
     text-align: left;
   }
 }
+
+/* Convite do aviso no alto de Próximos 30 dias: uma faixa discreta, sem o título. */
+.gf-aviso[data-alto='true'] {
+  margin: 0 0 0.25rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--panel-2);
+}
+
+.gf-aviso[data-alto='true'] .label {
+  display: none;
+}
+
+/* Controle numa coluna: orçamento e meta lado a lado na leitura, antes dos gráficos. */
+@container (max-width: 58rem) {
+  .ctl__grade > .ctl__coluna {
+    display: contents;
+  }
+
+  .ctl__grade > .ctl__coluna > * {
+    order: 3;
+  }
+
+  .ctl__grade > .ctl__coluna > .orc {
+    order: 1;
+  }
+
+  .ctl__grade > .ctl__coluna > .meta {
+    order: 2;
+  }
+}
+
+/* Lançamentos no celular: as contas ficam recolhidas no saldo total, para a lista aparecer logo. */
+.fin-contas__alternar {
+  display: none;
+}
+
+@container (max-width: 58rem) {
+  .fin-contas[data-recolhivel='true'] {
+    gap: 0.5rem;
+    padding: 1.1rem 1.25rem;
+  }
+
+  .fin-contas[data-recolhivel='true'][data-aberto='false'] :is(.fin-contas__lista, .fin-contas__pe) {
+    display: none;
+  }
+
+  .fin-contas[data-recolhivel='true'] .fin-contas__alternar {
+    display: inline-flex;
+    justify-self: start;
+    min-height: 2.75rem;
+    align-items: center;
+  }
+}
+
+/* Cobranças no celular: o prazo e o Pagar descem para uma linha própria e o nome usa a largura. */
+@container (max-width: 30rem) {
+  .gf-cobranca {
+    flex-wrap: wrap;
+    row-gap: 0.25rem;
+  }
+
+  .gf-cobranca__texto {
+    flex: 1 1 0;
+  }
+
+  .gf-cobranca__lado {
+    display: contents;
+  }
+
+  .gf-cobranca__valor {
+    align-self: center;
+  }
+
+  .gf-cobranca__estado {
+    flex-basis: 100%;
+    justify-content: space-between;
+    padding-left: 3rem;
+  }
+}

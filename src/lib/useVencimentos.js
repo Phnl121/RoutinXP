@@ -12,12 +12,25 @@ const api = emPrevia ? apiPrevia : apiReal
 const DIAS_ATRAS = 7
 const VAZIO = { atrasadas: [], hoje: [], amanha: [] }
 
+const EVENTO = 'routinxp:pagamentos'
+
+// Gastos fixos chama depois de pagar, desfazer ou ligar pagamentos: a faixa lê de novo.
+export const avisarPagamentosMudaram = () => window.dispatchEvent(new Event(EVENTO))
+
 // Gastos fixos para pagar (atrasados, hoje e amanhã), para a faixa no topo do app. Recarrega ao
-// entrar ou sair das páginas do Financeiro, onde os pagamentos mudam.
+// entrar ou sair das páginas do Financeiro, quando um pagamento muda e quando o dia vira.
 export function useVencimentos(ativo) {
   const location = useLocation()
   const chave = location.pathname.startsWith('/financeiro') ? location.pathname : 'fora'
   const [dados, setDados] = useState(VAZIO)
+  const [versao, setVersao] = useState(0)
+  const hojeAgora = hojeBrasilia()
+
+  useEffect(() => {
+    const aoMudar = () => setVersao((n) => n + 1)
+    window.addEventListener(EVENTO, aoMudar)
+    return () => window.removeEventListener(EVENTO, aoMudar)
+  }, [])
 
   useEffect(() => {
     if (!ativo) return undefined
@@ -32,7 +45,7 @@ export function useVencimentos(ativo) {
     return () => {
       vivo = false
     }
-  }, [ativo, chave])
+  }, [ativo, chave, versao, hojeAgora])
 
   return ativo ? dados : VAZIO
 }

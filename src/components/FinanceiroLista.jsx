@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { agruparPorDia, formatarReais, rotuloDia, rotuloMes, andarMes } from '../lib/dinheiro'
 import { hojeBrasilia } from '../lib/datas'
 import { IconeMais, IconeSetaDireita, IconeSetaEsquerda } from './icones'
@@ -36,7 +37,11 @@ export function ListaPorDia({ transacoes, contaPorId, categoriaPorId, categorias
         </span>
         {/* Dia só com transferências (ou só agendado) não mexe no resultado: sem total. */}
         {g.total !== 0 && g.dia <= hojeDia && (
-          <span className="fin-dia__total" data-direcao={g.total > 0 ? 'entrada' : 'saida'} aria-label={l.totalDia(formatarReais(g.total, { sinal: true }))}>
+          <span
+            className="fin-dia__total"
+            data-direcao={g.total > 0 ? 'entrada' : 'saida'}
+            aria-label={l.totalDia(formatarReais(g.total, { sinal: true }))}
+          >
             {formatarReais(g.total, { sinal: true })}
           </span>
         )}
@@ -53,7 +58,12 @@ export function ListaPorDia({ transacoes, contaPorId, categoriaPorId, categorias
             />
             {revisando && x.tipo !== 'transferencia' && !x.categoria_id && (
               <span className="select fin-lista__categoria">
-                <select className="input" aria-label={fin.revisar.categoriaDe(x.descricao)} value="" onChange={(e) => onCategorizar(x, e.target.value)}>
+                <select
+                  className="input"
+                  aria-label={fin.revisar.categoriaDe(x.descricao)}
+                  value=""
+                  onChange={(e) => onCategorizar(x, e.target.value)}
+                >
                   <option value="" disabled>
                     {fin.revisar.escolher}
                   </option>
@@ -115,12 +125,13 @@ function LinhaLancamento({ transacao: x, conta, destino, categoria, onAbrir }) {
 
 // Contas e cartões com saldo e total. Com `onAbrir`, cada conta abre a edição e aparece
 // "+ Nova conta" (página Lançamentos); sem, é só a leitura dos saldos (página Controle).
-export function ContasCartoes({ contas, saldos, onAbrir, onNova }) {
+export function ContasCartoes({ contas, saldos, onAbrir, onNova, recolhivel = false }) {
+  const [aberto, setAberto] = useState(false)
   const visiveis = contas.filter((c) => !c.arquivada)
   const arquivadas = contas.length - visiveis.length
   const total = visiveis.reduce((soma, c) => soma + (saldos[c.id] ?? c.saldo_inicial_centavos), 0)
   return (
-    <section className="panel fin-contas" aria-labelledby="fin-contas">
+    <section className="panel fin-contas" data-recolhivel={recolhivel} data-aberto={aberto} aria-labelledby="fin-contas">
       <h2 id="fin-contas" className="label">
         {fin.contas.titulo}
       </h2>
@@ -162,6 +173,11 @@ export function ContasCartoes({ contas, saldos, onAbrir, onNova }) {
         <span className="label">{fin.contas.total}</span>
         <span className="fin-contas__valor">{formatarReais(total)}</span>
       </div>
+      {recolhivel && (
+        <button type="button" className="link-btn fin-contas__alternar" aria-expanded={aberto} onClick={() => setAberto((a) => !a)}>
+          {aberto ? fin.contas.esconder : fin.contas.ver(visiveis.length)}
+        </button>
+      )}
       {(onNova || arquivadas > 0) && (
         <div className="fin-contas__pe">
           {onNova && (
