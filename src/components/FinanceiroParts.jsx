@@ -5,6 +5,7 @@ import { IconeMais } from './icones'
 import { mensagemErroDados } from '../lib/dadosErros'
 import { formatarReais, lerCentavos, rotuloDia as rotuloDiaCurto } from '../lib/dinheiro'
 import { hojeBrasilia } from '../lib/datas'
+import { traduzirCategoriaBanco } from '../lib/categoriasBanco'
 import { t } from '../i18n/pt-BR'
 
 const fin = t.financeiro
@@ -191,6 +192,9 @@ export function LancamentoDialog({ transacao, contas, categorias, manualParecido
                 ))}
               </select>
             </span>
+            {doBanco && transacao?.categoria_banco && (
+              <span className="hint">{f.categoriaBanco(traduzirCategoriaBanco(transacao.categoria_banco))}</span>
+            )}
           </div>
         )}
 

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { agruparPorDia, formatarReais, rotuloDia, rotuloMes, andarMes } from '../lib/dinheiro'
 import { hojeBrasilia } from '../lib/datas'
+import { traduzirCategoriaBanco } from '../lib/categoriasBanco'
 import { IconeMais, IconeSetaDireita, IconeSetaEsquerda } from './icones'
 import { t } from '../i18n/pt-BR'
 
@@ -109,7 +110,9 @@ function LinhaLancamento({ transacao: x, conta, destino, categoria, onAbrir }) {
           <span className="fin-linha__detalhe" data-revisar={revisar}>
             {!transferencia && (
               <>
-                <span className="fin-linha__cat">{categoria?.nome ?? l.semCategoria}</span>
+                <span className="fin-linha__cat">
+                  {categoria?.nome ?? (x.categoria_banco ? l.semCategoriaBanco(traduzirCategoriaBanco(x.categoria_banco)) : l.semCategoria)}
+                </span>
                 {' · '}
               </>
             )}

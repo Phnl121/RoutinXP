@@ -144,8 +144,8 @@ recorrencias.filter((r) => r.tipo === 'parcelada').forEach(gerarParcelas)
   const almoco = transacoes.find((x) => x.descricao === 'Almoço')
   transacoes.push(
     { ...tx('saida', 4500, noMes(12), 'RESTAURANTE SABOR CASEIRO', 'fc3'), origem: 'banco', pendente: false, duplicata_de: almoco?.id ?? null },
-    { ...tx('saida', 6790, noMes(13), 'IFOOD *PEDIDO', 'fc3'), origem: 'banco', pendente: true, duplicata_de: null },
-    { ...tx('saida', 2390, noMes(11), 'UBER *TRIP HELP.UBER.COM', 'fc3'), origem: 'banco', pendente: false, duplicata_de: null },
+    { ...tx('saida', 6790, noMes(13), 'IFOOD *PEDIDO', 'fc3'), origem: 'banco', categoria_banco: 'Food delivery', pendente: true, duplicata_de: null },
+    { ...tx('saida', 2390, noMes(11), 'UBER *TRIP HELP.UBER.COM', 'fc3'), origem: 'banco', categoria_banco: 'Taxi and ride-hailing', pendente: false, duplicata_de: null },
     { ...tx('saida', 18900, noMes(9), 'PAG*POSTO SHELL AV PAULISTA', 'fc3'), origem: 'banco', pendente: false, duplicata_de: null },
     { ...tx('saida', 3490, noMes(8), 'PADARIA DOCE PAO', 'fc1'), origem: 'banco', pendente: false, duplicata_de: null },
   )

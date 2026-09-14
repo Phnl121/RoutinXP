@@ -12,7 +12,7 @@ function ok({ data, error }) {
 const CAMPOS_CONTA = 'id, nome, tipo, cor, origem, item_id, saldo_inicial_centavos, saldo_inicial_em, dia_fechamento, dia_vencimento, arquivada, posicao, created_at'
 const CAMPOS_CATEGORIA = 'id, nome, cor, tipo, grupo, arquivada, posicao, created_at'
 const CAMPOS_TRANSACAO =
-  'id, tipo, valor_centavos, data, descricao, conta_id, conta_destino_id, categoria_id, categoria_origem, origem, pendente, duplicata_de, recorrencia_id, referencia, parcela, created_at'
+  'id, tipo, valor_centavos, data, descricao, conta_id, conta_destino_id, categoria_id, categoria_origem, categoria_banco, origem, pendente, duplicata_de, recorrencia_id, referencia, parcela, created_at'
 const CAMPOS_RECORRENCIA =
   'id, nome, tipo, valor_centavos, valor_variavel, frequencia, inicio, fim, parcelas, conta_id, categoria_id, ativa, created_at'
 
