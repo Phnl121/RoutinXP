@@ -36,9 +36,16 @@ export function useVencimentos(ativo) {
     if (!ativo) return undefined
     let vivo = true
     const hoje = hojeBrasilia()
-    Promise.all([api.listarRecorrencias(), api.listarPagamentos(somarDias(hoje, -DIAS_ATRAS), somarDias(hoje, 1))])
-      .then(([recorrencias, pagamentos]) => {
-        if (vivo) setDados(vencimentosProximos(recorrencias, pagamentos, hoje, DIAS_ATRAS, (rec) => diaBrasilia(rec.created_at)))
+    Promise.all([
+      api.listarRecorrencias(),
+      api.listarPagamentos(somarDias(hoje, -DIAS_ATRAS), somarDias(hoje, 1)),
+      api.listarContasFin(),
+      api.listarSaldosFin(),
+    ])
+      .then(([recorrencias, pagamentos, contas, saldos]) => {
+        const porConta = Object.fromEntries(saldos.map((s) => [s.conta_id, s.saldo_centavos]))
+        if (vivo)
+          setDados(vencimentosProximos(recorrencias, pagamentos, hoje, DIAS_ATRAS, (rec) => diaBrasilia(rec.created_at), contas, porConta))
       })
       // Sem conexão ou sem dados: a faixa só não aparece.
       .catch(() => {})

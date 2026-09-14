@@ -1,7 +1,16 @@
 import { useCallback, useMemo, useState } from 'react'
 import { Link } from 'react-router'
 import { DIAS_A_FRENTE, DIAS_ATRAS, useGastosFixos } from '../lib/useGastosFixos'
-import { chaveCobranca, cobrancasEntre, custoAnual, custoMensal, progressoParcelas, proximaCobranca, somarDias } from '../lib/gastosFixos'
+import {
+  chaveCobranca,
+  cobradoNoCartao,
+  cobrancasEntre,
+  custoAnual,
+  custoMensal,
+  progressoParcelas,
+  proximaCobranca,
+  somarDias,
+} from '../lib/gastosFixos'
 import { formatarReais, mesDe, rotuloDia } from '../lib/dinheiro'
 import { diaBrasilia, formatarPrazo, hojeBrasilia } from '../lib/datas'
 import { GastoFixoDialog, PagarDialog } from '../components/GastosFixosParts'
@@ -187,8 +196,9 @@ export default function GastosFixos() {
       pagamento: pagoPor.get(chaveCobranca(rec.id, c.dia)) ?? null,
     })),
   )
+  const noCartao = (rec) => cobradoNoCartao(rec, contaPorId)
   const vencidas = cobrancas
-    .filter((c) => c.rec.tipo !== 'parcelada' && c.dia < hoje && !c.pagamento)
+    .filter((c) => c.rec.tipo !== 'parcelada' && !noCartao(c.rec) && c.dia < hoje && !c.pagamento)
     .sort((a, b) => a.dia.localeCompare(b.dia))
   const proximas = cobrancas.filter((c) => c.dia >= hoje).sort((a, b) => a.dia.localeCompare(b.dia) || a.rec.nome.localeCompare(b.rec.nome))
   // Pagas neste mês com o dia já passado: continuam à vista, com o check e o Desfazer.
@@ -233,7 +243,7 @@ export default function GastosFixos() {
   const mes = mesDe(hoje)
   // Pagas contam sempre; em aberto, só as que a lista também mostra (desde o cadastro).
   const doMes = recs
-    .filter((rec) => rec.tipo !== 'parcelada')
+    .filter((rec) => rec.tipo !== 'parcelada' && !noCartao(rec))
     .flatMap((rec) => {
       const piso = desdeCadastro(rec)
       return cobrancasEntre(rec, `${mes}-01`, `${mes}-31`)
@@ -278,12 +288,13 @@ export default function GastosFixos() {
   const linhaCobranca = (c) => {
     const prazo = formatarPrazo(c.dia)
     const parcelada = c.rec.tipo === 'parcelada'
+    const cartao = noCartao(c.rec)
     return (
       <li
         key={chaveCobranca(c.rec.id, c.dia)}
         className="gf-cobranca"
-        data-paga={!parcelada && Boolean(c.pagamento)}
-        data-vencida={!parcelada && !c.pagamento && c.dia < hoje}
+        data-paga={!parcelada && !cartao && Boolean(c.pagamento)}
+        data-vencida={!parcelada && !cartao && !c.pagamento && c.dia < hoje}
         style={corDe[c.rec.categoria_id] ? { '--c': corDe[c.rec.categoria_id] } : undefined}
       >
         <span
@@ -304,6 +315,21 @@ export default function GastosFixos() {
           <span className="gf-cobranca__valor">{formatarReais((!parcelada && c.pagamento?.valor_centavos) || c.rec.valor_centavos)}</span>
           {parcelada ? (
             <span className="gf-cobranca__estado hint">{g.proximas.lancada}</span>
+          ) : cartao ? (
+            // No cartão: sai do limite no dia; o que se paga é a fatura.
+            <span className="gf-cobranca__estado" title={g.proximas.noCartaoRotulo}>
+              {c.dia > hoje ? (
+                <>
+                  <span className="prazo" data-prazo={prazo.estado}>
+                    <IconeRelogio />
+                    {prazo.texto}
+                  </span>
+                  <span className="hint">{g.proximas.noCartao}</span>
+                </>
+              ) : (
+                <span className="hint">{c.pagamento ? g.proximas.lancadaCartao : g.proximas.noCartao}</span>
+              )}
+            </span>
           ) : c.pagamento ? (
             <span className="gf-cobranca__estado">
               <span className="gf-pago">

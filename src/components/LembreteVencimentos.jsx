@@ -14,17 +14,21 @@ export function LembreteVencimentos({ atrasadas, hoje, amanha, onDispensar }) {
   if (todas.length === 1) {
     const [c] = todas
     const quando = atrasadas.length ? 'atrasada' : hoje.length ? 'hoje' : 'amanha'
-    texto = v.um(c.rec.nome, quando, formatarReais(c.rec.valor_centavos), c.rec.valor_variavel)
+    texto = c.rec.fatura
+      ? v.fatura(c.rec.nome, hoje.length ? 'hoje' : 'amanha', formatarReais(c.rec.valor_centavos))
+      : v.um(c.rec.nome, quando, formatarReais(c.rec.valor_centavos), c.rec.valor_variavel)
   } else {
     texto = v.varios(atrasadas.length, hoje.length, amanha.length, formatarReais(todas.reduce((soma, c) => soma + c.rec.valor_centavos, 0)))
   }
+  // Só faturas: o lugar delas é Lançamentos (contas e cartões).
+  const destino = todas.every((c) => c.rec.fatura) ? '/financeiro' : '/financeiro/gastos-fixos'
   return (
     <div className="lembrete lembrete--vencimentos" data-atrasada={atrasadas.length > 0} role="status">
       <IconeRepetir />
       <p>{texto}</p>
-      {location.pathname !== '/financeiro/gastos-fixos' && (
-        <NavLink to="/financeiro/gastos-fixos" className="link-btn">
-          {v.acao}
+      {location.pathname !== destino && (
+        <NavLink to={destino} className="link-btn">
+          {destino === '/financeiro' ? v.acaoFatura : v.acao}
         </NavLink>
       )}
       <button type="button" className="lembrete__fechar" onClick={onDispensar} aria-label={v.dispensar}>

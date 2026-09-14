@@ -435,6 +435,12 @@ export async function salvarMeta(meta) {
   preferencias = { ...preferencias, ...meta }
 }
 
+// Prévia: o cartão é do banco, então nada é lançado sozinho.
+export async function lancarCobrancasCartao() {
+  await espera()
+  return 0
+}
+
 export async function salvarAvisoVencimentos(ligado) {
   await espera()
   preferencias = { ...preferencias, avisar_vencimentos: ligado }

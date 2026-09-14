@@ -723,9 +723,11 @@ export const t = {
       if (amanha) partes.push(`${amanha} amanhã`)
       const n = atrasadas + hoje + amanha
       const lista = partes.length > 1 ? `${partes.slice(0, -1).join(', ')} e ${partes.at(-1)}` : partes[0]
-      return `${n} gastos fixos para pagar: ${lista} · ${total}`
+      return `${n} contas para pagar: ${lista} · ${total}`
     },
+    fatura: (nome, quando, valor) => `Fatura do ${nome} vence ${quando === 'hoje' ? 'hoje' : 'amanhã'} · ${valor}`,
     acao: 'Ver gastos fixos',
+    acaoFatura: 'Ver contas',
     dispensar: 'Dispensar aviso de vencimentos',
   },
 
@@ -1106,6 +1108,9 @@ export const t = {
       desfazerRotulo: (nome) => `Desfazer o pagamento de ${nome}`,
       parcela: (n, total) => `parcela ${n} de ${total}`,
       lancada: 'lançada',
+      lancadaCartao: 'lançada no cartão',
+      noCartao: 'no cartão',
+      noCartaoRotulo: 'Cobrado no cartão: entra na fatura, sem pagamento separado',
       aproximado: 'valor aproximado',
       pagoAviso: (nome) => `${nome} marcada como paga.`,
     },

@@ -4,6 +4,8 @@
 // Chamada só pelo agendamento do banco (todo dia às 8h de Brasília), com o cabeçalho
 // x-cron-secret. Parceladas ficam de fora: as parcelas já entram lançadas no cartão.
 // Cobrança já marcada como paga (lançamento ligado ao gasto e ao dia) não gera aviso.
+// Gasto cobrado no cartão também não: ele entra na fatura, e o aviso é o da fatura do cartão.
+// Antes dos avisos, lança as cobranças de cartão do dia (fin_lancar_cobrancas_cartao_todos).
 //
 // Segredos (supabase secrets): VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY.
 
@@ -17,6 +19,8 @@ const admin = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE
 webpush.setVapidDetails('https://routinxp.vercel.app', Deno.env.get('VAPID_PUBLIC_KEY')!, Deno.env.get('VAPID_PRIVATE_KEY')!)
 
 type Recorrencia = {
+  fatura?: boolean
+  conta_id?: string
   id: string
   user_id: string
   nome: string
@@ -77,6 +81,9 @@ function cobraEm(rec: Recorrencia, dia: string) {
 const reais = (centavos: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(centavos / 100)
 
 function texto(recs: Recorrencia[]) {
+  if (recs.length === 1 && recs[0].fatura) {
+    return { titulo: `Fatura do ${recs[0].nome} vence amanhã`, corpo: `${reais(recs[0].valor_centavos)} em aberto.` }
+  }
   if (recs.length === 1) {
     const [r] = recs
     return {
@@ -86,8 +93,9 @@ function texto(recs: Recorrencia[]) {
   }
   const total = recs.reduce((soma, r) => soma + r.valor_centavos, 0)
   const nomes = recs.map((r) => r.nome)
-  const lista = nomes.length > 3 ? `${nomes.slice(0, 3).join(', ')} e mais ${nomes.length - 3}` : `${nomes.slice(0, -1).join(', ')} e ${nomes.at(-1)}`
-  return { titulo: `${recs.length} gastos fixos vencem amanhã`, corpo: `${lista} · ${reais(total)} no total.` }
+  const lista =
+    nomes.length > 3 ? `${nomes.slice(0, 3).join(', ')} e mais ${nomes.length - 3}` : `${nomes.slice(0, -1).join(', ')} e ${nomes.at(-1)}`
+  return { titulo: `${recs.length} contas vencem amanhã`, corpo: `${lista} · ${reais(total)} no total.` }
 }
 
 Deno.serve(async (req) => {
@@ -99,18 +107,24 @@ Deno.serve(async (req) => {
   const { data: valido } = await admin.rpc('segredo_cron_valido', { p_segredo: segredo })
   if (!valido) return resposta({ erro: 'nao_autorizado' }, 401)
 
+  // Cobranças de cartão do dia viram lançamento (mesmo para quem não recebe push).
+  const { error: erroLancar } = await admin.rpc('fin_lancar_cobrancas_cartao_todos')
+  const lancamento = erroLancar ? 'falhou' : 'ok'
+
   const hoje = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date())
   const amanha = somarDias(hoje, 1)
 
   // Quem recebe: conta com o Financeiro liberado, algum aparelho inscrito e o aviso ligado.
   let inscricoes: Inscricao[]
   try {
-    inscricoes = await todas<Inscricao>((de, ate) => admin.from('push_subscriptions').select('id, user_id, endpoint, p256dh, auth').order('id').range(de, ate))
+    inscricoes = await todas<Inscricao>((de, ate) =>
+      admin.from('push_subscriptions').select('id, user_id, endpoint, p256dh, auth').order('id').range(de, ate),
+    )
   } catch {
     return resposta({ erro: 'falha' }, 500)
   }
   const comAparelho = [...new Set(inscricoes.map((s) => s.user_id))]
-  if (!comAparelho.length) return resposta({ enviados: 0 })
+  if (!comAparelho.length) return resposta({ enviados: 0, lancamento })
 
   const [{ data: contas, error: erroContas }, { data: desligados, error: erroPreferencias }] = await Promise.all([
     admin.from('contas_app').select('user_id').contains('funcoes', ['financeiro']).in('user_id', comAparelho),
@@ -119,14 +133,14 @@ Deno.serve(async (req) => {
   if (erroContas || erroPreferencias) return resposta({ erro: 'falha' }, 500)
   const semAviso = new Set((desligados ?? []).map((p) => p.user_id))
   const usuarios = (contas ?? []).map((c) => c.user_id).filter((id) => !semAviso.has(id))
-  if (!usuarios.length) return resposta({ enviados: 0 })
+  if (!usuarios.length) return resposta({ enviados: 0, lancamento })
 
   let recorrencias: Recorrencia[]
   try {
     recorrencias = await todas<Recorrencia>((de, ate) =>
       admin
         .from('fin_recorrencias')
-        .select('id, user_id, nome, valor_centavos, valor_variavel, frequencia, inicio, fim')
+        .select('id, user_id, nome, valor_centavos, valor_variavel, frequencia, inicio, fim, conta_id')
         .eq('ativa', true)
         .neq('tipo', 'parcelada')
         .lte('inicio', amanha)
@@ -138,16 +152,30 @@ Deno.serve(async (req) => {
   } catch {
     return resposta({ erro: 'falha' }, 500)
   }
-  const vencem = recorrencias.filter((r) => cobraEm(r, amanha))
-  if (!vencem.length) return resposta({ enviados: 0 })
+  // Cartões das pessoas: gastos neles não geram aviso; a fatura que vence amanhã, sim.
+  const [{ data: cartoes, error: erroCartoes }, { data: faturas, error: erroFaturas }] = await Promise.all([
+    admin.from('fin_contas').select('id').eq('tipo', 'cartao').in('user_id', usuarios),
+    admin.rpc('fin_faturas_vencendo', { p_dia: amanha }),
+  ])
+  if (erroCartoes || erroFaturas) return resposta({ erro: 'falha' }, 500)
+  const ehCartao = new Set((cartoes ?? []).map((c) => c.id))
+  const vencem = recorrencias.filter((r) => !ehCartao.has(r.conta_id!) && cobraEm(r, amanha))
+  const comAviso = new Set(usuarios)
+  const faturasDe = ((faturas ?? []) as { user_id: string; nome: string; fatura_centavos: number }[]).filter((f) => comAviso.has(f.user_id))
+  if (!vencem.length && !faturasDe.length) return resposta({ enviados: 0, lancamento })
 
   // Já pago antes do vencimento: não avisa.
   // Sem saber o que já foi pago, melhor não avisar do que avisar conta paga.
-  const { data: pagos, error: erroPagos } = await admin
-    .from('fin_transacoes')
-    .select('recorrencia_id')
-    .in('recorrencia_id', vencem.map((r) => r.id))
-    .eq('referencia', amanha)
+  const { data: pagos, error: erroPagos } = vencem.length
+    ? await admin
+        .from('fin_transacoes')
+        .select('recorrencia_id')
+        .in(
+          'recorrencia_id',
+          vencem.map((r) => r.id),
+        )
+        .eq('referencia', amanha)
+    : { data: [], error: null }
   if (erroPagos) return resposta({ erro: 'falha' }, 500)
   const pagas = new Set((pagos ?? []).map((p) => p.recorrencia_id))
   const porUsuario = new Map<string, Recorrencia[]>()
@@ -155,7 +183,21 @@ Deno.serve(async (req) => {
     if (pagas.has(r.id)) continue
     porUsuario.set(r.user_id, [...(porUsuario.get(r.user_id) ?? []), r])
   }
-  if (!porUsuario.size) return resposta({ enviados: 0 })
+  for (const f of faturasDe) {
+    const item: Recorrencia = {
+      fatura: true,
+      id: `fatura-${f.nome}`,
+      user_id: f.user_id,
+      nome: f.nome,
+      valor_centavos: f.fatura_centavos,
+      valor_variavel: false,
+      frequencia: 'mensal',
+      inicio: amanha,
+      fim: null,
+    }
+    porUsuario.set(f.user_id, [...(porUsuario.get(f.user_id) ?? []), item])
+  }
+  if (!porUsuario.size) return resposta({ enviados: 0, lancamento })
 
   const vencidas: string[] = []
   let enviados = 0
@@ -167,7 +209,11 @@ Deno.serve(async (req) => {
         try {
           await webpush.sendNotification(
             { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },
-            JSON.stringify({ ...texto(recs), url: '/financeiro/gastos-fixos', tag: 'routinxp-vencimento' }),
+            JSON.stringify({
+              ...texto(recs),
+              url: recs.every((x) => x.fatura) ? '/financeiro' : '/financeiro/gastos-fixos',
+              tag: 'routinxp-vencimento',
+            }),
             // Vale até o fim do dia: um celular desligado de manhã ainda recebe à tarde.
             { TTL: 12 * 60 * 60, urgency: 'normal' },
           )
@@ -180,5 +226,5 @@ Deno.serve(async (req) => {
   )
 
   if (vencidas.length) await admin.from('push_subscriptions').delete().in('id', vencidas)
-  return resposta({ enviados, removidas: vencidas.length })
+  return resposta({ enviados, removidas: vencidas.length, lancamento })
 })

@@ -27,7 +27,11 @@ export function cobrancasEntre(rec, inicio, fim) {
   const limite = rec.fim && rec.fim < fim ? rec.fim : fim
   const lista = []
   const passo =
-    rec.frequencia === 'semanal' ? (i) => somarDias(rec.inicio, 7 * i) : rec.frequencia === 'anual' ? (i) => somarMeses(rec.inicio, 12 * i) : (i) => somarMeses(rec.inicio, i)
+    rec.frequencia === 'semanal'
+      ? (i) => somarDias(rec.inicio, 7 * i)
+      : rec.frequencia === 'anual'
+        ? (i) => somarMeses(rec.inicio, 12 * i)
+        : (i) => somarMeses(rec.inicio, i)
   const maximo = rec.tipo === 'parcelada' ? rec.parcelas : 5000
   for (let i = 0; i < maximo; i++) {
     const dia = passo(i)
@@ -69,22 +73,40 @@ export function proximaCobranca(rec, hoje, paga = () => false) {
   return cobrancasEntre(rec, hoje, somarMeses(hoje, 13)).find((c) => !paga(c.dia)) ?? null
 }
 
+// Gasto fixo cobrado num cartão: sai do limite no dia, não tem "Pagar" (o que se paga é a fatura).
+export const cobradoNoCartao = (rec, contaPorId) => rec.tipo !== 'parcelada' && contaPorId[rec.conta_id]?.tipo === 'cartao'
+
+// Dia do vencimento da fatura no mês de `dia` (dia 31 cai no último dia dos meses curtos).
+export function vencimentoFatura(conta, dia) {
+  const [ano, mes] = partes(dia)
+  return formatar(ano, mes, Math.min(conta.dia_vencimento, ultimoDia(ano, mes)))
+}
+
 // Chave de uma cobrança: o gasto e o dia.
 export const chaveCobranca = (recorrenciaId, dia) => `${recorrenciaId}|${dia}`
 
 // Avisos de vencimento (fase 3.6): cobranças sem pagamento atrasadas (desde o cadastro, até
-// `diasAtras`), de hoje e de amanhã. Parceladas ficam de fora: as parcelas já estão lançadas.
-export function vencimentosProximos(recorrencias, pagamentos, hoje, diasAtras, diaDoCadastro) {
+// `diasAtras`), de hoje e de amanhã. Parceladas e gastos no cartão ficam de fora (já estão
+// lançados); no lugar deles entra a fatura em aberto do cartão que vence hoje ou amanhã.
+export function vencimentosProximos(recorrencias, pagamentos, hoje, diasAtras, diaDoCadastro, contas = [], saldos = {}) {
   const pagas = new Set(pagamentos.map((x) => chaveCobranca(x.recorrencia_id, x.referencia)))
   const amanha = somarDias(hoje, 1)
   const janela = somarDias(hoje, -diasAtras)
+  const contaPorId = Object.fromEntries(contas.map((c) => [c.id, c]))
+  const faturas = contas
+    .filter((c) => c.tipo === 'cartao' && !c.arquivada && c.dia_vencimento && (saldos[c.id] ?? 0) < 0)
+    .flatMap((c) => {
+      const dia = [hoje, amanha].find((x) => vencimentoFatura(c, x) === x)
+      return dia ? [{ rec: { id: `fatura-${c.id}`, nome: c.nome, valor_centavos: -saldos[c.id], fatura: true }, dia }] : []
+    })
   const lista = recorrencias
-    .filter((rec) => rec.tipo !== 'parcelada')
+    .filter((rec) => rec.tipo !== 'parcelada' && !cobradoNoCartao(rec, contaPorId))
     .flatMap((rec) => {
       const cadastro = diaDoCadastro(rec)
       return cobrancasEntre(rec, cadastro > janela ? cadastro : janela, amanha).map((c) => ({ rec, dia: c.dia }))
     })
     .filter((c) => !pagas.has(chaveCobranca(c.rec.id, c.dia)))
+    .concat(faturas)
     .sort((a, b) => a.dia.localeCompare(b.dia) || b.rec.valor_centavos - a.rec.valor_centavos)
   return {
     atrasadas: lista.filter((c) => c.dia < hoje),

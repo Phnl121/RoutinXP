@@ -38,6 +38,8 @@ export function useGastosFixos() {
     const [inicio, fim] = janela()
     api
       .prepararFinanceiro()
+      // Cobranças de cartão que já passaram viram lançamento antes de ler.
+      .then(() => api.lancarCobrancasCartao().catch(() => 0))
       .then(() => {
         const mes = mesDe(hojeBrasilia())
         return Promise.all([

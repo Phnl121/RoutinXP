@@ -62,6 +62,7 @@ export function useFinanceiro(mes) {
     let ativo = true
     api
       .prepararFinanceiro()
+      .then(() => api.lancarCobrancasCartao().catch(() => 0))
       // Primeira visita: dicionário inicial de regras e, se criou, aplica logo.
       .then(() =>
         api

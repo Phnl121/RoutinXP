@@ -298,6 +298,11 @@ export async function salvarMeta({ meta_tipo, meta_valor }) {
   ok(await supabase.from('fin_preferencias').upsert({ meta_tipo, meta_valor, updated_at: new Date().toISOString() }, { onConflict: 'user_id' }))
 }
 
+// Gastos fixos no cartão (manual) viram saída no dia da cobrança. Devolve quantas lançou.
+export async function lancarCobrancasCartao() {
+  return ok(await supabase.rpc('fin_lancar_cobrancas_cartao'))
+}
+
 // Aviso de vencimento no celular (fase 3.6): ligado por padrão; desligar vale para todos os aparelhos.
 export async function salvarAvisoVencimentos(ligado) {
   ok(await supabase.from('fin_preferencias').upsert({ avisar_vencimentos: ligado, updated_at: new Date().toISOString() }, { onConflict: 'user_id' }))
