@@ -72,6 +72,8 @@ let transacoes = [
   tx('saida', 180000, noAnterior(5), 'Aluguel', 'fc1', 'fk1'),
   tx('saida', 31200, noAnterior(14), 'Mercado', 'fc3', 'fk2'),
   tx('saida', 5590, noAnterior(6), 'Spotify e Netflix', 'fc3', 'fk8'),
+  tx('saida', 3390, noAnterior(9), 'DISNEY PLUS 1', 'fc3', 'fk8'),
+  tx('saida', 3390, noMes(9), 'DISNEY PLUS 0', 'fc3', 'fk8'),
   tx('saida', 42000, noAnterior(20), 'Curso de inglês', 'fc1', 'fk5'),
   tx('entrada', 60000, noAnterior(22), 'Freela de design', 'fc1', 'fr2'),
   // Meses anteriores, para a evolução de 6 meses.
@@ -84,6 +86,7 @@ let transacoes = [
       tx('saida', 26000 + n * 3100, dia(12), 'Mercado', 'fc3', 'fk2'),
       tx('saida', 5590, dia(6), 'Spotify e Netflix', 'fc3', 'fk8'),
       tx('saida', 9000 * n, dia(18), 'Lazer', 'fc3', 'fk6'),
+      tx('saida', 3390, dia(9), `DISNEY PLUS ${n}`, 'fc3', 'fk8'),
       ...(n === 3 ? [tx('entrada', 120000, dia(15), 'Projeto freelance', 'fc1', 'fr2')] : []),
       ...(n === 4 ? [tx('saida', 95000, dia(21), 'Conserto do notebook', 'fc1', 'fk7')] : []),
     ]
@@ -401,4 +404,26 @@ export async function aplicarRegras() {
 export async function categorizarTransacao(id, categoriaId) {
   await espera()
   transacoes = transacoes.map((x) => (x.id === id ? { ...x, categoria_id: categoriaId, categoria_origem: 'manual' } : x))
+}
+
+// ---------- Preferências e sugestões na prévia ----------
+let preferencias = { sugestoes_ignoradas: [] }
+
+export async function lerPreferencias() {
+  await espera()
+  return copia(preferencias)
+}
+
+export async function ignorarSugestao(chave) {
+  await espera()
+  preferencias = { ...preferencias, sugestoes_ignoradas: [...new Set([...preferencias.sugestoes_ignoradas, chave])] }
+  return copia(preferencias.sugestoes_ignoradas)
+}
+
+export async function vincularPagamentos(recorrenciaId, ocorrencias) {
+  await espera()
+  transacoes = transacoes.map((x) => {
+    const o = ocorrencias.find((y) => y.id === x.id)
+    return o ? { ...x, recorrencia_id: recorrenciaId, referencia: o.referencia } : x
+  })
 }

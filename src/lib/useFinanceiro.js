@@ -26,15 +26,16 @@ export function useFinanceiro(mes) {
   const lerSaldos = async () => Object.fromEntries((await api.listarSaldosFin()).map((s) => [s.conta_id, s.saldo_centavos]))
   // Gastos fixos e conexões só alimentam partes da página: se falharem, o resto carrega.
   const lerBase = async () => {
-    const [contas, categorias, saldos, recorrencias, conexoes, regras] = await Promise.all([
+    const [contas, categorias, saldos, recorrencias, conexoes, regras, preferencias] = await Promise.all([
       api.listarContasFin(),
       api.listarCategoriasFin(),
       lerSaldos(),
       api.listarRecorrencias().catch(() => []),
       api.listarConexoes().catch(() => []),
       api.listarRegras().catch(() => []),
+      api.lerPreferencias().catch(() => ({ sugestoes_ignoradas: [] })),
     ])
-    return { contas, categorias, saldos, recorrencias, conexoes, regras }
+    return { contas, categorias, saldos, recorrencias, conexoes, regras, ignoradas: preferencias.sugestoes_ignoradas ?? [] }
   }
 
   // Primeira carga: categorias iniciais, depois contas, categorias e saldos.
@@ -237,6 +238,7 @@ export function useFinanceiro(mes) {
     recorrencias: base.recorrencias,
     conexoes: base.conexoes,
     regras: base.regras,
+    ignoradas: base.ignoradas ?? [],
     salvarRegra,
     excluirRegra,
     aplicarRegras,

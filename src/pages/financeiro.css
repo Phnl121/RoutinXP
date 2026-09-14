@@ -1910,3 +1910,88 @@ button.fin-dre__botao:hover {
     flex-wrap: wrap;
   }
 }
+
+/* ---------- Recorrências detectadas (fase 5.5) ---------- */
+
+.gf-sugestoes {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.35rem 1.5rem;
+  border-color: color-mix(in oklab, var(--tom-assinatura) 34%, var(--rule));
+  background:
+    radial-gradient(80% 90% at 100% 0%, color-mix(in oklab, var(--tom-assinatura) 16%, transparent) 0%, transparent 70%),
+    color-mix(in oklab, var(--tom-assinatura) 6%, var(--panel));
+}
+
+.gf-sugestoes__cabeca {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.gf-sugestoes__cabeca .label {
+  color: color-mix(in oklab, var(--tom-assinatura) 55%, var(--ink));
+}
+
+.gf-sugestoes__cabeca .hint {
+  margin: 0;
+}
+
+.gf-sugestoes__lista {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gf-sugestao {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--c, var(--panel)) 8%, var(--panel));
+}
+
+.gf-sugestao__texto {
+  display: grid;
+  flex: 1 1 12rem;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.gf-sugestao__nome {
+  overflow: hidden;
+  font-weight: 700;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.gf-sugestao__detalhe {
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.gf-sugestao__valor {
+  font-weight: 800;
+  color: var(--saida);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.gf-sugestao__acoes {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.gf-sugestao__cadastrar {
+  min-height: 2.5rem;
+  padding: 0 1rem;
+}
+
+.fin-revisar--sugestao {
+  border-color: color-mix(in oklab, var(--tom-assinatura) 40%, var(--rule));
+  background: color-mix(in oklab, var(--tom-assinatura) 8%, var(--panel));
+}

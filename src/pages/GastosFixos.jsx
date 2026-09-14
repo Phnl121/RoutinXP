@@ -5,6 +5,7 @@ import { chaveCobranca, cobrancasEntre, custoAnual, custoMensal, progressoParcel
 import { formatarReais, mesDe, rotuloDia } from '../lib/dinheiro'
 import { diaBrasilia, formatarPrazo, hojeBrasilia } from '../lib/datas'
 import { GastoFixoDialog, PagarDialog } from '../components/GastosFixosParts'
+import { detectarRecorrencias } from '../lib/recorrencias'
 import { Toast } from '../components/Toast'
 import { Aviso } from '../components/AuthParts'
 import { IconeCheck, IconeMais, IconeRelogio } from '../components/icones'
@@ -61,6 +62,42 @@ export default function GastosFixos() {
 
   const recs = d.recorrencias
   const semContas = d.contas.length === 0
+  // 5.5: cobranças que se repetem e ainda não são gastos fixos.
+  const sugestoes = semContas ? [] : detectarRecorrencias(d.historico, recs, d.ignoradas)
+
+  const painelSugestoes =
+    sugestoes.length > 0 ? (
+      <section className="panel gf-sugestoes" aria-labelledby="gf-sugestoes">
+        <div className="gf-sugestoes__cabeca">
+          <h2 id="gf-sugestoes" className="label">
+            {g.sugestoes.titulo}
+          </h2>
+          <p className="hint">{g.sugestoes.texto}</p>
+        </div>
+        <ul className="gf-sugestoes__lista">
+          {sugestoes.map((s) => (
+            <li key={s.chave} className="gf-sugestao" style={corDe[s.categoria_id] ? { '--c': corDe[s.categoria_id] } : undefined}>
+              <span className="fin-bloco" data-vazio={!corDe[s.categoria_id]} aria-hidden="true" />
+              <span className="gf-sugestao__texto">
+                <span className="gf-sugestao__nome">{s.nome}</span>
+                <span className="gf-sugestao__detalhe">
+                  {g.sugestoes.detalhe(s.ocorrencias.length, Number(s.inicio.slice(8, 10)), contaPorId[s.conta_id]?.nome)}
+                </span>
+              </span>
+              <span className="gf-sugestao__valor">{formatarReais(s.valor_centavos)}</span>
+              <span className="gf-sugestao__acoes">
+                <button type="button" className="botao-contorno gf-sugestao__cadastrar" onClick={() => setDlg({ tipo: 'gasto', sugestao: s })}>
+                  {g.sugestoes.cadastrar}
+                </button>
+                <button type="button" className="link-btn" onClick={() => d.ignorarSugestao(s.chave)} aria-label={g.sugestoes.ignorarRotulo(s.nome)}>
+                  {g.sugestoes.ignorar}
+                </button>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ) : null
 
   // Cobranças: vencidas sem pagamento (últimos dias) e as dos próximos 30 dias.
   const limite = somarDias(hoje, DIAS_A_FRENTE)
@@ -206,6 +243,7 @@ export default function GastosFixos() {
         </header>
 
         {semContas || recs.length === 0 ? (
+          <>
           <section className="panel fin-comecar" aria-labelledby="gf-vazio">
             <h2 id="gf-vazio" className="fin-comecar__titulo">
               {g.vazio.titulo}
@@ -222,6 +260,8 @@ export default function GastosFixos() {
               </button>
             )}
           </section>
+          {painelSugestoes}
+          </>
         ) : (
           <>
             <section className="panel fin-placar" aria-label={g.placar.rotulo}>
@@ -246,6 +286,8 @@ export default function GastosFixos() {
                 </div>
               </dl>
             </section>
+
+            {painelSugestoes}
 
             <div className="gf__grade">
               <section className="panel gf-proximas" aria-labelledby="gf-proximas">
@@ -320,9 +362,27 @@ export default function GastosFixos() {
       {dlg?.tipo === 'gasto' && (
         <GastoFixoDialog
           recorrencia={dlg.item}
+          inicial={
+            dlg.sugestao && {
+              tipo: 'assinatura',
+              nome: dlg.sugestao.nome,
+              valor_centavos: dlg.sugestao.valor_centavos,
+              valor_variavel: dlg.sugestao.variavel,
+              inicio: dlg.sugestao.inicio,
+              conta_id: dlg.sugestao.conta_id,
+              categoria_id: dlg.sugestao.categoria_id,
+            }
+          }
           contas={d.contas}
           categorias={d.categorias}
-          onSalvar={d.salvar}
+          onSalvar={
+            dlg.sugestao
+              ? async (rec) => {
+                  await d.cadastrarSugestao(rec, dlg.sugestao)
+                  setAviso({ tipo: 'info', texto: g.sugestoes.cadastrada(rec.nome) })
+                }
+              : d.salvar
+          }
           onExcluir={d.excluir}
           onFechar={() => setDlg(null)}
         />

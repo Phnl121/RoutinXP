@@ -275,3 +275,26 @@ export async function aplicarRegras() {
 export async function categorizarTransacao(id, categoriaId) {
   ok(await supabase.from('fin_transacoes').update({ categoria_id: categoriaId, categoria_origem: 'manual' }).eq('id', id))
 }
+
+// ---------- Preferências e recorrências detectadas (fase 5.5) ----------
+
+export async function lerPreferencias() {
+  const { data, error } = await supabase.from('fin_preferencias').select('*').maybeSingle()
+  if (error) throw error
+  return data ?? { sugestoes_ignoradas: [] }
+}
+
+// Dispensar uma sugestão: a chave fica guardada e ela não volta.
+export async function ignorarSugestao(chave, atuais) {
+  const lista = [...new Set([...(atuais ?? []), chave])].slice(-300)
+  ok(await supabase.from('fin_preferencias').upsert({ sugestoes_ignoradas: lista, updated_at: new Date().toISOString() }, { onConflict: 'user_id' }))
+  return lista
+}
+
+// Depois de cadastrar o gasto fixo sugerido: os lançamentos que o formaram viram os pagamentos
+// das cobranças (Gastos fixos passa a mostrá-los como pagos).
+export async function vincularPagamentos(recorrenciaId, ocorrencias) {
+  for (const o of ocorrencias) {
+    ok(await supabase.from('fin_transacoes').update({ recorrencia_id: recorrenciaId, referencia: o.referencia }).eq('id', o.id))
+  }
+}

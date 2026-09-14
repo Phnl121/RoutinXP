@@ -4,6 +4,7 @@ import * as apiPrevia from '../dev/previaFinanceiro'
 import { emPrevia } from '../dev/previa'
 import { hojeBrasilia } from './datas'
 import { somarDias } from './gastosFixos'
+import { andarMes, mesDe } from './dinheiro'
 
 const api = emPrevia ? apiPrevia : apiReal
 
@@ -14,7 +15,15 @@ export const DIAS_A_FRENTE = 30
 // Dados da página Gastos fixos: contas, categorias de despesa, os gastos fixos e os pagamentos
 // ligados a eles na janela de cobranças.
 export function useGastosFixos() {
-  const [dados, setDados] = useState({ estado: 'carregando', contas: [], categorias: [], recorrencias: [], pagamentos: [] })
+  const [dados, setDados] = useState({
+    estado: 'carregando',
+    contas: [],
+    categorias: [],
+    recorrencias: [],
+    pagamentos: [],
+    historico: [],
+    ignoradas: [],
+  })
   const [tentativa, setTentativa] = useState(0)
 
   const janela = () => {
@@ -27,10 +36,22 @@ export function useGastosFixos() {
     const [inicio, fim] = janela()
     api
       .prepararFinanceiro()
-      .then(() => Promise.all([api.listarContasFin(), api.listarCategoriasFin(), api.listarRecorrencias(), api.listarPagamentos(inicio, fim)]))
+      .then(() => {
+        const mes = mesDe(hojeBrasilia())
+        return Promise.all([
+          api.listarContasFin(),
+          api.listarCategoriasFin(),
+          api.listarRecorrencias(),
+          api.listarPagamentos(inicio, fim),
+          // Seis meses de lançamentos para detectar cobranças que se repetem (fase 5.5).
+          api.listarTransacoesDosMeses(andarMes(mes, -5), mes).catch(() => []),
+          api.lerPreferencias().catch(() => ({ sugestoes_ignoradas: [] })),
+        ])
+      })
       .then(
-        ([contas, categorias, recorrencias, pagamentos]) =>
-          ativo && setDados({ estado: 'pronto', contas, categorias, recorrencias, pagamentos }),
+        ([contas, categorias, recorrencias, pagamentos, historico, preferencias]) =>
+          ativo &&
+          setDados({ estado: 'pronto', contas, categorias, recorrencias, pagamentos, historico, ignoradas: preferencias.sugestoes_ignoradas ?? [] }),
         (erro) => ativo && setDados((d) => ({ ...d, estado: 'erro', erro })),
       )
     return () => {
@@ -58,6 +79,7 @@ export function useGastosFixos() {
         recorrencias: rec.id ? d.recorrencias.map((x) => (x.id === salva.id ? salva : x)) : [...d.recorrencias, salva],
       }))
       if (salva.tipo === 'parcelada') await recarregarPagamentos()
+      return salva
     },
     [recarregarPagamentos, dados.recorrencias],
   )
@@ -83,5 +105,26 @@ export function useGastosFixos() {
     setDados((d) => ({ ...d, pagamentos: d.pagamentos.filter((x) => x.id !== transacaoId) }))
   }, [])
 
-  return { ...dados, tentarDeNovo, salvar, excluir, pagar, desfazerPagamento }
+  // Sugestão aceita: cadastra e liga os lançamentos antigos como pagamentos das cobranças.
+  const cadastrarSugestao = useCallback(
+    async (rec, sugestao) => {
+      const salva = await salvar(rec)
+      await api.vincularPagamentos(salva.id, sugestao.ocorrencias)
+      const ids = new Set(sugestao.ocorrencias.map((o) => o.id))
+      setDados((d) => ({
+        ...d,
+        historico: d.historico.map((x) => (ids.has(x.id) ? { ...x, recorrencia_id: salva.id } : x)),
+      }))
+      await recarregarPagamentos()
+    },
+    [salvar, recarregarPagamentos],
+  )
+
+  const ignorarSugestao = useCallback(async (chave) => {
+    setDados((d) => ({ ...d, ignoradas: [...d.ignoradas, chave] }))
+    const lista = await api.ignorarSugestao(chave, dados.ignoradas)
+    setDados((d) => ({ ...d, ignoradas: lista }))
+  }, [dados.ignoradas])
+
+  return { ...dados, tentarDeNovo, salvar, excluir, pagar, desfazerPagamento, cadastrarSugestao, ignorarSugestao }
 }

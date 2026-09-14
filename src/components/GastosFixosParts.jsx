@@ -24,21 +24,23 @@ function categoriaSugerida(categorias, tipo) {
 }
 
 // Cadastro de assinatura, compra parcelada, conta fixa ou outro gasto que se repete.
-export function GastoFixoDialog({ recorrencia, contas, categorias, onSalvar, onExcluir, onFechar }) {
+// Com `inicial` (sugestão de recorrência detectada), um cadastro novo já começa preenchido.
+export function GastoFixoDialog({ recorrencia, inicial, contas, categorias, onSalvar, onExcluir, onFechar }) {
   const id = useId()
   const ref = useRef(null)
-  const [tipo, setTipo] = useState(recorrencia?.tipo ?? 'assinatura')
-  const [nome, setNome] = useState(recorrencia?.nome ?? '')
-  const [valor, setValor] = useState(recorrencia?.valor_centavos ?? 0)
+  const base = recorrencia ?? inicial
+  const [tipo, setTipo] = useState(base?.tipo ?? 'assinatura')
+  const [nome, setNome] = useState(base?.nome ?? '')
+  const [valor, setValor] = useState(base?.valor_centavos ?? 0)
   const [parcelas, setParcelas] = useState(recorrencia?.parcelas ?? 12)
   const [frequencia, setFrequencia] = useState(recorrencia?.frequencia ?? 'mensal')
-  const [inicio, setInicio] = useState(recorrencia?.inicio ?? hojeBrasilia())
+  const [inicio, setInicio] = useState(base?.inicio ?? hojeBrasilia())
   const [fim, setFim] = useState(recorrencia?.fim ?? '')
-  const [variavel, setVariavel] = useState(Boolean(recorrencia?.valor_variavel))
+  const [variavel, setVariavel] = useState(Boolean(base?.valor_variavel))
   const contasAtivas = contas.filter((c) => !c.arquivada || c.id === recorrencia?.conta_id)
-  const [contaId, setContaId] = useState(recorrencia?.conta_id ?? (contasAtivas.find((c) => c.tipo === 'cartao') ?? contasAtivas[0])?.id ?? '')
-  const [categoriaId, setCategoriaId] = useState(recorrencia ? (recorrencia.categoria_id ?? '') : categoriaSugerida(categorias, 'assinatura'))
-  const [categoriaTocada, setCategoriaTocada] = useState(Boolean(recorrencia))
+  const [contaId, setContaId] = useState(base?.conta_id ?? (contasAtivas.find((c) => c.tipo === 'cartao') ?? contasAtivas[0])?.id ?? '')
+  const [categoriaId, setCategoriaId] = useState(base?.categoria_id ?? (recorrencia ? '' : categoriaSugerida(categorias, 'assinatura')))
+  const [categoriaTocada, setCategoriaTocada] = useState(Boolean(base?.categoria_id) || Boolean(recorrencia))
   const [pausada, setPausada] = useState(recorrencia ? !recorrencia.ativa : false)
   const [salvando, setSalvando] = useState(false)
   const [confirmando, setConfirmando] = useState(false)

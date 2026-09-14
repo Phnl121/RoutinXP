@@ -4,6 +4,7 @@ import { useFinanceiro } from '../lib/useFinanceiro'
 import { useAcoesFinanceiro } from '../lib/useAcoesFinanceiro'
 import { mesAtual, mesValido, nomeDoMes } from '../lib/dinheiro'
 import { ehAdmin, useConta } from '../lib/conta'
+import { detectarRecorrencias } from '../lib/recorrencias'
 import { mensagemErroDados } from '../lib/dadosErros'
 import { ContasCartoes, ListaPorDia, MesSeletor } from '../components/FinanceiroLista'
 import { FinanceiroDialogos } from '../components/FinanceiroDialogos'
@@ -57,6 +58,7 @@ export default function Financeiro() {
   const revisando = visao === 'revisar'
   const lista = revisando ? aRevisar : d.transacoes
   const novoLancamento = () => setDlg({ tipo: 'lancamento' })
+  const sugestoes = detectarRecorrencias(d.historico, d.recorrencias, d.ignoradas)
 
   async function categorizar(x, categoriaId) {
     try {
@@ -120,6 +122,15 @@ export default function Financeiro() {
                   {fin.verControle}
                 </Link>
               </div>
+
+              {sugestoes.length > 0 && !revisando && (
+                <p className="fin-revisar fin-revisar--sugestao">
+                  <span>{t.gastosFixos.sugestoes.faixa(sugestoes.length)}</span>
+                  <Link to="/financeiro/gastos-fixos" className="link-btn">
+                    {t.gastosFixos.sugestoes.ver}
+                  </Link>
+                </p>
+              )}
 
               {d.carregandoMes ? (
                 <p className="label" aria-busy="true">
