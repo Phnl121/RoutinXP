@@ -9,7 +9,7 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 
 **Painel de administração e verificação em duas etapas publicados e testados pelo usuário (2026-09-13).**
 
-**Financeiro no ar (2026-09-13):** menu em seções, fases 0 a 3 testadas pelo usuário; fase 4 (Open Finance pelo MeuPluggy) publicada: migration `20260914100000_financeiro_open_finance`, Edge Function `sincronizar-banco` (sem verificação de JWT; confere o admin verificado) e leitura diária às 6h. Falta o primeiro teste real (Conectar bancos).
+**Financeiro no ar (2026-09-14):** menu em seções; fases 0 a 5 publicadas (mês, lançamentos, contas, categorias, resumo com DRE, Gastos fixos, Open Finance pelo MeuPluggy e regras de categoria) e visual colorido (entradas verde-água, saídas coral, transferências azul-céu, cards com tom). Open Finance testado pelo usuário (importou as transações); falta ver as regras categorizando o que veio.
 
 ### Infraestrutura
 - **Pasta local:** `C:\Users\pedro\Desktop\RoutinXP` (renomeada de `App - Rotina` pelo usuário em 2026-09-13). O git e o link da Supabase CLI continuaram funcionando.
@@ -40,7 +40,8 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
     - `20260913210000_financeiro_modelo`;
     - `20260913220000_financeiro_gastos_fixos`;
     - `20260913230000_gastos_fixos_tipo_fixo`;
-    - `20260914100000_financeiro_open_finance`.
+    - `20260914100000_financeiro_open_finance`;
+    - `20260914110000_financeiro_regras`.
   - **Permissão local:** `.claude/settings.local.json` (fora do git) libera para o Claude Code `npx.cmd supabase db push`, `migration list`, `functions deploy` e `git push`. Continua valendo: só com pedido do usuário no chat.
   - **Mudança no banco:**
     - Criar a migration com `npx.cmd supabase migration new <nome>`.
@@ -104,8 +105,8 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 - **Dados de teste:** as 8 tarefas de exemplo foram apagadas pelo usuário (2026-09-13).
 
 ### Pendências
-- **Testar o Open Finance (usuário):** Financeiro > Bancos conectados > Conectar bancos. Conferir contas criadas, saldos, transferências (pagamento de fatura) e possíveis duplicatas. Se a Pluggy devolver formato diferente do documentado, ajustar `sincronizar-banco`.
-- **Financeiro, próximas fases:** 3.6 (avisos de vencimento: faixa no topo e push um dia antes), 4 (Open Finance pelo MeuPluggy; depende do usuário criar a conta, a aplicação na Pluggy e guardar as chaves nos segredos do Supabase), 5 (categorização por regras), 6 (orçamento e metas; gamificação sem decisão).
+- **Conferir as regras (usuário):** abrir o Financeiro (o dicionário inicial é criado e aplicado na primeira visita), revisar o que sobrar em "a revisar" e criar regras pelas sugestões.
+- **Financeiro, próximas fases:** 5.5 (recorrências detectadas viram sugestão de gasto fixo), 3.6 (avisos de vencimento: faixa no topo e push um dia antes), 6 (orçamento por categoria e metas; gamificação sem decisão). Depois: Agenda.
 - **Técnicas:**
   - O pacote JS passa de 500 kB; dá para carregar cada página só quando for aberta (lazy loading).
   - O SMTP padrão do Supabase envia só ~2 e-mails por hora. O SMTP próprio depende de um domínio.
@@ -128,6 +129,21 @@ Atualizado em 2026-09-13 (Claude Code). **v1 completa e v2 entregue.** Tudo est�
 
 ## Log de sessões (mais recente primeiro)
 Cada entrada: data, ferramenta usada, o que foi feito, o que travou, o que fazer a seguir.
+
+### 2026-09-14, Claude Code (Opus 5): Open Finance, regras de categoria e Financeiro colorido
+Pedidos do usuário: fase 4 (MeuPluggy), depois categorizar o que chegou "a revisar" (fase 5), depois deixar o Financeiro vivo e colorido (texto e cards), sem perder a essência do app.
+
+Feito (tudo publicado):
+- **Fase 4:** `fin_conexoes`, contas e lançamentos importados com id da Pluggy, Edge Function `sincronizar-banco` (admin verificado; leitura diária às 6h; 90 dias na primeira leitura, 30 nas seguintes), transferências detectadas entre contas próprias, possíveis duplicatas de lançamentos manuais, juntar contas, desconectar mantendo ou apagando. Revisão com 8 correções aplicadas antes de publicar (banco ligado a uma conta só, saldo somado no banco, datas só com dia, operações atômicas).
+- **Fase 5:** `fin_regras` (descrição contém → categoria, palavras inteiras), dicionário inicial de ~100 estabelecimentos criado uma vez, pista da categoria da Pluggy, `fin_aplicar_regras` ao importar e ao abrir, faixa e fila "a revisar" com categoria na linha, sugestão "Criar regra" ao categorizar. Revisão com 8 correções aplicadas.
+- **Cores:** tokens `--entrada`, `--saida`, `--transferencia` e tons de tipo; placar em cards por tom, linhas no tom da categoria, gráficos coloridos. A antiga Neutral Money Rule do DESIGN.md foi substituída pela Money Direction Rule e pelos Toned Cards.
+- **Permissão local:** `.claude/settings.local.json` (fora do git) libera db push, functions deploy e git push quando o usuário pede.
+
+Travou:
+- Sem banco local nem sandbox da Pluggy: o primeiro teste real foi o do usuário.
+
+Próximo:
+- Conferir as regras nas transações reais; seguir para 5.5, 3.6 ou 6.
 
 ### 2026-09-13, Claude Code (Opus 5): Financeiro, fases 2 e 3
 Pedidos do usuário: seguir para a fase 2; depois, uma página própria "Gastos fixos" com assinaturas, compras parceladas (ex.: 12x), pagamentos e outros.
