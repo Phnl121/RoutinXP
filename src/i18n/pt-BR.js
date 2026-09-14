@@ -102,6 +102,15 @@ export const t = {
   conta: {
     menu: 'Conta',
     sair: 'Sair',
+    temaClaro: 'Tema claro',
+    temaEscuro: 'Tema escuro',
+  },
+
+  tema: {
+    titulo: 'Aparência',
+    rotulo: 'Tema do app',
+    opcoes: { sistema: 'Sistema', claro: 'Claro', escuro: 'Escuro' },
+    dica: 'Sistema segue o modo claro ou escuro do aparelho. Vale para este navegador.',
   },
 
   // Entre o login e o app (verificação e senha provisória).

@@ -39,11 +39,15 @@
   --green-wash: rgb(34 197 94 / 0.1);
   --green-line: rgb(34 197 94 / 0.35);
   --green-glow: rgb(34 197 94 / 0.6);
+  /* Verde e âmbar como texto: no escuro são os mesmos; no claro, mais fundos para ler. */
+  --green-texto: var(--green);
   --on-green: #0a2616;
   /* Prazos (pedido do usuário, 2026-09-11): perto de vencer em âmbar, atrasado em rosa. */
   --prazo-perto: #e0a050;
   --prazo-atrasado: #e27d8f;
   --on-prazo: #1d1407;
+  --prazo-perto-texto: var(--prazo-perto);
+  --on-atrasado: var(--on-prazo);
 
   --purple: #7c3aed;
   --purple-hover: #8b5cf6;
@@ -71,6 +75,64 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* ---------- Tema claro (pedido do usuário, 2026-09-14) ----------
+   O oposto do escuro, com a mesma alma: papel frio com um sopro de lavanda no fundo, cartões
+   brancos que se destacam pela sombra (no escuro é o painel mais claro que dá a altura), tinta
+   índigo quase preta. Verde e roxo da marca continuam; tudo que vira texto ganha a versão
+   mais funda do mesmo tom, acima de 4,5:1 sobre o branco e sobre o Panel Two. */
+:root[data-tema='claro'] {
+  --ground: #f3f2f8;
+  --topbar: #fbfbfd;
+  --panel: #ffffff;
+  --panel-2: #f1f0f6;
+  --rule: #e4e2ec;
+  --rule-strong: #c9c6d6;
+  /* 4,6:1 no Panel, 4,0:1 no Panel Two. */
+  --check-ring: #77738a;
+  --ink: #17161f;
+  --muted: #5c596b;
+  --backdrop: rgb(23 22 31 / 0.4);
+
+  --entrada: #0b7a6d;
+  --entrada-wash: rgb(11 122 109 / 0.1);
+  --saida: #c23a28;
+  --saida-wash: rgb(194 58 40 / 0.09);
+  --transferencia: #16699f;
+  --transferencia-wash: rgb(22 105 159 / 0.1);
+  --tom-assinatura: #7a56c0;
+  --tom-parcelada: #3566c8;
+  --tom-conta: #7d6327;
+  --tom-outro: #5a6680;
+
+  /* A barra de XP e o selo de nível seguem o verde vivo da logo; como texto, o verde fundo. */
+  --green: #1fb455;
+  --green-tip: #4ade80;
+  --green-wash: rgb(31 180 85 / 0.1);
+  --green-line: rgb(21 128 61 / 0.35);
+  --green-glow: rgb(31 180 85 / 0.45);
+  --green-texto: #15803d;
+  --on-green: #052e16;
+  --prazo-perto: #d98b2b;
+  --prazo-perto-texto: #9a5a0a;
+  --prazo-atrasado: #c2365a;
+  --on-prazo: #1d1407;
+  --on-atrasado: #ffffff;
+
+  --purple: #7c3aed;
+  --purple-hover: #6d28d9;
+  --purple-soft: #6d28d9;
+  --purple-glow: rgb(124 58 237 / 0.35);
+  --purple-halo: rgb(124 58 237 / 0.22);
+  --purple-selection: rgb(124 58 237 / 0.2);
+  --purple-link-line: rgb(109 40 217 / 0.35);
+  --on-purple: #ffffff;
+
+  --shadow: 0 1px 2px rgb(30 27 60 / 0.06), 0 12px 32px -14px rgb(30 27 60 / 0.16);
+
+  color-scheme: light;
+}
+
 
 *,
 *::before,
@@ -139,6 +201,13 @@ select {
   height: var(--logo-h, 2.5rem);
   width: auto;
   max-width: 100%;
+}
+
+/* Logo: o nome "Routin" é claro no escuro e tinta no claro. A regra só esconde a versão do
+   outro tema; quando e onde a logo aparece continua com as regras de cada lugar. */
+:root[data-tema='claro'] .logo--escuro,
+:root:not([data-tema='claro']) .logo--claro {
+  display: none;
 }
 
 .panel {

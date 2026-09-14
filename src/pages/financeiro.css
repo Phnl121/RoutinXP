@@ -2101,7 +2101,7 @@ button.fin-dre__botao:hover {
 }
 
 .orc__linha[data-estado='perto'] :is(.orc__pct, .orc__estado) {
-  color: var(--prazo-perto);
+  color: var(--prazo-perto-texto);
 }
 
 .orc__linha[data-estado='estourou'] {

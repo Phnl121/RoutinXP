@@ -5,7 +5,8 @@ import { nomeCompleto } from '../lib/perfil'
 import { formatarTempo, restanteDe, useAgora, useFocoApp } from '../lib/foco'
 import { BadgeNivel, BarraXp } from './Progresso'
 import { useMedidorNivel } from '../lib/useMedidorNivel'
-import { IconeFoco, IconeMenu, IconePausa, IconePlay } from './icones'
+import { IconeFoco, IconeLua, IconeMenu, IconePausa, IconePlay, IconeSol } from './icones'
+import { useTema } from '../lib/tema'
 import { Logo } from './Logo'
 import { t } from '../i18n/pt-BR'
 
@@ -49,6 +50,7 @@ export function TopBar({ stats, perfil, email, onAbrirMenu, gavetaAberta }) {
   const foco = useFocoApp()
   const { pathname } = useLocation()
   const focoFora = foco && foco.estado.fase !== 'parado' && pathname !== '/foco'
+  const [, tema, mudarTema] = useTema()
 
   return (
     <header className="topo" data-foco={Boolean(focoFora)}>
@@ -90,6 +92,11 @@ export function TopBar({ stats, perfil, email, onAbrirMenu, gavetaAberta }) {
         <div id="menu-conta" popover="auto" className="menu">
           {perfil && <p className="menu__nome">{nomeCompleto(perfil)}</p>}
           <p className="menu__email">{email}</p>
+          {/* Um toque troca entre claro e escuro (a opção Sistema fica no Perfil). */}
+          <button type="button" className="menu__item menu__item--icone" onClick={() => mudarTema(tema === 'claro' ? 'escuro' : 'claro')}>
+            {tema === 'claro' ? <IconeLua /> : <IconeSol />}
+            {tema === 'claro' ? t.conta.temaEscuro : t.conta.temaClaro}
+          </button>
           <button type="button" className="menu__item" onClick={() => supabase.auth.signOut()}>
             {t.conta.sair}
           </button>

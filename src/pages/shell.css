@@ -347,7 +347,7 @@
 
 /* Prazos: o relógio em âmbar chama atenção sem virar alarme. */
 .lembrete--prazos > svg {
-  color: var(--prazo-perto);
+  color: var(--prazo-perto-texto);
 }
 
 .lembrete p {
@@ -584,7 +584,7 @@
 
 /* Vencimentos: âmbar como os prazos; coral quando há gasto fixo atrasado. */
 .lembrete--vencimentos > svg {
-  color: var(--prazo-perto);
+  color: var(--prazo-perto-texto);
 }
 
 .lembrete--vencimentos[data-atrasada='true'] > svg {

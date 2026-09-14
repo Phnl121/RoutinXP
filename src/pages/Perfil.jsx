@@ -7,6 +7,7 @@ import { mensagemErroDados } from '../lib/dadosErros'
 import { CamposPerfil } from '../components/CamposPerfil'
 import { Aviso } from '../components/AuthParts'
 import { t } from '../i18n/pt-BR'
+import { TEMAS, useTema } from '../lib/tema'
 
 const p = t.perfil
 
@@ -60,6 +61,38 @@ function FormPerfil({ inicial, salvar }) {
   )
 }
 
+// Tema do app: sistema, claro ou escuro (salvo neste navegador).
+function Aparencia() {
+  const [preferencia, , mudar] = useTema()
+  return (
+    <section className="panel pagina__painel" aria-labelledby="perfil-tema">
+      <h2 id="perfil-tema" className="label">
+        {t.tema.titulo}
+      </h2>
+      <div className="tema-escolha" role="radiogroup" aria-label={t.tema.rotulo}>
+        {TEMAS.map((opcao) => (
+          <button
+            key={opcao}
+            type="button"
+            role="radio"
+            aria-checked={preferencia === opcao}
+            className="tema-escolha__opcao"
+            data-opcao={opcao}
+            onClick={() => mudar(opcao)}
+          >
+            <span className="tema-escolha__amostra" aria-hidden="true">
+              <span />
+              <span />
+            </span>
+            {t.tema.opcoes[opcao]}
+          </button>
+        ))}
+      </div>
+      <p className="hint">{t.tema.dica}</p>
+    </section>
+  )
+}
+
 export default function Perfil() {
   const d = useDadosApp()
   const { session } = useOutletContext()
@@ -80,6 +113,8 @@ export default function Perfil() {
           <FormPerfil key={completo ? 'com-perfil' : 'sem-perfil'} inicial={d.perfil} salvar={d.salvarPerfil} />
         )}
       </section>
+
+      <Aparencia />
 
       <section className="panel pagina__painel" aria-labelledby="perfil-conta">
         <h2 id="perfil-conta" className="label">

@@ -494,7 +494,7 @@
 .linha__meta-xp {
   display: none;
   font-weight: 800;
-  color: var(--green);
+  color: var(--green-texto);
   white-space: nowrap;
 }
 
@@ -697,7 +697,7 @@
 
 .linha__check:hover:not(:disabled) .linha__circulo {
   border-color: var(--green);
-  color: var(--green);
+  color: var(--green-texto);
 }
 
 .linha[data-feita='true'] .linha__circulo {
@@ -986,7 +986,7 @@
 .prazo[data-prazo='breve'],
 .prazo[data-prazo='amanha'] {
   background: color-mix(in oklab, var(--prazo-perto) 18%, transparent);
-  color: var(--prazo-perto);
+  color: var(--prazo-perto-texto);
 }
 
 .prazo[data-prazo='hoje'] {
@@ -996,13 +996,13 @@
 
 .prazo[data-prazo='atrasada'] {
   background: var(--prazo-atrasado);
-  color: var(--on-prazo);
+  color: var(--on-atrasado);
 }
 
 .linha__xp {
   font-size: 0.8125rem;
   font-weight: 800;
-  color: var(--green);
+  color: var(--green-texto);
   white-space: nowrap;
 }
 
@@ -1074,7 +1074,7 @@
   margin: 0 0.5rem 0.5rem;
   font-size: 0.8125rem;
   font-weight: 700;
-  color: var(--green);
+  color: var(--green-texto);
 }
 
 .coluna__vazio {
@@ -1293,7 +1293,7 @@
   z-index: 40;
   font-size: 1rem;
   font-weight: 800;
-  color: var(--green);
+  color: var(--green-texto);
   white-space: nowrap;
   pointer-events: none;
   animation: xp-voa-app 0.7s cubic-bezier(0.5, 0, 0.2, 1) forwards;
@@ -1470,4 +1470,99 @@
   .lista .linha__meta-xp {
     display: inline;
   }
+}
+
+.menu__item--icone {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.menu__item--icone svg {
+  width: 1rem;
+  height: 1rem;
+  color: var(--muted);
+}
+
+/* ---------- Aparência (Perfil) ---------- */
+
+.tema-escolha {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.tema-escolha__opcao {
+  display: grid;
+  justify-items: start;
+  gap: 0.55rem;
+  padding: 0.6rem 0.6rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--panel);
+  font-weight: 700;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: border-color 160ms var(--ease-out), background-color 160ms var(--ease-out);
+}
+
+.tema-escolha__opcao:hover {
+  background: var(--panel-2);
+}
+
+.tema-escolha__opcao[aria-checked='true'] {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+
+.tema-escolha__opcao:focus-visible {
+  outline: 2px solid var(--purple-soft);
+  outline-offset: 2px;
+}
+
+/* Miniatura do tema: fundo e um cartão com as duas cores da marca. */
+.tema-escolha__amostra {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 3.25rem;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #121318;
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+
+.tema-escolha__amostra > span:first-child {
+  position: absolute;
+  inset: 0.55rem 0.55rem auto;
+  height: 1.1rem;
+  border-radius: 5px;
+  background: #25262f;
+}
+
+.tema-escolha__amostra > span:last-child {
+  position: absolute;
+  left: 0.55rem;
+  bottom: 0.55rem;
+  width: 45%;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22c55e 0 70%, #7c3aed 70%);
+}
+
+.tema-escolha__opcao[data-opcao='claro'] .tema-escolha__amostra {
+  background: #f3f2f8;
+}
+
+.tema-escolha__opcao[data-opcao='claro'] .tema-escolha__amostra > span:first-child {
+  background: #ffffff;
+  box-shadow: 0 2px 6px -2px rgb(30 27 60 / 0.25);
+}
+
+.tema-escolha__opcao[data-opcao='sistema'] .tema-escolha__amostra {
+  background: linear-gradient(90deg, #121318 0 50%, #f3f2f8 50%);
+}
+
+.tema-escolha__opcao[data-opcao='sistema'] .tema-escolha__amostra > span:first-child {
+  background: linear-gradient(90deg, #25262f 0 50%, #ffffff 50%);
 }

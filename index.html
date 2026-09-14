@@ -14,6 +14,15 @@
     <meta name="apple-mobile-web-app-title" content="RoutinXP" />
     <meta name="description" content="RoutinXP: organize tarefas por categoria e ganhe XP ao concluir." />
     <title>RoutinXP</title>
+    <script>
+      // Tema salvo (claro, escuro ou sistema) antes do primeiro desenho. Ver src/lib/tema.js.
+      try {
+        var p = localStorage.getItem('routinxp:tema') || 'escuro'
+        var claro = p === 'claro' || (p === 'sistema' && matchMedia('(prefers-color-scheme: light)').matches)
+        document.documentElement.dataset.tema = claro ? 'claro' : 'escuro'
+        if (claro) document.querySelector('meta[name="theme-color"]').setAttribute('content', '#fbfbfd')
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
