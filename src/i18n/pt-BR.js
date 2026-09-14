@@ -269,7 +269,8 @@ export const t = {
   menu: {
     rotulo: 'Navegação',
     secoes: { rotina: 'Rotina', financas: 'Finanças', organizacao: 'Organização', conta: 'Conta' },
-    financeiro: 'Financeiro',
+    financeiro: 'Lançamentos',
+    controle: 'Controle',
     gastosFixos: 'Gastos fixos',
     tarefas: 'Tarefas',
     admin: 'Administração',
@@ -745,8 +746,17 @@ export const t = {
     ],
   },
 
+  controle: {
+    titulo: 'Controle',
+    filtros: 'Filtros',
+    lista: 'Lançamentos',
+    listaFiltro: 'Lançamentos do filtro',
+    listaDica: 'Escolha um filtro (ou toque numa categoria em Para onde foi) para ver os lançamentos por trás dos números.',
+  },
+
   financeiro: {
-    titulo: 'Financeiro',
+    titulo: 'Lançamentos',
+    verControle: 'Ver o controle do mês',
     novoLancamento: 'Lançamento',
     novoLancamentoRotulo: 'Novo lançamento',
     categorias: 'Categorias',
@@ -861,6 +871,10 @@ export const t = {
       criarRegra: 'Criar regra',
     },
     revisar: {
+      visao: 'Mostrar',
+      todos: (n) => `Todos · ${n}`,
+      aRevisar: (n) => `A revisar · ${n}`,
+      vazio: 'Nada para revisar neste mês.',
       faixa: (n) => `${n} ${n === 1 ? 'lançamento a revisar' : 'lançamentos a revisar'} neste mês`,
       ver: 'Revisar',
       escolher: 'Escolher categoria',

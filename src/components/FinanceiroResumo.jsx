@@ -1,5 +1,8 @@
 import { useId, useState } from 'react'
+import { Link } from 'react-router'
 import { formatarReais, mesCurto, rotuloMes } from '../lib/dinheiro'
+import { cobrancasEntre, custoMensal, somarDias } from '../lib/gastosFixos'
+import { hojeBrasilia } from '../lib/datas'
 import { t } from '../i18n/pt-BR'
 
 const r = t.financeiro.resumo
@@ -201,6 +204,25 @@ export function EvolucaoMeses({ meses, mesAtual }) {
           </span>
         </figcaption>
       </figure>
+    </section>
+  )
+}
+
+// Resumo dos gastos fixos: quanto está comprometido por mês e o que vence nos próximos 7 dias.
+export function CartaoGastosFixos({ recorrencias }) {
+  if (!recorrencias.length) return null
+  const hoje = hojeBrasilia()
+  const gf = t.gastosFixos.cartao
+  return (
+    <section className="panel fin-resumo gf-cartao" aria-labelledby="gf-cartao">
+      <h2 id="gf-cartao" className="label">
+        {gf.titulo}
+      </h2>
+      <p className="gf-cartao__valor">{gf.mensal(formatarReais(recorrencias.reduce((soma, rec) => soma + custoMensal(rec, hoje), 0)))}</p>
+      <p className="hint">{gf.proximas(recorrencias.flatMap((rec) => cobrancasEntre(rec, hoje, somarDias(hoje, 7))).length)}</p>
+      <Link to="/financeiro/gastos-fixos" className="link-btn gf-cartao__ver">
+        {gf.ver}
+      </Link>
     </section>
   )
 }

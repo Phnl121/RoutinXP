@@ -136,3 +136,19 @@ export function montarDre(transacoes, categoriaPorId) {
 
 // Variação percentual inteira entre dois valores; null quando não há base de comparação.
 export const variacaoPct = (atual, anterior) => (anterior > 0 ? Math.round(((atual - anterior) / anterior) * 100) : null)
+
+// Entradas, saídas e transferências somadas; com uma conta escolhida, a transferência entra ou sai
+// daquela conta. Lançamentos com data futura (parcelas agendadas) não contam.
+export function somarFiltro(lista, contaId) {
+  const hojeDia = hojeBrasilia()
+  const efetivas = lista.filter((x) => x.data <= hojeDia)
+  if (!contaId) return somar(efetivas)
+  const soma = efetivas.reduce(
+    (s, x) => {
+      const entra = x.tipo === 'entrada' || (x.tipo === 'transferencia' && x.conta_destino_id === contaId)
+      return entra ? { ...s, entradas: s.entradas + x.valor_centavos } : { ...s, saidas: s.saidas + x.valor_centavos }
+    },
+    { entradas: 0, saidas: 0 },
+  )
+  return { ...soma, resultado: soma.entradas - soma.saidas }
+}

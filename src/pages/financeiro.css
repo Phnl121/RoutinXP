@@ -1808,3 +1808,72 @@ button.fin-dre__botao:hover {
 .fin-dre__item-nome .fin-linha__ponto::after {
   content: none;
 }
+
+/* ---------- Lançamentos e Controle (pedido do usuário, 2026-09-14) ---------- */
+
+.fin-lanc__barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+
+.fin-lanc__barra .fin-segmentos {
+  justify-self: auto;
+}
+
+.ctl-filtros {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+}
+
+.ctl-filtros .fin-filtros__resumo {
+  margin: 0;
+}
+
+/* Duas colunas de análise: categorias e DRE; evolução, saldos e gastos fixos. */
+.ctl__grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.ctl__coluna {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.ctl-lista {
+  display: grid;
+  gap: 0.25rem;
+  scroll-margin-top: 5rem;
+}
+
+.ctl-lista > .hint {
+  margin: 0.25rem 0 0;
+}
+
+/* Saldo só para ler (Controle): sem hover de botão. */
+.fin-conta[data-leitura='true'] {
+  cursor: default;
+}
+
+.fin-conta[data-leitura='true']:hover {
+  background: none;
+}
+
+@container (max-width: 58rem) {
+  .ctl__grade {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@container (max-width: 30rem) {
+  .ctl-filtros {
+    padding: 1.1rem;
+  }
+}

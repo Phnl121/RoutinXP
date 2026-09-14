@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { NavLink } from 'react-router'
 import { Logo } from './Logo'
-import { IconeBaixar, IconeCalendario, IconeCarteira, IconeRepetir, IconeEscudo, IconeEtiqueta, IconeFechar, IconeFoco, IconeGrafico, IconeLista, IconeMenuLateral, IconePessoa } from './icones'
+import { IconeBaixar, IconeCalendario, IconeCarteira, IconeRepetir, IconeRosca, IconeEscudo, IconeEtiqueta, IconeFechar, IconeFoco, IconeGrafico, IconeLista, IconeMenuLateral, IconePessoa } from './icones'
 import { calcularNivel } from '../lib/nivel'
 import { rotaPermitida, useConta } from '../lib/conta'
 import { iniciaisDoPerfil } from '../lib/datas'
@@ -25,6 +25,7 @@ const SECOES = [
     titulo: m.secoes.financas,
     itens: [
       { para: '/financeiro', rotulo: m.financeiro, Icone: IconeCarteira },
+      { para: '/financeiro/controle', rotulo: m.controle, Icone: IconeRosca },
       { para: '/financeiro/gastos-fixos', rotulo: m.gastosFixos, Icone: IconeRepetir },
     ],
   },

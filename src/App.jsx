@@ -10,6 +10,7 @@ import Integracoes from './pages/Integracoes'
 import Categorias from './pages/Categorias'
 import Financeiro from './pages/Financeiro'
 import GastosFixos from './pages/GastosFixos'
+import Controle from './pages/Controle'
 import Admin from './pages/Admin'
 import AdminConta from './pages/AdminConta'
 import { t } from './i18n/pt-BR'
@@ -57,6 +58,7 @@ export default function App() {
           <Route path="/foco" element={null} />
           <Route path="/painel" element={<Painel />} />
           <Route path="/financeiro" element={<Financeiro />} />
+          <Route path="/financeiro/controle" element={<Controle />} />
           <Route path="/financeiro/gastos-fixos" element={<GastosFixos />} />
           <Route path="/categorias" element={<Categorias />} />
           <Route path="/integracoes" element={<Integracoes />} />

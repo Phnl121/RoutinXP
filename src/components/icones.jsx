@@ -101,6 +101,16 @@ export function IconePular() {
   )
 }
 
+// Rosca (Controle): gráfico de pizza com uma fatia destacada.
+export function IconeRosca() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <path d="M8 2.25a5.75 5.75 0 1 0 5.75 5.75H8V2.25Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M10.5 1.75a4.25 4.25 0 0 1 3.75 3.75H10.5V1.75Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 // Repetição (Gastos fixos): duas setas em ciclo.
 export function IconeRepetir() {
   return (
