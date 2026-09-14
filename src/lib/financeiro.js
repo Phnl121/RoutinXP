@@ -284,6 +284,20 @@ export async function lerPreferencias() {
   return data ?? { sugestoes_ignoradas: [], avisar_vencimentos: true }
 }
 
+// Orçamento (fase 6): limites por categoria e a meta de poupança.
+export async function listarOrcamentos() {
+  return ok(await supabase.from('fin_orcamentos').select('categoria_id, limite_centavos'))
+}
+
+// A lista inteira de uma vez (o que não vier sai), numa transação.
+export async function salvarOrcamentos(limites) {
+  ok(await supabase.rpc('fin_salvar_orcamentos', { p_limites: limites }))
+}
+
+export async function salvarMeta({ meta_tipo, meta_valor }) {
+  ok(await supabase.from('fin_preferencias').upsert({ meta_tipo, meta_valor, updated_at: new Date().toISOString() }, { onConflict: 'user_id' }))
+}
+
 // Aviso de vencimento no celular (fase 3.6): ligado por padrão; desligar vale para todos os aparelhos.
 export async function salvarAvisoVencimentos(ligado) {
   ok(await supabase.from('fin_preferencias').upsert({ avisar_vencimentos: ligado, updated_at: new Date().toISOString() }, { onConflict: 'user_id' }))

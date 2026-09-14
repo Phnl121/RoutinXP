@@ -2021,3 +2021,223 @@ button.fin-dre__botao:hover {
 .gf-aviso__opcao {
   min-height: 2.75rem;
 }
+
+/* ---------- Orçamento e meta (fase 6) ---------- */
+
+.orc__lista {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0 -0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.orc__linha {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'nome pct'
+    'trilho trilho'
+    'valores estado';
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+}
+
+.orc__linha .fin-gastos__nome {
+  grid-area: nome;
+}
+
+.orc__pct {
+  grid-area: pct;
+  justify-self: end;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.orc__valores {
+  grid-area: valores;
+  font-size: 0.8125rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.orc__estado {
+  grid-area: estado;
+  justify-self: end;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.orc__trilho {
+  grid-area: trilho;
+}
+
+.orc__trilho,
+.meta__trilho {
+  display: block;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--panel-2);
+  overflow: hidden;
+}
+
+.orc__barra,
+.meta__barra {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--c, var(--muted));
+}
+
+.orc__linha[data-estado='perto'] {
+  background: color-mix(in oklab, var(--prazo-perto) 9%, transparent);
+}
+
+.orc__linha[data-estado='perto'] .orc__barra {
+  background: var(--prazo-perto);
+}
+
+.orc__linha[data-estado='perto'] :is(.orc__pct, .orc__estado) {
+  color: var(--prazo-perto);
+}
+
+.orc__linha[data-estado='estourou'] {
+  background: var(--saida-wash);
+}
+
+.orc__linha[data-estado='estourou'] .orc__barra {
+  background: var(--saida);
+}
+
+.orc__linha[data-estado='estourou'] :is(.orc__pct, .orc__estado) {
+  color: var(--saida);
+}
+
+.meta {
+  border-color: color-mix(in oklab, var(--entrada) 26%, var(--rule));
+  background:
+    radial-gradient(90% 100% at 100% 0%, color-mix(in oklab, var(--entrada) 12%, transparent) 0%, transparent 70%),
+    var(--panel);
+}
+
+.meta__numeros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.6rem;
+  margin: 0;
+}
+
+.meta__guardado {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--entrada);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.meta__guardado[data-negativo='true'] {
+  color: var(--saida);
+}
+
+.meta__alvo {
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.meta__trilho {
+  height: 0.625rem;
+}
+
+.meta__barra {
+  background: var(--entrada);
+}
+
+.meta__texto {
+  margin: 0;
+}
+
+.meta[data-batida='true'] .meta__texto {
+  color: var(--entrada);
+  font-weight: 700;
+}
+
+.fin-revisar--orcamento {
+  border-color: color-mix(in oklab, var(--prazo-perto) 45%, var(--rule));
+  background: color-mix(in oklab, var(--prazo-perto) 8%, var(--panel));
+}
+
+.fin-revisar--orcamento[data-passou='true'] {
+  border-color: color-mix(in oklab, var(--saida) 45%, var(--rule));
+  background: var(--saida-wash);
+}
+
+/* Janela de limites */
+.orc-form {
+  display: grid;
+  gap: 0.35rem;
+  max-height: min(55vh, 28rem);
+  margin: 0;
+  padding: 0 0.25rem 0 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.orc-form__linha {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 9.5rem;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.orc-form__nome {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  font-weight: 600;
+}
+
+.orc-form__nome > span:last-child {
+  display: grid;
+  min-width: 0;
+}
+
+.orc-form__media {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.orc-form__valor {
+  text-align: right;
+}
+
+.meta-form__pct {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 9rem;
+}
+
+.meta-form__pct .input {
+  text-align: right;
+}
+
+@container (max-width: 30rem) {
+  .orc__linha {
+    grid-template-areas:
+      'nome pct'
+      'trilho trilho'
+      'valores valores'
+      'estado estado';
+  }
+
+  .orc__estado {
+    justify-self: start;
+    text-align: left;
+  }
+}

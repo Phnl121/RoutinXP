@@ -5,6 +5,8 @@ import { useAcoesFinanceiro } from '../lib/useAcoesFinanceiro'
 import { mesAtual, mesValido, nomeDoMes } from '../lib/dinheiro'
 import { ehAdmin, useConta } from '../lib/conta'
 import { detectarRecorrencias } from '../lib/recorrencias'
+import { progressoOrcamento } from '../lib/orcamento'
+import { hojeBrasilia } from '../lib/datas'
 import { mensagemErroDados } from '../lib/dadosErros'
 import { ContasCartoes, ListaPorDia, MesSeletor } from '../components/FinanceiroLista'
 import { FinanceiroDialogos } from '../components/FinanceiroDialogos'
@@ -59,6 +61,9 @@ export default function Financeiro() {
   const lista = revisando ? aRevisar : d.transacoes
   const novoLancamento = () => setDlg({ tipo: 'lancamento' })
   const sugestoes = detectarRecorrencias(d.historico, d.recorrencias, d.ignoradas)
+  // Categorias do mês a partir de 80% do limite (fase 6).
+  const apertadas = progressoOrcamento(d.transacoes, d.orcamentos, categoriaPorId, hojeBrasilia()).filter((x) => x.estado !== 'ok')
+  const passaram = apertadas.filter((x) => x.estado === 'estourou').length
 
   async function categorizar(x, categoriaId) {
     try {
@@ -123,6 +128,19 @@ export default function Financeiro() {
                 </Link>
               </div>
 
+              {apertadas.length > 0 && !revisando && (
+                <p className="fin-revisar fin-revisar--orcamento" data-passou={passaram > 0}>
+                  <span>
+                    {apertadas.length === 1
+                      ? t.controle.orcamento.faixaUma(apertadas[0].categoria.nome, Math.round(apertadas[0].fatia * 100), passaram > 0)
+                      : t.controle.orcamento.faixaVarias(apertadas.length, passaram)}
+                  </span>
+                  <Link to={`/financeiro/controle?mes=${mes}`} className="link-btn">
+                    {t.controle.orcamento.verOrcamento}
+                  </Link>
+                </p>
+              )}
+
               {sugestoes.length > 0 && !revisando && (
                 <p className="fin-revisar fin-revisar--sugestao">
                   <span>{t.gastosFixos.sugestoes.faixa(sugestoes.length)}</span>
@@ -162,7 +180,12 @@ export default function Financeiro() {
             </section>
 
             <aside className="fin__lado">
-              <ContasCartoes contas={d.contas} saldos={d.saldos} onAbrir={(c) => setDlg({ tipo: 'conta', item: c })} onNova={() => setDlg({ tipo: 'conta' })} />
+              <ContasCartoes
+                contas={d.contas}
+                saldos={d.saldos}
+                onAbrir={(c) => setDlg({ tipo: 'conta', item: c })}
+                onNova={() => setDlg({ tipo: 'conta' })}
+              />
               {ehAdmin(conta) && <BancosConectados conexoes={d.conexoes} onLer={d.lerBancos} onDesconectar={d.desconectarBanco} />}
             </aside>
           </div>

@@ -410,7 +410,30 @@ export async function categorizarTransacao(id, categoriaId) {
 }
 
 // ---------- Preferências e sugestões na prévia ----------
-let preferencias = { sugestoes_ignoradas: [], avisar_vencimentos: true }
+let preferencias = { sugestoes_ignoradas: [], avisar_vencimentos: true, meta_tipo: 'pct', meta_valor: 20 }
+
+// ---------- Orçamento na prévia ----------
+let orcamentos = [
+  { categoria_id: 'fk2', limite_centavos: 30000 },
+  { categoria_id: 'fk6', limite_centavos: 10000 },
+  { categoria_id: 'fk3', limite_centavos: 20000 },
+  { categoria_id: 'fk4', limite_centavos: 50000 },
+]
+
+export async function listarOrcamentos() {
+  await espera()
+  return copia(orcamentos)
+}
+
+export async function salvarOrcamentos(limites) {
+  await espera()
+  orcamentos = copia(limites)
+}
+
+export async function salvarMeta(meta) {
+  await espera()
+  preferencias = { ...preferencias, ...meta }
+}
 
 export async function salvarAvisoVencimentos(ligado) {
   await espera()

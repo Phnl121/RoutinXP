@@ -17,7 +17,15 @@ const lerJanela = (mes) => api.listarTransacoesDosMeses(andarMes(mes, -(MESES_DO
 // Dados do Financeiro para um mês: contas, saldos, categorias e os lançamentos do mês.
 // Carrega só quando a página abre (não fica na casca, como os dados das tarefas).
 export function useFinanceiro(mes) {
-  const [base, setBase] = useState({ estado: 'carregando', contas: [], categorias: [], saldos: {}, recorrencias: [], conexoes: [], regras: [] })
+  const [base, setBase] = useState({
+    estado: 'carregando',
+    contas: [],
+    categorias: [],
+    saldos: {},
+    recorrencias: [],
+    conexoes: [],
+    regras: [],
+  })
   const [doMes, setDoMes] = useState({ mes: null, transacoes: [] })
   const [ocultas, setOcultas] = useState([]) // ids com exclusão aguardando o Desfazer
   const [tentativa, setTentativa] = useState(0)
@@ -26,7 +34,7 @@ export function useFinanceiro(mes) {
   const lerSaldos = async () => Object.fromEntries((await api.listarSaldosFin()).map((s) => [s.conta_id, s.saldo_centavos]))
   // Gastos fixos e conexões só alimentam partes da página: se falharem, o resto carrega.
   const lerBase = async () => {
-    const [contas, categorias, saldos, recorrencias, conexoes, regras, preferencias] = await Promise.all([
+    const [contas, categorias, saldos, recorrencias, conexoes, regras, preferencias, orcamentos] = await Promise.all([
       api.listarContasFin(),
       api.listarCategoriasFin(),
       lerSaldos(),
@@ -34,8 +42,19 @@ export function useFinanceiro(mes) {
       api.listarConexoes().catch(() => []),
       api.listarRegras().catch(() => []),
       api.lerPreferencias().catch(() => ({ sugestoes_ignoradas: [] })),
+      api.listarOrcamentos().catch(() => []),
     ])
-    return { contas, categorias, saldos, recorrencias, conexoes, regras, ignoradas: preferencias.sugestoes_ignoradas ?? [] }
+    return {
+      contas,
+      categorias,
+      saldos,
+      recorrencias,
+      conexoes,
+      regras,
+      preferencias,
+      orcamentos,
+      ignoradas: preferencias.sugestoes_ignoradas ?? [],
+    }
   }
 
   // Primeira carga: categorias iniciais, depois contas, categorias e saldos.
@@ -220,13 +239,23 @@ export function useFinanceiro(mes) {
     await recarregar()
     return mudaram
   }, [recarregar])
-  const categorizar = useCallback(
-    async (id, categoriaId) => {
-      await api.categorizarTransacao(id, categoriaId)
-      setDoMes((m) => ({ ...m, transacoes: m.transacoes.map((x) => (x.id === id ? { ...x, categoria_id: categoriaId, categoria_origem: 'manual' } : x)) }))
-    },
-    [],
-  )
+  const categorizar = useCallback(async (id, categoriaId) => {
+    await api.categorizarTransacao(id, categoriaId)
+    setDoMes((m) => ({
+      ...m,
+      transacoes: m.transacoes.map((x) => (x.id === id ? { ...x, categoria_id: categoriaId, categoria_origem: 'manual' } : x)),
+    }))
+  }, [])
+
+  // Orçamento e meta (fase 6).
+  const salvarOrcamentos = useCallback(async (limites) => {
+    await api.salvarOrcamentos(limites)
+    setBase((b) => ({ ...b, orcamentos: limites }))
+  }, [])
+  const salvarMeta = useCallback(async (meta) => {
+    await api.salvarMeta(meta)
+    setBase((b) => ({ ...b, preferencias: { ...b.preferencias, ...meta } }))
+  }, [])
 
   const carregandoMes = doMes.mes !== mes
   const janela = carregandoMes ? [] : doMes.transacoes.filter((x) => !ocultas.includes(x.id))
@@ -239,6 +268,10 @@ export function useFinanceiro(mes) {
     conexoes: base.conexoes,
     regras: base.regras,
     ignoradas: base.ignoradas ?? [],
+    preferencias: base.preferencias ?? {},
+    orcamentos: base.orcamentos ?? [],
+    salvarOrcamentos,
+    salvarMeta,
     salvarRegra,
     excluirRegra,
     aplicarRegras,

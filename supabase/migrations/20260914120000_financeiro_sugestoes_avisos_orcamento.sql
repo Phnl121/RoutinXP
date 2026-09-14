@@ -52,3 +52,82 @@ select cron.schedule(
   where exists (select 1 from public.fin_recorrencias where ativa and tipo <> 'parcelada');
   $cron$
 );
+
+-- ---------------------------------------------------------------------------
+-- 6 Orçamento e metas
+-- ---------------------------------------------------------------------------
+-- Limite mensal por categoria de despesa. O quanto já foi gasto é calculado na tela, com os
+-- lançamentos do mês (aviso em 80% e 100%).
+create table public.fin_orcamentos (
+  id               uuid primary key default gen_random_uuid(),
+  user_id          uuid not null default auth.uid() references auth.users (id) on delete cascade,
+  categoria_id     uuid not null,
+  limite_centavos  bigint not null check (limite_centavos between 1 and 100000000000),
+  updated_at       timestamptz not null default now(),
+  unique (user_id, categoria_id),
+  foreign key (categoria_id, user_id) references public.fin_categorias (id, user_id) on delete cascade
+);
+
+alter table public.fin_orcamentos enable row level security;
+
+create policy "fin_orcamentos: own" on public.fin_orcamentos for all to authenticated
+  using ((select auth.uid()) = user_id) with check ((select auth.uid()) = user_id);
+create policy "fin_orcamentos: funcao" on public.fin_orcamentos as restrictive for all to authenticated
+  using ((select public.tem_funcao('financeiro'))) with check ((select public.tem_funcao('financeiro')));
+
+revoke all on public.fin_orcamentos from anon;
+
+create trigger fin_orcamentos_limite before insert on public.fin_orcamentos
+  for each row execute function public.limitar_linhas_por_usuario('300');
+
+-- A janela "Definir limites" grava a lista inteira de uma vez: o que não veio sai.
+-- p_limites: [{"categoria_id": "...", "limite_centavos": 50000}, ...]. Só categorias de despesa.
+create function public.fin_salvar_orcamentos(p_limites jsonb)
+returns void
+language plpgsql
+security invoker
+set search_path = ''
+as $$
+declare
+  v_user uuid := auth.uid();
+begin
+  if v_user is null then
+    raise exception 'sem_acesso' using errcode = '42501';
+  end if;
+  if jsonb_typeof(p_limites) <> 'array' or jsonb_array_length(p_limites) > 200 then
+    raise exception 'limites_invalidos' using errcode = '22023';
+  end if;
+  if exists (
+    select 1
+      from jsonb_array_elements(p_limites) l
+      left join public.fin_categorias c on c.id = (l ->> 'categoria_id')::uuid and c.user_id = v_user
+     where c.id is null or c.tipo <> 'despesa'
+  ) then
+    raise exception 'categoria_incompativel' using errcode = '23514';
+  end if;
+
+  delete from public.fin_orcamentos
+   where user_id = v_user
+     and categoria_id not in (select (l ->> 'categoria_id')::uuid from jsonb_array_elements(p_limites) l);
+
+  insert into public.fin_orcamentos (user_id, categoria_id, limite_centavos)
+  select v_user, (l ->> 'categoria_id')::uuid, (l ->> 'limite_centavos')::bigint
+    from jsonb_array_elements(p_limites) l
+  on conflict (user_id, categoria_id)
+  do update set limite_centavos = excluded.limite_centavos, updated_at = now()
+   where public.fin_orcamentos.limite_centavos is distinct from excluded.limite_centavos;
+end;
+$$;
+
+revoke execute on function public.fin_salvar_orcamentos(jsonb) from public, anon;
+grant execute on function public.fin_salvar_orcamentos(jsonb) to authenticated;
+
+-- Meta de poupança do mês: uma parte das entradas (pct, de 1 a 90) ou um valor fixo (centavos).
+alter table public.fin_preferencias
+  add column meta_tipo text check (meta_tipo in ('pct', 'valor')),
+  add column meta_valor bigint,
+  add constraint fin_preferencias_meta_check check (
+    (meta_tipo is null and meta_valor is null)
+    or (meta_tipo = 'pct' and meta_valor between 1 and 90)
+    or (meta_tipo = 'valor' and meta_valor between 1 and 100000000000)
+  );

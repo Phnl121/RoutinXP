@@ -775,6 +775,65 @@ export const t = {
     semTransferencias: 'transferências entre suas contas não entram nos números',
     transferencias: (n) => `${n} ${n === 1 ? 'transferência' : 'transferências'} entre suas contas`,
     soTransferencias: 'Transferências só mudam o dinheiro de conta: não entram no placar, no resultado nem nos gráficos. Veja a lista abaixo.',
+    orcamento: {
+      titulo: 'Orçamento do mês',
+      definir: 'Definir limites',
+      editar: 'Editar limites',
+      vazio: 'Defina quanto quer gastar por mês em cada categoria. O app avisa quando chegar a 80% e quando passar do limite.',
+      resumo: (n, perto, fora) => {
+        if (!perto && !fora) return n === 1 ? 'A categoria está dentro do limite.' : `As ${n} categorias estão dentro do limite.`
+        const partes = []
+        if (fora) partes.push(`${fora} ${fora === 1 ? 'passou' : 'passaram'} do limite`)
+        if (perto) partes.push(`${perto} perto do limite`)
+        return `${partes.join(' e ')}.`
+      },
+      valores: (gasto, limite) => `${gasto} de ${limite}`,
+      rotulo: (nome, pct) => `${nome}: ${pct}% do limite do mês`,
+      perto: (resta) => `Perto do limite · restam ${resta}`,
+      passou: (excesso) => `Passou do limite · ${excesso} a mais`,
+      faixaUma: (nome, pct, passou) => (passou ? `${nome} passou do limite do mês (${pct}%)` : `${nome} já usou ${pct}% do limite do mês`),
+      faixaVarias: (n, fora) => `${n} categorias perto do limite do mês${fora ? `, ${fora} já ${fora === 1 ? 'passou' : 'passaram'}` : ''}`,
+      verOrcamento: 'Ver orçamento',
+      dialogo: {
+        titulo: 'Limites do mês',
+        texto: 'Quanto você quer gastar por mês em cada categoria. Deixe em branco para não ter limite.',
+        media: (valor) => `média ${valor}/mês`,
+        semMedia: 'sem gastos recentes',
+        semLimite: 'Sem limite',
+        cancelar: 'Cancelar',
+        salvar: 'Salvar limites',
+        salvando: 'Salvando…',
+      },
+    },
+    meta: {
+      titulo: 'Meta de poupança',
+      definir: 'Definir meta',
+      editar: 'Editar meta',
+      vazio: 'Escolha quanto quer guardar por mês: uma parte do que entra ou um valor fixo.',
+      de: (alvo) => `guardados de ${alvo}`,
+      rotulo: (pct) => `${pct}% da meta de poupança do mês`,
+      regraPct: (pct) => `${pct}% das entradas`,
+      faltam: (valor) => `Faltam ${valor} para a meta.`,
+      batida: (excesso) => `Meta batida${excesso ? `, com ${excesso} a mais` : ''}.`,
+      vermelho: 'As saídas passaram das entradas neste mês.',
+      semEntradas: 'Sem entradas neste mês ainda.',
+      dialogo: {
+        titulo: 'Meta de poupança',
+        texto: 'O quanto sobra no mês (entradas menos saídas) conta para a meta.',
+        tipo: 'Tipo de meta',
+        pct: 'Parte das entradas',
+        valor: 'Valor fixo',
+        pctRotulo: 'Guardar por mês',
+        pctDica: 'Uma parte de tudo o que entrar no mês, de 1% a 90%.',
+        valorRotulo: 'Guardar por mês',
+        valorDica: 'O mesmo valor todo mês.',
+        valorVazio: 'Informe quanto quer guardar por mês.',
+        remover: 'Remover meta',
+        cancelar: 'Cancelar',
+        salvar: 'Salvar meta',
+        salvando: 'Salvando…',
+      },
+    },
   },
 
   financeiro: {

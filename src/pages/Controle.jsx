@@ -19,6 +19,8 @@ import { FinanceiroDialogos } from '../components/FinanceiroDialogos'
 import { PlacarMes } from '../components/FinanceiroPlacar'
 import { CartaoGastosFixos, DrePessoal, EvolucaoMeses, GastosPorCategoria } from '../components/FinanceiroResumo'
 import { Segmentos } from '../components/FinanceiroParts'
+import { MetaDialog, MetaPoupanca, OrcamentoDialog, OrcamentoMes } from '../components/FinanceiroOrcamento'
+import { mediaPorCategoria, metaDoMes, progressoOrcamento } from '../lib/orcamento'
 import { Aviso } from '../components/AuthParts'
 import { IconeLupa } from '../components/icones'
 import { t } from '../i18n/pt-BR'
@@ -43,6 +45,7 @@ export default function Controle() {
   const [tipo, setTipo] = useState('todos')
   const [categoriaId, setCategoriaId] = useState('')
   const [contaId, setContaId] = useState('')
+  const [dlgMeta, setDlgMeta] = useState(null) // 'orcamento' | 'meta'
 
   const contaPorId = useMemo(() => Object.fromEntries(d.contas.map((x) => [x.id, x])), [d.contas])
   // Rolar só depois de a lista filtrada estar na tela (a página muda de altura ao filtrar).
@@ -92,6 +95,9 @@ export default function Controle() {
     mesesAte(mes, MESES_DO_RESUMO),
   )
   const soma = somarFiltro(doMes)
+  // Orçamento e meta olham o mês inteiro: somem enquanto um filtro está ativo.
+  const orcamento = progressoOrcamento(d.transacoes, d.orcamentos, categoriaPorId, hojeDia)
+  const meta = metaDoMes(d.preferencias, somarFiltro(d.transacoes))
   const semContas = d.contas.length === 0
   const soTransferencias = tipo === 'transferencia'
 
@@ -193,10 +199,12 @@ export default function Controle() {
             ) : (
               <div className="ctl__grade">
                 <div className="ctl__coluna">
+                  {!filtrando && <OrcamentoMes linhas={orcamento} onDefinir={() => setDlgMeta('orcamento')} />}
                   <GastosPorCategoria linhas={gastosPorCategoria(efetivas, categoriaPorId)} onEscolher={verCategoria} />
                   <DrePessoal dre={montarDre(efetivas, categoriaPorId)} />
                 </div>
                 <div className="ctl__coluna">
+                  {!filtrando && <MetaPoupanca meta={meta} onDefinir={() => setDlgMeta('meta')} />}
                   <EvolucaoMeses meses={evolucao} mesAtual={mes} />
                   <ContasCartoes contas={d.contas} saldos={d.saldos} />
                   <CartaoGastosFixos recorrencias={d.recorrencias} />
@@ -232,6 +240,19 @@ export default function Controle() {
       </main>
 
       <FinanceiroDialogos d={d} acoes={acoes} />
+      {dlgMeta === 'orcamento' && (
+        <OrcamentoDialog
+          categorias={d.categorias}
+          orcamentos={d.orcamentos}
+          medias={mediaPorCategoria(
+            d.historico,
+            [1, 2, 3].map((n) => andarMes(mes, -n)),
+          )}
+          onSalvar={d.salvarOrcamentos}
+          onFechar={() => setDlgMeta(null)}
+        />
+      )}
+      {dlgMeta === 'meta' && <MetaDialog preferencias={d.preferencias} onSalvar={d.salvarMeta} onFechar={() => setDlgMeta(null)} />}
     </>
   )
 }
