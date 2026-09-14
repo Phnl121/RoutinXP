@@ -215,7 +215,10 @@ export default function GastosFixos() {
       onErro={() => setAviso({ tipo: 'erro', texto: g.avisoCelular.erro, chave: `aviso-${Date.now()}` })}
     />
   )
-  const porDia = proximas.reduce((mapa, c) => mapa.set(c.dia, [...(mapa.get(c.dia) ?? []), c]), new Map())
+  // Pagas neste mês ficam no dia do vencimento, junto com as próximas (sem seção à parte).
+  const porDia = [...pagasNoMes, ...proximas]
+    .sort((a, b) => a.dia.localeCompare(b.dia) || a.rec.nome.localeCompare(b.rec.nome))
+    .reduce((mapa, c) => mapa.set(c.dia, [...(mapa.get(c.dia) ?? []), c]), new Map())
 
   // Placar.
   const mensal = recs.reduce((soma, rec) => soma + custoMensal(rec, hoje), 0)
@@ -409,7 +412,7 @@ export default function GastosFixos() {
                     <ul className="gf-cobrancas">{vencidas.map(linhaCobranca)}</ul>
                   </div>
                 )}
-                {porDia.size === 0 && vencidas.length === 0 && pagasNoMes.length === 0 ? (
+                {porDia.size === 0 && vencidas.length === 0 ? (
                   <p className="hint">{g.proximas.vazio}</p>
                 ) : (
                   [...porDia.entries()].map(([dia, itens]) => (
@@ -418,12 +421,6 @@ export default function GastosFixos() {
                       <ul className="gf-cobrancas">{itens.map(linhaCobranca)}</ul>
                     </div>
                   ))
-                )}
-                {pagasNoMes.length > 0 && (
-                  <div className="gf-dia">
-                    <h3 className="gf-dia__cabeca label">{g.proximas.pagasNoMes}</h3>
-                    <ul className="gf-cobrancas">{pagasNoMes.map(linhaCobranca)}</ul>
-                  </div>
                 )}
                 {!avisoNoAlto && avisoCelular}
               </section>
