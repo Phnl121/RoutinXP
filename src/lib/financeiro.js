@@ -281,7 +281,12 @@ export async function categorizarTransacao(id, categoriaId) {
 export async function lerPreferencias() {
   const { data, error } = await supabase.from('fin_preferencias').select('*').maybeSingle()
   if (error) throw error
-  return data ?? { sugestoes_ignoradas: [] }
+  return data ?? { sugestoes_ignoradas: [], avisar_vencimentos: true }
+}
+
+// Aviso de vencimento no celular (fase 3.6): ligado por padrão; desligar vale para todos os aparelhos.
+export async function salvarAvisoVencimentos(ligado) {
+  ok(await supabase.from('fin_preferencias').upsert({ avisar_vencimentos: ligado, updated_at: new Date().toISOString() }, { onConflict: 'user_id' }))
 }
 
 // Dispensar uma sugestão: a chave fica guardada e ela não volta.

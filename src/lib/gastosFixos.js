@@ -70,3 +70,24 @@ export function proximaCobranca(rec, hoje) {
 
 // Chave de uma cobrança: o gasto e o dia.
 export const chaveCobranca = (recorrenciaId, dia) => `${recorrenciaId}|${dia}`
+
+// Avisos de vencimento (fase 3.6): cobranças sem pagamento atrasadas (desde o cadastro, até
+// `diasAtras`), de hoje e de amanhã. Parceladas ficam de fora: as parcelas já estão lançadas.
+export function vencimentosProximos(recorrencias, pagamentos, hoje, diasAtras, diaDoCadastro) {
+  const pagas = new Set(pagamentos.map((x) => chaveCobranca(x.recorrencia_id, x.referencia)))
+  const amanha = somarDias(hoje, 1)
+  const janela = somarDias(hoje, -diasAtras)
+  const lista = recorrencias
+    .filter((rec) => rec.tipo !== 'parcelada')
+    .flatMap((rec) => {
+      const cadastro = diaDoCadastro(rec)
+      return cobrancasEntre(rec, cadastro > janela ? cadastro : janela, amanha).map((c) => ({ rec, dia: c.dia }))
+    })
+    .filter((c) => !pagas.has(chaveCobranca(c.rec.id, c.dia)))
+    .sort((a, b) => a.dia.localeCompare(b.dia) || b.rec.valor_centavos - a.rec.valor_centavos)
+  return {
+    atrasadas: lista.filter((c) => c.dia < hoje),
+    hoje: lista.filter((c) => c.dia === hoje),
+    amanha: lista.filter((c) => c.dia === amanha),
+  }
+}

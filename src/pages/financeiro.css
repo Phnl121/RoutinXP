@@ -1995,3 +1995,29 @@ button.fin-dre__botao:hover {
   border-color: color-mix(in oklab, var(--tom-assinatura) 40%, var(--rule));
   background: color-mix(in oklab, var(--tom-assinatura) 8%, var(--panel));
 }
+
+/* ---------- Aviso de vencimento no celular (fase 3.6) ---------- */
+
+.gf-aviso {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 1rem;
+  margin-top: 0.75rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--rule);
+}
+
+.gf-aviso .label {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.gf-aviso .hint {
+  flex: 1 1 16rem;
+  margin: 0;
+}
+
+.gf-aviso__opcao {
+  min-height: 2.75rem;
+}

@@ -36,15 +36,17 @@ self.addEventListener('push', (evento) => {
     dados = { corpo: evento.data ? evento.data.text() : '' }
   }
   // O app aberto pode ter avisado há pouco: substitui sem tocar de novo (o push precisa sempre
-  // mostrar uma notificação, então ela é mostrada mesmo assim).
+  // mostrar uma notificação, então ela é mostrada mesmo assim). Cada tipo de aviso tem a sua
+  // etiqueta: o de vencimento não apaga o do foco. Só o do foco fica até ser tocado.
+  const tag = dados.tag === 'routinxp-vencimento' ? dados.tag : 'routinxp-foco'
   evento.waitUntil(
-    self.registration.getNotifications({ tag: 'routinxp-foco' }).then((abertas) =>
+    self.registration.getNotifications({ tag }).then((abertas) =>
       self.registration.showNotification(dados.titulo || 'RoutinXP', {
         body: dados.corpo || '',
         icon: '/marca/routinxp-icone-192.png',
-        tag: 'routinxp-foco',
+        tag,
         renotify: !abertas.some((n) => Date.now() - n.timestamp < 120000),
-        requireInteraction: true,
+        requireInteraction: tag === 'routinxp-foco',
         data: { url: dados.url || '/foco' },
       }),
     ),

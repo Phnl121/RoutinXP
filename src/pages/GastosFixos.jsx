@@ -6,6 +6,9 @@ import { formatarReais, mesDe, rotuloDia } from '../lib/dinheiro'
 import { diaBrasilia, formatarPrazo, hojeBrasilia } from '../lib/datas'
 import { GastoFixoDialog, PagarDialog } from '../components/GastosFixosParts'
 import { detectarRecorrencias } from '../lib/recorrencias'
+import { garantirInscricao, iosSemInstalar, permissaoAtual } from '../lib/push'
+import { pedirPermissao } from '../lib/foco'
+import { useDadosApp } from '../lib/dadosContexto'
 import { Toast } from '../components/Toast'
 import { Aviso } from '../components/AuthParts'
 import { IconeCheck, IconeMais, IconeRelogio } from '../components/icones'
@@ -21,10 +24,68 @@ function repeticao(rec) {
   const [ano, mes, dia] = rec.inicio.split('-').map(Number)
   if (rec.frequencia === 'semanal') return g.todaSemana(DIAS_SEMANA[new Date(Date.UTC(ano, mes - 1, dia)).getUTCDay()])
   if (rec.frequencia === 'anual') {
-    const nomeMes = new Intl.DateTimeFormat('pt-BR', { month: 'short', timeZone: 'UTC' }).format(new Date(Date.UTC(ano, mes - 1, dia))).replace('.', '')
+    const nomeMes = new Intl.DateTimeFormat('pt-BR', { month: 'short', timeZone: 'UTC' })
+      .format(new Date(Date.UTC(ano, mes - 1, dia)))
+      .replace('.', '')
     return g.todoAno(`${dia} ${nomeMes}`)
   }
   return g.todoDia(dia)
+}
+
+// Aviso no celular um dia antes do vencimento (fase 3.6). A permissão é deste navegador; ligar e
+// desligar o aviso vale para a conta (o servidor manda para todos os aparelhos inscritos).
+function AvisoCelular({ ligado, onMudar, onErro }) {
+  const { registrarPush } = useDadosApp()
+  const [permissao, setPermissao] = useState(permissaoAtual)
+  const a = g.avisoCelular
+  let conteudo
+  if (permissao === 'granted') {
+    conteudo = (
+      <label className="fin-marcar gf-aviso__opcao">
+        <input
+          type="checkbox"
+          className="seletor__caixa"
+          checked={ligado}
+          onChange={(e) => {
+            onMudar(e.target.checked).catch(onErro)
+            if (e.target.checked) garantirInscricao(registrarPush).catch(() => {})
+          }}
+        />
+        <span>{a.ligado}</span>
+      </label>
+    )
+  } else if (iosSemInstalar()) {
+    conteudo = <p className="hint">{a.iphone}</p>
+  } else if (permissao === 'indisponivel') {
+    return null
+  } else if (permissao === 'denied') {
+    conteudo = <p className="hint">{a.bloqueados}</p>
+  } else {
+    conteudo = (
+      <>
+        <p className="hint">{a.convite}</p>
+        <button
+          type="button"
+          className="link-btn"
+          onClick={async () => {
+            const nova = await pedirPermissao()
+            setPermissao(nova)
+            if (nova !== 'granted') return
+            garantirInscricao(registrarPush).catch(() => {})
+            if (!ligado) onMudar(true).catch(onErro)
+          }}
+        >
+          {a.ativar}
+        </button>
+      </>
+    )
+  }
+  return (
+    <div className="gf-aviso">
+      <h3 className="label">{a.titulo}</h3>
+      {conteudo}
+    </div>
+  )
 }
 
 // Gastos fixos (fase 3 do Financeiro), estrutura escolhida pelo usuário: próximas cobranças à
@@ -86,10 +147,19 @@ export default function GastosFixos() {
               </span>
               <span className="gf-sugestao__valor">{formatarReais(s.valor_centavos)}</span>
               <span className="gf-sugestao__acoes">
-                <button type="button" className="botao-contorno gf-sugestao__cadastrar" onClick={() => setDlg({ tipo: 'gasto', sugestao: s })}>
+                <button
+                  type="button"
+                  className="botao-contorno gf-sugestao__cadastrar"
+                  onClick={() => setDlg({ tipo: 'gasto', sugestao: s })}
+                >
                   {g.sugestoes.cadastrar}
                 </button>
-                <button type="button" className="link-btn" onClick={() => d.ignorarSugestao(s.chave)} aria-label={g.sugestoes.ignorarRotulo(s.nome)}>
+                <button
+                  type="button"
+                  className="link-btn"
+                  onClick={() => d.ignorarSugestao(s.chave)}
+                  aria-label={g.sugestoes.ignorarRotulo(s.nome)}
+                >
                   {g.sugestoes.ignorar}
                 </button>
               </span>
@@ -113,7 +183,9 @@ export default function GastosFixos() {
       pagamento: pagoPor.get(chaveCobranca(rec.id, c.dia)) ?? null,
     })),
   )
-  const vencidas = cobrancas.filter((c) => c.rec.tipo !== 'parcelada' && c.dia < hoje && !c.pagamento).sort((a, b) => a.dia.localeCompare(b.dia))
+  const vencidas = cobrancas
+    .filter((c) => c.rec.tipo !== 'parcelada' && c.dia < hoje && !c.pagamento)
+    .sort((a, b) => a.dia.localeCompare(b.dia))
   const proximas = cobrancas.filter((c) => c.dia >= hoje).sort((a, b) => a.dia.localeCompare(b.dia) || a.rec.nome.localeCompare(b.rec.nome))
   // Pagas neste mês com o dia já passado: continuam à vista, com o check e o Desfazer.
   const inicioMes = `${mesDe(hoje)}-01`
@@ -121,7 +193,11 @@ export default function GastosFixos() {
   const pagasNoMes = recs
     .filter((rec) => rec.tipo !== 'parcelada')
     .flatMap((rec) =>
-      cobrancasEntre(rec, inicioMes, somarDias(hoje, -1)).map((c) => ({ rec, ...c, pagamento: pagoPor.get(chaveCobranca(rec.id, c.dia)) ?? null })),
+      cobrancasEntre(rec, inicioMes, somarDias(hoje, -1)).map((c) => ({
+        rec,
+        ...c,
+        pagamento: pagoPor.get(chaveCobranca(rec.id, c.dia)) ?? null,
+      })),
     )
     .filter((c) => c.pagamento)
     .sort((a, b) => a.dia.localeCompare(b.dia))
@@ -132,7 +208,10 @@ export default function GastosFixos() {
   const assinaturasAno = recs
     .filter((rec) => rec.tipo === 'assinatura' && rec.ativa && (!rec.fim || rec.fim >= hoje))
     .reduce((soma, rec) => soma + custoAnual(rec), 0)
-  const parceladasAbertas = recs.filter((rec) => rec.tipo === 'parcelada').map((rec) => progressoParcelas(rec, hoje)).filter((p) => p.restantes > 0)
+  const parceladasAbertas = recs
+    .filter((rec) => rec.tipo === 'parcelada')
+    .map((rec) => progressoParcelas(rec, hoje))
+    .filter((p) => p.restantes > 0)
   const parcelasFalta = parceladasAbertas.reduce((soma, p) => soma + p.falta, 0)
   const mes = mesDe(hoje)
   // Pagas contam sempre; em aberto, só as que a lista também mostra (desde o cadastro).
@@ -190,7 +269,12 @@ export default function GastosFixos() {
         data-vencida={!parcelada && !c.pagamento && c.dia < hoje}
         style={corDe[c.rec.categoria_id] ? { '--c': corDe[c.rec.categoria_id] } : undefined}
       >
-        <span className="fin-bloco" data-vazio={!corDe[c.rec.categoria_id]} style={corDe[c.rec.categoria_id] ? { '--c': corDe[c.rec.categoria_id] } : undefined} aria-hidden="true" />
+        <span
+          className="fin-bloco"
+          data-vazio={!corDe[c.rec.categoria_id]}
+          style={corDe[c.rec.categoria_id] ? { '--c': corDe[c.rec.categoria_id] } : undefined}
+          aria-hidden="true"
+        />
         <span className="gf-cobranca__texto">
           <span className="gf-cobranca__nome">{c.rec.nome}</span>
           <span className="gf-cobranca__detalhe">
@@ -209,7 +293,12 @@ export default function GastosFixos() {
                 <IconeCheck />
                 {g.proximas.paga}
               </span>
-              <button type="button" className="link-btn" onClick={() => d.desfazerPagamento(c.pagamento.id)} aria-label={g.proximas.desfazerRotulo(c.rec.nome)}>
+              <button
+                type="button"
+                className="link-btn"
+                onClick={() => d.desfazerPagamento(c.pagamento.id)}
+                aria-label={g.proximas.desfazerRotulo(c.rec.nome)}
+              >
                 {g.proximas.desfazer}
               </button>
             </span>
@@ -219,7 +308,12 @@ export default function GastosFixos() {
                 <IconeRelogio />
                 {prazo.texto}
               </span>
-              <button type="button" className="link-btn" onClick={() => pagar(c)} aria-label={g.proximas.pagarRotulo(c.rec.nome, rotuloDia(c.dia))}>
+              <button
+                type="button"
+                className="link-btn"
+                onClick={() => pagar(c)}
+                aria-label={g.proximas.pagarRotulo(c.rec.nome, rotuloDia(c.dia))}
+              >
                 {g.proximas.pagar}
               </button>
             </span>
@@ -244,23 +338,23 @@ export default function GastosFixos() {
 
         {semContas || recs.length === 0 ? (
           <>
-          <section className="panel fin-comecar" aria-labelledby="gf-vazio">
-            <h2 id="gf-vazio" className="fin-comecar__titulo">
-              {g.vazio.titulo}
-            </h2>
-            <p className="fin-comecar__texto">{semContas ? g.vazio.semConta : g.vazio.texto}</p>
-            {semContas ? (
-              <Link to="/financeiro" className="btn">
-                {g.vazio.irFinanceiro}
-              </Link>
-            ) : (
-              <button type="button" className="btn" onClick={() => setDlg({ tipo: 'gasto' })}>
-                <IconeMais />
-                {g.novo}
-              </button>
-            )}
-          </section>
-          {painelSugestoes}
+            <section className="panel fin-comecar" aria-labelledby="gf-vazio">
+              <h2 id="gf-vazio" className="fin-comecar__titulo">
+                {g.vazio.titulo}
+              </h2>
+              <p className="fin-comecar__texto">{semContas ? g.vazio.semConta : g.vazio.texto}</p>
+              {semContas ? (
+                <Link to="/financeiro" className="btn">
+                  {g.vazio.irFinanceiro}
+                </Link>
+              ) : (
+                <button type="button" className="btn" onClick={() => setDlg({ tipo: 'gasto' })}>
+                  <IconeMais />
+                  {g.novo}
+                </button>
+              )}
+            </section>
+            {painelSugestoes}
           </>
         ) : (
           <>
@@ -316,11 +410,18 @@ export default function GastosFixos() {
                     <ul className="gf-cobrancas">{pagasNoMes.map(linhaCobranca)}</ul>
                   </div>
                 )}
+                <AvisoCelular
+                  ligado={d.avisarVencimentos}
+                  onMudar={d.mudarAvisoVencimentos}
+                  onErro={() => setAviso({ tipo: 'erro', texto: g.avisoCelular.erro, chave: `aviso-${Date.now()}` })}
+                />
               </section>
 
               <div className="gf-grupos">
                 {TIPOS.map((tipo) => {
-                  const itens = recs.filter((rec) => rec.tipo === tipo).sort((a, b) => Number(b.ativa) - Number(a.ativa) || a.nome.localeCompare(b.nome))
+                  const itens = recs
+                    .filter((rec) => rec.tipo === tipo)
+                    .sort((a, b) => Number(b.ativa) - Number(a.ativa) || a.nome.localeCompare(b.nome))
                   if (!itens.length) return null
                   const subtotal = itens.reduce((soma, rec) => soma + custoMensal(rec, hoje), 0)
                   return (
@@ -438,9 +539,7 @@ function LinhaGasto({ rec, conta, cor, hoje, onAbrir }) {
         <span className="gf-gasto__detalhe">{detalhe}</span>
       </span>
       <span className="gf-gasto__lado">
-        <span className="gf-gasto__valor">
-          {formatarReais(rec.valor_centavos)}
-        </span>
+        <span className="gf-gasto__valor">{formatarReais(rec.valor_centavos)}</span>
         {lateral && <span className="gf-gasto__extra">{lateral}</span>}
       </span>
     </button>

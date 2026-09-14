@@ -581,3 +581,12 @@
     padding: 1.25rem;
   }
 }
+
+/* Vencimentos: âmbar como os prazos; coral quando há gasto fixo atrasado. */
+.lembrete--vencimentos > svg {
+  color: var(--prazo-perto);
+}
+
+.lembrete--vencimentos[data-atrasada='true'] > svg {
+  color: var(--prazo-atrasado);
+}

@@ -13,6 +13,8 @@ import { pedirInstalacao, useInstalacao } from '../lib/instalacao'
 import { useConexao } from '../lib/useConexao'
 import { contarPrazos, streakEmRisco } from '../lib/lembrete'
 import { LembretePrazos } from '../components/LembretePrazos'
+import { LembreteVencimentos } from '../components/LembreteVencimentos'
+import { useVencimentos } from '../lib/useVencimentos'
 import { hojeBrasilia } from '../lib/datas'
 import { FocoContexto, formatarTempo, restanteDe, useAgora, useFoco, useFocoApp } from '../lib/foco'
 import { garantirInscricao } from '../lib/push'
@@ -113,6 +115,13 @@ export default function Shell({ session }) {
     }
   }, [focoRodando, focoFimEm, focoFase, registrarPush, agendarAvisoFoco, cancelarAvisoFoco])
 
+  // Aviso de vencimento (Financeiro): com a permissão já dada neste navegador, mantém a inscrição
+  // do push em dia a cada abertura do app (o aviso é mandado pelo servidor, um dia antes).
+  const temFinanceiro = temFuncao(conta, 'financeiro')
+  useEffect(() => {
+    if (temFinanceiro) garantirInscricao(registrarPush).catch(() => {})
+  }, [temFinanceiro, registrarPush])
+
   // Tocar num aviso com o app aberto: o service worker pede para abrir a página Foco.
   useEffect(() => {
     const sw = navigator.serviceWorker
@@ -169,6 +178,12 @@ export default function Shell({ session }) {
   const streakVisivel = comTarefas && streakEmRisco(d.stats, hoje) && !streakDispensado
   const prazos = contarPrazos(d.tarefas, hoje)
   const prazosVisivel = comTarefas && !streakVisivel && prazos.paraHoje + prazos.atrasadas > 0 && !prazosDispensado
+  // Gastos fixos para pagar (atrasados, hoje, amanhã): só com a função Financeiro.
+  const comFinanceiro = temFuncao(conta, 'financeiro')
+  const [vencimentosDispensado, dispensarVencimentos] = useDispensaDoDia(`routinxp:vencimentos:${hoje}`)
+  const vencimentos = useVencimentos(comFinanceiro)
+  const nVencimentos = vencimentos.atrasadas.length + vencimentos.hoje.length + vencimentos.amanha.length
+  const vencimentosVisivel = comFinanceiro && !streakVisivel && !prazosVisivel && nVencimentos > 0 && !vencimentosDispensado
   const { estado, carregar } = d
   // A internet voltou depois de uma falha de carregamento: busca os dados de novo.
   useEffect(() => {
@@ -218,7 +233,8 @@ export default function Shell({ session }) {
           {online && prazosVisivel && (
             <LembretePrazos paraHoje={prazos.paraHoje} atrasadas={prazos.atrasadas} onDispensar={dispensarPrazos} />
           )}
-          {online && modoInstalacao && !streakVisivel && !prazosVisivel && <ConviteInstalar onInstalar={instalar} />}
+          {online && vencimentosVisivel && <LembreteVencimentos {...vencimentos} onDispensar={dispensarVencimentos} />}
+          {online && modoInstalacao && !streakVisivel && !prazosVisivel && !vencimentosVisivel && <ConviteInstalar onInstalar={instalar} />}
           <Outlet context={{ session }} />
           {focoMontado && temFuncao(conta, 'foco') && <Foco visivel={noFoco} userId={session.user.id} />}
           {dlgIos && <DialogoInstalarIos onFechar={() => setDlgIos(false)} />}

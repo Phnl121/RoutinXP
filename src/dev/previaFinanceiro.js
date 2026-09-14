@@ -2,7 +2,7 @@
 // src/lib/financeiro.js, com dados fictícios em memória.
 import { hojeBrasilia } from '../lib/datas'
 import { andarMes, limitesDoMes, mesDe } from '../lib/dinheiro'
-import { somarMeses } from '../lib/gastosFixos'
+import { somarDias, somarMeses } from '../lib/gastosFixos'
 import { combina } from '../lib/regras'
 
 let seq = 500
@@ -125,6 +125,9 @@ let recorrencias = [
   rec('fr-8', 'Notebook', 'parcelada', 41650, diaDoMes(andarMes(mes, -6), 8), 'fc3', 'fk7', { parcelas: 12 }),
   rec('fr-9', 'Curso de inglês', 'parcelada', 21000, diaDoMes(andarMes(mes, -1), 20), 'fc3', 'fk5', { parcelas: 6 }),
   rec('fr-10', 'Academia', 'outro', 9900, diaDoMes(andarMes(mes, -4), 10), 'fc1', 'fk4', { ativa: false }),
+  rec('fr-11', 'Seguro do carro', 'conta', 21490, somarMeses(somarDias(hoje, 1), -3), 'fc1', 'fk1', {
+    created_at: new Date(Date.now() - 100 * 86400000).toISOString(),
+  }),
 ]
 // Parcelas de uma compra parcelada: como fin_gerar_parcelas no banco (refaz as futuras).
 function gerarParcelas(r) {
@@ -407,7 +410,12 @@ export async function categorizarTransacao(id, categoriaId) {
 }
 
 // ---------- Preferências e sugestões na prévia ----------
-let preferencias = { sugestoes_ignoradas: [] }
+let preferencias = { sugestoes_ignoradas: [], avisar_vencimentos: true }
+
+export async function salvarAvisoVencimentos(ligado) {
+  await espera()
+  preferencias = { ...preferencias, avisar_vencimentos: ligado }
+}
 
 export async function lerPreferencias() {
   await espera()

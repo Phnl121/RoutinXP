@@ -392,6 +392,9 @@ verify_jwt = false
 [functions.avisos-foco]
 verify_jwt = false
 
+[functions.avisos-vencimento]
+verify_jwt = false
+
 # Painel de administração: exige o token do usuário; o código ainda confere se é administrador
 # com a sessão verificada (admin_verificado no banco).
 [functions.admin-usuarios]

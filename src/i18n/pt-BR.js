@@ -710,6 +710,25 @@ export const t = {
     dispensar: 'Dispensar aviso de prazos',
   },
 
+  vencimentosAviso: {
+    um: (nome, quando, valor, aproximado) => {
+      const frase = { atrasada: 'está atrasado', hoje: 'vence hoje', amanha: 'vence amanhã' }[quando]
+      return `${nome} ${frase} · ${aproximado ? 'cerca de ' : ''}${valor}`
+    },
+    // "3 gastos fixos para pagar: 1 atrasado, 2 amanhã · R$ 250,00"
+    varios: (atrasadas, hoje, amanha, total) => {
+      const partes = []
+      if (atrasadas) partes.push(`${atrasadas} ${atrasadas === 1 ? 'atrasado' : 'atrasados'}`)
+      if (hoje) partes.push(`${hoje} hoje`)
+      if (amanha) partes.push(`${amanha} amanhã`)
+      const n = atrasadas + hoje + amanha
+      const lista = partes.length > 1 ? `${partes.slice(0, -1).join(', ')} e ${partes.at(-1)}` : partes[0]
+      return `${n} gastos fixos para pagar: ${lista} · ${total}`
+    },
+    acao: 'Ver gastos fixos',
+    dispensar: 'Dispensar aviso de vencimentos',
+  },
+
   tagsPerfil: {
     titulo: 'Tags',
     texto: 'Marque tarefas com tags. Elas aparecem como etiquetas nas tarefas; clique numa etiqueta para mostrar só as cores.',
@@ -1088,6 +1107,15 @@ export const t = {
       data: 'Pago em',
       conta: 'Pago com',
       confirmar: 'Marcar como paga',
+    },
+    avisoCelular: {
+      titulo: 'Aviso no celular',
+      convite: 'Receba um aviso um dia antes de cada vencimento, mesmo com o app fechado.',
+      ativar: 'Ativar avisos',
+      ligado: 'Avisar um dia antes de cada vencimento',
+      bloqueados: 'Os avisos estão bloqueados neste navegador. Libere as notificações nas configurações do site.',
+      iphone: 'No iPhone, os avisos só chegam com o app instalado na tela inicial.',
+      erro: 'Não deu para salvar o aviso. Tente de novo.',
     },
     sugestoes: {
       titulo: 'Parecem gastos fixos',

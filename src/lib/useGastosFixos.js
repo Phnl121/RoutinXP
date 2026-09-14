@@ -23,6 +23,7 @@ export function useGastosFixos() {
     pagamentos: [],
     historico: [],
     ignoradas: [],
+    avisarVencimentos: true,
   })
   const [tentativa, setTentativa] = useState(0)
 
@@ -51,7 +52,16 @@ export function useGastosFixos() {
       .then(
         ([contas, categorias, recorrencias, pagamentos, historico, preferencias]) =>
           ativo &&
-          setDados({ estado: 'pronto', contas, categorias, recorrencias, pagamentos, historico, ignoradas: preferencias.sugestoes_ignoradas ?? [] }),
+          setDados({
+            estado: 'pronto',
+            contas,
+            categorias,
+            recorrencias,
+            pagamentos,
+            historico,
+            ignoradas: preferencias.sugestoes_ignoradas ?? [],
+            avisarVencimentos: preferencias.avisar_vencimentos ?? true,
+          }),
         (erro) => ativo && setDados((d) => ({ ...d, estado: 'erro', erro })),
       )
     return () => {
@@ -120,11 +130,24 @@ export function useGastosFixos() {
     [salvar, recarregarPagamentos],
   )
 
-  const ignorarSugestao = useCallback(async (chave) => {
-    setDados((d) => ({ ...d, ignoradas: [...d.ignoradas, chave] }))
-    const lista = await api.ignorarSugestao(chave, dados.ignoradas)
-    setDados((d) => ({ ...d, ignoradas: lista }))
-  }, [dados.ignoradas])
+  const ignorarSugestao = useCallback(
+    async (chave) => {
+      setDados((d) => ({ ...d, ignoradas: [...d.ignoradas, chave] }))
+      const lista = await api.ignorarSugestao(chave, dados.ignoradas)
+      setDados((d) => ({ ...d, ignoradas: lista }))
+    },
+    [dados.ignoradas],
+  )
 
-  return { ...dados, tentarDeNovo, salvar, excluir, pagar, desfazerPagamento, cadastrarSugestao, ignorarSugestao }
+  const mudarAvisoVencimentos = useCallback(async (ligado) => {
+    setDados((d) => ({ ...d, avisarVencimentos: ligado }))
+    try {
+      await api.salvarAvisoVencimentos(ligado)
+    } catch (erro) {
+      setDados((d) => ({ ...d, avisarVencimentos: !ligado }))
+      throw erro
+    }
+  }, [])
+
+  return { ...dados, tentarDeNovo, salvar, excluir, pagar, desfazerPagamento, cadastrarSugestao, ignorarSugestao, mudarAvisoVencimentos }
 }
